@@ -1,0 +1,163 @@
+bin/reverse_engineered_DLLs/
+└── SocietyForTheBlind.Slate.Web
+    ├── AssemblyInfo.cs
+    ├── Global.cs
+    ├── SocietyForTheBlind
+    │   └── Slate
+    │       └── Web
+    │           ├── App
+    │           │   ├── answer_sa.cs                 . / app / answer-sa.aspx
+    │           │   ├── answer_sa_questions.cs       . / app / answer-sa-questions.aspx
+XXXXXXXXXXXXXXXXXXXXX── assign_waiting_list.cs       . / app / assign-waiting-list.aspx
+XXXXXXXXXXXXXXXXXXXXX── authorizations.cs            . / app / authorizations.aspx
+    │           │   ├── authorization_search_add.cs  . / app / authorization-search-add.aspx
+    │           │   ├── authorization_search.cs      . / app / authorization-search.aspx
+    │           │   ├── AuthorizationType.cs         
+XXXXXXXXXXXXXXXXXXXXX── billing_address.cs          . / app / billing-address.aspx
+XXXXXXXXXXXXXXXXXXXXX── billing.cs                  . / app / billing.aspx
+XXXXXXXXXXXXXXXXXXXXX── client_merge_confirm.cs     . / app / client-merge-confirm.aspx
+XXXXXXXXXXXXXXXXXXXXX── client_merge.cs             . / app / client-merge.aspx
+    │           │   ├── CodeTable.cs                
+    │           │   ├── confirm_intake.cs            . / app / confirm-intake.aspx
+XXXXXXXXXXXXXXXXXXXXX── confirm_payment_source.cs    . / app / confirm-payment-source.aspx
+XXXXXXXXXXXXXXXXXXXXX── db_users.cs                  . / app / db-users.aspx
+XXXXXXXXXXXXXXXXXXXXX                                . / app / default.aspx
+XXXXXXXXXXXXXXXXXXXXX── del_authorization.cs         . / app / del-authorization.aspx
+XXXXXXXXXXXXXXXXXXXXX── del_db_user.cs               . / app / del-db-user.aspx
+    │           │   ├── del_goal.cs                  . / app / del-goal.aspx
+XXXXXXXXXXXXXXXXXXXXX── del_intake.cs                . / app / del-intake.aspx
+    │           │   ├── del_intake_file.cs           . / app / del-intake-file.aspx
+XXXXXXXXXXXXXXXXXXXXX── del_lesson_note.cs           . / app / del-lesson-note.aspx
+XXXXXXXXXXXXXXXXXXXXX── del_outreach.cs              . / app / del-outreach.aspx
+XXXXXXXXXXXXXXXXXXXXX── del_payment_source.cs        . / app / del-payment-source.aspx
+XXXXXXXXXXXXXXXXXXXXX── del_progress_report.cs       . / app / del-progress-report.aspx
+XXXXXXXXXXXXXXXXXXXXX── del_sa.cs                    . / app / del-sa.aspx
+    │           │   ├── del_sa_lesson_note.cs        . / app / del-sa-lesson-note.aspx
+XXXXXXXXXXXXXXXXXXXXX── del_service.cs               . / app / del-service.aspx
+XXXXXXXXXXXXXXXXXXXXX── del_service_group.cs         . / app / del-service-group.aspx
+    │           │   ├── del_sig_file.cs              . / app / del-sig-file.aspx
+XXXXXXXXXXXXXXXXXXXXX── del_volunteer_hours.cs       . / app / del-volunteer-hours.aspx
+XXXXXXXXXXXXXXXXXXXXX── edit_authorization.cs        . / app / edit-authorization.aspx
+    │           │   ├── edit_brief_intake2.cs        . / app / edit-brief-intake2.aspx
+    │           │   ├── edit_brief_intake.cs         . / app / edit-brief-intake.aspx
+XXXXXXXXXXXXXXXXXXXXX── edit_db_user.cs              . / app / edit-db-user.aspx
+    │           │   ├── edit_goal.cs                 . / app / edit-goal.aspx
+XXXXXXXXXXXXXXXXXXXXX── edit_intake2.cs              . / app / edit-intake2.aspx
+XXXXXXXXXXXXXXXXXXXXX── edit_intake3.cs              . / app / edit-intake3.aspx
+XXXXXXXXXXXXXXXXXXXXX── edit_intake4.cs              . / app / edit-intake4.aspx
+XXXXXXXXXXXXXXXXXXXXX── edit_intake.cs               . / app / edit-intake.aspx
+XXXXXXXXXXXXXXXXXXXXX── edit_lesson_note.cs          . / app / edit-lesson-note.aspx
+XXXXXXXXXXXXXXXXXXXXX── edit_outreach.cs             . / app / edit-outreach.aspx
+    │           │   ├── edit_payment_source2.cs      . / app / edit-payment-source2.aspx
+    │           │   ├── edit_payment_source.cs       . / app / edit-payment-source.aspx
+    │           │   ├── edit_planforservice.cs       . / app / edit-planforservice.aspx
+XXXXXXXXXXXXXXXXXXXXX── edit_progress_report.cs      . / app / edit-progress-report.aspx
+XXXXXXXXXXXXXXXXXXXXX── edit_sa.cs                   . / app / edit-sa.aspx
+    │           │   ├── edit_sa_lesson_note.cs       . / app / edit-sa-lesson-note.aspx
+XXXXXXXXXXXXXXXXXXXXX── edit_service.cs              . / app / edit-service.aspx
+XXXXXXXXXXXXXXXXXXXXX── edit_service_group.cs        . / app / edit-service-group.aspx
+XXXXXXXXXXXXXXXXXXXXX── edit_student_plan.cs         . / app / edit-student-plan.aspx
+XXXXXXXXXXXXXXXXXXXXX── edit_volunteer_hours.cs      . / app / edit-volunteer-hours.aspx
+XXXXXXXXXXXXXXXXXXXXX── export_billing.cs            . / app / export-billing.aspx
+XXXXXXXXXXXXXXXXXXXXX── export_data.cs               . / app / export-data.aspx
+XXXXXXXXXXXXXXXXXXXXX── export_demographics.cs       . / app / export-demographics.aspx
+XXXXXXXXXXXXXXXXXXXXX── export_lesson_billing.cs     . / app / export-lesson-billing.aspx
+XXXXXXXXXXXXXXXXXXXXX── export_planforservice.cs     . / app / export-planforservice.aspx
+    │           │   ├── fix_lesson_notes.cs          . / app / fix-lesson-notes.aspx
+XXXXXXXXXXXXXXXXXXXXX── intakes.cs                   . / app / intakes.aspx
+XXXXXXXXXXXXXXXXXXXXX── intake_search.cs             . / app / intake-search.aspx
+XXXXXXXXXXXXXXXXXXXXX── invoice2.cs                  . / app / invoice.aspx
+    │           │   ├── lesson_notes2.cs             . / app / lesson-notes2.aspx
+XXXXXXXXXXXXXXXXXXXXX── lesson_notes.cs              . / app / lesson-notes.aspx
+    │           │   ├── lesson_note_search.cs        . / app / lesson-note-search.aspx
+XXXXXXXXXXXXXXXXXXXXX── Login1.cs                    . / app / login.aspx
+XXXXXXXXXXXXXXXXXXXXX── new_authorization.cs         . / app / new-authorization.aspx
+XXXXXXXXXXXXXXXXXXXXX── new_db_user.cs               . / app / new-db-user.aspx
+    │           │   ├── new_goal.cs                  . / app / new-goal.aspx
+XXXXXXXXXXXXXXXXXXXXX── new_intake.cs                . / app / new-intake.aspx
+XXXXXXXXXXXXXXXXXXXXX── new_lesson_note.cs           . / app / new-lesson-note.aspx
+XXXXXXXXXXXXXXXXXXXXX── new_outreach.cs              . / app / new-outreach.aspx
+XXXXXXXXXXXXXXXXXXXXX── new_payment_source.cs        . / app / new-payment-source.aspx
+XXXXXXXXXXXXXXXXXXXXX── new_progress_report.cs       . / app / new-progress-report.aspx
+XXXXXXXXXXXXXXXXXXXXX── new_sa.cs                    . / app / new-sa.aspx
+    │           │   ├── new_sa_lesson_note.cs        . / app / new-sa-lesson-note.aspx
+XXXXXXXXXXXXXXXXXXXXX── new_service.cs               . / app / new-service.aspx
+XXXXXXXXXXXXXXXXXXXXX── new_volunteer_hours.cs       . / app / new-volunteer-hours.aspx
+XXXXXXXXXXXXXXXXXXXXX── outreach.cs                  . / app / outreach.aspx
+XXXXXXXXXXXXXXXXXXXXX── payment_sources.cs           . / app / payment-sources.aspx
+XXXXXXXXXXXXXXXXXXXXX── progress_reports.cs          . / app / progress-reports.aspx
+XXXXXXXXXXXXXXXXXXXXX── report_abyc.cs               . / app / report-abyc.aspx
+XXXXXXXXXXXXXXXXXXXXX── report_abys.cs               . / app / report-abys.aspx
+XXXXXXXXXXXXXXXXXXXXX── report_aexpire.cs            . / app / report-aexpire.aspx
+XXXXXXXXXXXXXXXXXXXXX── report_asbyc.cs              . / app / report-asbyc.aspx
+XXXXXXXXXXXXXXXXXXXXX── report_asbyi.cs              . / app / report-asbyi.aspx
+XXXXXXXXXXXXXXXXXXXXX── report_audit.cs              . / app / report-audit.aspx
+XXXXXXXXXXXXXXXXXXXXX── report_cbya.cs               . / app / report-cbya.aspx
+XXXXXXXXXXXXXXXXXXXXX── report_cbyc.cs               . / app / report-cbyc.aspx
+XXXXXXXXXXXXXXXXXXXXX── report_cbyh.cs               . / app / report-cbyh.aspx
+XXXXXXXXXXXXXXXXXXXXX── report_cbym.cs               . / app / report-cbym.aspx
+XXXXXXXXXXXXXXXXXXXXX── report_cbyr.cs               . / app / report-cbyr.aspx
+XXXXXXXXXXXXXXXXXXXXX── report_cbys.cs               . / app / report-cbys.aspx
+XXXXXXXXXXXXXXXXXXXXX── report_cci.cs                . / app / report-cci.aspx
+XXXXXXXXXXXXXXXXXXXXX── report_ccr.cs                . / app / report-ccr.aspx
+XXXXXXXXXXXXXXXXXXXXX── report_classes.cs            . / app / report-classes.aspx
+XXXXXXXXXXXXXXXXXXXXX── report_cschedule.cs          . / app / report-cschedule.aspx
+XXXXXXXXXXXXXXXXXXXXX── report_cunit.cs              . / app / report-cunit.aspx
+XXXXXXXXXXXXXXXXXXXXX── report_email.cs              . / app / report-email.aspx
+XXXXXXXXXXXXXXXXXXXXX── report_ibyc.cs               . / app / report-ibyc.aspx
+XXXXXXXXXXXXXXXXXXXXX── report_ibys.cs               . / app / report-ibys.aspx
+XXXXXXXXXXXXXXXXXXXXX── report_ihours.cs             . / app / report-ihours.aspx
+XXXXXXXXXXXXXXXXXXXXX── report_iproduct.cs           . / app / report-iproduct.aspx
+XXXXXXXXXXXXXXXXXXXXX── report_ischedule.cs          . / app / report-ischedule.aspx
+XXXXXXXXXXXXXXXXXXXXX── report_iunits.cs             . / app / report-iunits.aspx
+    │           │   ├── report_late_progress.cs      . / app / report-late-progress.aspx
+XXXXXXXXXXXXXXXXXXXXX── report_psi.cs                . / app / report-psi.aspx
+XXXXXXXXXXXXXXXXXXXXX── report_sa.cs                 . / app / report-sa.aspx
+    │           │   ├── reports.cs                   . / app / reports.aspx
+XXXXXXXXXXXXXXXXXXXXX── report_sp.cs                 . / app / report-sp.aspx
+    │           │   ├── report_vcci.cs               . / app / report-vcci.aspx
+    │           │   ├── report_vcm.cs                . / app / report-vcm.aspx
+    │           │   ├── report_vcrpv.cs              . / app / report-vcrpv.aspx
+    │           │   ├── report_vhours.cs             . / app / report-vhours.aspx
+    │           │   ├── sa_lesson_notes.cs           . / app / sa-lesson-notes.aspx
+XXXXXXXXXXXXXXXXXXXXX── schedule_volunteer.cs        . / app / schedule-volunteer.aspx
+XXXXXXXXXXXXXXXXXXXXX── schedule_volunteers.cs       . / app / schedule-volunteers.aspx
+XXXXXXXXXXXXXXXXXXXXX── search.cs                    . / app / search.aspx
+XXXXXXXXXXXXXXXXXXXXX── service_areas.cs             . / app / service-areas.aspx
+XXXXXXXXXXXXXXXXXXXXX── service_groups.cs            . / app / service-groups.aspx
+XXXXXXXXXXXXXXXXXXXXX── services.cs                  . / app / services.aspx
+XXXXXXXXXXXXXXXXXXXXX── student_plan.cs              . / app / student-plan.aspx
+XXXXXXXXXXXXXXXXXXXXX── student_plan_report.cs       . / app / student-plan-report.aspx
+    │           │   ├── Utility.cs                   . / app / test.aspx
+XXXXXXXXXXXXXXXXXXXXX── view_authorization.cs        . / app / view-authorization.aspx
+XXXXXXXXXXXXXXXXXXXXX── view_authorizations.cs       . / app / view-authorizations.aspx
+XXXXXXXXXXXXXXXXXXXXX── view_billing.cs              . / app / view-billing.aspx
+    │           │   ├── view_brief_intake.cs         . / app / view-brief-intake.aspx
+XXXXXXXXXXXXXXXXXXXXX── view_hours.cs                . / app / view-hours.aspx
+XXXXXXXXXXXXXXXXXXXXX── view_intake.cs               . / app / view-intake.aspx
+    │           │   ├── view_intake_vol.cs           . / app / view-intake-vol.aspx
+XXXXXXXXXXXXXXXXXXXXX── view_lesson_note.cs          . / app / view-lesson-note.aspx
+XXXXXXXXXXXXXXXXXXXXX── view_lesson_notes.cs         . / app / view-lesson-notes.aspx
+XXXXXXXXXXXXXXXXXXXXX── view_payment_source.cs       . / app / view-payment-source.aspx
+XXXXXXXXXXXXXXXXXXXXX── view_progress_report.cs      . / app / view-progress-report.aspx
+XXXXXXXXXXXXXXXXXXXXX── view_progress_reports.cs     . / app / view-progress-reports.aspx
+    │           │   ├── view_sa.cs                   . / app / view-sa.aspx
+    │           │   ├── view_sa_lesson_note.cs       . / app / view-sa-lesson-note.aspx
+    │           │   ├── view_sa_lesson_notes.cs      . / app / view-sa-lesson-notes.aspx
+XXXXXXXXXXXXXXXXXXXXX── view_volunteer_hour.cs       . / app / view-volunteer-hour.aspx
+XXXXXXXXXXXXXXXXXXXXX── view_volunteer_hours.cs      . / app / view-volunteer-hours.aspx
+XXXXXXXXXXXXXXXXXXXXX── volunteer_hours.cs           . / app / volunteer-hours.aspx
+XXXXXXXXXXXXXXXXXXXXX── waiting_list.cs              . / app / waiting-list.aspx
+    │           │   ├── waiting_search.cs            . / app / waiting-search.aspx
+    │           │   └── WebForm1.cs                  
+    │           ├── authorization_summary.cs         ./ authorization-summary.aspx
+    │           ├── brief_intake.cs                  ./ brief-intake.aspx
+    │           ├── brief_intake_start.cs            ./ brief-intake-start.aspx
+    │           ├── emailtest.cs                     ./ emailtest.aspx
+    │           ├── Helpers.cs                       
+    │           ├── invoice.cs                       ./ invoice.aspx
+    │           ├── late_progress_report.cs          ./ late-progress-report.aspx
+    │           ├── view_authorization2.cs           ./ view-authorization.aspx
+    │           ├── view_ccr.cs                      ./ view-ccr.aspx
+    │           ├── view_intake2.cs                  ./ view-intake.aspx
+    │           ├── view_lesson_note2.cs             ./ view-lesson-note.aspx
