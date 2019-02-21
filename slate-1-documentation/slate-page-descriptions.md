@@ -28,7 +28,7 @@ with no billing (if I understood that correctly).
 >
 > + [Authorizations](#user-content-authorizations)
 > + [Database Users](#user-content-database-users)
-> + [Class Information (AKA service areas)](#user-content-class-information)
+> + [Class Information (AKA service areas)](#class-information-aka-service-areas)
 > + [Intake Service List](#user-content-intake-service-list)
 > + [Service Groups](#user-content-service-groups)
 > + [Payment Sources](#user-content-payment-sources)
@@ -103,7 +103,7 @@ Authorizations are only used by CORE to identify a billing period and service ar
 + **description of required services**
 
   Shows the service area  (see [Class Information (AKA
-  service   areas)](#user-content-class-information)),
+  service   areas)](#class-information-aka-service-areas)),
   the   units  of   service  (classes   or  individual
   training), the number of units and the unit price.
 
@@ -597,7 +597,7 @@ running  list of  items on  a client's  intake under
 but  rarely  see  those updated  (or  even  included
 during intake). SIP definitely uses it because there
 are items here, that should be in service areas
-(see documented in [Class Information](#user-content-class-information)).
+(see documented in [Class Information](#class-information-aka-service-areas)).
 
 TODO: Ask Shane and Pat.
 
