@@ -1,0 +1,8 @@
+On Ubuntu 18.0.4 run these commands to install all required packages.
+
+sudo apt update
+sudo apt-get install git
+sudo apt-get install python3
+sudo apt install python3-pip
+sudo pip3 install Django==2.1.5
+sudo pip3 install psycopg2-binary

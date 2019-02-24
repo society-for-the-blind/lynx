@@ -35,14 +35,17 @@ class Contact(models.Model):
     do_not_contact_two = models.CharField(max_length=150)
     contact_notes = models.TextField()
 
+    def __str__(self):
+        return self.name
 
-#Employee information. Contact information in Contact table, addresses in Address table.
+
+# Employee information. Contact information in Contact table, addresses in Address table.
 class Employee(models.Model):
     contact_id = models.ForeignKey('Contact', on_delete=models.CASCADE)
     employee_type = models.CharField(max_length=150)
 
 
-#Addresses for Contacts.
+# Addresses for Contacts.
 class Address(models.Model):
     contact_id = models.ForeignKey('Contact', on_delete=models.CASCADE)
     name = models.CharField(max_length=150)
@@ -57,7 +60,7 @@ class Address(models.Model):
     region = models.CharField(max_length=150)
     cross_streets = models.CharField(max_length=150)
     bad_address = models.BinaryField()
-    billing = models.BinaryField() #Only applies to employees
+    billing = models.BinaryField()  # Only applies to employees
     address_notes = models.TextField()
 
 
@@ -66,7 +69,7 @@ class Billing(models.Model):
     invoice_date = models.DateField()
 
 
-#Intake questionairre
+# Intake questionnaire
 class Intake(models.Model):
     contact_id = models.ForeignKey('Contact', on_delete=models.CASCADE)
     created = models.DateField()
@@ -96,6 +99,3 @@ class Intake(models.Model):
     parole = models.BinaryField()
     parole_info = models.CharField(max_length=250)
     crime_history = models.TextField()
-
-
-
