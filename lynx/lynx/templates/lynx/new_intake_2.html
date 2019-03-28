@@ -1,0 +1,16 @@
+{% extends 'lynx/base.html' %}
+
+{% block content %}
+<h1>Intake Page 2 (Client History)</h1>
+<br>
+<form action="{{ action }}" method="post">
+    {% csrf_token %}
+    <h2>Criminal Background</h2>
+    {{ intake_form_criminal.as_p }}
+    <h2>Medical History</h2>
+    {{ intake_form_medical.as_p }}
+    <h2>Client History</h2>
+    {{ intake_form_history.as_p }}
+    <input type="submit" value="Submit">
+</form>
+{% endblock %}

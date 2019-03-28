@@ -6,3 +6,5 @@ sudo apt-get install python3
 sudo apt install python3-pip
 sudo pip3 install Django==2.1.5
 sudo pip3 install psycopg2-binary
+sudo pip3 install --upgrade django-crispy-forms
+sudo pip3 install django-debug-toolbar
