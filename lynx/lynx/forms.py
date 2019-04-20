@@ -86,11 +86,10 @@ class IntakeFormCriminal(forms.ModelForm):
             'crime': _('Have you been convicted of a crime?'),
             'crime_info': _('If yes, what and when did the convictions occur? What county did this conviction '
                             'occur in?'),
-            'crime_other': _('Criminal Conviction if Other'),
+            'crime_other': _('Criminal Conviction Information'),
             'parole': _('Are you on parole?'),
-            'parole_info': _('Parole Information if Other'),
-            'crime_history': _('Is there any other information regarding your criminal history that we should '
-                               'know about?'),
+            'parole_info': _('Parole Information'),
+            'crime_history': _('Additional Criminal History'),
         }
 
 
