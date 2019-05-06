@@ -25,7 +25,7 @@ SECRET_KEY = '5++)nw##nae9#ee2tv6g@p80p@+@j)+gd^@*4zggjgee%wpv+h'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['192.168.1.82', 'localhost']
 
 
 # Application definition
@@ -65,7 +65,7 @@ TEMPLATES = [
                 'django.template.context_processors.debug',
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
-                'django.contrib.messages.context_processors.messages',
+                'django.contrib.messages.context_processors.messages'
             ],
         },
     },
@@ -87,6 +87,9 @@ DATABASES = {
         'PORT': '5432',
     }
 }
+
+
+LOGIN_REDIRECT_URL = '/lynx/'
 
 
 # Password validation

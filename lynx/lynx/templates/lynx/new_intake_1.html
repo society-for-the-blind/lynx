@@ -3,10 +3,11 @@
 {% block content %}
 <h1>Intake Page 1 (Client Information)</h1>
 <br>
-<form action="{{ action }}" method="post">
+<form action="/lynx/add-intake/2/" method="post">
     {% csrf_token %}
     <h2>Client Contact Information</h2>
-    {{ intake_form.as_p }}
+    {{ form.as_p }}
+<!--    {{ intake_form.as_p }}-->
 <!--    {{ intake_form_address.as_p}}-->
 <!--    {{ intake_form_email.as_p}}-->
 <!--    {{ intake_form_phone.as_p}}-->

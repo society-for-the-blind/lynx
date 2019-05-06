@@ -1,0 +1,165 @@
+{% extends 'lynx/base.html' %}
+
+{% block content %}
+
+<h1>{{ object.first_name }} {{ object.last_name }}</h1>
+<h2>Client Information</h2>
+<p class="tab"><strong>Name:</strong>{{ object.first_name }} {% if object.middle_name %}{{ object.middle_name }} {% endif %}{{ object.last_name }}</p>
+{% if object.company %}<p><strong>Company:</strong> {{ object.company }}</p>{% endif %}
+{% if object.contact_notes %}<p><strong>Notes:</strong> {{ object.contact_notes }}</p>{% endif %}
+<p class="tab"><strong>Deceased:</strong> {{ object.deceased }}</p>
+<!--<p><strong>Remove from Mailing List:</strong> {{ object.remove_mailing }}</p>-->
+<!--<p><strong>Do Not Contact:</strong> {{ object.do_not_contact }}</p>-->
+
+{% for address in address_list %}
+    {% if not address.bad_address %}
+        <p class="tab">
+            <strong>Address:</strong><br>
+            {{ address.address_one }}<br>
+            {% if address.address_two %}{{ address.address_two }}<br>{% endif %}
+            {% if address.suite %}Suite {{ address.suite }}<br>{% endif %}
+            {{ address.city }}, {{ address.state }} {{ address.zip_code }}<br>
+            {{ address.country }}<br>
+        </p>
+        {% if address.region %}<p class="tab"><strong>Region:</strong> {{ address.region }}</p>{% endif %}
+        {% if address.cross_streets %}<p class="tab"><strong>Cross Streets:</strong> {{ address.cross_streets }}</p>{% endif %}
+        {% if address.address_notes %}<p class="tab"><strong>Notes:</strong> {{ address.address_notes }}</p>{% endif %}
+    {% endif %}
+{% empty %}
+    <p class="tab">Sorry, no associated addresses for this client</p>
+{% endfor %}
+
+{% for phone in phone_list %}
+    {% if phone.active %}
+        <p class="tab">
+            <strong>{{ phone.type }} Phone Number:</strong> {{ phone.phone }}
+<!--            {% if phone.type %}<strong>Number Type:</strong>{{ phone.type }}<br>{% endif %}-->
+        </p>
+    {% endif %}
+{% empty %}
+    <p class="tab">Sorry, no associated phone numbers for this client</p>
+{% endfor %}
+
+{% for email in email_list %}
+    {% if email.active %}
+        <p class="tab">
+            <strong>{{ email.type }} Email Address:</strong> {{ email.email }}
+<!--            {% if email.type %}<strong>Email Type:</strong>{{ email.type }}<br>{% endif %}-->
+        </p>
+    {% endif %}
+{% endfor %}
+
+<h2>Intake Information</h2>
+{% for intake in intake_list %}
+    {% if intake.intake_date %}<p class="tab"><strong>Intake Date:</strong> {{ intake.intake_date }}</p>{% endif %}
+    {% if intake.intake_type %}<p class="tab"><strong>Intake Type:</strong> {{ intake.intake_type }}</p>{% endif %}
+    <h3>Demographics</h3>
+    {% if intake.age_group %}<p class="tab"><strong>Age Group:</strong> {{ intake.age_group }}</p>{% endif %}
+    {% if intake.gender %}<p class="tab"><strong>Gender:</strong> {{ intake.gender }}</p>{% endif %}
+    {% if intake.birth_date %}<p class="tab"><strong>Birth Date:</strong> {{ intake.birth_date }}</p>{% endif %}
+    {% if intake.ssn %}<p class="tab"><strong>SSN:</strong> {{ intake.ssn }}</p>{% endif %}
+    {% if intake.ethnicity %}<p class="tab"><strong>Ethnicity:</strong> {{ intake.ethnicity }}</p>{% endif %}
+    {% if intake.other_ethnicity %}<p class="tab"><strong>Ethnicity (Other):</strong> {{ intake.other_ethnicity }}</p>{% endif %}
+    {% if intake.income %}<p class="tab"><strong>Income:</strong> {{ intake.income }}</p>{% endif %}
+    {% if intake.first_language %}<p class="tab"><strong>First Language:</strong> {{ intake.first_language }}</p>{% endif %}
+    {% if intake.second_language %}<p class="tab"><strong>Second Language:</strong> {{ intake.second_language }}</p>{% endif %}
+    {% if intake.other_languages %}<p class="tab"><strong>Other Languages:</strong> {{ intake.other_languages }}</p>{% endif %}
+    {% if intake.education %}<p class="tab"><strong>Education:</strong> {{ intake.education }}</p>{% endif %}
+    {% if intake.living_arrangement %}<p class="tab"><strong>Living Arrangements:</strong> {{ intake.living_arrangement }}</p>{% endif %}
+    {% if intake.residence_type %}<p class="tab"><strong>Residence Types:</strong> {{ intake.residence_type }}</p>{% endif %}
+    {% if intake.preferred_medium %}<p class="tab"><strong>Preferred Mailing Medium:</strong> {{ intake.preferred_medium }}</p>{% endif %}
+    {% if intake.performs_tasks %}<p class="tab"><strong>Performs Tasks:</strong> {{ intake.performs_tasks }}</p>{% endif %}
+    {% if intake.notes %}<p class="tab"><strong>Notes:</strong> {{ intake.notes }}</p>{% endif %}
+    {% if intake.training %}<p class="tab"><strong>Training History:</strong> {{ intake.training }}</p>{% endif %}
+    {% if intake.orientation %}<p class="tab"><strong>Orientation Training:</strong> {{ intake.orientation }}</p>{% endif %}
+    {% if intake.confidentiality %}<p class="tab"><strong>Confidentiality:</strong> {{ intake.confidentiality }}</p>{% endif %}
+    {% if intake.dmv %}<p class="tab"><strong>DMV:</strong> {{ intake.dmv }}</p>{% endif %}
+    {% if intake.work_history %}<p class="tab"><strong>Work History:</strong> {{ intake.work_history }}</p>{% endif %}
+    {% if intake.veteran %}<p class="tab"><strong>Veteran:</strong> {{ intake.veteran }}</p>{% endif %}
+    {% if intake.member_name %}<p class="tab"><strong>Member Name:</strong> {{ intake.member_name }}</p>{% endif %}
+    <h3>Criminal Background</h3>
+    {% if intake.crime %}<p class="tab"><strong>Criminal History:</strong> {{ intake.crime }}</p>{% endif %}
+    {% if intake.crime_info %}<p class="tab"><strong>Criminal History Information:</strong> {{ intake.crime_info }}</p>{% endif %}
+    {% if intake.crime_other %}<p class="tab"><strong>Criminal History (Other):</strong> {{ intake.crime_other }}</p>{% endif %}
+    {% if intake.parole %}<p class="tab"><strong>Parole:</strong> {{ intake.parole }}</p>{% endif %}
+    {% if intake.parole_info %}<p class="tab"><strong>Parole Information:</strong> {{ intake.parole_info }}</p>{% endif %}
+    {% if intake.crime_history %}<p class="tab"><strong>Other Criminal Information:</strong> {{ intake.crime_history }}</p>{% endif %}
+    <h3>Other Background</h3>
+    {% if intake.previous_training %}<p class="tab"><strong>Previous Training:</strong> {{ intake.previous_training }}</p>{% endif %}
+    {% if intake.training_goals %}<p class="tab"><strong>Training Goals:</strong> {{ intake.training_goals }}</p>{% endif %}
+    {% if intake.training_preferences %}<p class="tab"><strong>Training Preferences:</strong> {{ intake.training_preferences }}</p>{% endif %}
+    {% if intake.other %}<p class="tab"><strong>Other Notes:</strong> {{ intake.other }}</p>{% endif %}
+{% empty %}
+    <p>Sorry, no intake informations for this client</p>
+{% endfor %}
+
+<h2>Medical Information</h2>
+{% for medical in medical_list %}
+    <h3>Ocular Medical History</h3>
+    {% if medical.eye_condition %}<p class="tab"><strong>Eye Condition:</strong> {{ medical.eye_condition }} ({{ medical.eye_condition_date }}})</p>{% endif %}
+    {% if medical.degree %}<p class="tab"><strong>Degree:</strong> {{ medical.degree }}</p>{% endif %}
+    {% if medical.prognosis %}<p class="tab"><strong>Prognosis:</strong> {{ medical.prognosis }}</p>{% endif %}
+    <h3>Other Medical History</h3>
+    {% if medical.diabetes %}<p class="tab"><strong>Diabetes:</strong> {{ medical.diabetes }}</p>{% endif %}
+    {% if medical.dialysis %}<p class="tab"><strong>Dialysis:</strong> {{ medical.dialysis }}</p>{% endif %}
+    {% if medical.hearing_loss %}<p class="tab"><strong>Hearing Loss:</strong> {{ medical.hearing_loss }}</p>{% endif %}
+    {% if medical.mobility %}<p class="tab"><strong>Mobility:</strong> {{ medical.mobility }}</p>{% endif %}
+    {% if medical.stroke %}<p class="tab"><strong>Stroke:</strong> {{ medical.stroke }}</p>{% endif %}
+    {% if medical.seizure %}<p class="tab"><strong>Seizure:</strong> {{ medical.seizure }}</p>{% endif %}
+    {% if medical.heart %}<p class="tab"><strong>Heart Health:</strong> {{ medical.heart }}</p>{% endif %}
+    {% if medical.high_bp %}<p class="tab"><strong>High BP:</strong> {{ medical.high_bp }}</p>{% endif %}
+    {% if medical.neuropathy %}<p class="tab"><strong>Neuropathy:</strong> {{ medical.neuropathy }}</p>{% endif %}
+    {% if medical.pain %}<p class="tab"><strong>Pain:</strong> {{ medical.pain }}</p>{% endif %}
+    {% if medical.asthma %}<p class="tab"><strong>Asthma:</strong> {{ medical.asthma }}</p>{% endif %}
+    {% if medical.cancer %}<p class="tab"><strong>Cancer:</strong> {{ medical.cancer }}</p>{% endif %}
+    {% if medical.allergies %}<p class="tab"><strong>Mental Health:</strong> {{ medical.mental_health }}</p>{% endif %}
+    {% if medical.substance_abuse %}<p class="tab"><strong>Substance Abuse:</strong> {{ medical.substance_abuse }}</p>{% endif %}
+    {% if medical.memory_loss %}<p class="tab"><strong>Memory Loss:</strong> {{ medical.memory_loss }}</p>{% endif %}
+    {% if medical.learning_disability %}<p class="tab"><strong>Learning Disability:</strong> {{ medical.learning_disability }}</p>{% endif %}
+    {% if medical.medications %}<p class="tab"><strong>Medications:</strong> {{ medical.medications }}</p>{% endif %}
+    {% if medical.other %}<p class="tab"><strong>Other:</strong> {{ medical.other }}</p>{% endif %}
+    {% if medical.notes %}<p class="tab"><strong>Medical Notes:</strong> {{ medical.notes }}</p>{% endif %}
+{% empty %}
+    <p class="tab">Sorry, no medical information for this client</p>
+{% endfor %}
+
+<h2>Referral Information</h2>
+{% for referral in referral_list %}
+    {% if referral.source %}<p class="tab"><strong>Source:</strong> {{ referral.source }}</p>{% endif %}
+    {% if referral.name %}<p class="tab"><strong>Name:</strong> {{ referral.name }}</p>{% endif %}
+    {% if referral.referral_date %}<p class="tab"><strong>Referral Date:</strong> {{ referral.referral_date }}</p>{% endif %}
+{% empty %}
+    <p class="tab">Sorry, no referral information for this client</p>
+{% endfor %}
+
+<h2>Emergency Contacts</h2>
+{% for emergency in emergency_list %}
+    {% if emergency.name %}<p class="tab"><strong>Emergency Contact Name:</strong> {{ emergency.name }}</p>{% endif %}
+    <p class="tab">
+        <strong>Emergency Contact Address:</strong><br>
+        {{ emergency.address_one }}<br>
+        {% if emergency.address_two %}{{ emergency.address_two }}<br>{% endif %}
+        {{ emergency.city }}, {{ emergency.state }} {{ emergency.zip_code }}<br>
+        {{ emergency.country }}<br>
+    </p>
+    {% if emergency.phone_day %}<p class="tab"><strong>Emergency Contact Daytime Phone Number:</strong> {{ emergency.phone_day }}</p>{% endif %}
+    {% if emergency.phone_other %}<p class="tab"><strong>Emergency Contact Other Phone Number:</strong> {{ emergency.phone_other }}</p>{% endif %}
+{% empty %}
+    <p class="tab">Sorry, no emergency contacts for this client</p>
+{% endfor %}
+
+<h2>Notes</h2>
+{% for note in note_list %}
+    {% if note.note %}<p class="tab">{{ note.note }}</p>{% endif %}
+    {% if note.user %}<p class="tab">-{{ note.user.first_name }} {{ note.user.last_name }} {{ note.created }}</p>{% endif %}
+{% empty %}
+    <p class="tab">Sorry, no associated notes for this client</p>
+{% endfor %}
+<h3>New Note</h3>
+<form action="/lynx/client/{{ object.id }}" method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <input type="submit" value="Submit">
+</form>
+
+{% endblock %}

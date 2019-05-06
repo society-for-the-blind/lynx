@@ -1,0 +1,10 @@
+{% extends 'lynx/base.html' %}
+
+{% block content %}
+<h1>Clients</h1>
+<ul>
+{% for client in object_list %}
+    <li>{{ client.first_name }} {{ client.middle_name }} {{ client.last_name }}</li>
+{% endfor %}
+</ul>
+{% endblock %}
