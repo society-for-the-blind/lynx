@@ -7,7 +7,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 
 from .models import Contact, Address, Phone, Email, Intake, Referral, IntakeNote, EmergencyContact
-from .forms import IntakeFormContact, IntakeFormOther, IntakeFormCriminal, IntakeFormEmergency, IntakeFormHistory, \
+from .forms import ContactForm, IntakeFormOther, IntakeFormCriminal, IntakeFormEmergency, IntakeFormHistory, \
     IntakeFormAddress, IntakeFormEmail, IntakeFormPhone, IntakeNoteForm
 
 
@@ -31,7 +31,7 @@ def client_list(request):
 # @login_required
 # def add_intake1(request):
 #     if request.method == 'POST':
-#         intake_form = IntakeFormContact(request.POST)
+#         intake_form = ContactForm(request.POST, request.FILES)
 #         if intake_form.is_valid():
 #             intake_form.save()
 #             return HttpResponseRedirect("/lynx/add-intake/2/")
@@ -39,7 +39,7 @@ def client_list(request):
 #             print(intake_form.errors)
 #
 #     else:
-#         intake_form = IntakeFormContact()
+#         intake_form = ContactForm()
 #
 #     return render(request, 'lynx/new_intake_1.html', {'intake_form': intake_form})
 
@@ -48,7 +48,7 @@ class IntakeFormView(LoginRequiredMixin, FormView):
 
     model = Intake
     template_name = 'lynx/new_intake_1.html'
-    form_class = IntakeFormContact
+    form_class = ContactForm
     success_url = 'lynx/add-intake/2/'
 
 # def add_intake1(request):
@@ -106,18 +106,18 @@ class IntakeFormView(LoginRequiredMixin, FormView):
 @login_required
 def add_intake2(request):
     action = "/lynx/add-intake/3/"
-    if request.method == 'POST':
-        intake_form_history = IntakeFormHistory(request.POST)
-        intake_form_criminal = IntakeFormCriminal(request.POST)
-        if all([intake_form_criminal.is_valid(),  intake_form_history.is_valid()]):
-            intake_criminal = intake_form_criminal.save()
-            intake_history = intake_form_history.save()
-
-            return HttpResponseRedirect(action)
-
-    else:
-        intake_form_criminal = IntakeFormCriminal()
-        intake_form_history = IntakeFormHistory()
+    # if request.method == 'POST':
+    #     intake_form_history = IntakeFormHistory(request.POST)
+    #     intake_form_criminal = IntakeFormCriminal(request.POST)
+    #     if all([intake_form_criminal.is_valid(),  intake_form_history.is_valid(), intake_form_criminal.is_bound, intake_form_history.is_bound]):
+    #         intake_criminal = intake_form_criminal.save()
+    #         intake_history = intake_form_history.save()
+    #
+    #         return HttpResponseRedirect(action)
+    #
+    # else:
+    intake_form_criminal = IntakeFormCriminal()
+    intake_form_history = IntakeFormHistory()
 
     return render(request, 'lynx/new_intake_2.html', {'intake_form_criminal': intake_form_criminal,
                                                       'intake_form_history': intake_form_history, 'action': action})

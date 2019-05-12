@@ -6,8 +6,9 @@
 <form action="/lynx/add-intake/2/" method="post">
     {% csrf_token %}
     <h2>Client Contact Information</h2>
+<!--    {{ form.as_p }}-->
+<!--    {{form.errors}}-->
     {{ form.as_p }}
-<!--    {{ intake_form.as_p }}-->
 <!--    {{ intake_form_address.as_p}}-->
 <!--    {{ intake_form_email.as_p}}-->
 <!--    {{ intake_form_phone.as_p}}-->

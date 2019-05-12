@@ -5,8 +5,9 @@
 <br>
 <form action="{{ action }}" method="post">
     {% csrf_token %}
+    {{form.errors}}
     <h2>Criminal Background</h2>
-    {{ intake_form_criminal.as_p }}
+    {{ form.as_p }}
     <h2>Medical History</h2>
     {{ intake_form_medical.as_p }}
     <h2>Client History</h2>

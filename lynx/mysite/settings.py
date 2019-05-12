@@ -25,7 +25,7 @@ SECRET_KEY = '5++)nw##nae9#ee2tv6g@p80p@+@j)+gd^@*4zggjgee%wpv+h'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['192.168.1.82', 'localhost']
+ALLOWED_HOSTS = ['192.168.1.82', 'localhost', '127.0.0.1']
 
 
 # Application definition
@@ -80,7 +80,7 @@ WSGI_APPLICATION = 'mysite.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'lynx',
+        'NAME': 'lynx2',
         'USER': 'postgres',
         'PASSWORD': 'An55wsg',
         'HOST': 'localhost',

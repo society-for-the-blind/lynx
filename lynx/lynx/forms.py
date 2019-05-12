@@ -5,12 +5,20 @@ from .models import Contact, Address, Intake, Email, Phone, Referral, IntakeNote
     EmergencyContact
 
 
-class IntakeFormContact(forms.ModelForm):
+class ContactForm(forms.ModelForm):
 
     class Meta:
 
         model = Contact
         exclude = ('created', 'modified', 'user')
+
+
+class IntakeForm(forms.ModelForm):
+
+    class Meta:
+
+        model = Intake
+        exclude = ('created', 'modified', 'user_id', 'contact_id')
 
 
 class IntakeFormAddress(forms.ModelForm):
@@ -99,3 +107,11 @@ class IntakeNoteForm(forms.ModelForm):
 
         model = IntakeNote
         fields = ('note',)
+
+
+class IntakeForm(forms.ModelForm):
+
+    class Meta:
+
+        model = IntakeNote
+        exclude = ('created', 'modified', 'user_id', 'contact_id')
