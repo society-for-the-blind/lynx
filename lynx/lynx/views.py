@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect, reverse
 from django.http import HttpResponse, HttpResponseRedirect
 from django.template import loader
 from django.views import generic
@@ -19,15 +19,6 @@ def index(request):
     return render(request, 'lynx/index.html', context)
 
 
-@login_required
-def client_list(request):
-    template = loader.get_template('lynx/clients.html')
-    context = {
-        "message": "Welcome to Lynx, the Client Management Tool for Society for the Blind"
-    }
-    return HttpResponse(template.render(context, request))
-
-
 # @login_required
 # def add_intake1(request):
 #     if request.method == 'POST':
@@ -41,15 +32,31 @@ def client_list(request):
 #     else:
 #         intake_form = ContactForm()
 #
-#     return render(request, 'lynx/new_intake_1.html', {'intake_form': intake_form})
+#     return render(request, 'lynx/add_contact.html', {'intake_form': intake_form})
 
 
 class IntakeFormView(LoginRequiredMixin, FormView):
 
-    model = Intake
-    template_name = 'lynx/new_intake_1.html'
+    # model = Intake
+    template_name = 'lynx/add_contact.html'
     form_class = ContactForm
-    success_url = 'lynx/add-intake/2/'
+    success_url = '/lynx/add-intake/'
+
+    def form_valid(self, form):
+        return super().form_valid(form)
+
+
+def add_contact(request):
+    form = ContactForm()
+    if request.method == 'POST':
+        form = ContactForm(request.POST)
+        if form.is_valid():
+            form.save()
+            # HttpResponseRedirect('/lynx/add-intake/2/')
+            # redirect('add_intake2')
+            return HttpResponseRedirect(reverse('lynx:add_intake'))
+    return render(request, 'lynx/add_contact.html', {'form': form})
+
 
 # def add_intake1(request):
 #     action = "/lynx/add-intake/2/"
@@ -95,7 +102,7 @@ class IntakeFormView(LoginRequiredMixin, FormView):
 #         intake_form_email = IntakeFormEmail()
 #         intake_form_phone = IntakeFormPhone()
 #
-#     return render(request, 'lynx/new_intake_1.html', {'intake_form': intake_form, 'action': action,
+#     return render(request, 'lynx/add_contact.html', {'intake_form': intake_form, 'action': action,
 #                                                       'intake_form_other': intake_form_other,
 #                                                       'intake_form_emergency': intake_form_emergency,
 #                                                       'intake_form_address': intake_form_address,
@@ -104,8 +111,8 @@ class IntakeFormView(LoginRequiredMixin, FormView):
 
 
 @login_required
-def add_intake2(request):
-    action = "/lynx/add-intake/3/"
+def add_intake(request):
+    # action = "/lynx/add-intake/3/"
     # if request.method == 'POST':
     #     intake_form_history = IntakeFormHistory(request.POST)
     #     intake_form_criminal = IntakeFormCriminal(request.POST)
@@ -117,10 +124,10 @@ def add_intake2(request):
     #
     # else:
     intake_form_criminal = IntakeFormCriminal()
-    intake_form_history = IntakeFormHistory()
-
-    return render(request, 'lynx/new_intake_2.html', {'intake_form_criminal': intake_form_criminal,
-                                                      'intake_form_history': intake_form_history, 'action': action})
+    # intake_form_history = IntakeFormHistory()
+    #
+    return render(request, 'lynx/add_intake.html', {'intake_form_criminal': intake_form_criminal})
+                                                      # 'intake_form_history': intake_form_history, 'action': action})
 
 
 class ContactListView(LoginRequiredMixin, ListView):
