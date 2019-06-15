@@ -7,8 +7,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 
 from .models import Contact, Address, Phone, Email, Intake, Referral, IntakeNote, EmergencyContact
-from .forms import ContactForm, IntakeFormOther, IntakeFormCriminal, IntakeFormEmergency, IntakeFormHistory, \
-    IntakeFormAddress, IntakeFormEmail, IntakeFormPhone, IntakeNoteForm
+from .forms import ContactForm, IntakeForm, IntakeNoteForm, EmergencyForm, AddressForm, EmailForm, PhoneForm
 
 
 @login_required
@@ -17,22 +16,6 @@ def index(request):
         "message": "Welcome to Lynx, the Client Management Tool for Society for the Blind"
     }
     return render(request, 'lynx/index.html', context)
-
-
-# @login_required
-# def add_intake1(request):
-#     if request.method == 'POST':
-#         intake_form = ContactForm(request.POST, request.FILES)
-#         if intake_form.is_valid():
-#             intake_form.save()
-#             return HttpResponseRedirect("/lynx/add-intake/2/")
-#         else:
-#             print(intake_form.errors)
-#
-#     else:
-#         intake_form = ContactForm()
-#
-#     return render(request, 'lynx/add_contact.html', {'intake_form': intake_form})
 
 
 class IntakeFormView(LoginRequiredMixin, FormView):
@@ -46,94 +29,66 @@ class IntakeFormView(LoginRequiredMixin, FormView):
         return super().form_valid(form)
 
 
+@login_required
 def add_contact(request):
     form = ContactForm()
     if request.method == 'POST':
         form = ContactForm(request.POST)
         if form.is_valid():
-            form.save()
-            # HttpResponseRedirect('/lynx/add-intake/2/')
-            # redirect('add_intake2')
-            return HttpResponseRedirect(reverse('lynx:add_intake'))
+            form = form.save()
+            contact_id = form.pk
+            return HttpResponseRedirect(reverse('lynx:add_intake',  args=(contact_id,)))
     return render(request, 'lynx/add_contact.html', {'form': form})
 
 
-# def add_intake1(request):
-#     action = "/lynx/add-intake/2/"
-#
-#     if request.method == 'POST':
-#         intake_form = IntakeFormContact(request.POST)
-#         intake_form_other = IntakeFormOther(request.POST)
-#         intake_form_emergency = IntakeFormEmergency(request.POST)
-#         intake_form_address = IntakeFormAddress(request.POST)
-#         intake_form_email = IntakeFormEmail(request.POST)
-#         intake_form_phone = IntakeFormPhone(request.POST)
-#         if all([intake_form.is_valid(), intake_form_other.is_valid(), intake_form_emergency.is_valid(),
-#                 intake_form_address.is_valid(), intake_form_email.is_valid(), intake_form_phone.is_valid()]):
-#             intake = intake_form.save()
-#             contact_id = intake.pk
-#             intake_address = intake_form_address.save(commit=False)
-#             intake_address.contact_id = contact_id
-#             intake_address.save()
-#             intake_email = intake_form_email.save(commit=False)
-#             intake_email.contact_id = contact_id
-#             intake_email.save()
-#             intake_phone = intake_form_phone.save(commit=False)
-#             intake_phone.contact_id = contact_id
-#             intake_phone.save()
-#             intake_other = intake_form_other.save(commit=False)
-#             intake_other.contact_id = contact_id
-#             intake_other.save()
-#             intake_emergency = intake_form_emergency.save(commit=False)
-#             intake_emergency.contact_id = contact_id
-#             intake_emergency.save()
-#
-#             return HttpResponseRedirect(action)
-#         else:
-#             print(intake_form.errors, intake_form_other.errors, intake_form_emergency.errors, intake_form_address.errors,
-#                   intake_form_email.errors, intake_form_phone.errors)
-#
-#
-#     else:
-#         intake_form = IntakeFormContact()
-#         intake_form_other = IntakeFormOther()
-#         intake_form_address = IntakeFormAddress()
-#         intake_form_emergency = IntakeFormEmergency()
-#         intake_form_email = IntakeFormEmail()
-#         intake_form_phone = IntakeFormPhone()
-#
-#     return render(request, 'lynx/add_contact.html', {'intake_form': intake_form, 'action': action,
-#                                                       'intake_form_other': intake_form_other,
-#                                                       'intake_form_emergency': intake_form_emergency,
-#                                                       'intake_form_address': intake_form_address,
-#                                                       'intake_form_email': intake_form_email,
-#                                                       'intake_form_phone': intake_form_phone})
+@login_required
+def add_intake(request, contact_id):
+    form = IntakeForm()
+    if request.method == 'POST':
+        form = IntakeForm(request.POST)
+        if form.is_valid():
+            form = form.save(commit=False)
+            form.contact_id = contact_id
+            form.active = 1
+            form.save()
+            return HttpResponseRedirect(reverse('lynx:add_contact_information',  args=(contact_id,)))
+    return render(request, 'lynx/add_intake.html', {'form': form})
 
 
 @login_required
-def add_intake(request):
-    # action = "/lynx/add-intake/3/"
-    # if request.method == 'POST':
-    #     intake_form_history = IntakeFormHistory(request.POST)
-    #     intake_form_criminal = IntakeFormCriminal(request.POST)
-    #     if all([intake_form_criminal.is_valid(),  intake_form_history.is_valid(), intake_form_criminal.is_bound, intake_form_history.is_bound]):
-    #         intake_criminal = intake_form_criminal.save()
-    #         intake_history = intake_form_history.save()
-    #
-    #         return HttpResponseRedirect(action)
-    #
-    # else:
-    intake_form_criminal = IntakeFormCriminal()
-    # intake_form_history = IntakeFormHistory()
-    #
-    return render(request, 'lynx/add_intake.html', {'intake_form_criminal': intake_form_criminal})
-                                                      # 'intake_form_history': intake_form_history, 'action': action})
+def add_contact_information(request, contact_id):
+    address_form = AddressForm()
+    phone_form = PhoneForm()
+    email_form = EmailForm()
+    emergency_form = EmergencyForm()
+    if request.method == 'POST':
+        address_form = AddressForm(request.POST)
+        phone_form = PhoneForm(request.POST)
+        email_form = EmailForm(request.POST)
+        emergency_form = EmergencyForm(request.POST)
+        if address_form.is_valid() & phone_form.is_valid() & email_form.is_valid() & emergency_form.is_valid():
+            address_form = address_form.save(commit=False)
+            address_form.contact_id = contact_id
+            address_form.save()
+            phone_form = phone_form.save(commit=False)
+            phone_form.contact_id = contact_id
+            phone_form.save()
+            email_form = email_form.save(commit=False)
+            email_form.contact_id = contact_id
+            email_form.save()
+            emergency_form = emergency_form.save(commit=False)
+            emergency_form.contact_id = contact_id
+            emergency_form.save()
+            return HttpResponseRedirect(reverse('lynx:contact_detail',  args=(contact_id,)))
+    return render(request, 'lynx/add_contact_information.html', {'address_form': address_form, 'phone_form': phone_form,
+                                                    'email_form': email_form, 'emergency_form': emergency_form})
 
 
 class ContactListView(LoginRequiredMixin, ListView):
 
     model = Contact
-    paginate_by = 100  # if pagination is desired
+    paginate_by = 100  # if contact_id
+    # pagination is desired
 
 
 class ContactDetailView(LoginRequiredMixin, DetailView):
@@ -143,14 +98,13 @@ class ContactDetailView(LoginRequiredMixin, DetailView):
     def get_context_data(self, **kwargs):
         # Call the base implementation first to get a context
         context = super(ContactDetailView, self).get_context_data(**kwargs)
-        # Add in a QuerySet of all the books
-        context['address_list'] = Address.objects.all()
-        context['phone_list'] = Phone.objects.all()
-        context['email_list'] = Email.objects.all()
-        context['intake_list'] = Intake.objects.all()
-        context['referral_list'] = Referral.objects.all()
-        context['note_list'] = IntakeNote.objects.all().order_by('-created')
-        context['emergency_list'] = EmergencyContact.objects.all()
+        context['address_list'] = Address.objects.filter(contact_id=self.kwargs['pk'])
+        context['phone_list'] = Phone.objects.filter(contact_id=self.kwargs['pk'])
+        context['email_list'] = Email.objects.filter(contact_id=self.kwargs['pk'])
+        context['intake_list'] = Intake.objects.filter(contact_id=self.kwargs['pk'])
+        # context['referral_list'] = Referral.objects.filter(contact_id=self.kwargs['pk'])
+        context['note_list'] = IntakeNote.objects.filter(contact_id=self.kwargs['pk']).order_by('-created')
+        context['emergency_list'] = EmergencyContact.objects.filter(contact_id=self.kwargs['pk'])
         context['form'] = IntakeNoteForm
         return context
 
@@ -164,3 +118,59 @@ class ContactDetailView(LoginRequiredMixin, DetailView):
             # form.user.add(*[request.user])
             action = "/lynx/client/" + str(self.kwargs['pk'])
             return HttpResponseRedirect(action)
+
+
+@login_required
+def add_emergency(request, contact_id):
+    form = EmergencyForm()
+    if request.method == 'POST':
+        form = EmergencyForm(request.POST)
+        if form.is_valid():
+            form = form.save(commit=False)
+            form.contact_id = contact_id
+            form.active = 1
+            form.save()
+            return HttpResponseRedirect(reverse('lynx:contact_detail',  args=(contact_id,)))
+    return render(request, 'lynx/add_emergency.html', {'form': form})
+
+
+@login_required
+def add_address(request, contact_id):
+    form = AddressForm()
+    if request.method == 'POST':
+        form = AddressForm(request.POST)
+        if form.is_valid():
+            form = form.save(commit=False)
+            form.contact_id = contact_id
+            form.active = 1
+            form.save()
+            return HttpResponseRedirect(reverse('lynx:contact_detail',  args=(contact_id,)))
+    return render(request, 'lynx/add_address.html', {'form': form})
+
+
+@login_required
+def add_email(request, contact_id):
+    form = EmailForm()
+    if request.method == 'POST':
+        form = EmailForm(request.POST)
+        if form.is_valid():
+            form = form.save(commit=False)
+            form.contact_id = contact_id
+            form.active = 1
+            form.save()
+            return HttpResponseRedirect(reverse('lynx:contact_detail',  args=(contact_id,)))
+    return render(request, 'lynx/add_email.html', {'form': form})
+
+
+@login_required
+def add_phone(request, contact_id):
+    form = PhoneForm()
+    if request.method == 'POST':
+        form = PhoneForm(request.POST)
+        if form.is_valid():
+            form = form.save(commit=False)
+            form.contact_id = contact_id
+            form.active = 1
+            form.save()
+            return HttpResponseRedirect(reverse('lynx:contact_detail',  args=(contact_id,)))
+    return render(request, 'lynx/add_phone.html', {'form': form})

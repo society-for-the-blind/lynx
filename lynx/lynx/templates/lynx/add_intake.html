@@ -3,15 +3,71 @@
 {% block content %}
 <h1>Intake Page 2 (Client History)</h1>
 <br>
-<form method="post">
-    {% csrf_token %}
+<form method="post"> {% csrf_token %}
+<!--    <input type="hidden" name="contact_id" value="{{patient.patient_id}}" />-->
     {{ form.errors }}
+    <h2>Intake Information</h2>
+        <p>Intake Date: {{ form.intake_date }}</p>
+        <p>Intake Type: {{ form.intake_type }}</p>
+    <h2>Client Demographics</h2>
+        <p>Age Group: {{ form.age_group }}</p>
+        <p>Gender: {{ form.gender }}</p>
+        <p>Birth Date: {{ form.birth_date }}</p>
+        <p>SSN: {{ form.ssn }}</p>
+        <p>Ethnicity: {{ form.ethnicity }}</p>
+        <p>Ethnicity (If Other): {{ form.other_ethnicity }}</p>
+        <p>Income: {{ form.income }}</p>
+        <p>First Language: {{ form.first_language }}</p>
+        <p>Second Language: {{ form.second_language }}</p>
+        <p>Other Language(s): {{ form.other_languages }}</p>
+        <p>Education: {{ form.education }}</p>
+        <p>Living Arrangements: {{ form.living_arrangement }}</p>
+        <p>Residence Type: {{ form.residence_type }}</p>
+        <p>Veteran: {{ form.veteran }}</p>
     <h2>Criminal Background</h2>
-    {{ form.as_p }}
+        <p>Have you been convicted of a crime?: {{ form.crime }}</p>
+        <p>If yes, what and when did the convictions occur? What county did this conviction occur in?: {{ form.crime_info }}</p>
+        <p>Criminal Conviction Information: {{ form.crime_other }}</p>
+        <p>Are you on parole?: {{ form.parole }}</p>
+        <p>Parole Information: {{ form.parole_info }}</p>
+        <p>Additional Criminal History: {{ form.crime_history }}</p>
     <h2>Medical History</h2>
-<!--    {{ intake_form_medical.as_p }}-->
+        <p>Eye Condition: {{ form.eye_condition }}</p>
+        <p>Eye Condition Date: {{ form.eye_condition_date }}</p>
+        <p>Degree: {{ form.degree }}</p>
+        <p>Prognosis: {{ form.prognosis }}</p>
+        <p>Diabetes: {{ form.diabetes }}</p>
+        <p>Dialysis: {{ form.dialysis }}</p>
+        <p>Hearing Loss: {{ form.hearing_loss }}</p>
+        <p>Mobility: {{ form.mobility }}</p>
+        <p>Stroke: {{ form.stroke }}</p>
+        <p>Seizure: {{ form.seizure }}</p>
+        <p>Heart: {{ form.heart }}</p>
+        <p>High BP: {{ form.high_bp }}</p>
+        <p>Neuropathy: {{ form.neuropathy }}</p>
+        <p>Pain: {{ form.pain }}</p>
+        <p>Asthma: {{ form.asthma }}</p>
+        <p>Cancer: {{ form.cancer }}</p>
+        <p>Allergies: {{ form.allergies }}</p>
+        <p>Mental Health: {{ form.mental_health }}</p>
+        <p>Substance Abuse: {{ form.substance_abuse }}</p>
+        <p>Memory Loss: {{ form.memory_loss }}</p>
+        <p>Learning Disability: {{ form.learning_disability }}</p>
+        <p>Other Medical Information: {{ form.other_medical }}</p>
+        <p>Medications: {{ form.medications }}</p>
+        <p>Medical Notes: {{ form.medical_notes }}</p>
     <h2>Client History</h2>
-<!--    {{ intake_form_history.as_p }}-->
+        <p>Work History: {{ form.work_history }}</p>
+        <p>Previous Training: {{ form.previous_training }}</p>
+        <p>Training Goals: {{ form.training_goals }}</p>
+        <p>Training Preferences: {{ form.training_preferences }}</p>
+        <p>Other: {{ form.other }}</p>
+        <p>Prepared Mailing Medium: {{ form.preferred_medium }}</p>
+        <p>Performs Tasks?: {{ form.performs_tasks }}</p>
+        <p>Notes: {{ form.notes }}</p>
+        <p>Training: {{ form.training }}</p>
+        <p>Orientation: {{ form.orientation }}</p>
+
     <input type="submit" value="Submit">
 </form>
 {% endblock %}
