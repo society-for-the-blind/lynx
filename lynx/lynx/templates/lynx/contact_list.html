@@ -4,7 +4,7 @@
 <h1>Clients</h1>
 <ul>
 {% for client in object_list %}
-    <li>{{ client.first_name }} {{ client.middle_name }} {{ client.last_name }}</li>
+    <li><a href="/lynx/client/{{client.id}}">{{ client.first_name }} {{ client.middle_name }} {{ client.last_name }}</a></li>
 {% endfor %}
 </ul>
 {% endblock %}

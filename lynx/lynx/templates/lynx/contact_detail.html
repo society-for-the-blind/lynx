@@ -4,10 +4,10 @@
 
 <h1>{{ object.first_name }} {{ object.last_name }}</h1>
 <h2>Client Information</h2>
-<p class="tab"><strong>Name:</strong>{{ object.first_name }} {% if object.middle_name %}{{ object.middle_name }} {% endif %}{{ object.last_name }}</p>
-{% if object.company %}<p><strong>Company:</strong> {{ object.company }}</p>{% endif %}
-{% if object.contact_notes %}<p><strong>Notes:</strong> {{ object.contact_notes }}</p>{% endif %}
-<p class="tab"><strong>Deceased:</strong> {{ object.deceased }}</p>
+<p class="tab"><strong>Name:</strong> {{ object.first_name }} {% if object.middle_name %}{{ object.middle_name }} {% endif %}{{ object.last_name }}</p>
+{% if object.company %}<p class="tab"><strong>Company:</strong> {{ object.company }}</p>{% endif %}
+{% if object.contact_notes %}<p class="tab"><strong>Notes:</strong> {{ object.contact_notes }}</p>{% endif %}
+{% if object.deceased %}<p class="tab"><strong>Deceased</strong></p>{% endif %}
 <!--<p><strong>Remove from Mailing List:</strong> {{ object.remove_mailing }}</p>-->
 <!--<p><strong>Do Not Contact:</strong> {{ object.do_not_contact }}</p>-->
 
@@ -29,25 +29,30 @@
     <p class="tab">Sorry, no associated addresses for this client</p>
 {% endfor %}
 
+
 {% for phone in phone_list %}
     {% if phone.active %}
         <p class="tab">
             <strong>{{ phone.type }} Phone Number:</strong> {{ phone.phone }}
-<!--            {% if phone.type %}<strong>Number Type:</strong>{{ phone.type }}<br>{% endif %}-->
         </p>
     {% endif %}
 {% empty %}
     <p class="tab">Sorry, no associated phone numbers for this client</p>
 {% endfor %}
 
+
 {% for email in email_list %}
     {% if email.active %}
         <p class="tab">
             <strong>{{ email.type }} Email Address:</strong> {{ email.email }}
-<!--            {% if email.type %}<strong>Email Type:</strong>{{ email.type }}<br>{% endif %}-->
         </p>
     {% endif %}
+{% empty %}
+    <p class="tab">Sorry, no associated emails for this client</p>
 {% endfor %}
+<input type="button" onclick="location.href='/lynx/add-address/{{ object.id }}';" value="Add Address" />
+<input type="button" onclick="location.href='/lynx/add-phone/{{ object.id }}';" value="Add Phone Number" />
+<input type="button" onclick="location.href='/lynx/add-email/{{ object.id }}';" value="Add Email" />
 
 <h2>Intake Information</h2>
 {% for intake in intake_list %}
@@ -90,11 +95,12 @@
     {% if intake.training_preferences %}<p class="tab"><strong>Training Preferences:</strong> {{ intake.training_preferences }}</p>{% endif %}
     {% if intake.other %}<p class="tab"><strong>Other Notes:</strong> {{ intake.other }}</p>{% endif %}
 {% empty %}
-    <p>Sorry, no intake informations for this client</p>
+    <p>Sorry, no intake information for this client</p>
+    <input type="button" onclick="location.href='/lynx/add-intake/{{ object.id }}';" value="Add Intake Information" />
 {% endfor %}
 
 <h2>Medical Information</h2>
-{% for medical in medical_list %}
+{% for medical in intake_list %}
     <h3>Ocular Medical History</h3>
     {% if medical.eye_condition %}<p class="tab"><strong>Eye Condition:</strong> {{ medical.eye_condition }} ({{ medical.eye_condition_date }}})</p>{% endif %}
     {% if medical.degree %}<p class="tab"><strong>Degree:</strong> {{ medical.degree }}</p>{% endif %}
@@ -134,7 +140,7 @@
 
 <h2>Emergency Contacts</h2>
 {% for emergency in emergency_list %}
-    {% if emergency.name %}<p class="tab"><strong>Emergency Contact Name:</strong> {{ emergency.name }}</p>{% endif %}
+    <h3 class="tab">{{ emergency.name }}</h3>
     <p class="tab">
         <strong>Emergency Contact Address:</strong><br>
         {{ emergency.address_one }}<br>
@@ -147,6 +153,10 @@
 {% empty %}
     <p class="tab">Sorry, no emergency contacts for this client</p>
 {% endfor %}
+<input type="button" onclick="location.href='/lynx/add-emergency/{{ object.id }}';" value="Add Emergency Contact" />
+
+<h2>Authorizations</h2>
+<input type="button" onclick="location.href='/lynx/add-authorization/{{ object.id }}';" value="Add New Authorization" />
 
 <h2>Notes</h2>
 {% for note in note_list %}

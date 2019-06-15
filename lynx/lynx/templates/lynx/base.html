@@ -16,23 +16,27 @@
 </head>
 <body>
      <!-- Side navigation -->
-    <div class="sidenav">
-        <img src="{% static 'lynx/images/logo.jpg' %}" alt="" style="width:160px;">
-        <a href="#">Home</a>
-        <a href="#">Intake</a>
-        <a href="#">Clients</a>
-        <a href="#">Staff</a>
-        <a href="#">Instructor</a>
-        <a href="#">Billing</a>
-        <a href="/admin">Admin</a>
-    </div>
+    <nav role="navigation">
+        <div class="sidenav">
+            <img src="{% static 'lynx/images/logo.jpg' %}" alt="" style="width:160px;">
+            <a href="#">Home</a>
+<!--            <a href="#">Intake</a>-->
+            <a href="/lynx/clients">Clients</a>
+<!--            <a href="#">Staff</a>-->
+<!--            <a href="#">Instructor</a>-->
+<!--            <a href="#">Billing</a>-->
+            <a href="/admin">Admin</a>
+        </div>
 
-     <div class="sidebar">
-     </div>
+         <div class="sidebar">
+         </div>
+    </nav>
 
     <!-- Page content -->
-    <div class="main">
-        {% block content %} {% endblock %}
-    </div>
+    <main role="main">
+        <div class="main">
+            {% block content %} {% endblock %}
+        </div>
+    </main>
 </body>
 </html>

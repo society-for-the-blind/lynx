@@ -18,87 +18,39 @@ class IntakeForm(forms.ModelForm):
     class Meta:
 
         model = Intake
-        exclude = ('created', 'modified', 'user_id', 'contact_id')
+        exclude = ('contact', 'created', 'modified', 'user')
 
 
-class IntakeFormAddress(forms.ModelForm):
+class AddressForm(forms.ModelForm):
 
     class Meta:
 
         model = Address
-        exclude = ('created', 'modified', 'user', 'billing', 'contact_id')
+        exclude = ('created', 'modified', 'user', 'billing', 'contact')
 
 
-class IntakeFormOther(forms.ModelForm):
-
-    class Meta:
-
-        model = Intake
-        fields = ('gender', 'ethnicity', 'other_ethnicity', 'first_language', 'second_language', 'other_languages',
-                  'birth_date', 'ssn', 'preferred_medium')
-        labels = {
-            'ssn': _('Social Security (use ###-##-####)'),
-            'other_ethnicity': _('Ethnicity if Other'),
-            'preferred_medium': _('Medium for Mailings'),
-        }
-
-
-class IntakeFormCriminal(forms.ModelForm):
-
-    class Meta:
-
-        model = Intake
-        fields = ('crime', 'crime_other', 'crime_info', 'parole', 'parole_info', 'crime_history')
-        labels = {
-            'crime': _('Have you been convicted of a crime?'),
-            'crime_info': _('If yes, what and when did the convictions occur? What county did this conviction '
-                            'occur in?'),
-            'crime_other': _('Criminal Conviction Information'),
-            'parole': _('Are you on parole?'),
-            'parole_info': _('Parole Information'),
-            'crime_history': _('Additional Criminal History'),
-        }
-
-
-class IntakeFormEmergency(forms.ModelForm):
+class EmergencyForm(forms.ModelForm):
 
     class Meta:
 
         model = EmergencyContact
-        exclude = ('created', 'modified', 'user_id', 'contact_id')
+        exclude = ('created', 'modified', 'user', 'contact')
 
 
-# class IntakeFormMedical(forms.ModelForm):
-#
-#     class Meta:
-#
-#         model = Medical
-#         exclude = ('created', 'modified', 'user_id')
-
-
-class IntakeFormHistory(forms.ModelForm):
-
-    class Meta: #TODO: missing some fields
-
-        model = Intake
-        fields = ('veteran', 'education', 'living_arrangement', 'residence_type', 'work_history', 'training_goals',
-                  'training_preferences', 'other')
-
-
-class IntakeFormEmail(forms.ModelForm):
+class EmailForm(forms.ModelForm):
 
     class Meta:
 
         model = Email
-        exclude = ('created', 'modified', 'user_id','contact_id')
+        exclude = ('created', 'modified', 'user', 'contact', 'active')
 
 
-class IntakeFormPhone(forms.ModelForm):
+class PhoneForm(forms.ModelForm):
 
     class Meta:
 
         model = Phone
-        exclude = ('created', 'modified', 'user_id', 'contact_id')
+        exclude = ('created', 'modified', 'user', 'contact', 'active')
 
 
 class IntakeNoteForm(forms.ModelForm):
@@ -107,11 +59,3 @@ class IntakeNoteForm(forms.ModelForm):
 
         model = IntakeNote
         fields = ('note',)
-
-
-class IntakeForm(forms.ModelForm):
-
-    class Meta:
-
-        model = IntakeNote
-        exclude = ('created', 'modified', 'user_id', 'contact_id')
