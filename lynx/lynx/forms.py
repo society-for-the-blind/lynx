@@ -2,7 +2,7 @@ from django import forms
 from django.utils.translation import gettext_lazy as _
 
 from .models import Contact, Address, Intake, Email, Phone, Referral, IntakeNote, \
-    EmergencyContact
+    EmergencyContact, Authorization
 
 
 class ContactForm(forms.ModelForm):
@@ -59,3 +59,11 @@ class IntakeNoteForm(forms.ModelForm):
 
         model = IntakeNote
         fields = ('note',)
+
+
+class AuthorizationForm(forms.ModelForm):
+
+    class Meta:
+
+        model = Authorization
+        exclude = ('created', 'modified', 'user', 'contact')

@@ -6,8 +6,9 @@ from django.views.generic import DetailView, ListView, FormView
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 
-from .models import Contact, Address, Phone, Email, Intake, Referral, IntakeNote, EmergencyContact
-from .forms import ContactForm, IntakeForm, IntakeNoteForm, EmergencyForm, AddressForm, EmailForm, PhoneForm
+from .models import Contact, Address, Phone, Email, Intake, Referral, IntakeNote, EmergencyContact, Authorization
+from .forms import ContactForm, IntakeForm, IntakeNoteForm, EmergencyForm, AddressForm, EmailForm, PhoneForm, \
+    AuthorizationForm
 
 
 @login_required
@@ -102,7 +103,7 @@ class ContactDetailView(LoginRequiredMixin, DetailView):
         context['phone_list'] = Phone.objects.filter(contact_id=self.kwargs['pk'])
         context['email_list'] = Email.objects.filter(contact_id=self.kwargs['pk'])
         context['intake_list'] = Intake.objects.filter(contact_id=self.kwargs['pk'])
-        # context['referral_list'] = Referral.objects.filter(contact_id=self.kwargs['pk'])
+        context['authorization_list'] = Authorization.objects.filter(contact_id=self.kwargs['pk'])
         context['note_list'] = IntakeNote.objects.filter(contact_id=self.kwargs['pk']).order_by('-created')
         context['emergency_list'] = EmergencyContact.objects.filter(contact_id=self.kwargs['pk'])
         context['form'] = IntakeNoteForm
@@ -174,3 +175,27 @@ def add_phone(request, contact_id):
             form.save()
             return HttpResponseRedirect(reverse('lynx:contact_detail',  args=(contact_id,)))
     return render(request, 'lynx/add_phone.html', {'form': form})
+
+
+@login_required
+def add_authorization(request, contact_id):
+    form = AuthorizationForm()
+    if request.method == 'POST':
+        form = AuthorizationForm(request.POST)
+        if form.is_valid():
+            form = form.save(commit=False)
+            form.contact_id = contact_id
+            form.active = 1
+            form.save()
+            return HttpResponseRedirect(reverse('lynx:contact_detail',  args=(contact_id,)))
+    return render(request, 'lynx/add_authorization.html', {'form': form})
+
+
+class AuthorizationDetailView(LoginRequiredMixin, DetailView):
+
+    model = Authorization
+
+    def get_context_data(self, **kwargs):
+        # Call the base implementation first to get a context
+        context = super(AuthorizationDetailView, self).get_context_data(**kwargs)
+        return context

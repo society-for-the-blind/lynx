@@ -52,6 +52,7 @@ MAILINGS = (("N/A", "N/A"), ("Print", "Print"), ("Large Print", "Large Print"), 
 TRINARY = (('Yes', 'Yes'), ('No', 'No'), ('Other', 'Other'))
 
 
+
 def get_sentinel_user():
     return get_user_model().objects.get_or_create(username='deleted')[0]
 
@@ -63,6 +64,7 @@ class Contact(models.Model):
     last_name = models.CharField(max_length=150)
     company = models.CharField(max_length=150, blank=True, null=True)
     do_not_contact = models.BooleanField(blank=True, default=False)
+    donor = models.BooleanField(blank=True, default=False)
     deceased = models.BooleanField(blank=True, default=False)
     remove_mailing = models.BooleanField(blank=True, default=False)
     contact_notes = models.TextField(blank=True, null=True)
@@ -127,6 +129,9 @@ class Address(models.Model):
     modified = models.DateTimeField(auto_now=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET(get_sentinel_user))
 
+    class Meta:
+        verbose_name_plural = 'Addresses'
+
 
 class Billing(models.Model):
     employee = models.ForeignKey('Employee', on_delete=models.CASCADE)
@@ -157,10 +162,10 @@ class Intake(models.Model):
     second_language = models.CharField(max_length=50, blank=True, null=True)
     other_languages = models.CharField(max_length=150, blank=True, null=True)
     education = models.CharField(max_length=150, blank=True, null=True)
-    living_arrangement= models.CharField(max_length=150, blank=True, null=True)
-    residence_type= models.CharField(max_length=150, blank=True, null=True)
+    living_arrangement = models.CharField(max_length=150, blank=True, null=True)
+    residence_type = models.CharField(max_length=150, blank=True, null=True)
     preferred_medium = models.CharField(max_length=150, blank=True, choices=MAILINGS, null=True)
-    performs_tasks= models.CharField(max_length=150, blank=True, null=True)
+    performs_tasks = models.CharField(max_length=150, blank=True, null=True)
     notes = models.TextField(blank=True, null=True)
     training = models.CharField(max_length=250, blank=True, null=True)
     orientation = models.CharField(max_length=250, blank=True, null=True)
@@ -204,6 +209,7 @@ class Intake(models.Model):
     other_medical = models.CharField(max_length=250, blank=True, null=True)
     medications = models.CharField(max_length=250, blank=True, null=True)
     medical_notes = models.TextField(blank=True, null=True)
+    hired = models.BooleanField(blank=True, default=False)
     created = models.DateTimeField(auto_now_add=True, null=True)
     modified = models.DateTimeField(auto_now=True, null=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET(get_sentinel_user))
@@ -243,3 +249,60 @@ class EmergencyContact(models.Model):
     created = models.DateTimeField(auto_now_add=True, null=True)
     modified = models.DateTimeField(auto_now=True, null=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET(get_sentinel_user))
+
+
+class Authorization(models.Model):
+    contact = models.ForeignKey('Contact', on_delete=models.CASCADE)
+    intake_service_area = models.ForeignKey('IntakeServiceArea', on_delete=models.CASCADE)
+    authorization_number = models.CharField(max_length=150, blank=True, null=True)
+    authorization_type = models.CharField(max_length=25, choices=(("Hours", "Hours"), ("Classes", "Classes")), blank=True, null=True)
+    start_date = models.DateField(blank=True, null=True)
+    end_date = models.DateField(blank=True, null=True)
+    total_time = models.CharField(max_length=150, blank=True, null=True)
+    monthly_time = models.CharField(max_length=150, blank=True, null=True)
+    billing_name = models.ForeignKey('BillingName', on_delete=models.CASCADE)
+    billing_rate = models.CharField(max_length=150, blank=True, null=True)
+    outside_agency = models.ForeignKey('OutsideAgency', on_delete=models.CASCADE)
+    student_plan = models.CharField(max_length=25, choices=(("Yes", "Yes"), ("No", "No")), blank=True, null=True)
+    notes = models.TextField(blank=True, null=True)
+    created = models.DateTimeField(auto_now_add=True, null=True)
+    modified = models.DateTimeField(auto_now=True, null=True)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET(get_sentinel_user))
+
+
+class OutsideAgency(models.Model):
+    agency = models.CharField(max_length=150, blank=True, null=True)
+    contact = models.CharField(max_length=150, blank=True, null=True)
+    active = models.BooleanField(blank=True, default=False)
+    created = models.DateTimeField(auto_now_add=True, null=True)
+    modified = models.DateTimeField(auto_now=True, null=True)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET(get_sentinel_user))
+
+    class Meta:
+        verbose_name_plural = 'Outside Agencies'
+
+    def __str__(self):
+        return '%s - %s' % (self.contact, self.agency)
+
+
+class IntakeServiceArea(models.Model):
+    agency = models.CharField(max_length=150, blank=True, null=True)
+    active = models.BooleanField(blank=True, default=False)
+    created = models.DateTimeField(auto_now_add=True, null=True)
+    modified = models.DateTimeField(auto_now=True, null=True)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET(get_sentinel_user))
+
+    def __str__(self):
+        return self.agency
+
+
+class BillingName(models.Model):
+    agency = models.CharField(max_length=150, blank=True, null=True)
+    cost = models.CharField(max_length=50, blank=True, null=True)
+    active = models.BooleanField(blank=True, default=False)
+    created = models.DateTimeField(auto_now_add=True, null=True)
+    modified = models.DateTimeField(auto_now=True, null=True)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET(get_sentinel_user))
+
+    def __str__(self):
+        return '%s ($%s)' % (self.agency, self.cost)

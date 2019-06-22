@@ -8,6 +8,8 @@ urlpatterns = [
 
     # path('add-contact/', views.IntakeFormView.as_view(), name='add_intake1'),
     path('add-contact/', views.add_contact, name='add_contact'),
+    path('add-authorization/<int:contact_id>/', views.add_authorization, name='add_authorization'),
+    path('authorization/<int:pk>/', views.AuthorizationDetailView.as_view(), name='authorization_detail'),
     path('add-intake/<int:contact_id>/', views.add_intake, name='add_intake'),
     path('add-contact-information/<int:contact_id>/', views.add_contact_information, name='add_contact_information'),
     path('clients', views.ContactListView.as_view(), name='contact_list'),

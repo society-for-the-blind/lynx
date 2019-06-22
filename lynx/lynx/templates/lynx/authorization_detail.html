@@ -1,0 +1,22 @@
+{% extends 'lynx/base.html' %}
+
+{% block content %}
+
+<h1>Authorization for {{ object.contact.first_name }} {{ object.contact.last_name }}</h1>
+
+{% if object.intake_service_area %}<p class="tab"><strong>Intake Service Area:</strong> {{ object.intake_service_area }}</p>{% endif %}
+{% if object.authorization_number %}<p class="tab"><strong>Authorization Number:</strong> {{ object.authorization_number }}</p>{% endif %}
+{% if object.authorization_type %}<p class="tab"><strong>Authorization Type:</strong> {{ object.authorization_type }}</p>{% endif %}
+{% if object.start_date %}<p class="tab"><strong>Start Date:</strong> {{ object.start_date }}</p>{% endif %}
+{% if object.end_date %}<p class="tab"><strong>End Date:</strong> {{ object.end_date }}</p>{% endif %}
+{% if object.total_time %}<p class="tab"><strong>Total Time Authorized:</strong> {{ object.total_time }}</p>{% endif %}
+{% if object.monthly_time %}<p class="tab"><strong>Monthly Time Authorize:</strong> {{ object.monthly_time }}</p>{% endif %}
+{% if object.billing_name %}<p class="tab"><strong>Service Area Billing Name:</strong> {{ object.billing_name }}</p>{% endif %}
+{% if object.billing_rate %}<p class="tab"><strong>Billing Rate:</strong> {{ object.billing_rate }}</p>{% endif %}
+{% if object.outside_agency %}<p class="tab"><strong>Name of Outside Agency:</strong> {{ object.outside_agency }}</p>{% endif %}
+{% if object.student_plan %}<p class="tab"><strong>Student Plan Required:</strong> {{ object.student_plan }}</p>{% endif %}
+{% if object.notes %}<p class="tab"><strong>Notes:</strong> {{ object.notes }}</p>{% endif %}
+<p class="tab">Created by {{ user }} on {{ object.created }}</p>
+
+
+{% endblock %}

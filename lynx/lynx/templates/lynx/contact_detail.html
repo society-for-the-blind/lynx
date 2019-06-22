@@ -8,6 +8,7 @@
 {% if object.company %}<p class="tab"><strong>Company:</strong> {{ object.company }}</p>{% endif %}
 {% if object.contact_notes %}<p class="tab"><strong>Notes:</strong> {{ object.contact_notes }}</p>{% endif %}
 {% if object.deceased %}<p class="tab"><strong>Deceased</strong></p>{% endif %}
+{% if object.donor %}<p class="tab"><strong>Donor</strong></p>{% endif %}
 <!--<p><strong>Remove from Mailing List:</strong> {{ object.remove_mailing }}</p>-->
 <!--<p><strong>Do Not Contact:</strong> {{ object.do_not_contact }}</p>-->
 
@@ -156,6 +157,17 @@
 <input type="button" onclick="location.href='/lynx/add-emergency/{{ object.id }}';" value="Add Emergency Contact" />
 
 <h2>Authorizations</h2>
+{% for auth in authorization_list %}
+<h3 class="tab"><a href="/lynx/authorization/{{ auth.id }}">{{ auth.authorization_number }}</a></h3>
+    <p class="tab">
+        {% if auth.intake_service_area %}<strong>Intake Service Area:</strong> {{ auth.intake_service_area }}<br>{% endif %}
+        {% if auth.authorization_type %}<strong>Authorization Type:</strong> {{ auth.authorization_type }}<br>{% endif %}
+        {% if auth.start_date %}<strong>Start Date:</strong> {{ auth.start_date }}<br>{% endif %}
+        {% if auth.end_date %}<strong>End Date:</strong> {{ auth.end_date }}<br>{% endif %}
+    </p>
+{% empty %}
+    <p class="tab">Sorry, no authorizations for this client</p>
+{% endfor %}
 <input type="button" onclick="location.href='/lynx/add-authorization/{{ object.id }}';" value="Add New Authorization" />
 
 <h2>Notes</h2>
