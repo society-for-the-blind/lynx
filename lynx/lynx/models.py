@@ -51,6 +51,9 @@ MAILINGS = (("N/A", "N/A"), ("Print", "Print"), ("Large Print", "Large Print"), 
 
 TRINARY = (('Yes', 'Yes'), ('No', 'No'), ('Other', 'Other'))
 
+MONTHS = (("January", "January"), ("February", "February"), ("March", "March"), ("April", "April"),
+            ("May", "May"), ("June", "June"), ("July", "July"), ("August", "August"), ("September", "September"),
+            ("October", "October"), ("November", "November"), ("December", "December"))
 
 
 def get_sentinel_user():
@@ -306,3 +309,17 @@ class BillingName(models.Model):
 
     def __str__(self):
         return '%s ($%s)' % (self.agency, self.cost)
+
+
+class ProgressReport(models.Model):
+    month = models.CharField(max_length=25, choices=MONTHS, blank=True, null=True)
+    authorization = models.ForeignKey('Authorization', on_delete=models.CASCADE)
+    instructor = models.CharField(max_length=150, blank=True, null=True)
+    accomplishments = models.TextField(blank=True, null=True)
+    remaining_objectives = models.TextField(blank=True, null=True)
+    estimated_hours = models.TextField(blank=True, null=True)
+    client_behavior = models.TextField(blank=True, null=True)
+    notes = models.TextField(blank=True, null=True)
+    created = models.DateTimeField(auto_now_add=True, null=True)
+    modified = models.DateTimeField(auto_now=True, null=True)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET(get_sentinel_user))
