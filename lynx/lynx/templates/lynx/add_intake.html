@@ -1,7 +1,7 @@
 {% extends 'lynx/base.html' %}
 
 {% block content %}
-<h1>Intake Page 2 (Client History)</h1>
+<h1>Intake Page 3 (Client History)</h1>
 <br>
 <form method="post"> {% csrf_token %}
     {{ form.errors }}
@@ -9,8 +9,9 @@
         <p>Intake Date: {{ form.intake_date }}</p>
         <p>Intake Type: {{ form.intake_type }}</p>
     <h2>Client Demographics</h2>
-        <p>Age Group: {{ form.age_group }}</p>
+<!--        <p>Age Group: {{ form.age_group }}</p>-->
         <p>Gender: {{ form.gender }}</p>
+        <p>Pronouns: {{ form.pronouns }}</p>
         <p>Birth Date: {{ form.birth_date }}</p>
         <p>SSN: {{ form.ssn }}</p>
         <p>Ethnicity: {{ form.ethnicity }}</p>
@@ -65,7 +66,7 @@
         <p>Performs Tasks?: {{ form.performs_tasks }}</p>
         <p>Notes: {{ form.notes }}</p>
         <p>Training: {{ form.training }}</p>
-        <p>Orientation: {{ form.orientation }}</p>g
+        <p>Orientation: {{ form.orientation }}</p>
 
     <input type="submit" value="Submit">
 </form>

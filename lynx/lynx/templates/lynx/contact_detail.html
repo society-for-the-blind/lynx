@@ -6,11 +6,8 @@
 <h2>Client Information</h2>
 <p class="tab"><strong>Name:</strong> {{ object.first_name }} {% if object.middle_name %}{{ object.middle_name }} {% endif %}{{ object.last_name }}</p>
 {% if object.company %}<p class="tab"><strong>Company:</strong> {{ object.company }}</p>{% endif %}
-{% if object.contact_notes %}<p class="tab"><strong>Notes:</strong> {{ object.contact_notes }}</p>{% endif %}
 {% if object.deceased %}<p class="tab"><strong>Deceased</strong></p>{% endif %}
 {% if object.donor %}<p class="tab"><strong>Donor</strong></p>{% endif %}
-<!--<p><strong>Remove from Mailing List:</strong> {{ object.remove_mailing }}</p>-->
-<!--<p><strong>Do Not Contact:</strong> {{ object.do_not_contact }}</p>-->
 
 {% for address in address_list %}
     {% if not address.bad_address %}
@@ -60,43 +57,44 @@
     {% if intake.intake_date %}<p class="tab"><strong>Intake Date:</strong> {{ intake.intake_date }}</p>{% endif %}
     {% if intake.intake_type %}<p class="tab"><strong>Intake Type:</strong> {{ intake.intake_type }}</p>{% endif %}
     <h3>Demographics</h3>
-    {% if intake.age_group %}<p class="tab"><strong>Age Group:</strong> {{ intake.age_group }}</p>{% endif %}
-    {% if intake.gender %}<p class="tab"><strong>Gender:</strong> {{ intake.gender }}</p>{% endif %}
-    {% if intake.birth_date %}<p class="tab"><strong>Birth Date:</strong> {{ intake.birth_date }}</p>{% endif %}
-    {% if intake.ssn %}<p class="tab"><strong>SSN:</strong> {{ intake.ssn }}</p>{% endif %}
-    {% if intake.ethnicity %}<p class="tab"><strong>Ethnicity:</strong> {{ intake.ethnicity }}</p>{% endif %}
-    {% if intake.other_ethnicity %}<p class="tab"><strong>Ethnicity (Other):</strong> {{ intake.other_ethnicity }}</p>{% endif %}
-    {% if intake.income %}<p class="tab"><strong>Income:</strong> {{ intake.income }}</p>{% endif %}
-    {% if intake.first_language %}<p class="tab"><strong>First Language:</strong> {{ intake.first_language }}</p>{% endif %}
-    {% if intake.second_language %}<p class="tab"><strong>Second Language:</strong> {{ intake.second_language }}</p>{% endif %}
-    {% if intake.other_languages %}<p class="tab"><strong>Other Languages:</strong> {{ intake.other_languages }}</p>{% endif %}
-    {% if intake.education %}<p class="tab"><strong>Education:</strong> {{ intake.education }}</p>{% endif %}
-    {% if intake.living_arrangement %}<p class="tab"><strong>Living Arrangements:</strong> {{ intake.living_arrangement }}</p>{% endif %}
-    {% if intake.residence_type %}<p class="tab"><strong>Residence Types:</strong> {{ intake.residence_type }}</p>{% endif %}
-    {% if intake.preferred_medium %}<p class="tab"><strong>Preferred Mailing Medium:</strong> {{ intake.preferred_medium }}</p>{% endif %}
-    {% if intake.performs_tasks %}<p class="tab"><strong>Performs Tasks:</strong> {{ intake.performs_tasks }}</p>{% endif %}
-    {% if intake.notes %}<p class="tab"><strong>Notes:</strong> {{ intake.notes }}</p>{% endif %}
-    {% if intake.training %}<p class="tab"><strong>Training History:</strong> {{ intake.training }}</p>{% endif %}
-    {% if intake.orientation %}<p class="tab"><strong>Orientation Training:</strong> {{ intake.orientation }}</p>{% endif %}
-    {% if intake.confidentiality %}<p class="tab"><strong>Confidentiality:</strong> {{ intake.confidentiality }}</p>{% endif %}
-    {% if intake.dmv %}<p class="tab"><strong>DMV:</strong> {{ intake.dmv }}</p>{% endif %}
-    {% if intake.work_history %}<p class="tab"><strong>Work History:</strong> {{ intake.work_history }}</p>{% endif %}
-    {% if intake.veteran %}<p class="tab"><strong>Veteran:</strong> {{ intake.veteran }}</p>{% endif %}
-    {% if intake.member_name %}<p class="tab"><strong>Member Name:</strong> {{ intake.member_name }}</p>{% endif %}
+<!--    {% if intake.age_group %}<p class="tab"><strong>Age Group:</strong> {{ intake.age_group }}</p>{% endif %}-->
+        {% if intake.gender %}<p class="tab"><strong>Gender:</strong> {{ intake.gender }}</p>{% endif %}
+        {% if intake.pronouns %}<p class="tab"><strong>Pronouns:</strong> {{ intake.pronouns }}</p>{% endif %}
+        {% if intake.birth_date %}<p class="tab"><strong>Birth Date:</strong> {{ intake.birth_date }}</p>{% endif %}
+        {% if intake.ssn %}<p class="tab"><strong>SSN:</strong> {{ intake.ssn }}</p>{% endif %}
+        {% if intake.ethnicity %}<p class="tab"><strong>Ethnicity:</strong> {{ intake.ethnicity }}</p>{% endif %}
+        {% if intake.other_ethnicity %}<p class="tab"><strong>Ethnicity (Other):</strong> {{ intake.other_ethnicity }}</p>{% endif %}
+        {% if intake.income %}<p class="tab"><strong>Income:</strong> {{ intake.income }}</p>{% endif %}
+        {% if intake.first_language %}<p class="tab"><strong>First Language:</strong> {{ intake.first_language }}</p>{% endif %}
+        {% if intake.second_language %}<p class="tab"><strong>Second Language:</strong> {{ intake.second_language }}</p>{% endif %}
+        {% if intake.other_languages %}<p class="tab"><strong>Other Languages:</strong> {{ intake.other_languages }}</p>{% endif %}
+        {% if intake.education %}<p class="tab"><strong>Education:</strong> {{ intake.education }}</p>{% endif %}
+        {% if intake.living_arrangement %}<p class="tab"><strong>Living Arrangements:</strong> {{ intake.living_arrangement }}</p>{% endif %}
+        {% if intake.residence_type %}<p class="tab"><strong>Residence Types:</strong> {{ intake.residence_type }}</p>{% endif %}
+        {% if intake.preferred_medium %}<p class="tab"><strong>Preferred Mailing Medium:</strong> {{ intake.preferred_medium }}</p>{% endif %}
+        {% if intake.performs_tasks %}<p class="tab"><strong>Performs Tasks:</strong> {{ intake.performs_tasks }}</p>{% endif %}
+        {% if intake.notes %}<p class="tab"><strong>Notes:</strong> {{ intake.notes }}</p>{% endif %}
+        {% if intake.training %}<p class="tab"><strong>Training History:</strong> {{ intake.training }}</p>{% endif %}
+        {% if intake.orientation %}<p class="tab"><strong>Orientation Training:</strong> {{ intake.orientation }}</p>{% endif %}
+        {% if intake.confidentiality %}<p class="tab"><strong>Confidentiality:</strong> {{ intake.confidentiality }}</p>{% endif %}
+        {% if intake.dmv %}<p class="tab"><strong>DMV:</strong> {{ intake.dmv }}</p>{% endif %}
+        {% if intake.work_history %}<p class="tab"><strong>Work History:</strong> {{ intake.work_history }}</p>{% endif %}
+        {% if intake.veteran %}<p class="tab"><strong>Veteran:</strong> {{ intake.veteran }}</p>{% endif %}
+        {% if intake.member_name %}<p class="tab"><strong>Member Name:</strong> {{ intake.member_name }}</p>{% endif %}
     <h3>Criminal Background</h3>
-    {% if intake.crime %}<p class="tab"><strong>Criminal History:</strong> {{ intake.crime }}</p>{% endif %}
-    {% if intake.crime_info %}<p class="tab"><strong>Criminal History Information:</strong> {{ intake.crime_info }}</p>{% endif %}
-    {% if intake.crime_other %}<p class="tab"><strong>Criminal History (Other):</strong> {{ intake.crime_other }}</p>{% endif %}
-    {% if intake.parole %}<p class="tab"><strong>Parole:</strong> {{ intake.parole }}</p>{% endif %}
-    {% if intake.parole_info %}<p class="tab"><strong>Parole Information:</strong> {{ intake.parole_info }}</p>{% endif %}
-    {% if intake.crime_history %}<p class="tab"><strong>Other Criminal Information:</strong> {{ intake.crime_history }}</p>{% endif %}
+        {% if intake.crime %}<p class="tab"><strong>Criminal History:</strong> {{ intake.crime }}</p>{% endif %}
+        {% if intake.crime_info %}<p class="tab"><strong>Criminal History Information:</strong> {{ intake.crime_info }}</p>{% endif %}
+        {% if intake.crime_other %}<p class="tab"><strong>Criminal History (Other):</strong> {{ intake.crime_other }}</p>{% endif %}
+        {% if intake.parole %}<p class="tab"><strong>Parole:</strong> {{ intake.parole }}</p>{% endif %}
+        {% if intake.parole_info %}<p class="tab"><strong>Parole Information:</strong> {{ intake.parole_info }}</p>{% endif %}
+        {% if intake.crime_history %}<p class="tab"><strong>Other Criminal Information:</strong> {{ intake.crime_history }}</p>{% endif %}
     <h3>Other Background</h3>
-    {% if intake.previous_training %}<p class="tab"><strong>Previous Training:</strong> {{ intake.previous_training }}</p>{% endif %}
-    {% if intake.training_goals %}<p class="tab"><strong>Training Goals:</strong> {{ intake.training_goals }}</p>{% endif %}
-    {% if intake.training_preferences %}<p class="tab"><strong>Training Preferences:</strong> {{ intake.training_preferences }}</p>{% endif %}
-    {% if intake.other %}<p class="tab"><strong>Other Notes:</strong> {{ intake.other }}</p>{% endif %}
+        {% if intake.previous_training %}<p class="tab"><strong>Previous Training:</strong> {{ intake.previous_training }}</p>{% endif %}
+        {% if intake.training_goals %}<p class="tab"><strong>Training Goals:</strong> {{ intake.training_goals }}</p>{% endif %}
+        {% if intake.training_preferences %}<p class="tab"><strong>Training Preferences:</strong> {{ intake.training_preferences }}</p>{% endif %}
+        {% if intake.other %}<p class="tab"><strong>Other Notes:</strong> {{ intake.other }}</p>{% endif %}
 {% empty %}
-    <p>Sorry, no intake information for this client</p>
+    <p class="tab">Sorry, no intake information for this client</p>
     <input type="button" onclick="location.href='/lynx/add-intake/{{ object.id }}';" value="Add Intake Information" />
 {% endfor %}
 
@@ -174,9 +172,9 @@
 {% for note in note_list %}
     {% if note.note %}<p class="tab">{{ note.note }}</p>{% endif %}
     {% if note.user %}<p class="tab">-{{ note.user.first_name }} {{ note.user.last_name }} {{ note.created }}</p>{% endif %}
-{% empty %}
-    <p class="tab">Sorry, no associated notes for this client</p>
 {% endfor %}
+    {% if object.contact_notes %}<p class="tab">{{ object.contact_notes }}</p>
+    <p class="tab">-{{ user.first_name }} {{ user.last_name }} {{ object.created }}</p>{% endif %}
 <h3>New Note</h3>
 <form action="/lynx/client/{{ object.id }}" method="post">
     {% csrf_token %}

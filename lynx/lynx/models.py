@@ -38,13 +38,15 @@ COUNTIES = (("Alameda", "Alameda"), ("Alpine", "Alpine"), ("Amador", "Amador"), 
 
 REGIONS = (("Sacramento", "Sacramento"), ("Fresno", "Fresno"), ("Chico", "Chico"), ("Diablo", "Diablo"))
 
-GENDERS = (("Female", "Female"), ("Male", "Male"), ("Non-Binary", "Non-Binary"), ("Other", "Other"))
+GENDERS = (("Female", "Female"), ("Male", "Male"), ("Non-Binary", "Non-Binary"),
+           ("Gender Non-Conforming", "Gender Non-Conforming"), ("Other (in notes)", "Other (in notes)"),
+           ("Prefer Not to Say", "Prefer Not to Say"), )
 
-ETHNICITIES = (("Data not recorded", "Data not recorded"), ("White", "White"),
+ETHNICITIES = (("White", "White"), ("Hispanic or Latino", "Hispanic or Latino"),
                ("Black or African American", "Black or African American"), ("Asian", "Asian"),
                ("American Indian or Alaska Native", "American Indian or Alaska Native"),
                ("Native Hawaiian or Other Pacific Islander", "Native Hawaiian or Other Pacific Islander"),
-               ("Hispanic or Latino", "Hispanic or Latino"), ("Other", "Other"))
+               ("Other", "Other"))
 
 MAILINGS = (("N/A", "N/A"), ("Print", "Print"), ("Large Print", "Large Print"), ("Braille", "Braille"),
             ("E-Mail", "E-Mail"), ("Cassette", "Cassette"))
@@ -54,6 +56,24 @@ TRINARY = (('Yes', 'Yes'), ('No', 'No'), ('Other', 'Other'))
 MONTHS = (("January", "January"), ("February", "February"), ("March", "March"), ("April", "April"),
             ("May", "May"), ("June", "June"), ("July", "July"), ("August", "August"), ("September", "September"),
             ("October", "October"), ("November", "November"), ("December", "December"))
+
+LANGUAGES = (("English", "English"), ("Armenian", "Armenian"), ("Arabic", "Arabic"), ("Bengali", "Bengali"),
+             ("Cantonese", "Cantonese"), ("Czech", "Czech"), ("Danish", "Danish"), ("Dutch", "Dutch"),
+             ("Finnish", "Finnish"), ("French", "French"), ("German", "German"), ("Greek", "Greek"),
+             ("Hebrew", "Hebrew"), ("Hindi (urdu)", "Hindi (urdu)"), ("Hmong", "Hmong"), ("Hungarian", "Hungarian"),
+             ("Italian", "Italian"), ("Japanese", "Japanese"), ("Korean", "Korean"), ("Lithuanian", "Lithuanian"),
+             ("Malayalam", "Malayalam"), ("Mandarin", "Mandarin"), ("Mon-khmer (cambodian)", "Mon-khmer (cambodian)"),
+             ("Norwegian", "Norwegian"), ("Panjabi", "Panjabi"), ("Persian", "Persian"), ("Polish", "Polish"),
+             ("Portuguese", "Portuguese"), ("Russian", "Russian"),  ("Slovak", "Slovak"), ("Samoan", "Samoan"),
+             ("Spanish", "Spanish"), ("Swahili", "Swahili"), ("Swedish", "Swedish"), ("Tagalog", "Tagalog"),
+             ("Thai (laotian)", "Thai (laotian)"), ("Turkish", "Turkish"), ("Ukrainian", "Ukrainian"),
+             ("Vietnamese", "Vietnamese"))
+
+EDUCATION = (("None", "None"), ("GED", "GED"), ("High School", "High School"), ("Associates", "Associates"),
+             ("Bachelors", "Bachelors"), ("Masters", "Masters"), ("Doctorate", "Doctorate"))
+
+PRONOUNS = (("He/Him", "He/Him"), ("She/Her", "She/Her"), ("They/Them", "They/Them"), ("Ve/Ver", "Ve/Ver"),
+            ("Xe/Xim", "Xe/Xim"), ("Ze/Hir", "Ze/Hir"), ("Other (in notes)", "Other (in notes)"))
 
 
 def get_sentinel_user():
@@ -156,15 +176,16 @@ class Intake(models.Model):
     intake_type = models.CharField(max_length=150, blank=True, null=True)
     age_group = models.CharField(max_length=150, blank=True, null=True)
     gender = models.CharField(max_length=50, blank=True, choices=GENDERS, null=True)
+    pronouns = models.CharField(max_length=150, blank=True, choices=PRONOUNS, null=True)
     birth_date = models.DateField(blank=True, null=True)
     ssn = models.CharField(max_length=15, blank=True, null=True)
-    ethnicity = models.CharField(max_length=50, blank=True, null=True)
+    ethnicity = models.CharField(max_length=50, blank=True, choices=ETHNICITIES, null=True)
     other_ethnicity = models.CharField(max_length=50, blank=True, null=True)
     income = models.CharField(max_length=25, choices=INCOMES, blank=True, null=True)
-    first_language = models.CharField(max_length=50, blank=True, null=True)
-    second_language = models.CharField(max_length=50, blank=True, null=True)
+    first_language = models.CharField(max_length=50, blank=True, choices=LANGUAGES, null=True)
+    second_language = models.CharField(max_length=50, blank=True, choices=LANGUAGES, null=True)
     other_languages = models.CharField(max_length=150, blank=True, null=True)
-    education = models.CharField(max_length=150, blank=True, null=True)
+    education = models.CharField(max_length=150, blank=True, choices=EDUCATION, null=True)
     living_arrangement = models.CharField(max_length=150, blank=True, null=True)
     residence_type = models.CharField(max_length=150, blank=True, null=True)
     preferred_medium = models.CharField(max_length=150, blank=True, choices=MAILINGS, null=True)

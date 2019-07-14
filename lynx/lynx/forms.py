@@ -14,6 +14,9 @@ class ContactForm(forms.ModelForm):
 
 
 class IntakeForm(forms.ModelForm):
+    intake_date = forms.DateField(widget=forms.SelectDateWidget(empty_label="Nothing"))
+    eye_condition_date = forms.DateField(widget=forms.SelectDateWidget(empty_label="Nothing"))
+    birth_date = forms.DateField(widget=forms.SelectDateWidget(years=range(1900, 2050)))
 
     class Meta:
 

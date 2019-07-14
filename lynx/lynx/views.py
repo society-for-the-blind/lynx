@@ -19,27 +19,32 @@ def index(request):
     return render(request, 'lynx/index.html', context)
 
 
-class IntakeFormView(LoginRequiredMixin, FormView):
-
-    # model = Intake
-    template_name = 'lynx/add_contact.html'
-    form_class = ContactForm
-    success_url = '/lynx/add-intake/'
-
-    def form_valid(self, form):
-        return super().form_valid(form)
-
-
 @login_required
 def add_contact(request):
     form = ContactForm()
+    address_form = AddressForm()
+    phone_form = PhoneForm()
+    email_form = EmailForm()
     if request.method == 'POST':
         form = ContactForm(request.POST)
-        if form.is_valid():
+        address_form = AddressForm(request.POST)
+        phone_form = PhoneForm(request.POST)
+        email_form = EmailForm(request.POST)
+        if address_form.is_valid() & phone_form.is_valid() & email_form.is_valid() & form.is_valid():
             form = form.save()
             contact_id = form.pk
-            return HttpResponseRedirect(reverse('lynx:add_intake',  args=(contact_id,)))
-    return render(request, 'lynx/add_contact.html', {'form': form})
+            address_form = address_form.save(commit=False)
+            address_form.contact_id = contact_id
+            address_form.save()
+            phone_form = phone_form.save(commit=False)
+            phone_form.contact_id = contact_id
+            phone_form.save()
+            email_form = email_form.save(commit=False)
+            email_form.contact_id = contact_id
+            email_form.save()
+            return HttpResponseRedirect(reverse('lynx:add_contact_information',  args=(contact_id,)))
+    return render(request, 'lynx/add_contact.html', {'address_form': address_form, 'phone_form': phone_form,
+                                                     'email_form': email_form, 'form': form})
 
 
 @login_required
@@ -52,7 +57,7 @@ def add_intake(request, contact_id):
             form.contact_id = contact_id
             form.active = 1
             form.save()
-            return HttpResponseRedirect(reverse('lynx:add_contact_information',  args=(contact_id,)))
+            return HttpResponseRedirect(reverse('lynx:contact_detail',  args=(contact_id,)))
     return render(request, 'lynx/add_intake.html', {'form': form})
 
 
@@ -80,7 +85,7 @@ def add_contact_information(request, contact_id):
             emergency_form = emergency_form.save(commit=False)
             emergency_form.contact_id = contact_id
             emergency_form.save()
-            return HttpResponseRedirect(reverse('lynx:contact_detail',  args=(contact_id,)))
+            return HttpResponseRedirect(reverse('lynx:add_intake',  args=(contact_id,)))
     return render(request, 'lynx/add_contact_information.html', {'address_form': address_form, 'phone_form': phone_form,
                                                     'email_form': email_form, 'emergency_form': emergency_form})
 
@@ -90,6 +95,8 @@ class ContactListView(LoginRequiredMixin, ListView):
     model = Contact
     paginate_by = 100  # if contact_id
     # pagination is desired
+
+    ordering = ['last_name', 'first_name']
 
 
 class ContactDetailView(LoginRequiredMixin, DetailView):
