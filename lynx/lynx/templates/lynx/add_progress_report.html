@@ -1,0 +1,11 @@
+{% extends 'lynx/base.html' %}
+
+{% block content %}
+<h1>Add Progress Report</h1>
+<br>
+<form method="post"> {% csrf_token %}
+    {{ form.as_p }}
+    {{ form.errors }}
+    <input type="submit" value="Submit">
+</form>
+{% endblock %}

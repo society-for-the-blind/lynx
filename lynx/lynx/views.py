@@ -199,3 +199,26 @@ class AuthorizationDetailView(LoginRequiredMixin, DetailView):
         # Call the base implementation first to get a context
         context = super(AuthorizationDetailView, self).get_context_data(**kwargs)
         return context
+
+
+@login_required
+def add_progress_report(request, authorization_id):
+    form = ProgressReportForm()
+    if request.method == 'POST':
+        form = ProgressReportForm(request.POST)
+        if form.is_valid():
+            form = form.save(commit=False)
+            form.authorization_id = authorization_id
+            form.save()
+            return HttpResponseRedirect(reverse('lynx:authorization_detail',  args=(authorization_id,)))
+    return render(request, 'lynx/add_progress_report.html', {'form': form})
+
+
+class ProgressReportDetailView(LoginRequiredMixin, DetailView):
+
+    model = ProgressReport
+
+    def get_context_data(self, **kwargs):
+        # Call the base implementation first to get a context
+        context = super(ProgressReportDetailView, self).get_context_data(**kwargs)
+        return context
