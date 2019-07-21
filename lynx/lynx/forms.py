@@ -70,3 +70,11 @@ class AuthorizationForm(forms.ModelForm):
 
         model = Authorization
         exclude = ('created', 'modified', 'user', 'contact')
+
+
+class ProgressReportForm(forms.ModelForm):
+
+    class Meta:
+
+        model = ProgressReport
+        exclude = ('created', 'modified', 'user', 'authorization')
