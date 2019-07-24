@@ -1,0 +1,20 @@
+{% extends 'lynx/base.html' %}
+
+{% block content %}
+<h1>Add New Lesson Note for {{ client }}</h1>
+<br>
+<form method="post"> {% csrf_token %}
+    <h2>Lesson Note</h2>
+    <p>Lesson Date: {{ form.date }}</p>
+    <p>Attendance: {{ form.attendance }}</p>
+    <p>Instructional Units: {{ form.instructional_units }}</p>
+    <p>Billed Units: {{ form.billed_units }}</p>
+    <p>Number of Students in Class: {{ form.students_no }}</p>
+    <p>Successes and accomplishments: {{ form.successes }}</p>
+    <p>Obstacles and barriers to current learning: {{ form.obstacles }}</p>
+    <p>Recommendations to improve learning: {{ form.recommendations }}</p>
+    <p>Other: {{ form.note }}</p>
+    {{ form.errors }}
+    <input type="submit" value="Submit">
+</form>
+{% endblock %}

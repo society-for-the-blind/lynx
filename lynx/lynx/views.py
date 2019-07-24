@@ -6,9 +6,10 @@ from django.views.generic import DetailView, ListView, FormView
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 
-from .models import Contact, Address, Phone, Email, Intake, Referral, IntakeNote, EmergencyContact, Authorization
+from .models import Contact, Address, Phone, Email, Intake, Referral, IntakeNote, EmergencyContact, Authorization, \
+    ProgressReport, LessonNote
 from .forms import ContactForm, IntakeForm, IntakeNoteForm, EmergencyForm, AddressForm, EmailForm, PhoneForm, \
-    AuthorizationForm
+    AuthorizationForm, ProgressReportForm, LessonNoteForm
 
 
 @login_required
@@ -113,19 +114,7 @@ class ContactDetailView(LoginRequiredMixin, DetailView):
         context['authorization_list'] = Authorization.objects.filter(contact_id=self.kwargs['pk'])
         context['note_list'] = IntakeNote.objects.filter(contact_id=self.kwargs['pk']).order_by('-created')
         context['emergency_list'] = EmergencyContact.objects.filter(contact_id=self.kwargs['pk'])
-        context['form'] = IntakeNoteForm
         return context
-
-    def post(self, request, *args, **kwargs):
-        form = IntakeNoteForm(request.POST, request.FILES)
-        if form.is_valid():
-            form = form.save(commit=False)
-            form.contact_id = self.kwargs['pk']
-            form.user_id = request.user.id
-            form.save()
-            # form.user.add(*[request.user])
-            action = "/lynx/client/" + str(self.kwargs['pk'])
-            return HttpResponseRedirect(action)
 
 
 @login_required
@@ -205,7 +194,20 @@ class AuthorizationDetailView(LoginRequiredMixin, DetailView):
     def get_context_data(self, **kwargs):
         # Call the base implementation first to get a context
         context = super(AuthorizationDetailView, self).get_context_data(**kwargs)
+        context['report_list'] = ProgressReport.objects.filter(authorization_id=self.kwargs['pk'])
+        context['note_list'] = LessonNote.objects.filter(authorization_id=self.kwargs['pk']).order_by('-created')
+        context['form'] = LessonNoteForm
         return context
+
+    def post(self, request, *args, **kwargs):
+        form = LessonNoteForm(request.POST, request.FILES)
+        if form.is_valid():
+            form = form.save(commit=False)
+            form.authorization_id = self.kwargs['pk']
+            form.user_id = request.user.id
+            form.save()
+            action = "/lynx/authorization/" + str(self.kwargs['pk'])
+            return HttpResponseRedirect(action)
 
 
 @login_required
@@ -216,6 +218,7 @@ def add_progress_report(request, authorization_id):
         if form.is_valid():
             form = form.save(commit=False)
             form.authorization_id = authorization_id
+            form.user_id = request.user.id
             form.save()
             return HttpResponseRedirect(reverse('lynx:authorization_detail',  args=(authorization_id,)))
     return render(request, 'lynx/add_progress_report.html', {'form': form})
@@ -229,3 +232,19 @@ class ProgressReportDetailView(LoginRequiredMixin, DetailView):
         # Call the base implementation first to get a context
         context = super(ProgressReportDetailView, self).get_context_data(**kwargs)
         return context
+
+
+@login_required
+def add_lesson_note(request, authorization_id):
+    form = LessonNoteForm()
+    auth = Authorization.objects.get(id=authorization_id)
+    client = Contact.objects.get(id=auth.contact_id)
+    if request.method == 'POST':
+        form = LessonNoteForm(request.POST)
+        if form.is_valid():
+            form = form.save(commit=False)
+            form.authorization_id = authorization_id
+            form.user_id = request.user.id
+            form.save()
+            return HttpResponseRedirect(reverse('lynx:authorization_detail',  args=(authorization_id,)))
+    return render(request, 'lynx/add_lesson_note.html', {'form': form, 'client': client})

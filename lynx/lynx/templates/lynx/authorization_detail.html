@@ -3,7 +3,9 @@
 {% block content %}
 
 <h1>Authorization for {{ object.contact.first_name }} {{ object.contact.last_name }}</h1>
+<input type="button" onclick="location.href='/lynx/client/{{ object.contact_id }}';" value="Return to {{ object.contact.first_name }} {{ object.contact.last_name }}'s Information " />
 
+<h2>Authorization Details</h2>
 {% if object.intake_service_area %}<p class="tab"><strong>Intake Service Area:</strong> {{ object.intake_service_area }}</p>{% endif %}
 {% if object.authorization_number %}<p class="tab"><strong>Authorization Number:</strong> {{ object.authorization_number }}</p>{% endif %}
 {% if object.authorization_type %}<p class="tab"><strong>Authorization Type:</strong> {{ object.authorization_type }}</p>{% endif %}
@@ -16,7 +18,29 @@
 {% if object.outside_agency %}<p class="tab"><strong>Name of Outside Agency:</strong> {{ object.outside_agency }}</p>{% endif %}
 {% if object.student_plan %}<p class="tab"><strong>Student Plan Required:</strong> {{ object.student_plan }}</p>{% endif %}
 {% if object.notes %}<p class="tab"><strong>Notes:</strong> {{ object.notes }}</p>{% endif %}
-<p class="tab">Created by {{ user }} on {{ object.created }}</p>
+<p class="tab">Created by {{ user.first_name }} {{ user.last_name }} on {{ object.created }}</p>
+
+<h2>Progress Reports</h2>
+{% for report in report_list %}
+    <h3>{{ report.month }} by {{ report.instructor }}</h3>
+    <p class="tab"><strong>Accomplishments:</strong> {{ report.accomplishments }}</p>
+    <p class="tab"><strong>Remaining Objectives:</strong> {{ report.remaining_objectives }}</p>
+    <p class="tab"><strong>Estimated Hours:</strong> {{ report.estimated_hours }}</p>
+    <p class="tab"><strong>Client Behavior:</strong> {{ report.client_behavior }}</p>
+    <p class="tab"><strong>Notes:</strong> {{ report.notes }}</p>
+    <p class="tab">Entered by {{ report.user.first_name }} {{ report.user.last_name }} on {{ report.created }}</p>
+{% empty %}
+    <p class="tab">Sorry, no progress reports for this authorization.</p>
+{% endfor %}
+<input type="button" onclick="location.href='/lynx/add-progress-report/{{ object.id }}';" value="Add Progress Report" />
+
+
+<h2>Lesson Notes</h2>
+{% for note in note_list %}
+    {% if note.note %}<p class="tab">{{ note.note }}</p>{% endif %}
+    {% if note.user %}<p class="tab">-{{ note.user.first_name }} {{ note.user.last_name }} {{ note.created }}</p>{% endif %}
+{% endfor %}
+<input type="button" onclick="location.href='/lynx/add-lesson-note/{{ object.id }}';" value="Add Lesson Note" />
 
 
 {% endblock %}

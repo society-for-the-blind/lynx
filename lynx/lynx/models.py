@@ -344,3 +344,19 @@ class ProgressReport(models.Model):
     created = models.DateTimeField(auto_now_add=True, null=True)
     modified = models.DateTimeField(auto_now=True, null=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET(get_sentinel_user))
+
+
+class LessonNote(models.Model):
+    authorization = models.ForeignKey('Authorization', on_delete=models.CASCADE)
+    date = models.DateTimeField(auto_now_add=True, null=True)
+    attendance = models.CharField(max_length=150, blank=True, choices=(('Present', 'Present'), ('Absent', 'Absent')), null=True)
+    instructional_units = models.CharField(max_length=15, blank=True, null=True)
+    billed_units = models.CharField(max_length=15, blank=True, null=True)
+    students_no = models.CharField(max_length=15, blank=True, null=True)
+    successes = models.TextField(null=True, blank=True)
+    obstacles = models.TextField(null=True, blank=True)
+    recommendations = models.TextField(null=True, blank=True)
+    note = models.TextField(null=True, blank=True)
+    created = models.DateTimeField(auto_now_add=True, null=True)
+    modified = models.DateTimeField(auto_now=True, null=True)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET(get_sentinel_user))

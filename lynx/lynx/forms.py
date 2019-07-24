@@ -1,8 +1,8 @@
 from django import forms
 from django.utils.translation import gettext_lazy as _
 
-from .models import Contact, Address, Intake, Email, Phone, Referral, IntakeNote, \
-    EmergencyContact, Authorization
+from .models import Contact, Address, Intake, Email, Phone, Referral, IntakeNote, EmergencyContact, Authorization, \
+    ProgressReport, LessonNote
 
 
 class ContactForm(forms.ModelForm):
@@ -65,6 +65,8 @@ class IntakeNoteForm(forms.ModelForm):
 
 
 class AuthorizationForm(forms.ModelForm):
+    start_date = forms.DateField(widget=forms.SelectDateWidget(empty_label="Nothing"))
+    end_date = forms.DateField(widget=forms.SelectDateWidget(empty_label="Nothing"))
 
     class Meta:
 
@@ -77,4 +79,13 @@ class ProgressReportForm(forms.ModelForm):
     class Meta:
 
         model = ProgressReport
+        exclude = ('created', 'modified', 'user', 'authorization')
+
+
+class LessonNoteForm(forms.ModelForm):
+    date = forms.DateField(widget=forms.SelectDateWidget(empty_label="Nothing"))
+
+    class Meta:
+
+        model = LessonNote
         exclude = ('created', 'modified', 'user', 'authorization')

@@ -156,7 +156,7 @@
 
 <h2>Authorizations</h2>
 {% for auth in authorization_list %}
-<h3 class="tab"><a href="/lynx/authorization/{{ auth.id }}">{{ auth.authorization_number }}</a></h3>
+<h3 class="tab"><a href='/lynx/authorization/{{ auth.id }}'>{{ auth.authorization_number }}</a></h3>
     <p class="tab">
         {% if auth.intake_service_area %}<strong>Intake Service Area:</strong> {{ auth.intake_service_area }}<br>{% endif %}
         {% if auth.authorization_type %}<strong>Authorization Type:</strong> {{ auth.authorization_type }}<br>{% endif %}
