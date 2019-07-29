@@ -114,7 +114,20 @@ class ContactDetailView(LoginRequiredMixin, DetailView):
         context['authorization_list'] = Authorization.objects.filter(contact_id=self.kwargs['pk'])
         context['note_list'] = IntakeNote.objects.filter(contact_id=self.kwargs['pk']).order_by('-created')
         context['emergency_list'] = EmergencyContact.objects.filter(contact_id=self.kwargs['pk'])
+        context['form'] = IntakeNoteForm
         return context
+
+    def post(self, request, *args, **kwargs):
+        form = IntakeNoteForm(request.POST, request.FILES)
+        if form.is_valid():
+            form = form.save(commit=False)
+            form.contact_id = self.kwargs['pk']
+            form.user_id = request.user.id
+            form.save()
+            # form.user.add(*[request.user])
+            action = "/lynx/client/" + str(self.kwargs['pk'])
+            return HttpResponseRedirect(action)
+
 
 
 @login_required
@@ -248,3 +261,8 @@ def add_lesson_note(request, authorization_id):
             form.save()
             return HttpResponseRedirect(reverse('lynx:authorization_detail',  args=(authorization_id,)))
     return render(request, 'lynx/add_lesson_note.html', {'form': form, 'client': client})
+
+
+class LessonNoteDetailView(LoginRequiredMixin, DetailView):
+
+    model = LessonNote

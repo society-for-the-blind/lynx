@@ -17,8 +17,9 @@ urlpatterns = [
     path('add-address/<int:contact_id>', views.add_address, name='add_address'),
     path('add-email/<int:contact_id>', views.add_email, name='add_email'),
     path('add-phone/<int:contact_id>', views.add_phone, name='add_phone'),
-    path('add-progress-report/<int:authorization_id>/', views.add_progress_report, name='add_progress_report'),
+    path('add-progress-report/<int:authorization_id>', views.add_progress_report, name='add_progress_report'),
     path('progress-report/<int:pk>/', views.ProgressReportDetailView.as_view(), name='progress_report_detail'),
     path('add-lesson-note/<int:authorization_id>', views.add_lesson_note, name='add_lesson_note'),
+    path('lesson-note/<int:pk>', views.LessonNoteDetailView.as_view(), name='lesson_note'),
     path('', views.index, name='index'),
 ]

@@ -2,8 +2,9 @@
 
 {% block content %}
 
-<h1>{{ object.contact.first_name }} {{ object.contact.last_name }} Progress Report for {{object.month}} by {{object.instructor}}</h1>
+<h1>{{ object.contact.first_name }} {{ object.contact.last_name }} Progress Report for {{ object.month }} by {{ object.instructor }}</h1>
 <h2>Client Information</h2>
+<input type="button" onclick="location.href='/lynx/authorization/{{ object.authorization_id }}';" value="Return to Authorization" /> <input type="button" onclick="location.href='/lynx/client/{{ object.authorization.contact.id}}';" value="Return to Client" />
 <p class="tab"><strong>Accomplishments:</strong> {{ object.accomplishments }}</p>
 <p class="tab"><strong>Remaining Objectives:</strong> {{ object.remaining_objectives }}</p>
 <p class="tab"><strong>Estimated Hours:</strong> {{ object.estimated_hours }}</p>
