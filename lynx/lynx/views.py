@@ -5,6 +5,7 @@ from django.views import generic
 from django.views.generic import DetailView, ListView, FormView
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.views.generic.edit import UpdateView
 
 from .models import Contact, Address, Phone, Email, Intake, Referral, IntakeNote, EmergencyContact, Authorization, \
     ProgressReport, LessonNote
@@ -89,6 +90,12 @@ def add_contact_information(request, contact_id):
             return HttpResponseRedirect(reverse('lynx:add_intake',  args=(contact_id,)))
     return render(request, 'lynx/add_contact_information.html', {'address_form': address_form, 'phone_form': phone_form,
                                                     'email_form': email_form, 'emergency_form': emergency_form})
+
+
+@login_required
+def client_list_view(request):
+    clients = Contact.objects.all().order_by('last_name', 'first_name')
+    return render(request, 'lynx/contact_list.html', {'clients': clients})
 
 
 class ContactListView(LoginRequiredMixin, ListView):
@@ -209,6 +216,15 @@ class AuthorizationDetailView(LoginRequiredMixin, DetailView):
         context = super(AuthorizationDetailView, self).get_context_data(**kwargs)
         context['report_list'] = ProgressReport.objects.filter(authorization_id=self.kwargs['pk'])
         context['note_list'] = LessonNote.objects.filter(authorization_id=self.kwargs['pk']).order_by('-created')
+        notes = LessonNote.objects.filter(authorization_id=self.kwargs['pk']).values()
+        auth = Authorization.objects.filter(id=self.kwargs['pk']).values()
+        total_units = 0
+        for note in notes:
+            units = int(note['billed_units'])
+            total_units += units
+        context['total_billed'] = total_units * int(auth[0]['billing_rate'])
+        context['remaining_units'] = int(auth[0]['total_time']) - total_units
+        context['total_units'] = total_units
         context['form'] = LessonNoteForm
         return context
 
@@ -266,3 +282,10 @@ def add_lesson_note(request, authorization_id):
 class LessonNoteDetailView(LoginRequiredMixin, DetailView):
 
     model = LessonNote
+
+
+class ClientUpdateView(LoginRequiredMixin, UpdateView):
+    model = Contact
+    fields = ['name']
+    template_name = 'edit_client'
+

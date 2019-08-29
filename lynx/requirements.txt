@@ -10,6 +10,7 @@ sudo pip3 install --upgrade django-crispy-forms
 sudo pip3 install django-debug-toolbar
 sudo pip3 install django-tables2
 
+
 sudo apt-get install postgresql postgresql-contrib
 sudo update-rc.d postgresql enable
 sudo service postgresql start

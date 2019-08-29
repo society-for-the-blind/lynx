@@ -1,12 +1,26 @@
 {% extends 'lynx/base.html' %}
 
+{% block javascript %}
+<script>
+
+    function selectId() {
+        var clientId = document.getElementById("contactSelect").value;
+        // var urlString = location.href='/lynx/client/' + clientId;
+        document.getElementById("viewClient").onclick = location.href='/lynx/client/' + clientId;
+    }
+
+</script>
+{% endblock %}
+
 {% block content %}
+
 <h1>Clients</h1>
 <input type="button" onclick="location.href='/lynx/add-contact';" value="Add New Client" />
 <br>
-<ul>
-{% for client in object_list %}
-    <li><a href="/lynx/client/{{client.id}}">{{ client.first_name }} {% if client.middle_name %}{{ client.middle_name }} {% endif %}{{ client.last_name }}</a></li>
+<select id="contactSelect" onchange="selectId()">
+{% for client in clients %}
+    <option value = '{{ client.id }}'>{{ client.last_name }}, {{ client.first_name }} {% if client.middle_name %}{{ client.middle_name }} {% endif %}</option>
 {% endfor %}
-</ul>
+</select>
+<!--<input id="viewClient" type="button" onclick= "" value="View Client" />-->
 {% endblock %}

@@ -20,6 +20,28 @@
 {% if object.notes %}<p class="tab"><strong>Notes:</strong> {{ object.notes }}</p>{% endif %}
 <p class="tab">Created by {{ user.first_name }} {{ user.last_name }} on {{ object.created }}</p>
 
+<h2>Billing Information</h2>
+    <table class="table">
+        <tr>
+            <th>Lesson Date</th>
+            <th>Billed Time</th>
+            <th>Rate</th>
+            <th>Service Area</th>
+            <th>Authorization Type</th>
+        </tr>
+        {% for note in note_list %}
+            <tr>
+                <td>{{ note.date|date:"F d, Y" }}</td>
+                <td>{{ note.billed_units }}</td>
+                <td>{{ object.billing_rate }}</td>
+                <td>{{ object.intake_service_area }}</td>
+                <td>{{ object.authorization_type }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+<p class="tab"><strong>Total Billed:</strong> {{ total_billed }}</p>
+<p class="tab"><strong>Remaining Units:</strong> {{ remaining_units }}</p>
+
 <h2>Progress Reports</h2>
 {% for report in report_list %}
     <h3 class="tab">{{ report.month }} by {{ report.instructor }}</h3>

@@ -1,7 +1,8 @@
 from django.db import models
 from django.contrib.auth import get_user_model
-
 from django.conf import settings
+
+from datetime import datetime
 
 STATES = (("Alabama", "Alabama"), ("Alaska", "Alaska"), ("Arizona", "Arizona"), ("Arkansas", "Arkansas"),
           ("California", "California"), ("Colorado", "Colorado"), ("Connecticut", "Connecticut"),
@@ -348,7 +349,7 @@ class ProgressReport(models.Model):
 
 class LessonNote(models.Model):
     authorization = models.ForeignKey('Authorization', on_delete=models.CASCADE)
-    date = models.DateTimeField(auto_now_add=True, null=True)
+    date = models.DateTimeField(default=datetime.now, null=True)
     attendance = models.CharField(max_length=150, blank=True, choices=(('Present', 'Present'), ('Absent', 'Absent')), null=True)
     instructional_units = models.CharField(max_length=15, blank=True, null=True)
     billed_units = models.CharField(max_length=15, blank=True, null=True)
