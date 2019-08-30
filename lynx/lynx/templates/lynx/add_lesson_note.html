@@ -5,15 +5,15 @@
 <br>
 <form method="post"> {% csrf_token %}
     <h2>Lesson Note</h2>
-    <p>Lesson Date: {{ form.date }}</p>
-    <p>Attendance: {{ form.attendance }}</p>
-    <p>Instructional Units: {{ form.instructional_units }}</p>
-    <p>Billed Units: {{ form.billed_units }}</p>
-    <p>Number of Students in Class: {{ form.students_no }}</p>
-    <p>Successes and accomplishments: {{ form.successes }}</p>
-    <p>Obstacles and barriers to current learning: {{ form.obstacles }}</p>
-    <p>Recommendations to improve learning: {{ form.recommendations }}</p>
-    <p>Other: {{ form.note }}</p>
+    <label for="date">Lesson Date</label><p>Lesson Date: {{ form.date }}</p>
+    <label for="attendance">Attendance</label><p>Attendance: {{ form.attendance }}</p>
+    <label for="instructional_units">Instructional Units</label><p>Instructional Units: {{ form.instructional_units }}</p>
+    <label for="billed_units">Billed Units</label><p>Billed Units: {{ form.billed_units }}</p>
+    <label for="students_no">Number of Students in Class</label><p>Number of Students in Class: {{ form.students_no }}</p>
+    <label for="successes">Successes and accomplishments</label><p>Successes and accomplishments: {{ form.successes }}</p>
+    <label for="obstacles">Obstacles and barriers to current learning</label><p>Obstacles and barriers to current learning: {{ form.obstacles }}</p>
+    <label for="recommendations">Recommendations to improve learning</label><p>Recommendations to improve learning: {{ form.recommendations }}</p>
+    <label for="note">Other</label><p>Other: {{ form.note }}</p>
     {{ form.errors }}
     <input type="submit" value="Submit">
 </form>

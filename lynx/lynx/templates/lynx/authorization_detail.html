@@ -54,7 +54,7 @@
 {% empty %}
     <p class="tab">Sorry, no progress reports for this authorization.</p>
 {% endfor %}
-<input type="button" onclick="location.href='/lynx/add-progress-report/{{ object.id }}';" value="Add Progress Report" />
+<input type="button" onclick="location.href='/lynx/add-progress-report/{{ object.id }}/';" value="Add Progress Report" />
 
 
 <h2>Lesson Notes</h2>
@@ -65,7 +65,7 @@
     <p class="tab"><strong>Obstacles and barriers to current learning:</strong> {{ note.obstacles }}</p>
     <p class="tab"><strong>Instructor:</strong> {{ note.user.first_name }} {{ note.user.last_name }}</p>
 {% endfor %}
-<input type="button" onclick="location.href='/lynx/add-lesson-note/{{ object.id }}';" value="Add Lesson Note" />
+<input type="button" onclick="location.href='/lynx/add-lesson-note/{{ object.id }}/';" value="Add Lesson Note" />
 
 
 {% endblock %}
