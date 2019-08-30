@@ -6,67 +6,67 @@
 <form method="post"> {% csrf_token %}
     {{ form.errors }}
     <h2>Intake Information</h2>
-        <p>Intake Date: {{ form.intake_date }}</p>
-        <p>Intake Type: {{ form.intake_type }}</p>
+        <p><label for="id_intake_date">Intake Date:</label> {{ form.intake_date }}</p>
+        <p><label for="id_intake_type">Intake Type:</label> {{ form.intake_type }}</p>
     <h2>Client Demographics</h2>
 <!--        <p>Age Group: {{ form.age_group }}</p>-->
-        <p>Gender: {{ form.gender }}</p>
-        <p>Pronouns: {{ form.pronouns }}</p>
-        <p>Birth Date: {{ form.birth_date }}</p>
-        <p>SSN: {{ form.ssn }}</p>
-        <p>Ethnicity: {{ form.ethnicity }}</p>
-        <p>Ethnicity (If Other): {{ form.other_ethnicity }}</p>
-        <p>Income: {{ form.income }}</p>
-        <p>First Language: {{ form.first_language }}</p>
-        <p>Second Language: {{ form.second_language }}</p>
-        <p>Other Language(s): {{ form.other_languages }}</p>
-        <p>Education: {{ form.education }}</p>
-        <p>Living Arrangements: {{ form.living_arrangement }}</p>
-        <p>Residence Type: {{ form.residence_type }}</p>
-        <p>Veteran: {{ form.veteran }}</p>
+        <p><label for="id_gender">Gender:</label> {{ form.gender }}</p>
+        <p><label for="id_pronouns">Pronouns:</label> {{ form.pronouns }}</p>
+        <p><label for="id_birth_date">Birth Date:</label> {{ form.birth_date }}</p>
+        <p><label for="id_ssn">SSN:</label> {{ form.ssn }}</p>
+        <p><label for="id_ethnicity">Ethnicity:</label> {{ form.ethnicity }}</p>
+        <p><label for="id_other_ethnicity">Ethnicity (If Other):</label> {{ form.other_ethnicity }}</p>
+        <p><label for="id_income">Income:</label> {{ form.income }}</p>
+        <p><label for="id_first_language">First Language:</label> {{ form.first_language }}</p>
+        <p><label for="id_second_language">Second Language</label> {{ form.second_language }}</p>
+        <p><label for="id_other_languages">Other Language(s):</label> {{ form.other_languages }}</p>
+        <p><label for="id_education">Education:</label> {{ form.education }}</p>
+        <p><label for="id_living_arrangement">Living Arrangements:</label> {{ form.living_arrangement }}</p>
+        <p><label for="id_residence_type">Residence Type:</label> {{ form.residence_type }}</p>
+        <p><label for="id_veteran">Veteran:</label> {{ form.veteran }}</p>
     <h2>Criminal Background</h2>
-        <p>Have you been convicted of a crime?: {{ form.crime }}</p>
-        <p>If yes, what and when did the convictions occur? What county did this conviction occur in?: {{ form.crime_info }}</p>
-        <p>Criminal Conviction Information: {{ form.crime_other }}</p>
-        <p>Are you on parole?: {{ form.parole }}</p>
-        <p>Parole Information: {{ form.parole_info }}</p>
-        <p>Additional Criminal History: {{ form.crime_history }}</p>
+        <p><label for="id_crime">Have you been convicted of a crime?:</label>  {{ form.crime }}</p>
+        <p><label for="id_crime_info">If yes, what and when did the convictions occur? What county did this conviction occur in?: </label> {{ form.crime_info }}</p>
+        <p><label for="id_crime_other">Criminal Conviction Information: </label> {{ form.crime_other }}</p>
+        <p><label for="id_parole">Are you on parole?: </label> {{ form.parole }}</p>
+        <p><label for="id_parole_info">Parole Information: </label> {{ form.parole_info }}</p>
+        <p><label for="id_crime_history">Additional Criminal History: </label> {{ form.crime_history }}</p>
     <h2>Medical History</h2>
-        <p>Eye Condition: {{ form.eye_condition }}</p>
-        <p>Eye Condition Date: {{ form.eye_condition_date }}</p>
-        <p>Degree: {{ form.degree }}</p>
-        <p>Prognosis: {{ form.prognosis }}</p>
-        <p>Diabetes: {{ form.diabetes }}</p>
-        <p>Dialysis: {{ form.dialysis }}</p>
-        <p>Hearing Loss: {{ form.hearing_loss }}</p>
-        <p>Mobility: {{ form.mobility }}</p>
-        <p>Stroke: {{ form.stroke }}</p>
-        <p>Seizure: {{ form.seizure }}</p>
-        <p>Heart: {{ form.heart }}</p>
-        <p>High BP: {{ form.high_bp }}</p>
-        <p>Neuropathy: {{ form.neuropathy }}</p>
-        <p>Pain: {{ form.pain }}</p>
-        <p>Asthma: {{ form.asthma }}</p>
-        <p>Cancer: {{ form.cancer }}</p>
-        <p>Allergies: {{ form.allergies }}</p>
-        <p>Mental Health: {{ form.mental_health }}</p>
-        <p>Substance Abuse: {{ form.substance_abuse }}</p>
-        <p>Memory Loss: {{ form.memory_loss }}</p>
-        <p>Learning Disability: {{ form.learning_disability }}</p>
-        <p>Other Medical Information: {{ form.other_medical }}</p>
-        <p>Medications: {{ form.medications }}</p>
-        <p>Medical Notes: {{ form.medical_notes }}</p>
+        <p><label for="id_eye_condition">Eye Condition: </label> {{ form.eye_condition }}</p>
+        <p><label for="id_eye_condition_date">Eye Condition Date: {</label> { form.eye_condition_date }}</p>
+        <p><label for="id_degree">Degree: </label> {{ form.degree }}</p>
+        <p><label for="id_prognosis">Prognosis: </label> {{ form.prognosis }}</p>
+        <p><label for="id_diabetes">Diabetes: </label> {{ form.diabetes }}</p>
+        <p><label for="id_dialysis">Dialysis: </label> {{ form.dialysis }}</p>
+        <p><label for="id_hearing_loss">Hearing Loss: </label> {{ form.hearing_loss }}</p>
+        <p><label for="id_mobility"> Mobility: </label> {{ form.mobility }}</p>
+        <p><label for="id_stroke">Stroke: </label> {{ form.stroke }}</p>
+        <p><label for="id_seizure">Seizure: </label> {{ form.seizure }}</p>
+        <p><label for="id_heart">Heart: </label> {{ form.heart }}</p>
+        <p><label for="id_high_bp">High BP: </label> {{ form.high_bp }}</p>
+        <p><label for="id_neuropathy">Neuropathy: </label> {{ form.neuropathy }}</p>
+        <p><label for="id_pain">Pain: </label> {{ form.pain }}</p>
+        <p><label for="id_asthma">Asthma: </label> {{ form.asthma }}</p>
+        <p><label for="id_cancer">Cancer: </label> Cancer: {{ form.cancer }}</p>
+        <p><label for="id_allergies">IAllergies: </label> {{ form.allergies }}</p>
+        <p><label for="id_mental_health">Mental Health: </label> {{ form.mental_health }}</p>
+        <p><label for="id_substance_abuse">Substance Abuse: </label> {{ form.substance_abuse }}</p>
+        <p><label for="id_memory_loss">Memory Loss: </label> {{ form.memory_loss }}</p>
+        <p><label for="id_learning_disability">Learning Disability: </label> {{ form.learning_disability }}</p>
+        <p><label for="id_other_medical">Other Medical Information: </label> {{ form.other_medical }}</p>
+        <p><label for="id_medications">Medications: </label>  {{ form.medications }}</p>
+        <p><label for="id_medical_notes">Medical Notes: </label> {{ form.medical_notes }}</p>
     <h2>Client History</h2>
-        <p>Work History: {{ form.work_history }}</p>
-        <p>Previous Training: {{ form.previous_training }}</p>
-        <p>Training Goals: {{ form.training_goals }}</p>
-        <p>Training Preferences: {{ form.training_preferences }}</p>
-        <p>Other: {{ form.other }}</p>
-        <p>Prepared Mailing Medium: {{ form.preferred_medium }}</p>
-        <p>Performs Tasks?: {{ form.performs_tasks }}</p>
-        <p>Notes: {{ form.notes }}</p>
-        <p>Training: {{ form.training }}</p>
-        <p>Orientation: {{ form.orientation }}</p>
+        <p><label for="id_work_history">Work History: </label> {{ form.work_history }}</p>
+        <p><label for="id_previous_training">Previous Training: </label> {{ form.previous_training }}</p>
+        <p><label for="id_training_goals">Training Goals: </label> {{ form.training_goals }}</p>
+        <p><label for="id_training_preferences">Training Preferences: </label> {{ form.training_preferences }}</p>
+        <p><label for="id_other">Other: </label> {{ form.other }}</p>
+        <p><label for="id_preferred_medium">Prepared Mailing Medium: </label> {{ form.preferred_medium }}</p>
+        <p><label for="id_performs_tasks">Performs Tasks?: </label> {{ form.performs_tasks }}</p>
+        <p><label for="id_notes">Notes: </label> {{ form.notes }}</p>
+        <p><label for="id_training">Training: </label> {{ form.training }}</p>
+        <p><label for="id_orientation">Orientation: </label> {{ form.orientation }}</p>
 
     <input type="submit" value="Submit">
 </form>
