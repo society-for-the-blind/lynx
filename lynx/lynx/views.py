@@ -220,10 +220,10 @@ class AuthorizationDetailView(LoginRequiredMixin, DetailView):
         auth = Authorization.objects.filter(id=self.kwargs['pk']).values()
         total_units = 0
         for note in notes:
-            units = int(note['billed_units'])
+            units = float(note['billed_units'])
             total_units += units
-        context['total_billed'] = total_units * int(auth[0]['billing_rate'])
-        context['remaining_units'] = int(auth[0]['total_time']) - total_units
+        context['total_billed'] = total_units * float(auth[0]['billing_rate'])
+        context['remaining_units'] = float(auth[0]['total_time']) - total_units
         context['total_units'] = total_units
         context['form'] = LessonNoteForm
         return context

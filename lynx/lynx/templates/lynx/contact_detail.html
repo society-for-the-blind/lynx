@@ -48,9 +48,9 @@
 {% empty %}
     <p class="tab">Sorry, no associated emails for this client</p>
 {% endfor %}
-<input type="button" onclick="location.href='/lynx/add-address/{{ object.id }}';" value="Add Address" />
-<input type="button" onclick="location.href='/lynx/add-phone/{{ object.id }}';" value="Add Phone Number" />
-<input type="button" onclick="location.href='/lynx/add-email/{{ object.id }}';" value="Add Email" />
+<input type="button" onclick="location.href='/lynx/add-address/{{ object.id }}/';" value="Add Address" />
+<input type="button" onclick="location.href='/lynx/add-phone/{{ object.id }}/';" value="Add Phone Number" />
+<input type="button" onclick="location.href='/lynx/add-email/{{ object.id }}/';" value="Add Email" />
 
 <h2>Intake Information</h2>
 {% for intake in intake_list %}
@@ -95,7 +95,7 @@
         {% if intake.other %}<p class="tab"><strong>Other Notes:</strong> {{ intake.other }}</p>{% endif %}
 {% empty %}
     <p class="tab">Sorry, no intake information for this client</p>
-    <input type="button" onclick="location.href='/lynx/add-intake/{{ object.id }}';" value="Add Intake Information" />
+    <input type="button" onclick="location.href='/lynx/add-intake/{{ object.id }}/';" value="Add Intake Information" />
 {% endfor %}
 
 <h2>Medical Information</h2>
@@ -152,7 +152,7 @@
 {% empty %}
     <p class="tab">Sorry, no emergency contacts for this client</p>
 {% endfor %}
-<input type="button" onclick="location.href='/lynx/add-emergency/{{ object.id }}';" value="Add Emergency Contact" />
+<input type="button" onclick="location.href='/lynx/add-emergency/{{ object.id }}/';" value="Add Emergency Contact" />
 
 <h2>Authorizations</h2>
 {% for auth in authorization_list %}
@@ -166,7 +166,7 @@
 {% empty %}
     <p class="tab">Sorry, no authorizations for this client</p>
 {% endfor %}
-<input type="button" onclick="location.href='/lynx/add-authorization/{{ object.id }}';" value="Add New Authorization" />
+<input type="button" onclick="location.href='/lynx/add-authorization/{{ object.id }}/';" value="Add New Authorization" />
 
 <h2>Notes</h2>
 {% for note in note_list %}
