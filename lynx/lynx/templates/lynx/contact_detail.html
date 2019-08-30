@@ -31,7 +31,7 @@
 {% for phone in phone_list %}
     {% if phone.active %}
         <p class="tab">
-            <strong>{{ phone.type }} Phone Number:</strong> {{ phone.phone }}
+            <strong>{{ phone.phone_type }} Phone Number:</strong> {{ phone.phone }}
         </p>
     {% endif %}
 {% empty %}
@@ -42,7 +42,7 @@
 {% for email in email_list %}
     {% if email.active %}
         <p class="tab">
-            <strong>{{ email.type }} Email Address:</strong> {{ email.email }}
+            <strong>{{ email.email_type }} Email Address:</strong> {{ email.email }}
         </p>
     {% endif %}
 {% empty %}
@@ -142,10 +142,10 @@
     <h3 class="tab">{{ emergency.name }}</h3>
     <p class="tab">
         <strong>Emergency Contact Address:</strong><br>
-        {{ emergency.address_one }}<br>
-        {% if emergency.address_two %}{{ emergency.address_two }}<br>{% endif %}
-        {{ emergency.city }}, {{ emergency.state }} {{ emergency.zip_code }}<br>
-        {{ emergency.country }}<br>
+        {{ emergency.emergency_address_one }}<br>
+        {% if emergency.emergency_address_two %}{{ emergency.emergency_address_two }}<br>{% endif %}
+        {{ emergency.emergency_city }}, {{ emergency.emergency_state }} {{ emergency.emergency_zip_code }}<br>
+        {{ emergency.emergency_country }}<br>
     </p>
     {% if emergency.phone_day %}<p class="tab"><strong>Emergency Contact Daytime Phone Number:</strong> {{ emergency.phone_day }}</p>{% endif %}
     {% if emergency.phone_other %}<p class="tab"><strong>Emergency Contact Other Phone Number:</strong> {{ emergency.phone_other }}</p>{% endif %}

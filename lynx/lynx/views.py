@@ -44,7 +44,7 @@ def add_contact(request):
             email_form = email_form.save(commit=False)
             email_form.contact_id = contact_id
             email_form.save()
-            return HttpResponseRedirect(reverse('lynx:add_contact_information',  args=(contact_id,)))
+            return HttpResponseRedirect(reverse('lynx:add_intake',  args=(contact_id,)))
     return render(request, 'lynx/add_contact.html', {'address_form': address_form, 'phone_form': phone_form,
                                                      'email_form': email_form, 'form': form})
 
