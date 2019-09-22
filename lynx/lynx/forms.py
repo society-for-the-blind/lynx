@@ -2,7 +2,7 @@ from django import forms
 from django.utils.translation import gettext_lazy as _
 
 from .models import Contact, Address, Intake, Email, Phone, Referral, IntakeNote, EmergencyContact, Authorization, \
-    ProgressReport, LessonNote
+    ProgressReport, LessonNote, SipNote
 
 
 class ContactForm(forms.ModelForm):
@@ -89,3 +89,12 @@ class LessonNoteForm(forms.ModelForm):
 
         model = LessonNote
         exclude = ('created', 'modified', 'user', 'authorization')
+
+
+class SipNoteForm(forms.ModelForm):
+    note_date = forms.DateField(widget=forms.SelectDateWidget(empty_label="Nothing"))
+
+    class Meta:
+
+        model = SipNote
+        exclude = ('created', 'modified', 'user', 'contact')

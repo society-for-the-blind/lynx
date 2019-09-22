@@ -6,11 +6,12 @@ from django.views.generic import DetailView, ListView, FormView
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic.edit import UpdateView
+from django.urls import reverse_lazy
 
 from .models import Contact, Address, Phone, Email, Intake, Referral, IntakeNote, EmergencyContact, Authorization, \
-    ProgressReport, LessonNote
+    ProgressReport, LessonNote, SipNote
 from .forms import ContactForm, IntakeForm, IntakeNoteForm, EmergencyForm, AddressForm, EmailForm, PhoneForm, \
-    AuthorizationForm, ProgressReportForm, LessonNoteForm
+    AuthorizationForm, ProgressReportForm, LessonNoteForm, SipNoteForm
 
 
 @login_required
@@ -59,7 +60,7 @@ def add_intake(request, contact_id):
             form.contact_id = contact_id
             form.active = 1
             form.save()
-            return HttpResponseRedirect(reverse('lynx:contact_detail',  args=(contact_id,)))
+            return HttpResponseRedirect(reverse('lynx:client',  args=(contact_id,)))
     return render(request, 'lynx/add_intake.html', {'form': form})
 
 
@@ -93,6 +94,20 @@ def add_contact_information(request, contact_id):
 
 
 @login_required
+def add_sip_note(request, contact_id):
+    form = SipNoteForm()
+    if request.method == 'POST':
+        form = SipNoteForm(request.POST)
+        if form.is_valid():
+            form = form.save(commit=False)
+            form.contact_id = contact_id
+            form.user_id = request.user.id
+            form.save()
+            return HttpResponseRedirect(reverse('lynx:client',  args=(contact_id,)))
+    return render(request, 'lynx/add_sip_note.html', {'form': form})
+
+
+@login_required
 def client_list_view(request):
     clients = Contact.objects.all().order_by('last_name', 'first_name')
     return render(request, 'lynx/contact_list.html', {'clients': clients})
@@ -120,6 +135,7 @@ class ContactDetailView(LoginRequiredMixin, DetailView):
         context['intake_list'] = Intake.objects.filter(contact_id=self.kwargs['pk'])
         context['authorization_list'] = Authorization.objects.filter(contact_id=self.kwargs['pk'])
         context['note_list'] = IntakeNote.objects.filter(contact_id=self.kwargs['pk']).order_by('-created')
+        context['sip_list'] = SipNote.objects.filter(contact_id=self.kwargs['pk']).order_by('-created')
         context['emergency_list'] = EmergencyContact.objects.filter(contact_id=self.kwargs['pk'])
         context['form'] = IntakeNoteForm
         return context
@@ -147,7 +163,7 @@ def add_emergency(request, contact_id):
             form.contact_id = contact_id
             form.active = 1
             form.save()
-            return HttpResponseRedirect(reverse('lynx:contact_detail',  args=(contact_id,)))
+            return HttpResponseRedirect(reverse('lynx:client',  args=(contact_id,)))
     return render(request, 'lynx/add_emergency.html', {'form': form})
 
 
@@ -161,7 +177,7 @@ def add_address(request, contact_id):
             form.contact_id = contact_id
             form.active = 1
             form.save()
-            return HttpResponseRedirect(reverse('lynx:contact_detail',  args=(contact_id,)))
+            return HttpResponseRedirect(reverse('lynx:client',  args=(contact_id,)))
     return render(request, 'lynx/add_address.html', {'form': form})
 
 
@@ -175,7 +191,7 @@ def add_email(request, contact_id):
             form.contact_id = contact_id
             form.active = 1
             form.save()
-            return HttpResponseRedirect(reverse('lynx:contact_detail',  args=(contact_id,)))
+            return HttpResponseRedirect(reverse('lynx:client',  args=(contact_id,)))
     return render(request, 'lynx/add_email.html', {'form': form})
 
 
@@ -189,7 +205,7 @@ def add_phone(request, contact_id):
             form.contact_id = contact_id
             form.active = 1
             form.save()
-            return HttpResponseRedirect(reverse('lynx:contact_detail',  args=(contact_id,)))
+            return HttpResponseRedirect(reverse('lynx:client',  args=(contact_id,)))
     return render(request, 'lynx/add_phone.html', {'form': form})
 
 
@@ -203,7 +219,7 @@ def add_authorization(request, contact_id):
             form.contact_id = contact_id
             form.active = 1
             form.save()
-            return HttpResponseRedirect(reverse('lynx:contact_detail',  args=(contact_id,)))
+            return HttpResponseRedirect(reverse('lynx:client',  args=(contact_id,)))
     return render(request, 'lynx/add_authorization.html', {'form': form})
 
 
@@ -286,6 +302,49 @@ class LessonNoteDetailView(LoginRequiredMixin, DetailView):
 
 class ClientUpdateView(LoginRequiredMixin, UpdateView):
     model = Contact
-    fields = ['name']
-    template_name = 'edit_client'
+    fields = ['first_name', 'middle_name', 'last_name', 'company', 'do_not_contact', 'donor', 'deceased', 'remove_mailing', 'active', 'contact_notes']
+    template_name_suffix = '_edit'
 
+
+class AddressUpdateView(LoginRequiredMixin, UpdateView):
+    model = Address
+    fields = ['address_one', 'address_two', 'suite', 'city', 'state', 'zip_code', 'county', 'country', 'region', 'cross_streets', 'bad_address', 'billing', 'address_notes']
+    template_name_suffix = '_edit'
+
+
+class EmailUpdateView(LoginRequiredMixin, UpdateView):
+    model = Email
+    fields = ['email', 'email_type', 'active']
+    template_name_suffix = '_edit'
+
+
+class PhoneUpdateView(LoginRequiredMixin, UpdateView):
+    model = Phone
+    fields = ['phone', 'phone_type', 'active']
+    template_name_suffix = '_edit'
+
+
+class IntakeUpdateView(LoginRequiredMixin, UpdateView):
+    model = Intake
+    fields = ['intake_date', 'intake_type', 'gender', 'pronouns', 'birth_date', 'ethnicity', 'other_ethnicity', 'income',
+              'first_language', 'second_language', 'other_languages', 'education', 'living_arrangement', 'residence_type',
+              'preferred_medium', 'performs_tasks', 'notes', 'training', 'orientation', 'confidentiality', 'dmv', 'work_history',
+              'veteran', 'member_name', 'active', 'crime', 'crime_info', 'crime_other', 'parole', 'parole_info',
+              'crime_history', 'previous_training', 'training_goals', 'training_preferences', 'other', 'eye_condition',
+              'eye_condition_date', 'degree', 'prognosis', 'diabetes', 'dialysis', 'hearing_loss', 'mobility', 'stroke',
+              'seizure', 'heart', 'high_bp', 'neuropathy', 'pain', 'asthma', 'cancer', 'allergies', 'mental_health',
+              'substance_abuse', 'memory_loss', 'learning_disability', 'other_medical', 'medications', 'medical_notes', 'hired']
+    template_name_suffix = '_edit'
+
+
+class IntakeNoteUpdateView(LoginRequiredMixin, UpdateView):
+    model = IntakeNote
+    fields = ['note']
+    template_name_suffix = '_edit'
+
+
+class EmergencyContactUpdateView(LoginRequiredMixin, UpdateView):
+    model = EmergencyContact
+    fields = ['name', 'emergency_address_one', 'emergency_address_two', 'emergency_city', 'emergency_state', 'emergency_zip_code',
+              'emergency_country', 'phone_day', 'phone_other', 'emergency_notes']
+    template_name_suffix = '_edit'

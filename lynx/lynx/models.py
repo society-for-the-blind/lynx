@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth import get_user_model
 from django.conf import settings
+from django.urls import reverse
 
 from datetime import datetime
 
@@ -91,6 +92,9 @@ class Contact(models.Model):
     donor = models.BooleanField(blank=True, default=False)
     deceased = models.BooleanField(blank=True, default=False)
     remove_mailing = models.BooleanField(blank=True, default=False)
+    active = models.BooleanField(blank=True, default=True)
+    sip_client = models.BooleanField(blank=True, default=False)
+    core_client = models.BooleanField(blank=True, default=False)
     contact_notes = models.TextField(blank=True, null=True)
     created = models.DateTimeField(auto_now_add=True, null=True)
     modified = models.DateTimeField(auto_now=True, null=True)
@@ -98,6 +102,9 @@ class Contact(models.Model):
 
     def __str__(self):
         return '%s %s' % (self.first_name, self.last_name)
+
+    def get_absolute_url(self):
+        return "/lynx/client/%i" % self.id
 
 
 class Email (models.Model):
@@ -111,6 +118,9 @@ class Email (models.Model):
     modified = models.DateTimeField(auto_now=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='contact_emails', null=True, blank=True, on_delete=models.SET(get_sentinel_user))
 
+    def get_absolute_url(self):
+        return "/lynx/client/%i" % self.contact_id
+
 
 class Phone (models.Model):
     PHONE_TYPES = (("Work", "Work"), ("Home", "Home"), ("Cell", "Cell"), ("Evening", "Evening"), ("Fax", "Fax"))
@@ -122,6 +132,9 @@ class Phone (models.Model):
     created = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET(get_sentinel_user))
+
+    def get_absolute_url(self):
+        return "/lynx/client/%i" % self.contact_id
 
 
 # Employee information. Contact information in Contact table, addresses in Address table.
@@ -155,6 +168,9 @@ class Address(models.Model):
 
     class Meta:
         verbose_name_plural = 'Addresses'
+
+    def get_absolute_url(self):
+        return "/lynx/client/%i" % self.contact_id
 
 
 class Billing(models.Model):
@@ -211,7 +227,7 @@ class Intake(models.Model):
     training_preferences = models.TextField(blank=True, null=True)
     other = models.TextField(blank=True, null=True)
     eye_condition = models.CharField(max_length=250, blank=True, null=True)
-    eye_condition_date = models.DateField(null=True)
+    eye_condition_date = models.DateField(null=True, blank=True)
     degree = models.CharField(max_length=250, blank=True, null=True)
     prognosis = models.CharField(max_length=250, blank=True, null=True)
     diabetes = models.BooleanField(blank=True, default=False)
@@ -232,12 +248,15 @@ class Intake(models.Model):
     memory_loss = models.BooleanField(blank=True, default=False)
     learning_disability = models.BooleanField(blank=True, default=False)
     other_medical = models.CharField(max_length=250, blank=True, null=True)
-    medications = models.CharField(max_length=250, blank=True, null=True)
+    medications = models.TextField(blank=True, null=True)
     medical_notes = models.TextField(blank=True, null=True)
     hired = models.BooleanField(blank=True, default=False)
     created = models.DateTimeField(auto_now_add=True, null=True)
     modified = models.DateTimeField(auto_now=True, null=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET(get_sentinel_user))
+
+    def get_absolute_url(self):
+        return "/lynx/client/%i" % self.contact_id
 
 
 class Referral(models.Model):
@@ -257,6 +276,9 @@ class IntakeNote(models.Model):
     modified = models.DateTimeField(auto_now=True, null=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET(get_sentinel_user))
 
+    def get_absolute_url(self):
+        return "/lynx/client/%i" % self.contact_id
+
 
 # Addresses for Contacts.
 class EmergencyContact(models.Model):
@@ -274,6 +296,9 @@ class EmergencyContact(models.Model):
     created = models.DateTimeField(auto_now_add=True, null=True)
     modified = models.DateTimeField(auto_now=True, null=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET(get_sentinel_user))
+
+    def get_absolute_url(self):
+        return "/lynx/client/%i" % self.contact_id
 
 
 class Authorization(models.Model):
@@ -361,3 +386,34 @@ class LessonNote(models.Model):
     created = models.DateTimeField(auto_now_add=True, null=True)
     modified = models.DateTimeField(auto_now=True, null=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET(get_sentinel_user))
+
+
+class SipNote(models.Model):
+    contact = models.ForeignKey('Contact', on_delete=models.CASCADE)
+    note = models.TextField(null=True)
+    note_date = models.DateField(blank=True, null=True)
+    vision_screening = models.BooleanField(blank=True, default=False)
+    treatment = models.BooleanField(blank=True, default=False)
+    at_devices = models.BooleanField(blank=True, default=False)
+    at_services = models.BooleanField(blank=True, default=False)
+    independent_living = models.BooleanField(blank=True, default=False)
+    orientation = models.BooleanField(blank=True, default=False)
+    communications = models.BooleanField(blank=True, default=False)
+    dls = models.BooleanField(blank=True, default=False)
+    support = models.BooleanField(blank=True, default=False)
+    advocacy = models.BooleanField(blank=True, default=False)
+    counseling = models.BooleanField(blank=True, default=False)
+    information = models.BooleanField(blank=True, default=False)
+    services = models.BooleanField(blank=True, default=False)
+    retreat = models.BooleanField(blank=True, default=False)
+    in_home = models.BooleanField(blank=True, default=False)
+    seminar = models.BooleanField(blank=True, default=False)
+    modesto = models.BooleanField(blank=True, default=False)
+    group = models.BooleanField(blank=True, default=False)
+    community = models.BooleanField(blank=True, default=False)
+    created = models.DateTimeField(auto_now_add=True, null=True)
+    modified = models.DateTimeField(auto_now=True, null=True)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET(get_sentinel_user))
+
+    def get_absolute_url(self):
+        return "/lynx/client/%i" % self.contact_id

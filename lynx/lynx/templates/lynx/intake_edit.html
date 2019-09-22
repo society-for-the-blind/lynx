@@ -1,10 +1,10 @@
 {% extends 'lynx/base.html' %}
 
+{% block title %}Edit Intake{% endblock %}
+
 {% block content %}
-<h1>Intake Page 2 (Client History)</h1>
-<br>
-<!--<input type="button" onclick="location.href='/lynx/client/{{ object.contact_id }}';" value="Return to {{ object.contact.first_name }} {{ object.contact.last_name }}'s Information " />-->
-<form method="post"> {% csrf_token %}
+  <form method="post" >
+    {% csrf_token %}
     {{ form.errors }}
     <h2>Intake Information</h2>
         <p><label for="id_intake_date">Intake Date:</label> {{ form.intake_date }}</p>
@@ -69,5 +69,5 @@
         <p><label for="id_training">Training: </label> {{ form.training }}</p>
         <p><label for="id_orientation">Orientation: </label> {{ form.orientation }}</p>
     <input type="submit" value="Submit">
-</form>
+  </form>
 {% endblock %}
