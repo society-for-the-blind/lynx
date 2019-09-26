@@ -19,7 +19,61 @@
 {% if object.student_plan %}<p class="tab"><strong>Student Plan Required:</strong> {{ object.student_plan }}</p>{% endif %}
 {% if object.notes %}<p class="tab"><strong>Notes:</strong> {{ object.notes }}</p>{% endif %}
 <p class="tab">Created by {{ user.first_name }} {{ user.last_name }} on {{ object.created }}</p>
-
+<br>
+<h2>Lesson Notes</h2>
+    <table class="table">
+        <tr>
+            <th>Lesson Date</th>
+            <th>Attendance</th>
+            <th>Billed Units</th>
+            <th>Instructional Units</th>
+            <th>Obstacles</th>
+            <th>Successes</th>
+            <th>Recommendations</th>
+            <th>Other</th>
+            <th>Instructor</th>
+        </tr>
+        {% for note in note_list %}
+            <tr>
+                <td><a href='/lynx/lesson-note/{{ note.id }}/'>{{ note.date|date:"F d, Y" }}</a></td>
+                <td>{{ note.attendance }}</td>
+                <td>{{ note.billed_units }}</td>
+                <td>{{ note.instructional_units }}</td>
+                <td>{{ note.obstacles }}</td>
+                <td>{{ note.successes }}</td>
+                <td>{{ note.recommendations }}</td>
+                <td>{{ note.note }}</td>
+                <td>{{ note.user.first_name }} {{ note.user.last_name }}</td>
+            </tr>
+        {% endfor %}
+        <tr>
+                <td></td>
+                <td>{{ total_present }}/{{ total_notes }}</td>
+                <td>${{ total_billed }}</td>
+                <td>{{ total_instruction }}</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+        </tr>
+    </table>
+<input type="button" onclick="location.href='/lynx/add-lesson-note/{{ object.id }}/';" value="Add Lesson Note" />
+<br><br>
+<h2>Progress Reports</h2>
+{% for report in report_list %}
+    <h3 class="tab">{{ report.month }} by {{ report.instructor }}</h3>
+    <p class="tab"><strong>Accomplishments:</strong> {{ report.accomplishments }}</p>
+    <p class="tab"><strong>Remaining Objectives:</strong> {{ report.remaining_objectives }}</p>
+    <p class="tab"><strong>Estimated Hours:</strong> {{ report.estimated_hours }}</p>
+    <p class="tab"><strong>Client Behavior:</strong> {{ report.client_behavior }}</p>
+    <p class="tab"><strong>Notes:</strong> {{ report.notes }}</p>
+    <p class="tab">Entered by {{ report.user.first_name }} {{ report.user.last_name }} on {{ report.created }}</p>
+{% empty %}
+    <p class="tab">Sorry, no progress reports for this authorization.</p>
+{% endfor %}
+<input type="button" onclick="location.href='/lynx/add-progress-report/{{ object.id }}/';" value="Add Progress Report" />
+<br><br>
 <h2>Billing Information</h2>
     <table class="table">
         <tr>
@@ -39,33 +93,7 @@
             </tr>
         {% endfor %}
     </table>
-<p class="tab"><strong>Total Billed:</strong> {{ total_billed }}</p>
+<p class="tab"><strong>Total Billed:</strong> ${{ total_billed }}</p>
 <p class="tab"><strong>Remaining Units:</strong> {{ remaining_units }}</p>
-
-<h2>Progress Reports</h2>
-{% for report in report_list %}
-    <h3 class="tab">{{ report.month }} by {{ report.instructor }}</h3>
-    <p class="tab"><strong>Accomplishments:</strong> {{ report.accomplishments }}</p>
-    <p class="tab"><strong>Remaining Objectives:</strong> {{ report.remaining_objectives }}</p>
-    <p class="tab"><strong>Estimated Hours:</strong> {{ report.estimated_hours }}</p>
-    <p class="tab"><strong>Client Behavior:</strong> {{ report.client_behavior }}</p>
-    <p class="tab"><strong>Notes:</strong> {{ report.notes }}</p>
-    <p class="tab">Entered by {{ report.user.first_name }} {{ report.user.last_name }} on {{ report.created }}</p>
-{% empty %}
-    <p class="tab">Sorry, no progress reports for this authorization.</p>
-{% endfor %}
-<input type="button" onclick="location.href='/lynx/add-progress-report/{{ object.id }}/';" value="Add Progress Report" />
-
-
-<h2>Lesson Notes</h2>
-{% for note in note_list %}
-    <h3 class="tab"><a href='/lynx/lesson-note/{{ note.id }}'>{{ note.date|date:"F d, Y" }}</a></h3>
-    <p class="tab"><strong>Attendance:</strong> {{ note.attendance }}</p>
-    <p class="tab"><strong>Successes and accomplishments:</strong> {{ note.successes }}</p>
-    <p class="tab"><strong>Obstacles and barriers to current learning:</strong> {{ note.obstacles }}</p>
-    <p class="tab"><strong>Instructor:</strong> {{ note.user.first_name }} {{ note.user.last_name }}</p>
-{% endfor %}
-<input type="button" onclick="location.href='/lynx/add-lesson-note/{{ object.id }}/';" value="Add Lesson Note" />
-
 
 {% endblock %}

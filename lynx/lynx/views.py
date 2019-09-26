@@ -23,6 +23,12 @@ def index(request):
 
 
 @login_required
+def client_list_view(request):
+    clients = Contact.objects.all().order_by('last_name', 'first_name')
+    return render(request, 'lynx/contact_list.html', {'clients': clients})
+
+
+@login_required
 def add_contact(request):
     form = ContactForm()
     address_form = AddressForm()
@@ -107,51 +113,6 @@ def add_sip_note(request, contact_id):
     return render(request, 'lynx/add_sip_note.html', {'form': form})
 
 
-@login_required
-def client_list_view(request):
-    clients = Contact.objects.all().order_by('last_name', 'first_name')
-    return render(request, 'lynx/contact_list.html', {'clients': clients})
-
-
-class ContactListView(LoginRequiredMixin, ListView):
-
-    model = Contact
-    paginate_by = 100  # if contact_id
-    # pagination is desired
-
-    ordering = ['last_name', 'first_name']
-
-
-class ContactDetailView(LoginRequiredMixin, DetailView):
-
-    model = Contact
-
-    def get_context_data(self, **kwargs):
-        # Call the base implementation first to get a context
-        context = super(ContactDetailView, self).get_context_data(**kwargs)
-        context['address_list'] = Address.objects.filter(contact_id=self.kwargs['pk'])
-        context['phone_list'] = Phone.objects.filter(contact_id=self.kwargs['pk'])
-        context['email_list'] = Email.objects.filter(contact_id=self.kwargs['pk'])
-        context['intake_list'] = Intake.objects.filter(contact_id=self.kwargs['pk'])
-        context['authorization_list'] = Authorization.objects.filter(contact_id=self.kwargs['pk'])
-        context['note_list'] = IntakeNote.objects.filter(contact_id=self.kwargs['pk']).order_by('-created')
-        context['sip_list'] = SipNote.objects.filter(contact_id=self.kwargs['pk']).order_by('-created')
-        context['emergency_list'] = EmergencyContact.objects.filter(contact_id=self.kwargs['pk'])
-        context['form'] = IntakeNoteForm
-        return context
-
-    def post(self, request, *args, **kwargs):
-        form = IntakeNoteForm(request.POST, request.FILES)
-        if form.is_valid():
-            form = form.save(commit=False)
-            form.contact_id = self.kwargs['pk']
-            form.user_id = request.user.id
-            form.save()
-            # form.user.add(*[request.user])
-            action = "/lynx/client/" + str(self.kwargs['pk'])
-            return HttpResponseRedirect(action)
-
-
 
 @login_required
 def add_emergency(request, contact_id):
@@ -223,6 +184,79 @@ def add_authorization(request, contact_id):
     return render(request, 'lynx/add_authorization.html', {'form': form})
 
 
+@login_required
+def add_progress_report(request, authorization_id):
+    form = ProgressReportForm()
+    if request.method == 'POST':
+        form = ProgressReportForm(request.POST)
+        if form.is_valid():
+            form = form.save(commit=False)
+            form.authorization_id = authorization_id
+            form.user_id = request.user.id
+            form.save()
+            return HttpResponseRedirect(reverse('lynx:authorization_detail',  args=(authorization_id,)))
+    return render(request, 'lynx/add_progress_report.html', {'form': form})
+
+@login_required
+def add_lesson_note(request, authorization_id):
+    form = LessonNoteForm()
+    auth = Authorization.objects.get(id=authorization_id)
+    client = Contact.objects.get(id=auth.contact_id)
+    if auth['authorization_type'] == 'Hours':
+        auth_type = 'individual'
+    else:
+        auth_type = 'group'
+    if request.method == 'POST':
+        form = LessonNoteForm(request.POST)
+        if form.is_valid():
+            form = form.save(commit=False)
+            form.authorization_id = authorization_id
+            form.user_id = request.user.id
+            form.save()
+            return HttpResponseRedirect(reverse('lynx:authorization_detail',  args=(authorization_id,)))
+    return render(request, 'lynx/add_lesson_note.html', {'form': form, 'client': client, 'auth_type': auth_type})
+
+
+class ContactListView(LoginRequiredMixin, ListView):
+
+    model = Contact
+    paginate_by = 100  # if contact_id
+    # pagination is desired
+
+    ordering = ['last_name', 'first_name']
+
+
+class ContactDetailView(LoginRequiredMixin, DetailView):
+
+    model = Contact
+
+    def get_context_data(self, **kwargs):
+        # Call the base implementation first to get a context
+        context = super(ContactDetailView, self).get_context_data(**kwargs)
+        context['address_list'] = Address.objects.filter(contact_id=self.kwargs['pk'])
+        context['phone_list'] = Phone.objects.filter(contact_id=self.kwargs['pk'])
+        context['email_list'] = Email.objects.filter(contact_id=self.kwargs['pk'])
+        context['intake_list'] = Intake.objects.filter(contact_id=self.kwargs['pk'])
+        context['authorization_list'] = Authorization.objects.filter(contact_id=self.kwargs['pk'])
+        context['note_list'] = IntakeNote.objects.filter(contact_id=self.kwargs['pk']).order_by('-created')
+        context['sip_list'] = SipNote.objects.filter(contact_id=self.kwargs['pk']).order_by('-created')
+        context['emergency_list'] = EmergencyContact.objects.filter(contact_id=self.kwargs['pk'])
+        context['form'] = IntakeNoteForm
+        return context
+
+    def post(self, request, *args, **kwargs):
+        form = IntakeNoteForm(request.POST, request.FILES)
+        if form.is_valid():
+            form = form.save(commit=False)
+            form.contact_id = self.kwargs['pk']
+            form.user_id = request.user.id
+            form.save()
+            # form.user.add(*[request.user])
+            action = "/lynx/client/" + str(self.kwargs['pk'])
+            return HttpResponseRedirect(action)
+
+
+
 class AuthorizationDetailView(LoginRequiredMixin, DetailView):
 
     model = Authorization
@@ -235,12 +269,29 @@ class AuthorizationDetailView(LoginRequiredMixin, DetailView):
         notes = LessonNote.objects.filter(authorization_id=self.kwargs['pk']).values()
         auth = Authorization.objects.filter(id=self.kwargs['pk']).values()
         total_units = 0
+        total_notes = 0
+        total_present = 0
+        total_instruction = 0
         for note in notes:
-            units = float(note['billed_units'])
-            total_units += units
+            total_notes += 1
+            if note['attendance'] == 'Present':
+                total_present += 1
+            if note['billed_units']:
+                if auth['authorization_type'] == 'Classes':
+                    units = float(note['billed_units']/8)
+                if auth['authorization_type'] == 'Hours':
+                    units = float(note['billed_units'])
+                total_units += units
+            if note['instructional_units']:
+                i_units = float(note['instructional_units'])
+                total_instruction += i_units
+
         context['total_billed'] = total_units * float(auth[0]['billing_rate'])
         context['remaining_units'] = float(auth[0]['total_time']) - total_units
         context['total_units'] = total_units
+        context['total_notes'] = total_notes
+        context['total_present'] = total_present
+        context['total_instruction'] = total_present
         context['form'] = LessonNoteForm
         return context
 
@@ -255,20 +306,6 @@ class AuthorizationDetailView(LoginRequiredMixin, DetailView):
             return HttpResponseRedirect(action)
 
 
-@login_required
-def add_progress_report(request, authorization_id):
-    form = ProgressReportForm()
-    if request.method == 'POST':
-        form = ProgressReportForm(request.POST)
-        if form.is_valid():
-            form = form.save(commit=False)
-            form.authorization_id = authorization_id
-            form.user_id = request.user.id
-            form.save()
-            return HttpResponseRedirect(reverse('lynx:authorization_detail',  args=(authorization_id,)))
-    return render(request, 'lynx/add_progress_report.html', {'form': form})
-
-
 class ProgressReportDetailView(LoginRequiredMixin, DetailView):
 
     model = ProgressReport
@@ -279,22 +316,6 @@ class ProgressReportDetailView(LoginRequiredMixin, DetailView):
         return context
 
 
-@login_required
-def add_lesson_note(request, authorization_id):
-    form = LessonNoteForm()
-    auth = Authorization.objects.get(id=authorization_id)
-    client = Contact.objects.get(id=auth.contact_id)
-    if request.method == 'POST':
-        form = LessonNoteForm(request.POST)
-        if form.is_valid():
-            form = form.save(commit=False)
-            form.authorization_id = authorization_id
-            form.user_id = request.user.id
-            form.save()
-            return HttpResponseRedirect(reverse('lynx:authorization_detail',  args=(authorization_id,)))
-    return render(request, 'lynx/add_lesson_note.html', {'form': form, 'client': client})
-
-
 class LessonNoteDetailView(LoginRequiredMixin, DetailView):
 
     model = LessonNote
@@ -302,7 +323,7 @@ class LessonNoteDetailView(LoginRequiredMixin, DetailView):
 
 class ClientUpdateView(LoginRequiredMixin, UpdateView):
     model = Contact
-    fields = ['first_name', 'middle_name', 'last_name', 'company', 'do_not_contact', 'donor', 'deceased', 'remove_mailing', 'active', 'contact_notes']
+    fields = ['first_name', 'middle_name', 'last_name', 'company', 'do_not_contact', 'donor', 'deceased', 'remove_mailing', 'active', 'contact_notes', 'sip_client', 'core_client']
     template_name_suffix = '_edit'
 
 
