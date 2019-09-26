@@ -200,9 +200,9 @@ def add_progress_report(request, authorization_id):
 @login_required
 def add_lesson_note(request, authorization_id):
     form = LessonNoteForm()
-    auth = Authorization.objects.get(id=authorization_id)
-    client = Contact.objects.get(id=auth.contact_id)
-    if auth['authorization_type'] == 'Hours':
+    authorization = Authorization.objects.get(id=authorization_id)
+    client = Contact.objects.get(id=authorization.contact_id)
+    if authorization.authorization_type == 'Hours':
         auth_type = 'individual'
     else:
         auth_type = 'group'
@@ -267,7 +267,7 @@ class AuthorizationDetailView(LoginRequiredMixin, DetailView):
         context['report_list'] = ProgressReport.objects.filter(authorization_id=self.kwargs['pk'])
         context['note_list'] = LessonNote.objects.filter(authorization_id=self.kwargs['pk']).order_by('-created')
         notes = LessonNote.objects.filter(authorization_id=self.kwargs['pk']).values()
-        auth = Authorization.objects.filter(id=self.kwargs['pk']).values()
+        authorization = Authorization.objects.filter(id=self.kwargs['pk']).values()
         total_units = 0
         total_notes = 0
         total_present = 0
@@ -277,17 +277,17 @@ class AuthorizationDetailView(LoginRequiredMixin, DetailView):
             if note['attendance'] == 'Present':
                 total_present += 1
             if note['billed_units']:
-                if auth['authorization_type'] == 'Classes':
-                    units = float(note['billed_units']/8)
-                if auth['authorization_type'] == 'Hours':
-                    units = float(note['billed_units'])
+                # if authorization['authorization_type'] == 'Classes':
+                #     units = float(note['billed_units']/8)
+                # if authorization['authorization_type'] == 'Hours':
+                units = float(note['billed_units'])
                 total_units += units
             if note['instructional_units']:
                 i_units = float(note['instructional_units'])
                 total_instruction += i_units
 
-        context['total_billed'] = total_units * float(auth[0]['billing_rate'])
-        context['remaining_units'] = float(auth[0]['total_time']) - total_units
+        context['total_billed'] = total_units * float(authorization[0]['billing_rate'])
+        context['remaining_units'] = float(authorization[0]['total_time']) - total_units
         context['total_units'] = total_units
         context['total_notes'] = total_notes
         context['total_present'] = total_present
