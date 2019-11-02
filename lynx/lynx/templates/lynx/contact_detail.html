@@ -11,7 +11,7 @@
 <p class="tab"><a href="/lynx/contact-edit/{{ object.id }}">Edit Client Information</a></p>
 
 {% for address in address_list %}
-    {% if not address.bad_address %}
+    {% if not address.bad_address and address.address_one %}
         <p class="tab">
             <strong>Address:</strong><br>
             {{ address.address_one }}<br>
@@ -23,6 +23,7 @@
         </p>
         {% if address.region %}<p class="tab"><strong>Region:</strong> {{ address.region }}</p>{% endif %}
         {% if address.cross_streets %}<p class="tab"><strong>Cross Streets:</strong> {{ address.cross_streets }}</p>{% endif %}
+        {% if address.preferred_medium %}<p class="tab"><strong>Preferred Mailing Medium:</strong> {{ address.preferred_medium }}</p>{% endif %}
         {% if address.address_notes %}<p class="tab"><strong>Notes:</strong> {{ address.address_notes }}</p>{% endif %}
     {% endif %}
 {% empty %}
@@ -57,32 +58,53 @@
 <h2>Intake Information</h2>
 {% for intake in intake_list %}
     <p class="tab"><strong>Intake Date:</strong> <a href="/lynx/intake-edit/{{ intake.id }}">(Edit)</a></p>
-    {% if intake.intake_date %}<p class="tab"><strong>Intake Date:</strong> {{ intake.intake_date }}</p>{% endif %}
-    {% if intake.intake_type %}<p class="tab"><strong>Intake Type:</strong> {{ intake.intake_type }}</p>{% endif %}
+<!--    {% if intake.intake_date %}<p class="tab"><strong>Intake Date:</strong> {{ intake.intake_date }}</p>{% endif %}-->
+<!--    {% if intake.intake_type %}<p class="tab"><strong>Intake Type:</strong> {{ intake.intake_type }}</p>{% endif %}-->
     <h3>Demographics</h3>
         {% if intake.gender %}<p class="tab"><strong>Gender:</strong> {{ intake.gender }}</p>{% endif %}
         {% if intake.pronouns %}<p class="tab"><strong>Pronouns:</strong> {{ intake.pronouns }}</p>{% endif %}
         {% if intake.birth_date %}<p class="tab"><strong>Birth Date:</strong> {{ intake.birth_date }}</p>{% endif %}
-        {% if intake.ssn %}<p class="tab"><strong>SSN:</strong> {{ intake.ssn }}</p>{% endif %}
-        {% if intake.ethnicity %}<p class="tab"><strong>Ethnicity:</strong> {{ intake.ethnicity }}</p>{% endif %}
-        {% if intake.other_ethnicity %}<p class="tab"><strong>Ethnicity (Other):</strong> {{ intake.other_ethnicity }}</p>{% endif %}
+        {% if intake.ethnicity %}<p class="tab"><strong>Ethnicity:</strong> {{ intake.ethnicity }}{% if intake.other_ethnicity %}, {{ intake.other_ethnicity }}{% endif %}</p>{% endif %}
         {% if intake.income %}<p class="tab"><strong>Income:</strong> {{ intake.income }}</p>{% endif %}
         {% if intake.first_language %}<p class="tab"><strong>First Language:</strong> {{ intake.first_language }}</p>{% endif %}
         {% if intake.second_language %}<p class="tab"><strong>Second Language:</strong> {{ intake.second_language }}</p>{% endif %}
         {% if intake.other_languages %}<p class="tab"><strong>Other Languages:</strong> {{ intake.other_languages }}</p>{% endif %}
         {% if intake.education %}<p class="tab"><strong>Education:</strong> {{ intake.education }}</p>{% endif %}
+        {% if intake.work_history %}<p class="tab"><strong>Work History:</strong> {{ intake.work_history }}</p>{% endif %}
         {% if intake.living_arrangement %}<p class="tab"><strong>Living Arrangements:</strong> {{ intake.living_arrangement }}</p>{% endif %}
         {% if intake.residence_type %}<p class="tab"><strong>Residence Types:</strong> {{ intake.residence_type }}</p>{% endif %}
-        {% if intake.preferred_medium %}<p class="tab"><strong>Preferred Mailing Medium:</strong> {{ intake.preferred_medium }}</p>{% endif %}
         {% if intake.performs_tasks %}<p class="tab"><strong>Performs Tasks:</strong> {{ intake.performs_tasks }}</p>{% endif %}
         {% if intake.notes %}<p class="tab"><strong>Notes:</strong> {{ intake.notes }}</p>{% endif %}
-        {% if intake.training %}<p class="tab"><strong>Training History:</strong> {{ intake.training }}</p>{% endif %}
-        {% if intake.orientation %}<p class="tab"><strong>Orientation Training:</strong> {{ intake.orientation }}</p>{% endif %}
-        {% if intake.confidentiality %}<p class="tab"><strong>Confidentiality:</strong> {{ intake.confidentiality }}</p>{% endif %}
-        {% if intake.dmv %}<p class="tab"><strong>DMV:</strong> {{ intake.dmv }}</p>{% endif %}
-        {% if intake.work_history %}<p class="tab"><strong>Work History:</strong> {{ intake.work_history }}</p>{% endif %}
         {% if intake.veteran %}<p class="tab"><strong>Veteran:</strong> {{ intake.veteran }}</p>{% endif %}
-        {% if intake.member_name %}<p class="tab"><strong>Member Name:</strong> {{ intake.member_name }}</p>{% endif %}
+    <h3>Ocular Medical History</h3>
+        {% if intake.eye_condition %}<p class="tab"><strong>Eye Condition:</strong> {{ intake.eye_condition }} ({{ intake.eye_condition_date }})</p>{% endif %}
+        {% if intake.degree %}<p class="tab"><strong>Degree:</strong> {{ intake.degree }}</p>{% endif %}
+        {% if intake.prognosis %}<p class="tab"><strong>Prognosis:</strong> {{ intake.prognosis }}</p>{% endif %}
+    <h3>Other Medical History</h3>
+        <p class="tab">
+            {% if intake.diabetes %}Diabetes, {% endif %}
+            {% if intake.dialysis %}Dialysis, {% endif %}
+            {% if intake.hearing_loss %}Hearing Loss, {% endif %}
+            {% if intake.mobility %}Mobility, {% endif %}
+            {% if intake.stroke %}Stroke, {% endif %}
+            {% if intake.seizure %}Seizure, {% endif %}
+            {% if intake.alzheimers %}Alzheimer’s Disease/Cognitive Impairment, {% endif %}
+            {% if intake.musculoskeletal %}Musculoskeletal Disorders, {% endif %}
+            {% if intake.heart %}Cardiovascular Disease, {% endif %}
+            {% if intake.high_bp %}High BP, {% endif %}
+            {% if intake.neuropathy %}Neuropathy, {% endif %}
+            {% if intake.pain %}Pain, {% endif %}
+            {% if intake.asthma %}Asthma, {% endif %}
+            {% if intake.cancer %}Cancer, {% endif %}
+            {% if intake.substance_abuse %}Substance Abuse, {% endif %}
+            {% if intake.memory_loss %}Memory Loss, {% endif %}
+            {% if intake.learning_disability %}Learning Disability{% endif %}
+        </p>
+        {% if intake.allergies %}<p class="tab"><strong>Allergies:</strong> {{ intake.allergies }}</p>{% endif %}
+        {% if intake.mental_health %}<p class="tab"><strong>Mental Health:</strong> {{ intake.mental_health }}</p>{% endif %}
+        {% if intake.medications %}<p class="tab"><strong>Medications:</strong> {{ intake.medications }}</p>{% endif %}
+        {% if intake.other %}<p class="tab"><strong>Other:</strong> {{ intake.other }}</p>{% endif %}
+        {% if intake.notes %}<p class="tab"><strong>Medical Notes:</strong> {{ intake.notes }}</p>{% endif %}
     <h3>Criminal Background</h3>
         {% if intake.crime %}<p class="tab"><strong>Criminal History:</strong> {{ intake.crime }}</p>{% endif %}
         {% if intake.crime_info %}<p class="tab"><strong>Criminal History Information:</strong> {{ intake.crime_info }}</p>{% endif %}
@@ -94,41 +116,14 @@
         {% if intake.previous_training %}<p class="tab"><strong>Previous Training:</strong> {{ intake.previous_training }}</p>{% endif %}
         {% if intake.training_goals %}<p class="tab"><strong>Training Goals:</strong> {{ intake.training_goals }}</p>{% endif %}
         {% if intake.training_preferences %}<p class="tab"><strong>Training Preferences:</strong> {{ intake.training_preferences }}</p>{% endif %}
+        {% if intake.employment_goals %}<p class="tab"><strong>Employment Goals:</strong> {{ intake.employment_goals }}</p>{% endif %}
+        {% if intake.hired %}<p class="tab"><strong>Has been hired since training</strong></p>{% endif %}
+        {% if intake.hobbies %}<p class="tab"><strong>Hobbies/Interests:</strong> {{ intake.hobbies }}</p>{% endif %}
         {% if intake.other %}<p class="tab"><strong>Other Notes:</strong> {{ intake.other }}</p>{% endif %}
 {% empty %}
     <p class="tab">Sorry, no intake information for this client</p>
-    <input type="button" onclick="location.href='/lynx/add-intake/{{ object.id }}/';" value="Add Intake Information" />
 {% endfor %}
-
-<h2>Medical Information</h2>
-{% for medical in intake_list %}
-    <h3>Ocular Medical History</h3>
-    {% if medical.eye_condition %}<p class="tab"><strong>Eye Condition:</strong> {{ medical.eye_condition }} ({{ medical.eye_condition_date }}})</p>{% endif %}
-    {% if medical.degree %}<p class="tab"><strong>Degree:</strong> {{ medical.degree }}</p>{% endif %}
-    {% if medical.prognosis %}<p class="tab"><strong>Prognosis:</strong> {{ medical.prognosis }}</p>{% endif %}
-    <h3>Other Medical History</h3>
-    {% if medical.diabetes %}<p class="tab"><strong>Diabetes:</strong> {{ medical.diabetes }}</p>{% endif %}
-    {% if medical.dialysis %}<p class="tab"><strong>Dialysis:</strong> {{ medical.dialysis }}</p>{% endif %}
-    {% if medical.hearing_loss %}<p class="tab"><strong>Hearing Loss:</strong> {{ medical.hearing_loss }}</p>{% endif %}
-    {% if medical.mobility %}<p class="tab"><strong>Mobility:</strong> {{ medical.mobility }}</p>{% endif %}
-    {% if medical.stroke %}<p class="tab"><strong>Stroke:</strong> {{ medical.stroke }}</p>{% endif %}
-    {% if medical.seizure %}<p class="tab"><strong>Seizure:</strong> {{ medical.seizure }}</p>{% endif %}
-    {% if medical.heart %}<p class="tab"><strong>Heart Health:</strong> {{ medical.heart }}</p>{% endif %}
-    {% if medical.high_bp %}<p class="tab"><strong>High BP:</strong> {{ medical.high_bp }}</p>{% endif %}
-    {% if medical.neuropathy %}<p class="tab"><strong>Neuropathy:</strong> {{ medical.neuropathy }}</p>{% endif %}
-    {% if medical.pain %}<p class="tab"><strong>Pain:</strong> {{ medical.pain }}</p>{% endif %}
-    {% if medical.asthma %}<p class="tab"><strong>Asthma:</strong> {{ medical.asthma }}</p>{% endif %}
-    {% if medical.cancer %}<p class="tab"><strong>Cancer:</strong> {{ medical.cancer }}</p>{% endif %}
-    {% if medical.allergies %}<p class="tab"><strong>Mental Health:</strong> {{ medical.mental_health }}</p>{% endif %}
-    {% if medical.substance_abuse %}<p class="tab"><strong>Substance Abuse:</strong> {{ medical.substance_abuse }}</p>{% endif %}
-    {% if medical.memory_loss %}<p class="tab"><strong>Memory Loss:</strong> {{ medical.memory_loss }}</p>{% endif %}
-    {% if medical.learning_disability %}<p class="tab"><strong>Learning Disability:</strong> {{ medical.learning_disability }}</p>{% endif %}
-    {% if medical.medications %}<p class="tab"><strong>Medications:</strong> {{ medical.medications }}</p>{% endif %}
-    {% if medical.other %}<p class="tab"><strong>Other:</strong> {{ medical.other }}</p>{% endif %}
-    {% if medical.notes %}<p class="tab"><strong>Medical Notes:</strong> {{ medical.notes }}</p>{% endif %}
-{% empty %}
-    <p class="tab">Sorry, no medical information for this client</p>
-{% endfor %}
+<input type="button" onclick="location.href='/lynx/add-intake/{{ object.id }}/';" value="Add Intake Information" />
 
 <!--<h2>Referral Information</h2>-->
 <!--{% for referral in referral_list %}-->

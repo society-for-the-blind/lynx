@@ -2,8 +2,10 @@ from django.db import models
 from django.contrib.auth import get_user_model
 from django.conf import settings
 from django.urls import reverse
+from django.utils.timezone import now
 
-from datetime import datetime
+from datetime import datetime, date
+
 
 STATES = (("Alabama", "Alabama"), ("Alaska", "Alaska"), ("Arizona", "Arizona"), ("Arkansas", "Arkansas"),
           ("California", "California"), ("Colorado", "Colorado"), ("Connecticut", "Connecticut"),
@@ -77,6 +79,15 @@ EDUCATION = (("None", "None"), ("GED", "GED"), ("High School", "High School"), (
 PRONOUNS = (("He/Him", "He/Him"), ("She/Her", "She/Her"), ("They/Them", "They/Them"), ("Ve/Ver", "Ve/Ver"),
             ("Xe/Xim", "Xe/Xim"), ("Ze/Hir", "Ze/Hir"), ("Other (in notes)", "Other (in notes)"))
 
+UNITS = (("1", "15 Minutes"), ("2", "30 Minutes"), ("3", "45 Minutes"), ("4", "1 Hour"), ("5", "1 Hour 15 Minutes"),
+         ("6", "1 Hour 30 Minutes"), ("7", "1 Hour 45 Minutes"), ("8", "2 Hours"), ("9", "2 Hours 15 Minutes"),
+         ("10", "2 Hours 30 Minutes"), ("11", "2 Hours 45 Minutes"), ("12", "3 Hours"), ("13", "3 Hours 15 Minutes"),
+         ("14", "3 Hours 30 Minutes"), ("15", "3 Hours 45 Minutes"), ("16", "4 Hours"), ("17", "4 Hours 15 Minutes"),
+         ("18", "4 Hours 30 Minutes"), ("19", "4 Hours 45 Minutes"), ("20", "5 Hours"), ("21", "5 Hours 15 Minutes"),
+         ("22", "5 Hours 30 Minutes"), ("23", "5 Hours 45 Minutes"), ("24", "6 Hours"), ("25", "6 Hours 15 Minutes"),
+         ("26", "6 Hours 30 Minutes"), ("27", "6 Hours 45 Minutes"), ("28", "7 Hours"), ("29", "7 Hours 15 Minutes"),
+         ("30", "7 Hours 30 Minutes"), ("31", "7 Hours 45 Minutes"), ("32", "8 Hours"))
+
 
 def get_sentinel_user():
     return get_user_model().objects.get_or_create(username='deleted')[0]
@@ -95,6 +106,11 @@ class Contact(models.Model):
     active = models.BooleanField(blank=True, default=True)
     sip_client = models.BooleanField(blank=True, default=False)
     core_client = models.BooleanField(blank=True, default=False)
+    careers_plus = models.BooleanField(blank=True, default=False)
+    careers_plus_youth = models.BooleanField(blank=True, default=False)
+    volunteer = models.BooleanField(blank=True, default=False)
+    access_news = models.BooleanField(blank=True, default=False)
+    other_services = models.BooleanField(blank=True, default=False)
     contact_notes = models.TextField(blank=True, null=True)
     created = models.DateTimeField(auto_now_add=True, null=True)
     modified = models.DateTimeField(auto_now=True, null=True)
@@ -161,6 +177,7 @@ class Address(models.Model):
     cross_streets = models.CharField(max_length=150, blank=True, null=True)
     bad_address = models.BooleanField(blank=True, default=False)
     billing = models.BooleanField(blank=True, default=False)  # Only applies to employees
+    preferred_medium = models.CharField(max_length=150, blank=True, choices=MAILINGS, null=True)
     address_notes = models.TextField(blank=True, null=True)
     created = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)
@@ -183,13 +200,25 @@ class Billing(models.Model):
 
 # Intake questionnaire
 class Intake(models.Model):
-    INCOMES = (("<$25,000", "<$25,000"), ("$25,001-$50,000", "$25,001-$50,000"),
+    INCOMES = (("<$12,500", "<$12,500"), ("$12,500-$25,000", "$12,500-$25,000"), ("$25,001-$50,000", "$25,001-$50,000"),
                ("$50,001-$75,000", "$50,001-$75,000"), ("$75,001-$100,000", "$75,001-$100,000"),
                ("$100,001-$125,000", "$100,001-$125,000"), ("$125,001-$1150,000", "$125,001-$150,000"),
                (">$150,000", ">$150,000"))
 
+    LIVING = (("Live Alone", "Live Alone"), ("Live With Spouse", "Live With Spouse"),
+              ("Live With Other", "Live With Other"), ("Homeless", "Homeless"))
+
+    RESIDENCE = (("Private Residence", "Private Residence"), ("Community Residential", "Community Residential"),
+                 ("Assisted Living", "Assisted Living"), ("Skilled Nursing Care", "Skilled Nursing Care"),
+                 ("Homeless", "Homeless"))
+
+    PROGNOSIS = (("Stable", "Stable"), ("Diminishing", "Diminishing"))
+
+    DEGREE = (("Totally Blind (NP or NLP)", "Totally Blind (NP or NLP)"), ("Legally Blind", "Legally Blind"),
+              ("Severe Visual Impairment", "Severe Visual Impairment"), ("Low Vision", "Low Vision"))
+
     contact = models.ForeignKey('Contact', on_delete=models.CASCADE)
-    intake_date = models.DateField(blank=True, null=True)
+    intake_date = models.DateField(default=date.today)
     intake_type = models.CharField(max_length=150, blank=True, null=True)
     age_group = models.CharField(max_length=150, blank=True, null=True)
     gender = models.CharField(max_length=50, blank=True, choices=GENDERS, null=True)
@@ -203,9 +232,8 @@ class Intake(models.Model):
     second_language = models.CharField(max_length=50, blank=True, choices=LANGUAGES, null=True)
     other_languages = models.CharField(max_length=150, blank=True, null=True)
     education = models.CharField(max_length=150, blank=True, choices=EDUCATION, null=True)
-    living_arrangement = models.CharField(max_length=150, blank=True, null=True)
-    residence_type = models.CharField(max_length=150, blank=True, null=True)
-    preferred_medium = models.CharField(max_length=150, blank=True, choices=MAILINGS, null=True)
+    living_arrangement = models.CharField(max_length=150, blank=True, choices=LIVING, null=True)
+    residence_type = models.CharField(max_length=150, blank=True, choices=RESIDENCE, null=True)
     performs_tasks = models.CharField(max_length=150, blank=True, null=True)
     notes = models.TextField(blank=True, null=True)
     training = models.CharField(max_length=250, blank=True, null=True)
@@ -228,8 +256,8 @@ class Intake(models.Model):
     other = models.TextField(blank=True, null=True)
     eye_condition = models.CharField(max_length=250, blank=True, null=True)
     eye_condition_date = models.DateField(null=True, blank=True)
-    degree = models.CharField(max_length=250, blank=True, null=True)
-    prognosis = models.CharField(max_length=250, blank=True, null=True)
+    degree = models.CharField(max_length=250, blank=True, choices=DEGREE, null=True)
+    prognosis = models.CharField(max_length=250, blank=True, choices=PROGNOSIS, null=True)
     diabetes = models.BooleanField(blank=True, default=False)
     dialysis = models.BooleanField(blank=True, default=False)
     hearing_loss = models.BooleanField(blank=True, default=False)
@@ -237,11 +265,14 @@ class Intake(models.Model):
     stroke = models.BooleanField(blank=True, default=False)
     seizure = models.BooleanField(blank=True, default=False)
     heart = models.BooleanField(blank=True, default=False)
+    arthritis = models.BooleanField(blank=True, default=False)
     high_bp = models.BooleanField(blank=True, default=False)
     neuropathy = models.BooleanField(blank=True, default=False)
     pain = models.BooleanField(blank=True, default=False)
     asthma = models.BooleanField(blank=True, default=False)
     cancer = models.BooleanField(blank=True, default=False)
+    musculoskeletal = models.BooleanField(blank=True, default=False)
+    alzheimers = models.BooleanField(blank=True, default=False)
     allergies = models.CharField(max_length=250, blank=True, null=True)
     mental_health = models.CharField(max_length=250, blank=True, null=True)
     substance_abuse = models.BooleanField(blank=True, default=False)
@@ -250,6 +281,8 @@ class Intake(models.Model):
     other_medical = models.CharField(max_length=250, blank=True, null=True)
     medications = models.TextField(blank=True, null=True)
     medical_notes = models.TextField(blank=True, null=True)
+    hobbies = models.TextField(blank=True, null=True)
+    employment_goals = models.TextField(blank=True, null=True)
     hired = models.BooleanField(blank=True, default=False)
     created = models.DateTimeField(auto_now_add=True, null=True)
     modified = models.DateTimeField(auto_now=True, null=True)
@@ -263,7 +296,7 @@ class Referral(models.Model):
     intake = models.ForeignKey('Intake', on_delete=models.CASCADE)
     source = models.CharField(max_length=250, null=True)
     name = models.CharField(max_length=250, null=True)
-    referral_date = models.DateField(null=True)
+    referral_date = models.DateField(null=True, default=date.today)
     created = models.DateTimeField(null=True)
     modified = models.DateTimeField(auto_now=True, null=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET(get_sentinel_user))
@@ -306,10 +339,10 @@ class Authorization(models.Model):
     intake_service_area = models.ForeignKey('IntakeServiceArea', on_delete=models.CASCADE)
     authorization_number = models.CharField(max_length=150, blank=True, null=True)
     authorization_type = models.CharField(max_length=25, choices=(("Hours", "Hours"), ("Classes", "Classes")), blank=True, null=True)
-    start_date = models.DateField(blank=True, null=True)
-    end_date = models.DateField(blank=True, null=True)
+    start_date = models.DateField(blank=True, null=True, default=date.today)
+    end_date = models.DateField(blank=True, null=True, default=date.today)
     total_time = models.CharField(max_length=150, blank=True, null=True)
-    monthly_time = models.CharField(max_length=150, blank=True, null=True)
+    # monthly_time = models.CharField(max_length=150, blank=True, null=True)
     billing_name = models.ForeignKey('BillingName', on_delete=models.CASCADE)
     billing_rate = models.CharField(max_length=150, blank=True, null=True)
     outside_agency = models.ForeignKey('OutsideAgency', on_delete=models.CASCADE)
@@ -374,10 +407,10 @@ class ProgressReport(models.Model):
 
 class LessonNote(models.Model):
     authorization = models.ForeignKey('Authorization', on_delete=models.CASCADE)
-    date = models.DateTimeField(default=datetime.now, null=True)
+    date = models.DateField(default=date.today, null=True)
     attendance = models.CharField(max_length=150, blank=True, choices=(('Present', 'Present'), ('Absent', 'Absent')), null=True)
     instructional_units = models.CharField(max_length=15, blank=True, null=True)
-    billed_units = models.CharField(max_length=15, blank=True, null=True)
+    billed_units = models.CharField(max_length=50, blank=True, choices=UNITS, null=True)
     students_no = models.CharField(max_length=15, blank=True, null=True)
     successes = models.TextField(null=True, blank=True)
     obstacles = models.TextField(null=True, blank=True)
@@ -391,7 +424,7 @@ class LessonNote(models.Model):
 class SipNote(models.Model):
     contact = models.ForeignKey('Contact', on_delete=models.CASCADE)
     note = models.TextField(null=True)
-    note_date = models.DateField(blank=True, null=True)
+    note_date = models.DateField(blank=True, null=True, default=date.today)
     vision_screening = models.BooleanField(blank=True, default=False)
     treatment = models.BooleanField(blank=True, default=False)
     at_devices = models.BooleanField(blank=True, default=False)

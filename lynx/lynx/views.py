@@ -7,6 +7,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic.edit import UpdateView
 from django.urls import reverse_lazy
+from django.db.models import Q
 
 from .models import Contact, Address, Phone, Email, Intake, Referral, IntakeNote, EmergencyContact, Authorization, \
     ProgressReport, LessonNote, SipNote
@@ -24,7 +25,7 @@ def index(request):
 
 @login_required
 def client_list_view(request):
-    clients = Contact.objects.all().order_by('last_name', 'first_name')
+    clients = Contact.objects.filter(active=1).order_by('last_name', 'first_name')
     return render(request, 'lynx/contact_list.html', {'clients': clients})
 
 
@@ -216,14 +217,41 @@ def add_lesson_note(request, authorization_id):
             return HttpResponseRedirect(reverse('lynx:authorization_detail',  args=(authorization_id,)))
     return render(request, 'lynx/add_lesson_note.html', {'form': form, 'client': client, 'auth_type': auth_type})
 
+#
+# class ContactListView(LoginRequiredMixin, ListView):
+#
+#     model = Contact
+#     paginate_by = 100  # if contact_id
+#     # pagination is desired
+#
+#     ordering = ['last_name', 'first_name']
 
-class ContactListView(LoginRequiredMixin, ListView):
 
+@login_required
+def client_result_view(request):
+    query = request.GET.get('q')
+    if query:
+        object_list = Contact.objects.filter(
+            Q(first_name__icontains=query) | Q(last_name__icontains=query)
+        )
+    else:
+        object_list = None
+    return render(request, 'lynx/client_search.html', {'object_list': object_list})
+
+
+class ContactResultsView(LoginRequiredMixin, ListView):
     model = Contact
-    paginate_by = 100  # if contact_id
-    # pagination is desired
+    template_name = 'client_search.html'
 
-    ordering = ['last_name', 'first_name']
+    def get_queryset(self): # new
+        query = self.request.GET.get('q')
+        if query:
+            object_list = Contact.objects.filter(
+                Q(first_name__icontains=query) | Q(last_name__icontains=query)
+            )
+        else:
+            object_list = None
+        return object_list
 
 
 class ContactDetailView(LoginRequiredMixin, DetailView):
@@ -323,13 +351,15 @@ class LessonNoteDetailView(LoginRequiredMixin, DetailView):
 
 class ClientUpdateView(LoginRequiredMixin, UpdateView):
     model = Contact
-    fields = ['first_name', 'middle_name', 'last_name', 'company', 'do_not_contact', 'donor', 'deceased', 'remove_mailing', 'active', 'contact_notes', 'sip_client', 'core_client']
+    fields = ['first_name', 'middle_name', 'last_name', 'company', 'do_not_contact', 'donor', 'deceased',
+              'remove_mailing', 'active', 'contact_notes', 'sip_client', 'core_client', 'careers_plus', 'careers_plus_youth', 'volunteer', 'access_news', 'other_services']
     template_name_suffix = '_edit'
 
 
 class AddressUpdateView(LoginRequiredMixin, UpdateView):
     model = Address
-    fields = ['address_one', 'address_two', 'suite', 'city', 'state', 'zip_code', 'county', 'country', 'region', 'cross_streets', 'bad_address', 'billing', 'address_notes']
+    fields = ['address_one', 'address_two', 'suite', 'city', 'state', 'zip_code', 'county', 'country', 'region',
+              'cross_streets', 'bad_address', 'billing', 'address_notes']
     template_name_suffix = '_edit'
 
 
@@ -347,14 +377,15 @@ class PhoneUpdateView(LoginRequiredMixin, UpdateView):
 
 class IntakeUpdateView(LoginRequiredMixin, UpdateView):
     model = Intake
-    fields = ['intake_date', 'intake_type', 'gender', 'pronouns', 'birth_date', 'ethnicity', 'other_ethnicity', 'income',
-              'first_language', 'second_language', 'other_languages', 'education', 'living_arrangement', 'residence_type',
-              'preferred_medium', 'performs_tasks', 'notes', 'training', 'orientation', 'confidentiality', 'dmv', 'work_history',
-              'veteran', 'member_name', 'active', 'crime', 'crime_info', 'crime_other', 'parole', 'parole_info',
+    fields = ['intake_date', 'gender', 'pronouns', 'birth_date', 'ethnicity', 'other_ethnicity', 'income',
+              'first_language', 'second_language', 'other_languages', 'education', 'living_arrangement',
+              'residence_type', 'performs_tasks', 'notes', 'confidentiality', 'dmv', 'work_history',
+              'veteran', 'active', 'crime', 'crime_info', 'crime_other', 'parole', 'parole_info',
               'crime_history', 'previous_training', 'training_goals', 'training_preferences', 'other', 'eye_condition',
               'eye_condition_date', 'degree', 'prognosis', 'diabetes', 'dialysis', 'hearing_loss', 'mobility', 'stroke',
               'seizure', 'heart', 'high_bp', 'neuropathy', 'pain', 'asthma', 'cancer', 'allergies', 'mental_health',
-              'substance_abuse', 'memory_loss', 'learning_disability', 'other_medical', 'medications', 'medical_notes', 'hired']
+              'substance_abuse', 'memory_loss', 'learning_disability', 'other_medical', 'medications', 'medical_notes',
+              'hired', 'arthritis', 'musculoskeletal', 'alzheimers', 'hobbies', 'employment_goals']
     template_name_suffix = '_edit'
 
 

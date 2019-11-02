@@ -8,13 +8,12 @@
     {{ form.errors }}
     <h2>Intake Information</h2>
         <p><label for="id_intake_date">Intake Date:</label> {{ form.intake_date }}</p>
-        <p><label for="id_intake_type">Intake Type:</label> {{ form.intake_type }}</p>
+<!--        <p><label for="id_intake_type">Intake Type:</label> {{ form.intake_type }}</p>-->
     <h2>Client Demographics</h2>
 <!--        <p>Age Group: {{ form.age_group }}</p>-->
         <p><label for="id_gender">Gender:</label> {{ form.gender }}</p>
         <p><label for="id_pronouns">Pronouns:</label> {{ form.pronouns }}</p>
         <p><label for="id_birth_date">Birth Date:</label> {{ form.birth_date }}</p>
-<!--        <p><label for="id_ssn">SSN:</label> {{ form.ssn }}</p>-->
         <p><label for="id_ethnicity">Ethnicity:</label> {{ form.ethnicity }}</p>
         <p><label for="id_other_ethnicity">Ethnicity (If Other):</label> {{ form.other_ethnicity }}</p>
         <p><label for="id_income">Income:</label> {{ form.income }}</p>
@@ -22,6 +21,7 @@
         <p><label for="id_second_language">Second Language</label> {{ form.second_language }}</p>
         <p><label for="id_other_languages">Other Language(s):</label> {{ form.other_languages }}</p>
         <p><label for="id_education">Education:</label> {{ form.education }}</p>
+        <p><label for="id_work_history">Work History: </label> {{ form.work_history }}</p>
         <p><label for="id_living_arrangement">Living Arrangements:</label> {{ form.living_arrangement }}</p>
         <p><label for="id_residence_type">Residence Type:</label> {{ form.residence_type }}</p>
         <p><label for="id_veteran">Veteran:</label> {{ form.veteran }}</p>
@@ -43,12 +43,15 @@
         <p><label for="id_mobility"> Mobility: </label> {{ form.mobility }}</p>
         <p><label for="id_stroke">Stroke: </label> {{ form.stroke }}</p>
         <p><label for="id_seizure">Seizure: </label> {{ form.seizure }}</p>
-        <p><label for="id_heart">Heart: </label> {{ form.heart }}</p>
+        <p><label for="id_arthritis">Arthritis: </label> {{ form.arthritis }}</p>
+        <p><label for="id_heart">Cardiovascular Disease: </label> {{ form.heart }}</p>
+        <p><label for="id_musculoskeletal">Musculoskeletal Disorders: </label> {{ form.musculoskeletal }}</p>
+        <p><label for="id_alzheimers">Alzheimer’s Disease/Cognitive Impairment: </label> {{ form.alzheimers }}</p>
         <p><label for="id_high_bp">High BP: </label> {{ form.high_bp }}</p>
         <p><label for="id_neuropathy">Neuropathy: </label> {{ form.neuropathy }}</p>
         <p><label for="id_pain">Pain: </label> {{ form.pain }}</p>
         <p><label for="id_asthma">Asthma: </label> {{ form.asthma }}</p>
-        <p><label for="id_cancer">Cancer: </label> Cancer: {{ form.cancer }}</p>
+        <p><label for="id_cancer">Cancer: </label> {{ form.cancer }}</p>
         <p><label for="id_allergies">Allergies: </label> {{ form.allergies }}</p>
         <p><label for="id_mental_health">Mental Health: </label> {{ form.mental_health }}</p>
         <p><label for="id_substance_abuse">Substance Abuse: </label> {{ form.substance_abuse }}</p>
@@ -58,16 +61,14 @@
         <p><label for="id_medications">Medications: </label>  {{ form.medications }}</p>
         <p><label for="id_medical_notes">Medical Notes: </label> {{ form.medical_notes }}</p>
     <h2>Client History</h2>
-        <p><label for="id_work_history">Work History: </label> {{ form.work_history }}</p>
         <p><label for="id_previous_training">Previous Training: </label> {{ form.previous_training }}</p>
         <p><label for="id_training_goals">Training Goals: </label> {{ form.training_goals }}</p>
         <p><label for="id_training_preferences">Training Preferences: </label> {{ form.training_preferences }}</p>
+        <p><label for="id_employment_goals">Employment Goals: </label> {{ form.employment_goals }}</p>
+        <p><label for="id_hobbies">Hobbies/Interests: </label> {{ form.hobbies }}</p>
         <p><label for="id_other">Other: </label> {{ form.other }}</p>
-        <p><label for="id_preferred_medium">Preferred Mailing Medium: </label> {{ form.preferred_medium }}</p>
         <p><label for="id_performs_tasks">Performs Tasks?: </label> {{ form.performs_tasks }}</p>
         <p><label for="id_notes">Notes: </label> {{ form.notes }}</p>
-        <p><label for="id_training">Training: </label> {{ form.training }}</p>
-        <p><label for="id_orientation">Orientation: </label> {{ form.orientation }}</p>
     <input type="submit" value="Submit">
 </form>
 {% endblock %}

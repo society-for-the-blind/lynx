@@ -4,6 +4,8 @@ from django.utils.translation import gettext_lazy as _
 from .models import Contact, Address, Intake, Email, Phone, Referral, IntakeNote, EmergencyContact, Authorization, \
     ProgressReport, LessonNote, SipNote
 
+from datetime import datetime
+
 
 class ContactForm(forms.ModelForm):
 
@@ -14,9 +16,14 @@ class ContactForm(forms.ModelForm):
 
 
 class IntakeForm(forms.ModelForm):
-    intake_date = forms.DateField(widget=forms.SelectDateWidget(empty_label="Nothing"))
-    eye_condition_date = forms.DateField(widget=forms.SelectDateWidget(empty_label="Nothing"))
-    birth_date = forms.DateField(widget=forms.SelectDateWidget(years=range(1900, 2050)))
+    currentYear = datetime.now().year
+    oldYear = datetime.now().year - 125
+    if oldYear < 1900:
+        oldYear = 1900
+
+    intake_date = forms.DateField(widget=forms.SelectDateWidget(empty_label="Nothing", years=range(oldYear, currentYear)))
+    eye_condition_date = forms.DateField(widget=forms.SelectDateWidget(empty_label="Nothing", years=range(oldYear, currentYear)))
+    birth_date = forms.DateField(widget=forms.SelectDateWidget(years=range(oldYear, currentYear)))
 
     class Meta:
 
@@ -83,7 +90,7 @@ class ProgressReportForm(forms.ModelForm):
 
 
 class LessonNoteForm(forms.ModelForm):
-    date = forms.DateField(widget=forms.SelectDateWidget(empty_label="Nothing"))
+    # date = forms.DateField(widget=forms.SelectDateWidget(empty_label="Nothing"))
 
     class Meta:
 
