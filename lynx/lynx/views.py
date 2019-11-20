@@ -315,11 +315,14 @@ class AuthorizationDetailView(LoginRequiredMixin, DetailView):
                 total_instruction += i_units
 
         context['total_billed'] = total_units * float(authorization[0]['billing_rate'])
-        context['remaining_units'] = float(authorization[0]['total_time']) - total_units
-        context['total_units'] = total_units
+        remaining = float(authorization[0]['total_time']) - total_units
+        remaining_hours = units_to_hours(remaining)
+        total_hours = units_to_hours(total_units)
+        context['total_hours'] = total_hours
         context['total_notes'] = total_notes
+        context['remaining_hours'] = remaining_hours
         context['total_present'] = total_present
-        context['total_instruction'] = total_present
+        context['total_instruction'] = total_instruction
         context['form'] = LessonNoteForm
         return context
 
@@ -400,3 +403,15 @@ class EmergencyContactUpdateView(LoginRequiredMixin, UpdateView):
     fields = ['name', 'emergency_address_one', 'emergency_address_two', 'emergency_city', 'emergency_state', 'emergency_zip_code',
               'emergency_country', 'phone_day', 'phone_other', 'emergency_notes']
     template_name_suffix = '_edit'
+
+
+def units_to_hours(units):
+    minutes = units * 15
+    hours = minutes/60
+    return hours
+
+
+def hours_to_units(hours):
+    minutes = hours * 60
+    units = minutes/15
+    return units
