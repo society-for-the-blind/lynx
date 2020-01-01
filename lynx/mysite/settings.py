@@ -23,9 +23,10 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = '5++)nw##nae9#ee2tv6g@p80p@+@j)+gd^@*4zggjgee%wpv+h'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = ['192.168.1.82', 'localhost', '127.0.0.1', '35.231.66.229', '192.168.1.76']
+#ALLOWED_HOSTS = ['192.168.1.82', 'localhost', '127.0.0.1', '35.231.66.229', '192.168.1.76', '51.141.168.67']
+ALLOWED_HOSTS = ['*']
 
 # Application definition
 
@@ -79,7 +80,7 @@ WSGI_APPLICATION = 'mysite.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'lynx2',
+        'NAME': 'lynx',
         'USER': 'postgres',
         'PASSWORD': 'An55wsg',
         'HOST': 'localhost',
