@@ -23,10 +23,10 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = '5++)nw##nae9#ee2tv6g@p80p@+@j)+gd^@*4zggjgee%wpv+h'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 #ALLOWED_HOSTS = ['192.168.1.82', 'localhost', '127.0.0.1', '35.231.66.229', '192.168.1.76', '51.141.168.67']
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['localhost','10.0.0.4', '52.250.111.118', 'lynx.societyfortheblind.org']
 
 # Application definition
 
@@ -89,7 +89,7 @@ DATABASES = {
 }
 
 
-LOGIN_REDIRECT_URL = '/lynx/'
+LOGIN_REDIRECT_URL = '/'
 
 APPEND_SLASH = False
 

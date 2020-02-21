@@ -1,0 +1,4 @@
+venv/
+lynx/venv/
+lynx/mysite/__pycache__/
+lynx/lynx/__pycache__/

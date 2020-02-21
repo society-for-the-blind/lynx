@@ -29,5 +29,5 @@ urlpatterns = [
     path('intake-note-edit/<int:pk>', views.IntakeNoteUpdateView.as_view(), name='intake-note-edit'),
     path('emergency-contact-edit/<int:pk>', views.EmergencyContactUpdateView.as_view(), name='emergency-contact-edit'),
     path('client-search', views.client_result_view, name='client_search'),
-    path('', views.index, name='index'),
+    path("", views.index, name='index')
 ]
