@@ -15,34 +15,47 @@
           </div></div>
 <!--        <p><label for="id_intake_type">Intake Type:</label> {{ form.intake_type }}</p>-->
     <h2>Client Demographics</h2>
-<!--        <p>Age Group: {{ form.age_group }}</p>-->
         <div class="row">
-          <div class="col-6">
-            {{ form.gender|as_crispy_field  }}
-          </div>
-            <div class="col-6">
-        {{ form.pronouns|as_crispy_field  }}
-            </div>
+          <div class="col-6">{{ form.birth_date|as_crispy_field }}</div>
+          <div class="col-6">{{ form.age_group|as_crispy_field }}</div>
         </div>
-        <p><label for="id_birth_date">Birth Date:</label> {{ form.birth_date|as_crispy_field  }}</p>
-        <p><label for="id_ethnicity">Ethnicity:</label> {{ form.ethnicity|as_crispy_field  }}</p>
-        <p><label for="id_other_ethnicity">Ethnicity (If Other):</label> {{ form.other_ethnicity|as_crispy_field  }}</p>
-        <p><label for="id_income">Income:</label> {{ form.income|as_crispy_field  }}</p>
-        <p><label for="id_first_language">First Language:</label> {{ form.first_language|as_crispy_field }}</p>
-        <p><label for="id_second_language">Second Language</label> {{ form.second_language|as_crispy_field }}</p>
-        <p><label for="id_other_languages">Other Language(s):</label> {{ form.other_languages|as_crispy_field }}</p>
-        <p><label for="id_education">Education:</label> {{ form.education }}</p>
-        <p><label for="id_work_history">Work History: </label> {{ form.work_history }}</p>
-        <p><label for="id_living_arrangement">Living Arrangements:</label> {{ form.living_arrangement }}</p>
-        <p><label for="id_residence_type">Residence Type:</label> {{ form.residence_type }}</p>
-        <p><label for="id_veteran">Veteran:</label> {{ form.veteran }}</p>
+        <div class="row">
+          <div class="col-6">{{ form.gender|as_crispy_field }}</div>
+          <div class="col-6">{{ form.pronouns|as_crispy_field }}</div>
+        </div>
+        <div class="row">
+          <div class="col-6">{{ form.ethnicity|as_crispy_field }}</div>
+          <div class="col-6">{{ form.other_ethnicity|as_crispy_field }}</div>
+        </div>
+        <div class="row">
+          <div class="col-4">{{ form.first_language|as_crispy_field }}</div>
+          <div class="col-4">{{ form.second_language|as_crispy_field }}</div>
+          <div class="col-4">{{ form.other_languages|as_crispy_field }}</div>
+        </div>
+        <div class="row">
+          <div class="col-4">{{ form.income|as_crispy_field }}</div>
+          <div class="col-4">{{ form.education|as_crispy_field }}</div>
+          <div class="col-4">{{ form.work_history|as_crispy_field }}</div>
+        </div>
+        <div class="row">
+          <div class="col-4">{{ form.living_arrangement|as_crispy_field }}</div>
+          <div class="col-4">{{ form.residence_type|as_crispy_field }}</div>
+          <div class="col-4">{{ form.veteran|as_crispy_field }}</div>
+        </div>
+
     <h2>Criminal Background</h2>
-        <p><label for="id_crime">Have you been convicted of a crime?:</label>  {{ form.crime }}</p>
-        <p><label for="id_crime_info">If yes, what and when did the convictions occur? What county did this conviction occur in?: </label> {{ form.crime_info }}</p>
-        <p><label for="id_crime_other">Criminal Conviction Information: </label> {{ form.crime_other }}</p>
-        <p><label for="id_parole">Are you on parole?: </label> {{ form.parole }}</p>
-        <p><label for="id_parole_info">Parole Information: </label> {{ form.parole_info }}</p>
-        <p><label for="id_crime_history">Additional Criminal History: </label> {{ form.crime_history }}</p>
+        <div class="row">
+          <div class="col-2">{{ form.crime|as_crispy_field }}</div>
+          <div class="col-5">{{ form.crime_info }}</div>
+          <div class="col-5">{{ form.crime_other }}</div>
+        </div>
+        <div class="row">
+          <div class="col-2">{{ form.parole }}</div>
+          <div class="col-10">{{ form.parole_info }}</div>
+        </div>
+        <div class="row">
+            <div class="col-12">{ form.crime_history }}</div>
+        </div>
     <h2>Medical History</h2>
         <p><label for="id_eye_condition">Eye Condition: </label> {{ form.eye_condition }}</p>
         <p><label for="id_eye_condition_date">Eye Condition Date: </label> {{ form.eye_condition_date }}</p>

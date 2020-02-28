@@ -24,6 +24,19 @@ class IntakeForm(forms.ModelForm):
     intake_date = forms.DateField(widget=forms.SelectDateWidget(empty_label="Nothing", years=range(oldYear, currentYear)))
     eye_condition_date = forms.DateField(widget=forms.SelectDateWidget(empty_label="Nothing", years=range(oldYear, currentYear)))
     birth_date = forms.DateField(widget=forms.SelectDateWidget(years=range(oldYear, currentYear)))
+    other_languages = forms.CharField(label='Other Language(s)')
+    other_ethnicity = forms.CharField(label='Ethnicity (if other)')
+    crime = forms.CharField(label='Have you been convicted of a crime?')
+    crime_info = forms.CharField(label='If yes, what and when did the convictions occur? What county did this conviction occur in?')
+    crime_other = forms.CharField(label='Criminal Conviction Information')
+    parole = forms.CharField(label='Are you on parole?')
+    parole_info = forms.CharField(label='Parole Information')
+    crime_history = forms.CharField(label='Additional Criminal History')
+    musculoskeletal = forms.CharField(label='Musculoskeletal Disorders')
+    alzheimers = forms.CharField(label='Alzheimer’s Disease/Cognitive Impairment')
+    other_medical = forms.CharField(label='Other Medical Information')
+
+
 
     class Meta:
 
