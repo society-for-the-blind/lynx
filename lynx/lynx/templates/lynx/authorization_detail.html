@@ -23,7 +23,7 @@
 <h2>Lesson Notes</h2>
     <table class="table">
         <tr>
-            <th>Lesson Date</th>
+            <th>Lesson Date and Units</th>
             <th>Attendance</th>
             <th>Billed Units</th>
             <th>Instructional Units</th>
@@ -35,7 +35,7 @@
         </tr>
         {% for note in note_list %}
             <tr>
-                <td><a href='/lynx/lesson-note/{{ note.id }}/'>DATE COMING SOON</a></td>
+                <td><a href='/lynx/lesson-note/{{ note.id }}/'>February 29, 2020: {{ note.billed_units }}</a></td> <!--TODO don't have this be the link -->
                 <td>{{ note.attendance }}</td>
                 <td>{{ note.billed_units }}</td>
                 <td>{{ note.instructional_units }}</td>
