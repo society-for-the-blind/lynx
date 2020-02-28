@@ -35,26 +35,29 @@
         <div class="row">
           <div class="col-4">{{ form.income|as_crispy_field }}</div>
           <div class="col-4">{{ form.education|as_crispy_field }}</div>
-          <div class="col-4">{{ form.work_history|as_crispy_field }}</div>
         </div>
         <div class="row">
           <div class="col-4">{{ form.living_arrangement|as_crispy_field }}</div>
           <div class="col-4">{{ form.residence_type|as_crispy_field }}</div>
           <div class="col-4">{{ form.veteran|as_crispy_field }}</div>
         </div>
+        <div class="row">
+          <div class="col-4">{{ form.work_history|as_crispy_field }}</div>
+        </div>
+
 
     <h2>Criminal Background</h2>
         <div class="row">
           <div class="col-2">{{ form.crime|as_crispy_field }}</div>
-          <div class="col-5">{{ form.crime_info }}</div>
-          <div class="col-5">{{ form.crime_other }}</div>
+          <div class="col-5">{{ form.crime_info|as_crispy_field }}</div>
+          <div class="col-5">{{ form.crime_other|as_crispy_field }}</div>
         </div>
         <div class="row">
-          <div class="col-2">{{ form.parole }}</div>
-          <div class="col-10">{{ form.parole_info }}</div>
+          <div class="col-2">{{ form.parole|as_crispy_field }}</div>
+          <div class="col-10">{{ form.parole_info|as_crispy_field }}</div>
         </div>
         <div class="row">
-            <div class="col-12">{ form.crime_history }}</div>
+            <div class="col-12">{ form.crime_history|as_crispy_field }}</div>
         </div>
     <h2>Medical History</h2>
         <p><label for="id_eye_condition">Eye Condition: </label> {{ form.eye_condition }}</p>
