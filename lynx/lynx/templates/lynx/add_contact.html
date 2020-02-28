@@ -1,20 +1,21 @@
 {% extends 'lynx/base.html' %}
+{% load crispy_forms_tags %}
 
 {% block content %}
 <h1>Intake Page 1 (Client Information)</h1>
 <br>
 <form method="post"> {% csrf_token %}
     <h2>Client Contact Information</h2>
-        {{ form.as_p }}
+        {{ form|crispy }}
         {{ form.errors }}
     <h2>Address</h2>
-        {{ address_form.as_p }}
+        {{ address_form|crispy }}
         {{ address_form.errors }}
     <h2>Email</h2>
-        {{ email_form.as_p }}
+        {{ email_form|crispy }}
         {{ email_form.errors }}
     <h2>Phone</h2>
-        {{ phone_form.as_p }}
+        {{ phone_form|crispy }}
         {{ phone_form.errors }}
     <input type="submit" value="Submit">
 </form>
