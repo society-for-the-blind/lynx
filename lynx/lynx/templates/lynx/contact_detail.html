@@ -154,8 +154,8 @@
 
 {% if object.core_client %}
     <h2>Authorizations</h2>
-    {% for auth in authorization_list %}
-        <h3 class="tab"><a href='/lynx/authorization/{{ auth.id }}'>{{ auth.intake_service_area }}: {{ auth.start_date }}- {{ auth.end_date }}. {{ auth.authorization_number }}</a></h3>
+    {% for auth in authorization_list %}  <!--TODO Reverse chron by start date then type -->
+        <div class="tab" href='/lynx/authorization/{{ auth.id }}'>{{ auth.intake_service_area }}: {{ auth.start_date }}- {{ auth.end_date }}. {{ auth.authorization_number }}</div>
     {% empty %}
         <p class="tab">Sorry, no authorizations for this client</p>
     {% endfor %}
