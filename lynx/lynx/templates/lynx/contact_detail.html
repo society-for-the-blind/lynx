@@ -155,10 +155,11 @@
 {% if object.core_client %}
     <h2>Authorizations</h2>
     {% for auth in authorization_list %}
-    <h3 class="tab"><a href='/lynx/authorization/{{ auth.id }}'>{{ auth.authorization_number }}</a></h3>
+    <h3 class="tab"><a href='/lynx/authorization/{{ auth.id }}'>{{ auth.intake_service_area }}: {{ auth.start_date }}- {{ auth.end_date }}. {{ auth.authorization_number }}</a></h3>
         <p class="tab">
             {% if auth.intake_service_area %}<strong>Intake Service Area:</strong> {{ auth.intake_service_area }}<br>{% endif %}
             {% if auth.authorization_type %}<strong>Authorization Type:</strong> {{ auth.authorization_type }}<br>{% endif %}
+            {% if auth.authorization_number %}<strong>Authorization Number:</strong> {{ auth.authorization_number }}<br>{% endif %}
             {% if auth.start_date %}<strong>Start Date:</strong> {{ auth.start_date }}<br>{% endif %}
             {% if auth.end_date %}<strong>End Date:</strong> {{ auth.end_date }}<br>{% endif %}
         </p>
