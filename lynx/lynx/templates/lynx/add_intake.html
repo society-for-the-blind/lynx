@@ -9,19 +9,19 @@
 <form method="post"> {% csrf_token %}
     {{ form.errors }}
     <h2>Intake Information</h2>
-        <p><label for="id_intake_date">Intake Date:</label> {{ form.intake_date }}</p> <!--TODO CHECK FOR ALL DATES AS DROP DOWNS -->
+        <p><label for="id_intake_date">Intake Date:</label> {{ form.intake_date|as_crispy_field  }}</p> <!--TODO CHECK FOR ALL DATES AS DROP DOWNS -->
 <!--        <p><label for="id_intake_type">Intake Type:</label> {{ form.intake_type }}</p>-->
     <h2>Client Demographics</h2>
 <!--        <p>Age Group: {{ form.age_group }}</p>-->
-        <p><label for="id_gender">Gender:</label> {{ form.gender }}</p>
-        <p><label for="id_pronouns">Pronouns:</label> {{ form.pronouns }}</p>
-        <p><label for="id_birth_date">Birth Date:</label> {{ form.birth_date }}</p>
-        <p><label for="id_ethnicity">Ethnicity:</label> {{ form.ethnicity }}</p>
-        <p><label for="id_other_ethnicity">Ethnicity (If Other):</label> {{ form.other_ethnicity }}</p>
-        <p><label for="id_income">Income:</label> {{ form.income }}</p>
-        <p><label for="id_first_language">First Language:</label> {{ form.first_language }}</p>
-        <p><label for="id_second_language">Second Language</label> {{ form.second_language }}</p>
-        <p><label for="id_other_languages">Other Language(s):</label> {{ form.other_languages }}</p>
+        <p><label for="id_gender">Gender:</label> {{ form.gender|as_crispy_field  }}</p>
+        <p><label for="id_pronouns">Pronouns:</label> {{ form.pronouns|as_crispy_field  }}</p>
+        <p><label for="id_birth_date">Birth Date:</label> {{ form.birth_date|as_crispy_field  }}</p>
+        <p><label for="id_ethnicity">Ethnicity:</label> {{ form.ethnicity|as_crispy_field  }}</p>
+        <p><label for="id_other_ethnicity">Ethnicity (If Other):</label> {{ form.other_ethnicity|as_crispy_field  }}</p>
+        <p><label for="id_income">Income:</label> {{ form.income|as_crispy_field  }}</p>
+        <p><label for="id_first_language">First Language:</label> {{ form.first_language|as_crispy_field }}</p>
+        <p><label for="id_second_language">Second Language</label> {{ form.second_language|as_crispy_field }}</p>
+        <p><label for="id_other_languages">Other Language(s):</label> {{ form.other_languages|as_crispy_field }}</p>
         <p><label for="id_education">Education:</label> {{ form.education }}</p>
         <p><label for="id_work_history">Work History: </label> {{ form.work_history }}</p>
         <p><label for="id_living_arrangement">Living Arrangements:</label> {{ form.living_arrangement }}</p>
