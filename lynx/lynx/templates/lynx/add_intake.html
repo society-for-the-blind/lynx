@@ -9,12 +9,21 @@
 <form method="post"> {% csrf_token %}
     {{ form.errors }}
     <h2>Intake Information</h2>
+            <div class="row">
+          <div class="col-3">
         <p><label for="id_intake_date">Intake Date:</label> {{ form.intake_date|as_crispy_field  }}</p> <!--TODO CHECK FOR ALL DATES AS DROP DOWNS -->
+          </div></div>
 <!--        <p><label for="id_intake_type">Intake Type:</label> {{ form.intake_type }}</p>-->
     <h2>Client Demographics</h2>
 <!--        <p>Age Group: {{ form.age_group }}</p>-->
-        <p><label for="id_gender">Gender:</label> {{ form.gender|as_crispy_field  }}</p>
+        <div class="row">
+          <div class="col-6">
+            <p><label for="id_gender">Gender:</label> {{ form.gender|as_crispy_field  }}</p>
+          </div>
+            <div class="col-6">
         <p><label for="id_pronouns">Pronouns:</label> {{ form.pronouns|as_crispy_field  }}</p>
+            </div>
+        </div>
         <p><label for="id_birth_date">Birth Date:</label> {{ form.birth_date|as_crispy_field  }}</p>
         <p><label for="id_ethnicity">Ethnicity:</label> {{ form.ethnicity|as_crispy_field  }}</p>
         <p><label for="id_other_ethnicity">Ethnicity (If Other):</label> {{ form.other_ethnicity|as_crispy_field  }}</p>
