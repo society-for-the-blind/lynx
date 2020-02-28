@@ -1,4 +1,6 @@
 {% extends 'lynx/base.html' %}
+{% load crispy_forms_tags %}
+
 
 {% block content %}
 <h1>Intake Page 2 (Client History)</h1>
@@ -7,15 +9,15 @@
 <form method="post"> {% csrf_token %}
     {{ form.errors }}
     <h2>Intake Information</h2>
-        <p><label for="id_intake_date">Intake Date:</label> {{ form.intake_date }}</p> <!--TODO CHECK FOR ALL DATES AS DROP DOWNS -->
+        <p><label for="id_intake_date">Intake Date:</label> {{ form.intake_date|crispy }}</p> <!--TODO CHECK FOR ALL DATES AS DROP DOWNS -->
 <!--        <p><label for="id_intake_type">Intake Type:</label> {{ form.intake_type }}</p>-->
     <h2>Client Demographics</h2>
 <!--        <p>Age Group: {{ form.age_group }}</p>-->
-        <p><label for="id_gender">Gender:</label> {{ form.gender }}</p>
-        <p><label for="id_pronouns">Pronouns:</label> {{ form.pronouns }}</p>
-        <p><label for="id_birth_date">Birth Date:</label> {{ form.birth_date }}</p>
-        <p><label for="id_ethnicity">Ethnicity:</label> {{ form.ethnicity }}</p>
-        <p><label for="id_other_ethnicity">Ethnicity (If Other):</label> {{ form.other_ethnicity }}</p>
+        <p><label for="id_gender">Gender:</label> {{ form.gender|crispy }}</p>
+        <p><label for="id_pronouns">Pronouns:</label> {{ form.pronouns|crispy }}</p>
+        <p><label for="id_birth_date">Birth Date:</label> {{ form.birth_date|crispy }}</p>
+        <p><label for="id_ethnicity">Ethnicity:</label> {{ form.ethnicity|crispy }}</p>
+        <p><label for="id_other_ethnicity">Ethnicity (If Other):</label> {{ form.other_ethnicity|crispy }}</p>
         <p><label for="id_income">Income:</label> {{ form.income }}</p>
         <p><label for="id_first_language">First Language:</label> {{ form.first_language }}</p>
         <p><label for="id_second_language">Second Language</label> {{ form.second_language }}</p>
