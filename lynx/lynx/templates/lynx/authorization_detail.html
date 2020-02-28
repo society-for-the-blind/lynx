@@ -27,23 +27,27 @@
             <th>Attendance</th>
             <th>Billed Units</th>
             <th>Instructional Units</th>
+                        <th>Successes</th>
             <th>Obstacles</th>
-            <th>Successes</th>
+
             <th>Recommendations</th>
             <th>Other</th>
             <th>Instructor</th>
         </tr>
         {% for note in note_list %}
             <tr>
-                <td><a href='/lynx/lesson-note/{{ note.id }}/'>February 29, 2020: {{ note.billed_units }}</a></td> <!--TODO don't have this be the link -->
+<!--                <td><a href='/lynx/lesson-note/{{ note.id }}/'>February 29, 2020: {{ note.billed_units }}</a></td> &lt;!&ndash;TODO don't have this be the link &ndash;&gt;-->
+                <th>February 29, 2020</th> <!--TODO don't have this be the link -->
                 <td>{{ note.attendance }}</td>
                 <td>{{ note.billed_units }}</td>
                 <td>{{ note.instructional_units }}</td>
+                                <td>{{ note.successes }}</td>
                 <td>{{ note.obstacles }}</td>
-                <td>{{ note.successes }}</td>
+
                 <td>{{ note.recommendations }}</td>
                 <td>{{ note.note }}</td>
                 <td>{{ note.user.first_name }} {{ note.user.last_name }}</td>
+                <!--TODO add edit button -->
             </tr>
         {% endfor %}
         <tr>
