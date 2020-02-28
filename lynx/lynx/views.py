@@ -294,6 +294,7 @@ class AuthorizationDetailView(LoginRequiredMixin, DetailView):
         context = super(AuthorizationDetailView, self).get_context_data(**kwargs)
         context['report_list'] = ProgressReport.objects.filter(authorization_id=self.kwargs['pk'])
         context['note_list'] = LessonNote.objects.filter(authorization_id=self.kwargs['pk']).order_by('-created')
+        # todo add other for attendance, this is ignored when doing the totals for absences
         notes = LessonNote.objects.filter(authorization_id=self.kwargs['pk']).values()
         authorization = Authorization.objects.filter(id=self.kwargs['pk']).values()
         total_units = 0

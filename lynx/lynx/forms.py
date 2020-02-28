@@ -90,7 +90,7 @@ class ProgressReportForm(forms.ModelForm):
 
 
 class LessonNoteForm(forms.ModelForm):
-    # date = forms.DateField(widget=forms.SelectDateWidget(empty_label="Nothing"))
+    date = forms.DateField(widget=forms.SelectDateWidget(empty_label="Nothing"))
 
     class Meta:
 

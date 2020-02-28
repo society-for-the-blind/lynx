@@ -7,7 +7,7 @@
 <form method="post"> {% csrf_token %}
     {{ form.errors }}
     <h2>Intake Information</h2>
-        <p><label for="id_intake_date">Intake Date:</label> {{ form.intake_date }}</p>
+        <p><label for="id_intake_date">Intake Date:</label> {{ form.intake_date }}</p> <!--TODO CHECK FOR ALL DATES AS DROP DOWNS -->
 <!--        <p><label for="id_intake_type">Intake Type:</label> {{ form.intake_type }}</p>-->
     <h2>Client Demographics</h2>
 <!--        <p>Age Group: {{ form.age_group }}</p>-->

@@ -25,6 +25,10 @@
   padding-top: 20px;
 }
 
+h1, h2 {
+    color: #006ca3;
+}
+
 /* The navigation menu links */
 .sidenav a {
   padding: 6px 8px 6px 16px;
