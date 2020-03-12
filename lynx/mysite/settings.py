@@ -139,6 +139,16 @@ if DEBUG:
     DEBUG_TOOLBAR_CONFIG = {
         'INTERCEPT_REDIRECTS': False,
     }
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': 'lynx2',
+            'USER': 'postgres',
+            'PASSWORD': 'An55wsg',
+            'HOST': 'localhost',
+            'PORT': '5432',
+        }
+    }
 
 
 # Static files (CSS, JavaScript, Images)

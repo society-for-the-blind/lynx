@@ -42,60 +42,104 @@
           <div class="col-4">{{ form.veteran|as_crispy_field }}</div>
         </div>
         <div class="row">
-          <div class="col-4">{{ form.work_history|as_crispy_field }}</div>
+          <div class="col-12">{{ form.work_history|as_crispy_field }}</div>
         </div>
 
 
     <h2>Criminal Background</h2>
         <div class="row">
-          <div class="col-2">{{ form.crime|as_crispy_field }}</div>
-          <div class="col-5">{{ form.crime_info|as_crispy_field }}</div>
-          <div class="col-5">{{ form.crime_other|as_crispy_field }}</div>
+          <div class="col-4">{{ form.crime|as_crispy_field }}</div>
         </div>
         <div class="row">
-          <div class="col-2">{{ form.parole|as_crispy_field }}</div>
-          <div class="col-10">{{ form.parole_info|as_crispy_field }}</div>
+            <div class="col-12">{{ form.crime_info|as_crispy_field }}</div>
+        </div>
+        <div class="row">
+          <div class="col-12">{{ form.crime_other|as_crispy_field }}</div>
+        </div>
+        <div class="row">
+          <div class="col-4">{{ form.parole|as_crispy_field }}</div>
+        </div>
+        <div class="row">
+          <div class="col-12">{{ form.parole_info|as_crispy_field }}</div>
         </div>
         <div class="row">
             <div class="col-12">{{ form.crime_history|as_crispy_field }}</div>
         </div>
     <h2>Medical History</h2>
-        <p><label for="id_eye_condition">Eye Condition: </label> {{ form.eye_condition }}</p>
-        <p><label for="id_eye_condition_date">Eye Condition Date: </label> {{ form.eye_condition_date }}</p>
-        <p><label for="id_degree">Degree: </label> {{ form.degree }}</p>
-        <p><label for="id_prognosis">Prognosis: </label> {{ form.prognosis }}</p>
-        <p><label for="id_diabetes">Diabetes: </label> {{ form.diabetes }}</p>
-        <p><label for="id_dialysis">Dialysis: </label> {{ form.dialysis }}</p>
-        <p><label for="id_hearing_loss">Hearing Loss: </label> {{ form.hearing_loss }}</p>
-        <p><label for="id_mobility"> Mobility: </label> {{ form.mobility }}</p>
-        <p><label for="id_stroke">Stroke: </label> {{ form.stroke }}</p>
-        <p><label for="id_seizure">Seizure: </label> {{ form.seizure }}</p>
-        <p><label for="id_arthritis">Arthritis: </label> {{ form.arthritis }}</p>
-        <p><label for="id_heart">Cardiovascular Disease: </label> {{ form.heart }}</p>
-        <p><label for="id_musculoskeletal">Musculoskeletal Disorders: </label> {{ form.musculoskeletal }}</p>
-        <p><label for="id_alzheimers">Alzheimer’s Disease/Cognitive Impairment: </label> {{ form.alzheimers }}</p>
-        <p><label for="id_high_bp">High BP: </label> {{ form.high_bp }}</p>
-        <p><label for="id_neuropathy">Neuropathy: </label> {{ form.neuropathy }}</p>
-        <p><label for="id_pain">Pain: </label> {{ form.pain }}</p>
-        <p><label for="id_asthma">Asthma: </label> {{ form.asthma }}</p>
-        <p><label for="id_cancer">Cancer: </label> {{ form.cancer }}</p>
-        <p><label for="id_allergies">Allergies: </label> {{ form.allergies }}</p>
-        <p><label for="id_mental_health">Mental Health: </label> {{ form.mental_health }}</p>
-        <p><label for="id_substance_abuse">Substance Abuse: </label> {{ form.substance_abuse }}</p>
-        <p><label for="id_memory_loss">Memory Loss: </label> {{ form.memory_loss }}</p>
-        <p><label for="id_learning_disability">Learning Disability: </label> {{ form.learning_disability }}</p>
-        <p><label for="id_other_medical">Other Medical Information: </label> {{ form.other_medical }}</p>
-        <p><label for="id_medications">Medications: </label>  {{ form.medications }}</p>
-        <p><label for="id_medical_notes">Medical Notes: </label> {{ form.medical_notes }}</p>
+        <div class="row">
+            <div class="col-6">{{ form.eye_condition|as_crispy_field  }}</div>
+            <div class="col-6">{{ form.eye_condition_date |as_crispy_field }}</div>
+        </div>
+        <div class="row">
+            <div class="col-6">{{ form.degree|as_crispy_field  }}</div>
+            <div class="col-6">{{ form.prognosis|as_crispy_field  }}</div>
+        </div>
+        <div class="row">
+            <div class="col-3">{{ form.diabetes|as_crispy_field  }}</div>
+            <div class="col-3">{{ form.dialysis|as_crispy_field  }}</div>
+            <div class="col-3">{{ form.hearing_loss|as_crispy_field  }}</div>
+            <div class="col-3">{{ form.mobility|as_crispy_field }}</div>
+        </div>
+        <div class="row">
+            <div class="col-3">{{ form.stroke|as_crispy_field  }}</div>
+            <div class="col-3">{{ form.seizure|as_crispy_field  }}</div>
+            <div class="col-3">{{ form.arthritis|as_crispy_field  }}</div>
+            <div class="col-3">{{ form.heart|as_crispy_field  }}</div>
+        </div>
+        <div class="row">
+            <div class="col-3"> {{ form.musculoskeletal|as_crispy_field  }}</div>
+            <div class="col-3">{{ form.alzheimers|as_crispy_field  }}</div>
+            <div class="col-3">{{ form.high_bp|as_crispy_field  }}</div>
+            <div class="col-3"> {{ form.neuropathy|as_crispy_field  }}</div>
+        </div>
+        <div class="row">
+            <div class="col-3"> {{ form.pain|as_crispy_field  }}</div>
+            <div class="col-3">{{ form.asthma|as_crispy_field  }}</div>
+            <div class="col-3">{{ form.cancer|as_crispy_field  }}</div>
+            <div class="col-3"> {{ form.substance_abuse|as_crispy_field }}</div>
+        </div>
+        <div class="row">
+            <div class="col-3">{{ form.memory_loss|as_crispy_field  }}</div>
+            <div class="col-3">{{ form.learning_disability|as_crispy_field  }}</div>
+       </div>
+        <div class="row">
+            <div class="col-6">{{ form.allergies|as_crispy_field  }}</div>
+            <div class="col-6">{{ form.mental_health|as_crispy_field  }}</div>
+       </div>
+        <div class="row">
+            <div class="col-12"> {{ form.other_medical|as_crispy_field  }}</div>
+       </div>
+        <div class="row">
+            <div class="col-12"> {{ form.medications|as_crispy_field  }}</div>
+        </div>
+        <div class="row">
+            <div class="col-12">{{ form.medical_notes|as_crispy_field  }}</div>
+        </div>
     <h2>Client History</h2>
-        <p><label for="id_previous_training">Previous Training: </label> {{ form.previous_training }}</p>
-        <p><label for="id_training_goals">Training Goals: </label> {{ form.training_goals }}</p>
-        <p><label for="id_training_preferences">Training Preferences: </label> {{ form.training_preferences }}</p>
-        <p><label for="id_employment_goals">Employment Goals: </label> {{ form.employment_goals }}</p>
-        <p><label for="id_hobbies">Hobbies/Interests: </label> {{ form.hobbies }}</p>
-        <p><label for="id_other">Other: </label> {{ form.other }}</p>
-        <p><label for="id_performs_tasks">Performs Tasks?: </label> {{ form.performs_tasks }}</p>
-        <p><label for="id_notes">Notes: </label> {{ form.notes }}</p>
+        <div class="row">
+            <div class="col-12">{{ form.previous_training|as_crispy_field }}</div>
+        </div>
+        <div class="row">
+            <div class="col-12">{{ form.training_goals|as_crispy_field }}</div>
+        </div>
+        <div class="row">
+            <div class="col-12">{{ form.training_preferences|as_crispy_field }}</div>
+        </div>
+        <div class="row">
+            <div class="col-12">{{ form.employment_goals|as_crispy_field }}</div>
+        </div>
+        <div class="row">
+            <div class="col-12">{{ form.hobbies|as_crispy_field }}</div>
+        </div>
+        <div class="row">
+            <div class="col-12">{{ form.other|as_crispy_field }}</div>
+        </div>
+        <div class="row">
+            <div class="col-12">{{ form.performs_tasks|as_crispy_field }}</div>
+        </div>
+        <div class="row">
+            <div class="col-12">{{ form.notes|as_crispy_field }}</div>
+        </div>
     <input type="submit" value="Submit">
 </form>
 {% endblock %}

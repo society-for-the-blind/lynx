@@ -33,6 +33,10 @@ h2 {
     color: #5ca038;
 }
 
+h3 {
+    color: rgba(26, 28, 30, 0.73);
+}
+
 /* The navigation menu links */
 .sidenav a {
   padding: 6px 8px 6px 16px;
