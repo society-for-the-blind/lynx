@@ -11,7 +11,7 @@
 {% if object.authorization_type %}<p class="tab"><strong>Authorization Type:</strong> {{ object.authorization_type }}</p>{% endif %}
 {% if object.start_date %}<p class="tab"><strong>Start Date:</strong> {{ object.start_date }}</p>{% endif %}
 {% if object.end_date %}<p class="tab"><strong>End Date:</strong> {{ object.end_date }}</p>{% endif %}
-{% if object.total_time %}<p class="tab"><strong>Total Time Authorized:</strong> {{ object.total_time }}</p>{% endif %} <!--TODO FIX THIS DISPLAY so that - this isn't free entry?->
+{% if object.total_time %}<p class="tab"><strong>Total Time Authorized:</strong> {{ object.total_time }}</p>{% endif %} <!--TODO FIX THIS DISPLAY so that isn't text?-->
 {% if object.billing_rate %}<p class="tab"><strong>Billing Rate:</strong> {{ rate }}</p>{% endif %}
 {% if object.outside_agency %}<p class="tab"><strong>Name of Outside Agency:</strong> {{ object.outside_agency }}</p>{% endif %}
 {% if object.notes %}<p class="tab"><strong>Notes:</strong> {{ object.notes }}</p>{% endif %}
