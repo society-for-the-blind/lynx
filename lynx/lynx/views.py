@@ -408,6 +408,12 @@ class EmergencyContactUpdateView(LoginRequiredMixin, UpdateView):
               'emergency_country', 'phone_day', 'phone_other', 'emergency_notes']
     template_name_suffix = '_edit'
 
+class LessonNoteUpdateView(LoginRequiredMixin, UpdateView):
+    model = LessonNote
+    fields = ['date', 'attendance', 'instructional_units', 'billed_units', 'students_no', 'successes',
+              'obstacles', 'recommendations', 'note']
+    template_name_suffix = '_edit'
+
 
 def units_to_hours(units):
     minutes = units * 15

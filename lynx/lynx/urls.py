@@ -24,6 +24,7 @@ urlpatterns = [
     path('contact-edit/<int:pk>', views.ClientUpdateView.as_view(), name='contact-edit'),
     path('address-edit/<int:pk>', views.AddressUpdateView.as_view(), name='address-edit'),
     path('phone-edit/<int:pk>', views.PhoneUpdateView.as_view(), name='phone-edit'),
+    path('lesson-note-edit/<int:pk>', views.LessonNoteUpdateView.as_view(), name='lesson-note-edit'),
     path('email-edit/<int:pk>', views.EmailUpdateView.as_view(), name='email-edit'),
     path('intake-edit/<int:pk>', views.IntakeUpdateView.as_view(), name='intake-edit'),
     path('intake-note-edit/<int:pk>', views.IntakeNoteUpdateView.as_view(), name='intake-note-edit'),

@@ -3,8 +3,11 @@
 {% block content %}
 
 <h1>Authorization for {{ object.contact.first_name }} {{ object.contact.last_name }}</h1>
-<input type="button" onclick="location.href='/lynx/client/{{ object.contact_id }}';" value="Return to {{ object.contact.first_name }} {{ object.contact.last_name }}'s Information " />
-
+<!--<input type="button" onclick="location.href='/lynx/client/{{ object.contact_id }}';" value="" />-->
+<form>
+  <button class="btn btn-success" formaction="/lynx/client/{{ object.contact_id }}">Return to {{ object.contact.first_name }} {{ object.contact.last_name }}'s Information </button>
+</form>
+<hr>
 <h2>Authorization Details</h2>
 {% if object.intake_service_area %}<p class="tab"><strong>Intake Service Area:</strong> {{ object.intake_service_area }}</p>{% endif %}
 {% if object.authorization_number %}<p class="tab"><strong>Authorization Number:</strong> {{ object.authorization_number }}</p>{% endif %}
@@ -18,6 +21,10 @@
 <p class="tab">Created by {{ user.first_name }} {{ user.last_name }} on {{ object.created }}</p>
 <br>
 <h2>Lesson Notes</h2>
+    <div class="alert alert-success" role="alert">
+      To navigate between table cells, use Ctrl+Alt+Arrow Keys<br>
+        If using JAWS, you can activate Table mode by pressing JAWS+Space followed by T. This allows you to use arrow and other navigation keys to move across the table.
+    </div>
     <table class="table">
         <tr>
             <th>Lesson Date</th>
@@ -33,8 +40,7 @@
         </tr>
         {% for note in note_list %}
             <tr>
-<!--                <td><a href='/lynx/lesson-note/{{ note.id }}/'>February 29, 2020: {{ note.billed_units }}</a></td> &lt;!&ndash;TODO don't have this be the link &ndash;&gt;-->
-                <th>February 29, 2020</th> <!--TODO don't have this be the link -->
+                <th>{{ note.date }}</th>
                 <td>{{ note.attendance }}</td>
                 <td>{{ note.billed_units }}</td>
                 <td>{{ note.instructional_units }}</td>
@@ -43,8 +49,13 @@
                 <td>{{ note.recommendations }}</td>
                 <td>{{ note.note }}</td>
                 <td>{{ note.user.first_name }} {{ note.user.last_name }}</td>
-                <td></td>
-                <!--TODO add edit button, do actual button -->
+                <td>
+                    <form>
+                      <button class="btn btn-success" formaction="/lynx/lesson-note/{{ note.id }}/">View</button>
+                      <button class="btn btn-primary" formaction="/lynx/lesson-note-edit/{{ note.id }}">Edit</button>
+                    </form>
+
+                </td>
             </tr>
         {% endfor %}
         <tr>
