@@ -412,7 +412,7 @@ class ProgressReport(models.Model):
 class LessonNote(models.Model):
     authorization = models.ForeignKey('Authorization', on_delete=models.CASCADE)
     date = models.DateField(default=date.today, null=True)
-    attendance = models.CharField(max_length=150, blank=True, choices=(('Present', 'Present'), ('Absent', 'Absent')), null=True)
+    attendance = models.CharField(max_length=150, blank=True, choices=(('Other', 'Other'), ('Present', 'Present'), ('Absent', 'Absent')), null=True)
     instructional_units = models.CharField(max_length=15, blank=True, null=True)
     billed_units = models.CharField(max_length=50, blank=True, choices=UNITS, null=True)
     students_no = models.CharField(max_length=15, blank=True, null=True)
