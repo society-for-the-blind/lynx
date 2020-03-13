@@ -306,9 +306,7 @@ class AuthorizationDetailView(LoginRequiredMixin, DetailView):
             if note['attendance'] == 'Present':
                 total_present += 1
             if note['billed_units']:
-                # if authorization['authorization_type'] == 'Classes':
-                #     units = float(note['billed_units']/8)
-                # if authorization['authorization_type'] == 'Hours':
+
                 units = float(note['billed_units'])
                 total_units += units
             if note['instructional_units']:
@@ -316,6 +314,11 @@ class AuthorizationDetailView(LoginRequiredMixin, DetailView):
                 total_instruction += i_units
 
         context['total_billed'] = total_units * float(authorization[0]['billing_rate'])
+        if authorization[0]['authorization_type'] == 'Classes':
+            context['rate'] = '$' + str(authorization[0]['billing_rate']) + '/class'
+        if authorization[0]['authorization_type'] == 'Hours':
+            billing = 4 * float(authorization[0]['billing_rate'])
+            context['rate'] = '$' + str(billing) + '/hour'
         remaining = float(authorization[0]['total_time']) - total_units
         remaining_hours = units_to_hours(remaining)
         total_hours = units_to_hours(total_units)
