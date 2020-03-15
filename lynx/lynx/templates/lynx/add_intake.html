@@ -1,23 +1,36 @@
 {% extends 'lynx/base.html' %}
 {% load crispy_forms_tags %}
 
+{% block javascript %}
+    <script>
+        $(document).ready(function(){
+            var d = new Date();
+
+            var currentMonth = d.getMonth() + 1;
+            var currentYear = d.getFullYear();
+            var currentDay = d.getDate();
+
+            $('#id_intake_date_year').val(currentYear);
+            $('#id_intake_date_month').val(currentMonth);
+            $('#id_intake_date_day').val(currentDay);
+        });
+    </script>
+{% endblock %}
 
 {% block content %}
 <h1>Intake Page 2 (Client History)</h1>
 <br>
-<!--<input type="button" onclick="location.href='/lynx/client/{{ object.contact_id }}';" value="Return to {{ object.contact.first_name }} {{ object.contact.last_name }}'s Information " />-->
 <form method="post"> {% csrf_token %}
     {{ form.errors }}
     <h2>Intake Information</h2>
             <div class="row">
           <div class="col-3">
-        {{ form.intake_date|as_crispy_field  }} <!--TODO default to current date-->
+        {{ form.intake_date|as_crispy_field  }}
           </div></div>
-<!--        <p><label for="id_intake_type">Intake Type:</label> {{ form.intake_type }}</p>-->
     <h2>Client Demographics</h2>
         <div class="row">
           <div class="col-6">{{ form.birth_date|as_crispy_field }}</div>
-          <div class="col-6">{{ form.age_group|as_crispy_field }}</div> <!-- TODO dropdown -->
+          <div class="col-6">{{ form.age_group|as_crispy_field }}</div>
         </div>
         <div class="row">
           <div class="col-6">{{ form.gender|as_crispy_field }}</div>
@@ -45,7 +58,6 @@
           <div class="col-12">{{ form.work_history|as_crispy_field }}</div>
         </div>
 
-<!--TODO not working labels-->
     <h2>Criminal Background</h2>
         <div class="row">
           <div class="col-4">{{ form.crime|as_crispy_field }}</div>
@@ -136,7 +148,6 @@
             <div class="col-12">{{ form.other|as_crispy_field }}</div>
         </div>
         <div class="row">
-<!--            todo should be a dropdown-->
             <div class="col-12">{{ form.performs_tasks|as_crispy_field }}</div>
         </div>
         <div class="row">

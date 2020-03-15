@@ -17,12 +17,13 @@ class ContactForm(forms.ModelForm):
 
 class IntakeForm(forms.ModelForm):
     currentYear = datetime.now().year
-    oldYear = datetime.now().year - 125
+    oldYear = currentYear - 125
+    highYear = currentYear + 2
     if oldYear < 1900:
         oldYear = 1900
 
-    intake_date = forms.DateField(widget=forms.SelectDateWidget(empty_label="Nothing", years=range(1990, currentYear)))
-    eye_condition_date = forms.DateField(widget=forms.SelectDateWidget(empty_label="Nothing", years=range(oldYear, currentYear)))
+    intake_date = forms.DateField(widget=forms.SelectDateWidget(empty_label="Nothing", years=range(1990, highYear)))
+    eye_condition_date = forms.DateField(widget=forms.SelectDateWidget(empty_label="Nothing", years=range(1920, highYear)))
     birth_date = forms.DateField(widget=forms.SelectDateWidget(years=range(oldYear, currentYear)))
 
     class Meta:
@@ -44,6 +45,7 @@ class IntakeForm(forms.ModelForm):
         self.fields['alzheimers'].label = "Alzheimer’s Disease/Cognitive Impairment"
         self.fields['other_medical'].label = "Other Medical Information"
         self.fields['hobbies'].label = "Hobbies/Interests"
+        self.fields['high_bp'].label = "High BP"
 
 
 class AddressForm(forms.ModelForm):

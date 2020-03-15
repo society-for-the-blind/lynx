@@ -90,6 +90,12 @@ UNITS = (("1", "15 Minutes"), ("2", "30 Minutes"), ("3", "45 Minutes"), ("4", "1
 SALUTATIONS = (("Mr.", "Mr."), ("Mrs.", "Mrs."), ("Miss", "Miss"), ("Ms.", "Ms."), ("Dr.", "Dr."), ("Prof.", "Prof."),
                ("Rev.", "Rev."))
 
+AGES = (("50-54", "50-54"), ("55-59", "55-59"), ("60-64", "60-64"), ("65-69", "65-69"), ("70-74", "70-74"),
+        ("75-79", "75-79"), ("80-84", "80-84"), ("85-89", "85-89"), ("90-94", "90-94"), ("95-99", "95-99"),
+        ("100+", "100+"))
+
+TASKS = (('Visually', 'Visually'), ('Non-Visually', 'Non-Visually'))
+
 
 def get_sentinel_user():
     return get_user_model().objects.get_or_create(username='deleted')[0]
@@ -223,7 +229,7 @@ class Intake(models.Model):
     contact = models.ForeignKey('Contact', on_delete=models.CASCADE)
     intake_date = models.DateField(default=date.today)
     intake_type = models.CharField(max_length=150, blank=True, null=True)
-    age_group = models.CharField(max_length=150, blank=True, null=True)
+    age_group = models.CharField(max_length=50, blank=True, choices=AGES, null=True)
     gender = models.CharField(max_length=50, blank=True, choices=GENDERS, null=True)
     pronouns = models.CharField(max_length=150, blank=True, choices=PRONOUNS, null=True)
     birth_date = models.DateField(blank=True, null=True)
@@ -237,7 +243,7 @@ class Intake(models.Model):
     education = models.CharField(max_length=150, blank=True, choices=EDUCATION, null=True)
     living_arrangement = models.CharField(max_length=150, blank=True, choices=LIVING, null=True)
     residence_type = models.CharField(max_length=150, blank=True, choices=RESIDENCE, null=True)
-    performs_tasks = models.CharField(max_length=150, blank=True, null=True)
+    performs_tasks = models.CharField(max_length=150, blank=True, choices=TASKS, null=True)
     notes = models.TextField(blank=True, null=True)
     training = models.CharField(max_length=250, blank=True, null=True)
     orientation = models.CharField(max_length=250, blank=True, null=True)
@@ -345,8 +351,6 @@ class Authorization(models.Model):
     start_date = models.DateField(blank=True, null=True, default=date.today)
     end_date = models.DateField(blank=True, null=True, default=date.today)
     total_time = models.CharField(max_length=150, blank=True, null=True)
-    # monthly_time = models.CharField(max_length=150, blank=True, null=True)
-    # billing_name = models.ForeignKey('BillingName', on_delete=models.CASCADE)
     billing_rate = models.CharField(max_length=150, blank=True, null=True)
     outside_agency = models.ForeignKey('OutsideAgency', on_delete=models.CASCADE)
     student_plan = models.CharField(max_length=25, choices=(("Yes", "Yes"), ("No", "No")), blank=True, null=True)
@@ -411,7 +415,7 @@ class ProgressReport(models.Model):
 class LessonNote(models.Model):
     authorization = models.ForeignKey('Authorization', on_delete=models.CASCADE)
     date = models.DateField(default=date.today, null=True)
-    attendance = models.CharField(max_length=150, blank=True, choices=(('Other', 'Other'), ('Present', 'Present'), ('Absent', 'Absent')), null=True)
+    attendance = models.CharField(max_length=150, blank=True, choices=(('Present', 'Present'), ('Absent', 'Absent'), ('Other', 'Other')), null=True, default='Present')
     instructional_units = models.CharField(max_length=15, blank=True, null=True)
     billed_units = models.CharField(max_length=50, blank=True, choices=UNITS, null=True)
     students_no = models.CharField(max_length=15, blank=True, null=True)
