@@ -139,19 +139,9 @@ if DEBUG:
     DEBUG_TOOLBAR_CONFIG = {
         'INTERCEPT_REDIRECTS': False,
     }
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql',
-            'NAME': 'lynx2',
-            'USER': 'postgres',
-            'PASSWORD': 'An55wsg',
-            'HOST': 'localhost',
-            'PORT': '5432',
-        }
-    }
-
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
 
 STATIC_URL = '/static/'
+STATIC_ROOT = '/var/www/lynx/slate-2/lynx/lynx/static'
