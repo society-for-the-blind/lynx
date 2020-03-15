@@ -265,7 +265,7 @@ class ContactDetailView(LoginRequiredMixin, DetailView):
         context['phone_list'] = Phone.objects.filter(contact_id=self.kwargs['pk'])
         context['email_list'] = Email.objects.filter(contact_id=self.kwargs['pk'])
         context['intake_list'] = Intake.objects.filter(contact_id=self.kwargs['pk'])
-        context['authorization_list'] = Authorization.objects.filter(contact_id=self.kwargs['pk'])
+        context['authorization_list'] = Authorization.objects.filter(contact_id=self.kwargs['pk']).order_by('-created')
         context['note_list'] = IntakeNote.objects.filter(contact_id=self.kwargs['pk']).order_by('-created')
         context['sip_list'] = SipNote.objects.filter(contact_id=self.kwargs['pk']).order_by('-created')
         context['emergency_list'] = EmergencyContact.objects.filter(contact_id=self.kwargs['pk'])

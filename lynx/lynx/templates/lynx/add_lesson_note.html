@@ -5,8 +5,10 @@
 <br>
 <form method="post"> {% csrf_token %}
     <h2>Lesson Note</h2>
+<!--    todo date dropdown-->
     <p><label for="id_date">Lesson Date</label> {{ form.date }}</p>
     <p><label for="id_attendance">Attendance</label> {{ form.attendance }}</p>
+<!--    todo present as default-->
     <p><label for="id_instructional_units">Instructional Units</label>{{ form.instructional_units }}</p>
     <p><label for="id_billed_units">Billed Units</label>{{ form.billed_units }}</p>
     <p><label for="id_students_no">Number of Students in Class</label>{{ form.students_no }}</p>

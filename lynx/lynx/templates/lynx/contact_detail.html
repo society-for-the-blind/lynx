@@ -125,15 +125,6 @@
 {% endfor %}
 <input type="button" onclick="location.href='/lynx/add-intake/{{ object.id }}/';" value="Add Intake Information" />
 
-<!--<h2>Referral Information</h2>-->
-<!--{% for referral in referral_list %}-->
-<!--    {% if referral.source %}<p class="tab"><strong>Source:</strong> {{ referral.source }}</p>{% endif %}-->
-<!--    {% if referral.name %}<p class="tab"><strong>Name:</strong> {{ referral.name }}</p>{% endif %}-->
-<!--    {% if referral.referral_date %}<p class="tab"><strong>Referral Date:</strong> {{ referral.referral_date }}</p>{% endif %}-->
-<!--{% empty %}-->
-<!--    <p class="tab">Sorry, no referral information for this client</p>-->
-<!--{% endfor %}-->
-
 <h2>Emergency Contacts</h2>
 {% for emergency in emergency_list %}
     <h3 class="tab">{{ emergency.name }}</h3>

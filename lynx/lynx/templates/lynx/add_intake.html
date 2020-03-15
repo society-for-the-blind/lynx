@@ -11,13 +11,13 @@
     <h2>Intake Information</h2>
             <div class="row">
           <div class="col-3">
-        {{ form.intake_date|as_crispy_field  }} <!--TODO CHECK FOR ALL DATES AS DROP DOWNS -->
+        {{ form.intake_date|as_crispy_field  }} <!--TODO default to current date-->
           </div></div>
 <!--        <p><label for="id_intake_type">Intake Type:</label> {{ form.intake_type }}</p>-->
     <h2>Client Demographics</h2>
         <div class="row">
           <div class="col-6">{{ form.birth_date|as_crispy_field }}</div>
-          <div class="col-6">{{ form.age_group|as_crispy_field }}</div>
+          <div class="col-6">{{ form.age_group|as_crispy_field }}</div> <!-- TODO dropdown -->
         </div>
         <div class="row">
           <div class="col-6">{{ form.gender|as_crispy_field }}</div>
@@ -45,7 +45,7 @@
           <div class="col-12">{{ form.work_history|as_crispy_field }}</div>
         </div>
 
-
+<!--TODO not working labels-->
     <h2>Criminal Background</h2>
         <div class="row">
           <div class="col-4">{{ form.crime|as_crispy_field }}</div>
@@ -67,6 +67,7 @@
         </div>
     <h2>Medical History</h2>
         <div class="row">
+<!--            todo multi select dropdown-->
             <div class="col-6">{{ form.eye_condition|as_crispy_field  }}</div>
             <div class="col-6">{{ form.eye_condition_date |as_crispy_field }}</div>
         </div>
@@ -135,6 +136,7 @@
             <div class="col-12">{{ form.other|as_crispy_field }}</div>
         </div>
         <div class="row">
+<!--            todo should be a dropdown-->
             <div class="col-12">{{ form.performs_tasks|as_crispy_field }}</div>
         </div>
         <div class="row">

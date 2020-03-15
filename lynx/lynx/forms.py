@@ -21,7 +21,7 @@ class IntakeForm(forms.ModelForm):
     if oldYear < 1900:
         oldYear = 1900
 
-    intake_date = forms.DateField(widget=forms.SelectDateWidget(empty_label="Nothing", years=range(oldYear, currentYear)))
+    intake_date = forms.DateField(widget=forms.SelectDateWidget(empty_label="Nothing", years=range(1990, currentYear)))
     eye_condition_date = forms.DateField(widget=forms.SelectDateWidget(empty_label="Nothing", years=range(oldYear, currentYear)))
     birth_date = forms.DateField(widget=forms.SelectDateWidget(years=range(oldYear, currentYear)))
 

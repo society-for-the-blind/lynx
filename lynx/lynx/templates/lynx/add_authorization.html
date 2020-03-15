@@ -6,6 +6,7 @@
 <form method="post"> {% csrf_token %}
     {{ form.as_p }}
     {{ form.errors }}
+<!--    todo get rid of billing name-->
     <input type="submit" value="Submit">
 </form>
 {% endblock %}

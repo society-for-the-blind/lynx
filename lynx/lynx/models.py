@@ -40,16 +40,15 @@ COUNTIES = (("Alameda", "Alameda"), ("Alpine", "Alpine"), ("Amador", "Amador"), 
           ("Tehama", "Tehama"), ("Trinity", "Trinity"), ("Tulare", "Tulare"), ("Tuolumne", "Tuolumne"),
           ("Ventura", "Ventura"), ("Yolo", "Yolo"), ("Yuba", "Yuba"), ("Other/None", "Other/None"))
 
-REGIONS = (("Sacramento", "Sacramento"), ("Fresno", "Fresno"), ("Chico", "Chico"), ("Diablo", "Diablo"))
+REGIONS = (("Chico", "Chico"), ("Diablo", "Diablo"), ("Fresno", "Fresno"), ("Sacramento", "Sacramento"), ("Other", "Other"))
 
 GENDERS = (("Female", "Female"), ("Male", "Male"), ("Non-Binary", "Non-Binary"),
            ("Gender Non-Conforming", "Gender Non-Conforming"), ("Other (in notes)", "Other (in notes)"),
            ("Prefer Not to Say", "Prefer Not to Say"), )
 
-ETHNICITIES = (("White", "White"), ("Hispanic or Latino", "Hispanic or Latino"),
-               ("Black or African American", "Black or African American"), ("Asian", "Asian"),
-               ("American Indian or Alaska Native", "American Indian or Alaska Native"),
-               ("Native Hawaiian or Other Pacific Islander", "Native Hawaiian or Other Pacific Islander"),
+ETHNICITIES = (("American Indian or Alaska Native", "American Indian or Alaska Native"), ("Asian", "Asian"),
+               ("Black or African American", "Black or African American"), ("Hispanic or Latino", "Hispanic or Latino"),
+               ("Native Hawaiian or Other Pacific Islander", "Native Hawaiian or Other Pacific Islander"), ("White", "White"),
                ("Other", "Other"))
 
 MAILINGS = (("N/A", "N/A"), ("Print", "Print"), ("Large Print", "Large Print"), ("Braille", "Braille"),
@@ -73,8 +72,8 @@ LANGUAGES = (("English", "English"), ("Armenian", "Armenian"), ("Arabic", "Arabi
              ("Thai (laotian)", "Thai (laotian)"), ("Turkish", "Turkish"), ("Ukrainian", "Ukrainian"),
              ("Vietnamese", "Vietnamese"))
 
-EDUCATION = (("None", "None"), ("GED", "GED"), ("High School", "High School"), ("Associates", "Associates"),
-             ("Bachelors", "Bachelors"), ("Masters", "Masters"), ("Doctorate", "Doctorate"))
+EDUCATION = (("None", "None"), ("Less than High School", "Less than High School"), ("GED", "GED"), ("High School", "High School"),
+             ("Associates", "Associates"), ("Bachelors", "Bachelors"), ("Masters", "Masters"), ("Doctorate", "Doctorate"))
 
 PRONOUNS = (("He/Him", "He/Him"), ("She/Her", "She/Her"), ("They/Them", "They/Them"), ("Ve/Ver", "Ve/Ver"),
             ("Xe/Xim", "Xe/Xim"), ("Ze/Hir", "Ze/Hir"), ("Other (in notes)", "Other (in notes)"))
@@ -155,7 +154,7 @@ class Phone (models.Model):
 
     def get_absolute_url(self):
         return "/lynx/client/%i" % self.contact_id
-
+#TODO check for duplicates
 
 # Employee information. Contact information in Contact table, addresses in Address table.
 class Employee(models.Model):
@@ -347,7 +346,7 @@ class Authorization(models.Model):
     end_date = models.DateField(blank=True, null=True, default=date.today)
     total_time = models.CharField(max_length=150, blank=True, null=True)
     # monthly_time = models.CharField(max_length=150, blank=True, null=True)
-    billing_name = models.ForeignKey('BillingName', on_delete=models.CASCADE)
+    # billing_name = models.ForeignKey('BillingName', on_delete=models.CASCADE)
     billing_rate = models.CharField(max_length=150, blank=True, null=True)
     outside_agency = models.ForeignKey('OutsideAgency', on_delete=models.CASCADE)
     student_plan = models.CharField(max_length=25, choices=(("Yes", "Yes"), ("No", "No")), blank=True, null=True)
