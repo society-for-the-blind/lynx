@@ -520,7 +520,9 @@ def billing_report(request):
                  'Amount', 'Payment Source'])
 
             for key, value in reports.items():
-                in_hours = str(float(value['billed_time'])/4) + ' hours'
+                in_hours = 'No hours'
+                if value['billed_time']:
+                    in_hours = str(float(value['billed_time'])/4) + ' hours'
                 writer.writerow([value['client'], value['service_area'], value['authorization_number'],
                                  value['authorization_type'], in_hours, value['rate'], value['amount'],
                                  value['outside_agency']])
