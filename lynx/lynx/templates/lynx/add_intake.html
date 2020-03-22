@@ -80,8 +80,9 @@
     <h2>Medical History</h2>
         <div class="row">
 <!--            todo multi select dropdown-->
-            <div class="col-6">{{ form.eye_condition|as_crispy_field  }}</div>
-            <div class="col-6">{{ form.eye_condition_date |as_crispy_field }}</div>
+            <div class="col-4">{{ form.eye_condition|as_crispy_field  }}</div>
+            <div class="col-4">{{ form.secondary_eye_condition|as_crispy_field  }}</div>
+            <div class="col-4">{{ form.eye_condition_date |as_crispy_field }}</div>
         </div>
         <div class="row">
             <div class="col-6">{{ form.degree|as_crispy_field  }}</div>
@@ -101,19 +102,22 @@
         </div>
         <div class="row">
             <div class="col-3"> {{ form.musculoskeletal|as_crispy_field  }}</div>
-            <div class="col-3">{{ form.alzheimers|as_crispy_field  }}</div>
             <div class="col-3">{{ form.high_bp|as_crispy_field  }}</div>
-            <div class="col-3"> {{ form.neuropathy|as_crispy_field  }}</div>
+            <div class="col-6">{{ form.alzheimers|as_crispy_field  }}</div>
         </div>
         <div class="row">
+            <div class="col-3"> {{ form.neuropathy|as_crispy_field  }}</div>
             <div class="col-3"> {{ form.pain|as_crispy_field  }}</div>
             <div class="col-3">{{ form.asthma|as_crispy_field  }}</div>
             <div class="col-3">{{ form.cancer|as_crispy_field  }}</div>
-            <div class="col-3"> {{ form.substance_abuse|as_crispy_field }}</div>
         </div>
         <div class="row">
+            <div class="col-3"> {{ form.substance_abuse|as_crispy_field }}</div>
             <div class="col-3">{{ form.memory_loss|as_crispy_field  }}</div>
             <div class="col-3">{{ form.learning_disability|as_crispy_field  }}</div>
+       </div>
+        <div class="row">
+            <div class="col-6">{{ form.geriatric|as_crispy_field  }}</div>
        </div>
         <div class="row">
             <div class="col-6">{{ form.allergies|as_crispy_field  }}</div>

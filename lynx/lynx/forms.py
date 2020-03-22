@@ -6,6 +6,10 @@ from .models import Contact, Address, Intake, Email, Phone, Referral, IntakeNote
 
 from datetime import datetime
 
+months = (("1", "January"), ("2", "February"), ("3", "March"), ("4", "April"),
+            ("5", "May"), ("6", "June"), ("7", "July"), ("8", "August"), ("9", "September"),
+            ("10", "October"), ("11", "November"), ("12", "December"))
+
 
 class ContactForm(forms.ModelForm):
 
@@ -46,6 +50,7 @@ class IntakeForm(forms.ModelForm):
         self.fields['other_medical'].label = "Other Medical Information"
         self.fields['hobbies'].label = "Hobbies/Interests"
         self.fields['high_bp'].label = "High BP"
+        self.fields['geriatric'].label = "Other Major Geriatric Concerns"
 
 
 class AddressForm(forms.ModelForm):
@@ -105,6 +110,14 @@ class ProgressReportForm(forms.ModelForm):
         model = ProgressReport
         exclude = ('created', 'modified', 'user', 'authorization')
 
+    def __init__(self, *args, **kwargs):
+        super(ProgressReportForm, self).__init__(*args, **kwargs)
+        self.fields['client_behavior'].label = "Client Attendance and Behavior"
+        self.fields['short_term_goals'].label = "Short Term Learning Goals"
+        self.fields['short_term_goals_time'].label = "Estimated Time for Short Term Goals"
+        self.fields['long_term_goals'].label = "Long Term Learning Goals"
+        self.fields['long_term_goals_time'].label = "Estimated Time for Long Term Goals"
+
 
 class LessonNoteForm(forms.ModelForm):
     date = forms.DateField(widget=forms.SelectDateWidget(empty_label="Nothing"))
@@ -122,3 +135,23 @@ class SipNoteForm(forms.ModelForm):
 
         model = SipNote
         exclude = ('created', 'modified', 'user', 'contact')
+
+
+class BillingReportForm(forms.Form):
+    current_year = datetime.now().year
+    old_year = current_year - 20
+    high_year = current_year + 2
+
+    years = []
+    for x in range(old_year, high_year):
+        year_str = str(x)
+        year_pair = (year_str, year_str)
+        years.append(year_pair)
+
+    month = forms.ChoiceField(choices = months)
+    year = forms.ChoiceField(choices = years)
+
+    def __init__(self, *args, **kwargs):
+        super(BillingReportForm, self).__init__(*args, **kwargs)
+        current_year = datetime.now().year
+        self.initial['year'] = str(current_year)

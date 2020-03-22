@@ -1,0 +1,12 @@
+{% extends 'lynx/base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Edit Progress Report{% endblock %}
+
+{% block content %}
+  <form method="post" >
+    {% csrf_token %}
+    {{ form|crispy }}
+    <input type="submit" value="Update">
+  </form>
+{% endblock %}

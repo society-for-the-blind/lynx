@@ -96,6 +96,9 @@ AGES = (("50-54", "50-54"), ("55-59", "55-59"), ("60-64", "60-64"), ("65-69", "6
 
 TASKS = (('Visually', 'Visually'), ('Non-Visually', 'Non-Visually'))
 
+CONDITIONS = (('Cataracts', 'Cataracts'), ('Diabetic Retinopathy', 'Diabetic Retinopathy'), ('Glaucoma', 'Glaucoma'),
+              ('Macular Degeneration', 'Macular Degeneration'), ('Other', 'Other'))
+
 
 def get_sentinel_user():
     return get_user_model().objects.get_or_create(username='deleted')[0]
@@ -233,7 +236,6 @@ class Intake(models.Model):
     gender = models.CharField(max_length=50, blank=True, choices=GENDERS, null=True)
     pronouns = models.CharField(max_length=150, blank=True, choices=PRONOUNS, null=True)
     birth_date = models.DateField(blank=True, null=True)
-    ssn = models.CharField(max_length=15, blank=True, null=True)
     ethnicity = models.CharField(max_length=50, blank=True, choices=ETHNICITIES, null=True)
     other_ethnicity = models.CharField(max_length=50, blank=True, null=True)
     income = models.CharField(max_length=25, choices=INCOMES, blank=True, null=True)
@@ -245,10 +247,6 @@ class Intake(models.Model):
     residence_type = models.CharField(max_length=150, blank=True, choices=RESIDENCE, null=True)
     performs_tasks = models.CharField(max_length=150, blank=True, choices=TASKS, null=True)
     notes = models.TextField(blank=True, null=True)
-    training = models.CharField(max_length=250, blank=True, null=True)
-    orientation = models.CharField(max_length=250, blank=True, null=True)
-    confidentiality = models.CharField(max_length=250, blank=True, null=True)
-    dmv = models.CharField(max_length=250, blank=True, null=True)
     work_history = models.TextField(blank=True, null=True)
     veteran = models.BooleanField(blank=True, default=False)
     member_name = models.CharField(max_length=250, blank=True, null=True)
@@ -263,7 +261,8 @@ class Intake(models.Model):
     training_goals = models.TextField(blank=True, null=True)
     training_preferences = models.TextField(blank=True, null=True)
     other = models.TextField(blank=True, null=True)
-    eye_condition = models.CharField(max_length=250, blank=True, null=True)
+    eye_condition = models.CharField(max_length=250, blank=True, null=True, choices = CONDITIONS)
+    secondary_eye_condition = models.CharField(max_length=250, blank=True, null=True)
     eye_condition_date = models.DateField(null=True, blank=True)
     degree = models.CharField(max_length=250, blank=True, choices=DEGREE, null=True)
     prognosis = models.CharField(max_length=250, blank=True, choices=PROGNOSIS, null=True)
@@ -282,6 +281,7 @@ class Intake(models.Model):
     cancer = models.BooleanField(blank=True, default=False)
     musculoskeletal = models.BooleanField(blank=True, default=False)
     alzheimers = models.BooleanField(blank=True, default=False)
+    geriatric = models.BooleanField(blank=True, default=False)
     allergies = models.CharField(max_length=250, blank=True, null=True)
     mental_health = models.CharField(max_length=250, blank=True, null=True)
     substance_abuse = models.BooleanField(blank=True, default=False)
@@ -400,11 +400,14 @@ class BillingName(models.Model):
 
 class ProgressReport(models.Model):
     month = models.CharField(max_length=25, choices=MONTHS, blank=True, null=True)
+    # year = models.CharField(max_length=25, blank=True, null=True)
     authorization = models.ForeignKey('Authorization', on_delete=models.CASCADE)
     instructor = models.CharField(max_length=150, blank=True, null=True)
     accomplishments = models.TextField(blank=True, null=True)
-    remaining_objectives = models.TextField(blank=True, null=True)
-    estimated_hours = models.TextField(blank=True, null=True)
+    short_term_goals = models.TextField(blank=True, null=True)
+    short_term_goals_time = models.CharField(max_length=150, blank=True, null=True)
+    long_term_goals = models.TextField(blank=True, null=True)
+    long_term_goals_time = models.CharField(max_length=150, blank=True, null=True)
     client_behavior = models.TextField(blank=True, null=True)
     notes = models.TextField(blank=True, null=True)
     created = models.DateTimeField(auto_now_add=True, null=True)
@@ -413,7 +416,7 @@ class ProgressReport(models.Model):
 
 
 class LessonNote(models.Model):
-    authorization = models.ForeignKey('Authorization', on_delete=models.CASCADE)
+    authorization = models.ForeignKey('Authorization', on_delete=models.CASCADE, related_name='lesson')
     date = models.DateField(default=date.today, null=True)
     attendance = models.CharField(max_length=150, blank=True, choices=(('Present', 'Present'), ('Absent', 'Absent'), ('Other', 'Other')), null=True, default='Present')
     instructional_units = models.CharField(max_length=15, blank=True, null=True)

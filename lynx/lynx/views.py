@@ -8,11 +8,15 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic.edit import UpdateView
 from django.urls import reverse_lazy
 from django.db.models import Q
+from django.db import connection
+
+import csv
+from datetime import datetime
 
 from .models import Contact, Address, Phone, Email, Intake, Referral, IntakeNote, EmergencyContact, Authorization, \
     ProgressReport, LessonNote, SipNote
 from .forms import ContactForm, IntakeForm, IntakeNoteForm, EmergencyForm, AddressForm, EmailForm, PhoneForm, \
-    AuthorizationForm, ProgressReportForm, LessonNoteForm, SipNoteForm
+    AuthorizationForm, ProgressReportForm, LessonNoteForm, SipNoteForm, BillingReportForm
 
 
 @login_required
@@ -313,18 +317,26 @@ class AuthorizationDetailView(LoginRequiredMixin, DetailView):
                 i_units = float(note['instructional_units'])
                 total_instruction += i_units
 
-        context['total_billed'] = total_units * float(authorization[0]['billing_rate'])
-        if authorization[0]['authorization_type'] == 'Classes':
-            context['rate'] = '$' + str(authorization[0]['billing_rate']) + '/class'
-        if authorization[0]['authorization_type'] == 'Hours':
-            billing = 4 * float(authorization[0]['billing_rate'])
-            context['rate'] = '$' + str(billing) + '/hour'
-        remaining = float(authorization[0]['total_time']) - total_units
-        remaining_hours = units_to_hours(remaining)
+        if authorization[0]['billing_rate'] is None:
+            context['total_billed'] = 'Need to enter billing rate'
+            context['rate'] = 'Need to enter billing rate'
+        else:
+            context['total_billed'] = '$' + str(total_units * float(authorization[0]['billing_rate']))
+            if authorization[0]['authorization_type'] == 'Classes':
+                context['rate'] = '$' + str(authorization[0]['billing_rate']) + '/class'
+            if authorization[0]['authorization_type'] == 'Hours':
+                billing = 4 * float(authorization[0]['billing_rate'])
+                context['rate'] = '$' + str(billing) + '/hour'
+        if authorization[0]['total_time'] is None:
+            context['remaining_hours'] = "Need to enter total time"
+        else:
+            remaining = float(authorization[0]['total_time']) - total_units
+            remaining_hours = units_to_hours(remaining)
+            context['remaining_hours'] = remaining_hours
         total_hours = units_to_hours(total_units)
         context['total_hours'] = total_hours
         context['total_notes'] = total_notes
-        context['remaining_hours'] = remaining_hours
+
         context['total_present'] = total_present
         context['total_instruction'] = total_instruction
         context['form'] = LessonNoteForm
@@ -386,14 +398,32 @@ class IntakeUpdateView(LoginRequiredMixin, UpdateView):
     model = Intake
     fields = ['intake_date', 'gender', 'pronouns', 'birth_date', 'ethnicity', 'other_ethnicity', 'income',
               'first_language', 'second_language', 'other_languages', 'education', 'living_arrangement',
-              'residence_type', 'performs_tasks', 'notes', 'confidentiality', 'dmv', 'work_history',
-              'veteran', 'active', 'crime', 'crime_info', 'crime_other', 'parole', 'parole_info',
+              'residence_type', 'performs_tasks', 'notes', 'work_history', 'geriatric', 'age_group', 'veteran',
+              'active', 'crime', 'crime_info', 'crime_other', 'parole', 'parole_info', 'secondary_eye_condition',
               'crime_history', 'previous_training', 'training_goals', 'training_preferences', 'other', 'eye_condition',
               'eye_condition_date', 'degree', 'prognosis', 'diabetes', 'dialysis', 'hearing_loss', 'mobility', 'stroke',
               'seizure', 'heart', 'high_bp', 'neuropathy', 'pain', 'asthma', 'cancer', 'allergies', 'mental_health',
               'substance_abuse', 'memory_loss', 'learning_disability', 'other_medical', 'medications', 'medical_notes',
               'hired', 'arthritis', 'musculoskeletal', 'alzheimers', 'hobbies', 'employment_goals']
     template_name_suffix = '_edit'
+
+    def get_form(self, form_class=None):
+        form = super().get_form(form_class=form_class)
+        form.fields["other_languages"].label = "Other Language(s)"
+        form.fields["other_ethnicity"].label = "Ethnicity (if other)"
+        form.fields["crime"].label = "Have you been convicted of a crime?"
+        form.fields["crime_info"].label = "If yes, what and when did the convictions occur? What county did this conviction occur in?"
+        form.fields["crime_other"].label = "Criminal Conviction Information"
+        form.fields["parole"].label = "Are you on parole?"
+        form.fields["parole_info"].label = "Parole Information"
+        form.fields["crime_history"].label = "Additional Criminal History"
+        form.fields["musculoskeletal"].label = "Musculoskeletal Disorders"
+        form.fields["alzheimers"].label = "Alzheimer’s Disease/Cognitive Impairment"
+        form.fields["other_medical"].label = "Other Medical Information"
+        form.fields["hobbies"].label = "Hobbies/Interests"
+        form.fields["high_bp"].label = "High BP"
+        form.fields["geriatric"].label = "Other Major Geriatric Concerns"
+        return form
 
 
 class IntakeNoteUpdateView(LoginRequiredMixin, UpdateView):
@@ -408,11 +438,96 @@ class EmergencyContactUpdateView(LoginRequiredMixin, UpdateView):
               'emergency_country', 'phone_day', 'phone_other', 'emergency_notes']
     template_name_suffix = '_edit'
 
+
 class LessonNoteUpdateView(LoginRequiredMixin, UpdateView):
     model = LessonNote
     fields = ['date', 'attendance', 'instructional_units', 'billed_units', 'students_no', 'successes',
               'obstacles', 'recommendations', 'note']
     template_name_suffix = '_edit'
+
+
+class ProgressReportUpdateView(LoginRequiredMixin, UpdateView):
+    model = ProgressReport
+    fields = ['month', 'instructor', 'accomplishments', 'short_term_goals', 'short_term_goals_time',
+              'long_term_goals', 'long_term_goals_time', 'client_behavior']
+    template_name_suffix = '_edit'
+
+    def get_form(self, form_class=None):
+        form = super().get_form(form_class=form_class)
+        form.fields["client_behavior"].label = "Client Attendance and Behavior"
+        form.fields["short_term_goals"].label = "Short Term Learning Goals"
+        form.fields["short_term_goals_time"].label = "Estimated Time for Short Term Goals"
+        form.fields["long_term_goals"].label = "Long Term Learning Goals"
+        form.fields["long_term_goals_time"].label = "Estimated Time for Long Term Goals"
+        return form
+
+
+def billing_report(request):
+    form = BillingReportForm()
+    if request.method == 'POST':
+        form = BillingReportForm(request.POST)
+        if form.is_valid():
+            data = request.POST.copy()
+            month = data.get('month')
+            year = data.get('year')
+
+            with connection.cursor() as cursor:
+                cursor.execute("""SELECT CONCAT(c.first_name, ' ', c.last_name) as name, sa.agency as service_area, auth.authorization_type, auth.authorization_number,
+                                    ln.billed_units, auth.billing_rate, oa.agency as outside_agency
+                                    FROM lynx_authorization as auth
+                                    LEFT JOIN lynx_contact as c on c.id = auth.contact_id
+                                    LEFT JOIN lynx_lessonnote as ln  on ln.authorization_id = auth.id
+                                    LEFT JOIN lynx_intakeservicearea as sa on auth.intake_service_area_id = sa.id
+                                    LEFT JOIN lynx_outsideagency as oa on auth.outside_agency_id = oa.id
+                                    where extract(month FROM date) = '%s' and extract(year FROM date) = '%s';""" % (month, year))
+                auth_set = dictfetchall(cursor)
+
+            reports = {}
+            for report in auth_set:
+                # print(report)
+                authorization_number = report['authorization_number']
+                billing_rate = float(report['billing_rate'])
+                if authorization_number in reports.keys():
+                    if report['billed_units'] and reports[authorization_number]['billed_time']:
+                        reports[authorization_number]['billed_time']  = float(report['billed_units']) + float(reports[authorization_number]['billed_time'])
+                    elif report['billed_units']:
+                        reports[authorization_number]['billed_time']  = float(report['billed_units'])
+                    reports[authorization_number]['amount'] = billing_rate * float(reports[authorization_number]['billed_time'])
+                else:
+                    service_area = report['service_area']
+                    authorization_type = report['authorization_type']
+                    outside_agency = report['outside_agency']
+                    client = report['name']
+                    billed_time = report['billed_units']
+                    rate = str(billing_rate * 4) + '/hour'
+                    if billed_time:
+                        amount = float(billed_time) * billing_rate
+                    else:
+                        amount = 0
+                    auth = {'service_area': service_area, 'authorization_number': authorization_number,
+                            'authorization_type': authorization_type, 'outside_agency': outside_agency, 'rate': rate,
+                            'client': client, 'billed_time': billed_time, 'amount': amount}
+                    reports[authorization_number] = auth
+
+            filename = "Core Lynx Excel Billing - " + month + " - " + year
+            response = HttpResponse(content_type='text/csv')
+            response['Content-Disposition'] = 'attachment; filename="' + filename + '.csv"'
+
+            writer = csv.writer(response)
+            writer.writerow(
+                ['Client', 'Service Area', 'Authorization', 'Authorization Type', 'Billed Time', 'Billing Rate',
+                 'Amount', 'Payment Source'])
+
+            for key, value in reports.items():
+                in_hours = str(float(value['billed_time'])/4) + ' hours'
+                writer.writerow([value['client'], value['service_area'], value['authorization_number'],
+                                 value['authorization_type'], in_hours, value['rate'], value['amount'],
+                                 value['outside_agency']])
+
+            return response
+
+    return render(request, 'lynx/billing_report.html', {'form': form})
+
 
 
 def units_to_hours(units):
@@ -425,3 +540,12 @@ def hours_to_units(hours):
     minutes = hours * 60
     units = minutes/15
     return units
+
+
+def dictfetchall(cursor):
+    "Return all rows from a cursor as a dict"
+    columns = [col[0] for col in cursor.description]
+    return [
+        dict(zip(columns, row))
+        for row in cursor.fetchall()
+    ]

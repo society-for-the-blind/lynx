@@ -1,12 +1,12 @@
 {% extends 'lynx/base.html' %}
+{% load crispy_forms_tags %}
 
 {% block content %}
 <h1>Add Progress Report</h1>
 <br>
 <form method="post"> {% csrf_token %}
-    {{ form.as_p }}
+    {{ form|crispy }}
     {{ form.errors }}
-<!--    todo short term learning goals, long term, estimated time remaining for each-->
     <input type="submit" value="Submit">
 </form>
 {% endblock %}
