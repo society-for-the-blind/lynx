@@ -490,9 +490,10 @@ def billing_report(request):
                 if authorization_number in reports.keys():
                     if report['billed_units'] and reports[authorization_number]['billed_time']:
                         reports[authorization_number]['billed_time']  = float(report['billed_units']) + float(reports[authorization_number]['billed_time'])
+                        reports[authorization_number]['amount'] = billing_rate * float(reports[authorization_number]['billed_time'])
                     elif report['billed_units']:
                         reports[authorization_number]['billed_time']  = float(report['billed_units'])
-                    reports[authorization_number]['amount'] = billing_rate * float(reports[authorization_number]['billed_time'])
+                        reports[authorization_number]['amount'] = billing_rate * float(reports[authorization_number]['billed_time'])
                 else:
                     service_area = report['service_area']
                     authorization_type = report['authorization_type']
