@@ -6,9 +6,8 @@ from .models import Contact, Address, Intake, Email, Phone, Referral, IntakeNote
 
 from datetime import datetime
 
-months = (("1", "January"), ("2", "February"), ("3", "March"), ("4", "April"),
-            ("5", "May"), ("6", "June"), ("7", "July"), ("8", "August"), ("9", "September"),
-            ("10", "October"), ("11", "November"), ("12", "December"))
+months = (("1", "January"), ("2", "February"), ("3", "March"), ("4", "April"), ("5", "May"), ("6", "June"),
+          ("7", "July"), ("8", "August"), ("9", "September"), ("10", "October"), ("11", "November"), ("12", "December"))
 
 
 class ContactForm(forms.ModelForm):
@@ -47,10 +46,12 @@ class IntakeForm(forms.ModelForm):
         self.fields['crime_history'].label = "Additional Criminal History"
         self.fields['musculoskeletal'].label = "Musculoskeletal Disorders"
         self.fields['alzheimers'].label = "Alzheimer’s Disease/Cognitive Impairment"
-        self.fields['other_medical'].label = "Other Medical Information"
+        self.fields['other_medical'].label = "Medical History"
         self.fields['hobbies'].label = "Hobbies/Interests"
         self.fields['high_bp'].label = "High BP"
         self.fields['geriatric'].label = "Other Major Geriatric Concerns"
+        self.fields['degree'].label = "Degree of Vision Loss"
+        self.fields['secondary_eye_condition'].label = "Secondary eye condition/Other notes"
 
 
 class AddressForm(forms.ModelForm):

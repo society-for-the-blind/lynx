@@ -90,14 +90,20 @@ UNITS = (("1", "15 Minutes"), ("2", "30 Minutes"), ("3", "45 Minutes"), ("4", "1
 SALUTATIONS = (("Mr.", "Mr."), ("Mrs.", "Mrs."), ("Miss", "Miss"), ("Ms.", "Ms."), ("Dr.", "Dr."), ("Prof.", "Prof."),
                ("Rev.", "Rev."))
 
-AGES = (("50-54", "50-54"), ("55-59", "55-59"), ("60-64", "60-64"), ("65-69", "65-69"), ("70-74", "70-74"),
-        ("75-79", "75-79"), ("80-84", "80-84"), ("85-89", "85-89"), ("90-94", "90-94"), ("95-99", "95-99"),
-        ("100+", "100+"))
+AGES = (("Less than 54", "Less than 54"), ("50-54", "50-54"), ("55-59", "55-59"), ("60-64", "60-64"),
+        ("65-69", "65-69"), ("70-74", "70-74"), ("75-79", "75-79"), ("80-84", "80-84"), ("85-89", "85-89"),
+        ("90-94", "90-94"), ("95-99", "95-99"), ("100+", "100+"))
 
 TASKS = (('Visually', 'Visually'), ('Non-Visually', 'Non-Visually'))
 
-CONDITIONS = (('Cataracts', 'Cataracts'), ('Diabetic Retinopathy', 'Diabetic Retinopathy'), ('Glaucoma', 'Glaucoma'),
-              ('Macular Degeneration', 'Macular Degeneration'), ('Other', 'Other'))
+CONDITIONS = (('Cataracts', 'Cataracts'), ('Cone Rod Dystrophy', 'Cone Rod Dystrophy'),
+              ('Diabetic Retinopathy', 'Diabetic Retinopathy'), ('Glaucoma', 'Glaucoma'), ('Keratoconus','Keratoconus'),
+              ('Leber Hereditary Optic Neuropathy (LHON)', 'Leber Hereditary Optic Neuropathy (LHON)'),
+              ('Macular Degeneration', 'Macular Degeneration'), ('Ocular Albinism', 'Ocular Albinism'),
+              ('Retinitis Pigmentosa (RP)', 'Retinitis Pigmentosa (RP)'),
+              ('Retinopathy of Prematurity(ROP)', 'Retinopathy of Prematurity(ROP)'), ('Stargardt Disease', 'Stargardt Disease'),
+              ('Stroke-related', 'Stroke-related'), ('Trauma or injury', 'Trauma or injury'), ('Uveitis', 'Uveitis'),
+              ('Other', 'Other'))
 
 
 def get_sentinel_user():
@@ -217,7 +223,7 @@ class Intake(models.Model):
                ("$100,001-$125,000", "$100,001-$125,000"), ("$125,001-$1150,000", "$125,001-$150,000"),
                (">$150,000", ">$150,000"))
 
-    LIVING = (("Live Alone", "Live Alone"), ("Live With Spouse", "Live With Spouse"),
+    LIVING = (("Live Alone", "Live Alone"), ("Live With Spouse or Family", "Live With Spouse or Family"),
               ("Live With Other", "Live With Other"), ("Homeless", "Homeless"))
 
     RESIDENCE = (("Private Residence", "Private Residence"), ("Community Residential", "Community Residential"),
@@ -227,7 +233,8 @@ class Intake(models.Model):
     PROGNOSIS = (("Stable", "Stable"), ("Diminishing", "Diminishing"))
 
     DEGREE = (("Totally Blind (NP or NLP)", "Totally Blind (NP or NLP)"), ("Legally Blind", "Legally Blind"),
-              ("Severe Visual Impairment", "Severe Visual Impairment"), ("Low Vision", "Low Vision"))
+              ("Severe Visual Impairment", "Severe Visual Impairment"), ("Light Perception Only", "Light Perception Only"),
+              ("Low Vision", "Low Vision"))
 
     contact = models.ForeignKey('Contact', on_delete=models.CASCADE)
     intake_date = models.DateField(default=date.today)
