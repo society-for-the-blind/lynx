@@ -13,7 +13,7 @@ from django.db import connection
 import csv
 from datetime import datetime
 
-from .models import Contact, Address, Phone, Email, Intake, Referral, IntakeNote, EmergencyContact, Authorization, \
+from .models import Contact, Address, Phone, Email, Intake, IntakeNote, EmergencyContact, Authorization, \
     ProgressReport, LessonNote, SipNote
 from .forms import ContactForm, IntakeForm, IntakeNoteForm, EmergencyForm, AddressForm, EmailForm, PhoneForm, \
     AuthorizationForm, ProgressReportForm, LessonNoteForm, SipNoteForm, BillingReportForm
@@ -378,7 +378,7 @@ class ClientUpdateView(LoginRequiredMixin, UpdateView):
 class AddressUpdateView(LoginRequiredMixin, UpdateView):
     model = Address
     fields = ['address_one', 'address_two', 'suite', 'city', 'state', 'zip_code', 'county', 'country', 'region',
-              'cross_streets', 'bad_address', 'billing', 'address_notes']
+              'cross_streets', 'bad_address', 'address_notes']
     template_name_suffix = '_edit'
 
 
@@ -435,7 +435,7 @@ class IntakeNoteUpdateView(LoginRequiredMixin, UpdateView):
 class EmergencyContactUpdateView(LoginRequiredMixin, UpdateView):
     model = EmergencyContact
     fields = ['name', 'emergency_address_one', 'emergency_address_two', 'emergency_city', 'emergency_state', 'emergency_zip_code',
-              'emergency_country', 'phone_day', 'phone_other', 'emergency_notes']
+              'emergency_country', 'phone_day', 'phone_other', 'emergency_notes', 'emergency_email']
     template_name_suffix = '_edit'
 
 

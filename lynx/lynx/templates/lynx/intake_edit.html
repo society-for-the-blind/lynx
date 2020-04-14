@@ -42,7 +42,9 @@
         <div class="row">
           <div class="col-12">{{ form.work_history|as_crispy_field }}</div>
         </div>
-
+        <div class="row">
+            <div class="col-12">{{ form.notes|as_crispy_field }}</div>
+        </div>
     <h2>Criminal Background</h2>
         <div class="row">
           <div class="col-4">{{ form.crime|as_crispy_field }}</div>
@@ -62,7 +64,7 @@
         <div class="row">
             <div class="col-12">{{ form.crime_history|as_crispy_field }}</div>
         </div>
-    <h2>Medical History</h2>
+    <h2>Ocular Medical History</h2>
         <div class="row">
             <div class="col-4">{{ form.eye_condition|as_crispy_field  }}</div>
             <div class="col-4">{{ form.secondary_eye_condition|as_crispy_field  }}</div>
@@ -72,6 +74,7 @@
             <div class="col-6">{{ form.degree|as_crispy_field  }}</div>
             <div class="col-6">{{ form.prognosis|as_crispy_field  }}</div>
         </div>
+    <h2>Other Medical History</h2>
         <div class="row">
             <div class="col-3">{{ form.hearing_loss|as_crispy_field }}</div>
             <div class="col-3">{{ form.mobility|as_crispy_field }}</div>
@@ -107,9 +110,9 @@
             <div class="col-6">{{ form.allergies|as_crispy_field }}</div>
             <div class="col-6">{{ form.geriatric|as_crispy_field }}</div>
        </div>
-        <div class="row">
-            <div class="col-12"> {{ form.other_medical|as_crispy_field }}</div>
-       </div>
+{#        <div class="row">#}
+{#            <div class="col-12"> {{ form.other_medical|as_crispy_field }}</div>#}
+{#       </div>#}
         <div class="row">
             <div class="col-12"> {{ form.medications|as_crispy_field }}</div>
         </div>
@@ -117,6 +120,9 @@
             <div class="col-12">{{ form.medical_notes|as_crispy_field }}</div>
         </div>
     <h2>Client History</h2>
+        <div class="row">
+            <div class="col-12">{{ form.performs_tasks|as_crispy_field }}</div>
+        </div>
         <div class="row">
             <div class="col-12">{{ form.previous_training|as_crispy_field }}</div>
         </div>
@@ -133,10 +139,10 @@
             <div class="col-12">{{ form.hobbies|as_crispy_field }}</div>
         </div>
         <div class="row">
-            <div class="col-12">{{ form.other|as_crispy_field }}</div>
+            <div class="col-12">{{ form.hired|as_crispy_field }}</div>
         </div>
         <div class="row">
-            <div class="col-12">{{ form.performs_tasks|as_crispy_field }}</div>
+            <div class="col-12">{{ form.other|as_crispy_field }}</div>
         </div>
         <div class="row">
             <div class="col-12">{{ form.notes|as_crispy_field }}</div>

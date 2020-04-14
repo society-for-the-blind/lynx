@@ -94,7 +94,7 @@ AGES = (("Less than 54", "Less than 54"), ("50-54", "50-54"), ("55-59", "55-59")
         ("65-69", "65-69"), ("70-74", "70-74"), ("75-79", "75-79"), ("80-84", "80-84"), ("85-89", "85-89"),
         ("90-94", "90-94"), ("95-99", "95-99"), ("100+", "100+"))
 
-TASKS = (('Visually', 'Visually'), ('Non-Visually', 'Non-Visually'))
+TASKS = (('Visually', 'Visually'), ('Non-Visually', 'Non-Visually'), ('Both', 'Both'))
 
 CONDITIONS = (('Cataracts', 'Cataracts'), ('Cone Rod Dystrophy', 'Cone Rod Dystrophy'),
               ('Diabetic Retinopathy', 'Diabetic Retinopathy'), ('Glaucoma', 'Glaucoma'), ('Keratoconus','Keratoconus'),
@@ -341,6 +341,7 @@ class EmergencyContact(models.Model):
     emergency_country = models.CharField(max_length=150, blank=True, null=True)
     phone_day = models.CharField(max_length=150, blank=True, null=True)
     phone_other = models.CharField(max_length=150, blank=True, null=True)
+    emergency_email = models.EmailField()
     emergency_notes = models.TextField(blank=True, null=True)
     created = models.DateTimeField(auto_now_add=True, null=True)
     modified = models.DateTimeField(auto_now=True, null=True)
