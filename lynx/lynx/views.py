@@ -47,15 +47,18 @@ def add_contact(request):
         if address_form.is_valid() & phone_form.is_valid() & email_form.is_valid() & form.is_valid():
             form = form.save()
             contact_id = form.pk
-            address_form = address_form.save(commit=False)
-            address_form.contact_id = contact_id
-            address_form.save()
-            phone_form = phone_form.save(commit=False)
-            phone_form.contact_id = contact_id
-            phone_form.save()
-            email_form = email_form.save(commit=False)
-            email_form.contact_id = contact_id
-            email_form.save()
+            if address_form.address_one:
+                address_form = address_form.save(commit=False)
+                address_form.contact_id = contact_id
+                address_form.save()
+            if phone_form.phone:
+                phone_form = phone_form.save(commit=False)
+                phone_form.contact_id = contact_id
+                phone_form.save()
+            if email_form.email:
+                email_form = email_form.save(commit=False)
+                email_form.contact_id = contact_id
+                email_form.save()
             return HttpResponseRedirect(reverse('lynx:add_intake',  args=(contact_id,)))
     return render(request, 'lynx/add_contact.html', {'address_form': address_form, 'phone_form': phone_form,
                                                      'email_form': email_form, 'form': form})
@@ -87,18 +90,22 @@ def add_contact_information(request, contact_id):
         email_form = EmailForm(request.POST)
         emergency_form = EmergencyForm(request.POST)
         if address_form.is_valid() & phone_form.is_valid() & email_form.is_valid() & emergency_form.is_valid():
-            address_form = address_form.save(commit=False)
-            address_form.contact_id = contact_id
-            address_form.save()
-            phone_form = phone_form.save(commit=False)
-            phone_form.contact_id = contact_id
-            phone_form.save()
-            email_form = email_form.save(commit=False)
-            email_form.contact_id = contact_id
-            email_form.save()
-            emergency_form = emergency_form.save(commit=False)
-            emergency_form.contact_id = contact_id
-            emergency_form.save()
+            if address_form.address_one:
+                address_form = address_form.save(commit=False)
+                address_form.contact_id = contact_id
+                address_form.save()
+            if phone_form.phone:
+                phone_form = phone_form.save(commit=False)
+                phone_form.contact_id = contact_id
+                phone_form.save()
+            if email_form.email:
+                email_form = email_form.save(commit=False)
+                email_form.contact_id = contact_id
+                email_form.save()
+            if emergency_form.name:
+                emergency_form = emergency_form.save(commit=False)
+                emergency_form.contact_id = contact_id
+                emergency_form.save()
             return HttpResponseRedirect(reverse('lynx:add_intake',  args=(contact_id,)))
     return render(request, 'lynx/add_contact_information.html', {'address_form': address_form, 'phone_form': phone_form,
                                                     'email_form': email_form, 'emergency_form': emergency_form})
@@ -396,15 +403,20 @@ class PhoneUpdateView(LoginRequiredMixin, UpdateView):
 
 class IntakeUpdateView(LoginRequiredMixin, UpdateView):
     model = Intake
-    fields = ['intake_date', 'gender', 'pronouns', 'birth_date', 'ethnicity', 'other_ethnicity', 'income',
-              'first_language', 'second_language', 'other_languages', 'education', 'living_arrangement',
-              'residence_type', 'performs_tasks', 'notes', 'work_history', 'geriatric', 'age_group', 'veteran',
-              'active', 'crime', 'crime_info', 'crime_other', 'parole', 'parole_info', 'secondary_eye_condition',
-              'crime_history', 'previous_training', 'training_goals', 'training_preferences', 'other', 'eye_condition',
-              'eye_condition_date', 'degree', 'prognosis', 'diabetes', 'dialysis', 'hearing_loss', 'mobility', 'stroke',
-              'seizure', 'heart', 'high_bp', 'neuropathy', 'pain', 'asthma', 'cancer', 'allergies', 'mental_health',
-              'substance_abuse', 'memory_loss', 'learning_disability', 'other_medical', 'medications', 'medical_notes',
-              'hired', 'arthritis', 'musculoskeletal', 'alzheimers', 'hobbies', 'employment_goals']
+    fields = ['intake_date', 'intake_type', 'age_group', 'gender', 'pronouns', 'birth_date', 'ethnicity',
+              'other_ethnicity', 'income', 'first_language', 'second_language', 'other_languages', 'education',
+              'living_arrangement', 'residence_type', 'performs_tasks', 'notes', 'work_history', 'veteran',
+              'member_name', 'active', 'crime', 'crime_info', 'crime_other', 'parole', 'parole_info', 'crime_history',
+              'previous_training', 'training_goals', 'training_preferences', 'other', 'eye_condition',
+              'secondary_eye_condition', 'eye_condition_date', 'degree', 'prognosis', 'diabetes', 'diabetes_notes',
+              'dialysis', 'dialysis_notes', 'hearing_loss', 'hearing_loss_notes', 'mobility', 'mobility_notes',
+              'stroke', 'stroke_notes', 'seizure', 'seizure_notes', 'heart', 'heart_notes', 'arthritis',
+              'arthritis_notes', 'high_bp', 'high_bp_notes', 'neuropathy', 'neuropathy_notes', 'dexterity',
+              'dexterity_notes', 'migraine', 'migraine_notes', 'pain', 'pain_notes', 'asthma', 'asthma_notes', 'cancer',
+              'cancer_notes', 'musculoskeletal', 'musculoskeletal_notes', 'alzheimers', 'alzheimers_notes', 'geriatric',
+              'geriatric_notes', ' allergies', 'mental_health', 'substance_abuse', 'substance_abuse_notes',
+              'memory_loss', 'memory_loss_notes', 'learning_disability', 'learning_disability_notes', 'other_medical',
+              'medications', 'medical_notes', 'hobbies', 'employment_goals', 'hired']
     template_name_suffix = '_edit'
 
     def get_form(self, form_class=None):
