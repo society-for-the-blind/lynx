@@ -100,7 +100,7 @@ CONDITIONS = (('Cataracts', 'Cataracts'), ('Cone Rod Dystrophy', 'Cone Rod Dystr
               ('Diabetic Retinopathy', 'Diabetic Retinopathy'), ('Glaucoma', 'Glaucoma'), ('Keratoconus','Keratoconus'),
               ('Leber Hereditary Optic Neuropathy (LHON)', 'Leber Hereditary Optic Neuropathy (LHON)'),
               ('Macular Degeneration', 'Macular Degeneration'), ('Ocular Albinism', 'Ocular Albinism'),
-              ('Retinitis Pigmentosa (RP)', 'Retinitis Pigmentosa (RP)'),
+              ('Optic Nerve Hypoplasia', 'Optic Nerve Hypoplasia'), ('Retinitis Pigmentosa (RP)', 'Retinitis Pigmentosa (RP)'),
               ('Retinopathy of Prematurity(ROP)', 'Retinopathy of Prematurity(ROP)'), ('Stargardt Disease', 'Stargardt Disease'),
               ('Stroke-related', 'Stroke-related'), ('Trauma or injury', 'Trauma or injury'), ('Uveitis', 'Uveitis'),
               ('Other', 'Other'))
@@ -237,6 +237,9 @@ class Intake(models.Model):
               ("Severe Visual Impairment", "Severe Visual Impairment"), ("Light Perception Only", "Light Perception Only"),
               ("Low Vision", "Low Vision"))
 
+    REFERER = (("DOR", "DOR"), ("Alta", "Alta"), ("VA", "VA"), ("Physician", "Physician"),
+              ("Family/friend", "Family/friend"), ("Other", "Other"))
+
     contact = models.ForeignKey('Contact', on_delete=models.CASCADE)
     intake_date = models.DateField(default=date.today)
     intake_type = models.CharField(max_length=150, blank=True, null=True)
@@ -256,10 +259,10 @@ class Intake(models.Model):
     performs_tasks = models.CharField(max_length=150, blank=True, choices=TASKS, null=True)
     notes = models.TextField(blank=True, null=True)
     work_history = models.TextField(blank=True, null=True)
-    veteran = models.BooleanField(blank=True, default=False)
+    veteran = models.CharField(max_length=25, blank=True, null=True, choices=TRINARY)
     member_name = models.CharField(max_length=250, blank=True, null=True)
     active = models.BooleanField(blank=True, null=True, default=True)
-    crime = models.BooleanField(blank=True, default=False)
+    crime = models.CharField(max_length=25, blank=True, null=True, choices=TRINARY)
     crime_info = models.TextField(blank=True, null=True)
     crime_other = models.CharField(max_length=250, blank=True, null=True)
     parole = models.BooleanField(blank=True, default=False)
@@ -269,11 +272,13 @@ class Intake(models.Model):
     training_goals = models.TextField(blank=True, null=True)
     training_preferences = models.TextField(blank=True, null=True)
     other = models.TextField(blank=True, null=True)
-    eye_condition = models.CharField(max_length=250, blank=True, null=True, choices = CONDITIONS)
+    eye_condition = models.CharField(max_length=250, blank=True, null=True, choices=CONDITIONS)
     secondary_eye_condition = models.CharField(max_length=250, blank=True, null=True)
     eye_condition_date = models.DateField(null=True, blank=True)
     degree = models.CharField(max_length=250, blank=True, choices=DEGREE, null=True)
     prognosis = models.CharField(max_length=250, blank=True, choices=PROGNOSIS, null=True)
+    referred_by = models.CharField(max_length=250, blank=True, choices=REFERER, null=True)
+    payment_source = models.CharField(max_length=250, blank=True, null=True)
     diabetes = models.BooleanField(blank=True, default=False)
     diabetes_notes = models.CharField(max_length=255, blank=True, null=True)
     dialysis = models.BooleanField(blank=True, default=False)
@@ -323,7 +328,10 @@ class Intake(models.Model):
     medical_notes = models.TextField(blank=True, null=True)
     hobbies = models.TextField(blank=True, null=True)
     employment_goals = models.TextField(blank=True, null=True)
-    hired = models.BooleanField(blank=True, default=False)
+    hired = models.CharField(max_length=25, blank=True, null=True, choices=TRINARY)
+    employer = models.CharField(max_length=250, blank=True, null=True)
+    position = models.CharField(max_length=250, blank=True, null=True)
+    hire_date = models.DateField(blank=True, null=True)
     created = models.DateTimeField(auto_now_add=True, null=True)
     modified = models.DateTimeField(auto_now=True, null=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET(get_sentinel_user))

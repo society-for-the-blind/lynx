@@ -39,11 +39,11 @@ class IntakeForm(forms.ModelForm):
         self.fields['other_languages'].label = "Other Language(s)"
         self.fields['other_ethnicity'].label = "Ethnicity (if other)"
         self.fields['crime'].label = "Have you been convicted of a crime?"
-        self.fields['crime_info'].label = "If yes, what and when did the convictions occur? What county did this conviction occur in?"
-        self.fields['crime_other'].label = "Criminal Conviction Information"
-        self.fields['parole'].label = "Are you on parole?"
-        self.fields['parole_info'].label = "Parole Information"
-        self.fields['crime_history'].label = "Additional Criminal History"
+        self.fields['crime_info'].label = "Criminal Details"
+        # self.fields['crime_other'].label = "Criminal Conviction Information"
+        # self.fields['parole'].label = "Are you on parole?"
+        # self.fields['parole_info'].label = "Parole Information"
+        # self.fields['crime_history'].label = "Additional Criminal History"
         self.fields['musculoskeletal'].label = "Musculoskeletal Disorders"
         self.fields['alzheimers'].label = "Alzheimer’s Disease/Cognitive Impairment"
         self.fields['medical_notes'].label = "Medical History"
@@ -51,8 +51,10 @@ class IntakeForm(forms.ModelForm):
         self.fields['high_bp'].label = "High BP"
         self.fields['geriatric'].label = "Other Major Geriatric Concerns"
         self.fields['degree'].label = "Degree of Vision Loss"
-        self.fields['secondary_eye_condition'].label = "Secondary eye condition/Other notes"
+        self.fields['secondary_eye_condition'].label = "Notes"
         self.fields['heart'].label = "Cardiovascular Disease"
+        self.fields['dexterity'].label = "Use of Hands, Arms, and Fingers"
+        self.fields['migraine'].label = "Migraine Headache"
 
 
 class AddressForm(forms.ModelForm):

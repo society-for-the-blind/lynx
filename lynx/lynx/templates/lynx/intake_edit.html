@@ -40,6 +40,12 @@
           <div class="col-4">{{ form.veteran|as_crispy_field }}</div>
         </div>
         <div class="row">
+            <div class="col-3">{{ form.hired|as_crispy_field }}</div>
+            <div class="col-3">{{ form.hire_date|as_crispy_field }}</div>
+            <div class="col-3">{{ form.employer|as_crispy_field }}</div>
+            <div class="col-3">{{ form.position|as_crispy_field }}</div>
+        </div>
+        <div class="row">
           <div class="col-12">{{ form.work_history|as_crispy_field }}</div>
         </div>
         <div class="row">
@@ -52,18 +58,18 @@
         <div class="row">
             <div class="col-12">{{ form.crime_info|as_crispy_field }}</div>
         </div>
-        <div class="row">
-          <div class="col-12">{{ form.crime_other|as_crispy_field }}</div>
-        </div>
-        <div class="row">
-          <div class="col-4">{{ form.parole|as_crispy_field }}</div>
-        </div>
-        <div class="row">
-          <div class="col-12">{{ form.parole_info|as_crispy_field }}</div>
-        </div>
-        <div class="row">
-            <div class="col-12">{{ form.crime_history|as_crispy_field }}</div>
-        </div>
+<!--        <div class="row">-->
+<!--          <div class="col-12">{{ form.crime_other|as_crispy_field }}</div>-->
+<!--        </div>-->
+<!--        <div class="row">-->
+<!--          <div class="col-4">{{ form.parole|as_crispy_field }}</div>-->
+<!--        </div>-->
+<!--        <div class="row">-->
+<!--          <div class="col-12">{{ form.parole_info|as_crispy_field }}</div>-->
+<!--        </div>-->
+<!--        <div class="row">-->
+<!--            <div class="col-12">{{ form.crime_history|as_crispy_field }}</div>-->
+<!--        </div>-->
     <h2>Ocular Medical History</h2>
         <div class="row">
             <div class="col-4">{{ form.eye_condition|as_crispy_field  }}</div>
@@ -71,48 +77,79 @@
             <div class="col-4">{{ form.eye_condition_date |as_crispy_field }}</div>
         </div>
         <div class="row">
-            <div class="col-6">{{ form.degree|as_crispy_field  }}</div>
-            <div class="col-6">{{ form.prognosis|as_crispy_field  }}</div>
+            <div class="col-3">{{ form.degree|as_crispy_field }}</div>
+            <div class="col-3">{{ form.prognosis|as_crispy_field }}</div>
+            <div class="col-3">{{ form.referred_by|as_crispy_field }}</div>
+            <div class="col-3">{{ form.payment|as_crispy_field }}</div>
         </div>
     <h2>Other Medical History</h2>
         <div class="row">
             <div class="col-3">{{ form.hearing_loss|as_crispy_field }}</div>
+            <div class="col-3">{{ form.hearing_loss_notes|as_crispy_field }}</div>
             <div class="col-3">{{ form.mobility|as_crispy_field }}</div>
-{#            <div class="col-3">{{ form.mobility|as_crispy_field }}</div>#}
+            <div class="col-3">{{ form.mobility_notes|as_crispy_field }}</div>
+        </div>
+        <div class="row">
+            <div class="col-3">{{ form.dexterity|as_crispy_field }}</div>
+            <div class="col-3">{{ form.dexterity_notes|as_crispy_field }}</div>
             <div class="col-3">{{ form.musculoskeletal|as_crispy_field }}</div>
+            <div class="col-3">{{ form.musculoskeletal_notes|as_crispy_field }}</div>
+        </div>
+        <div class="row">
             <div class="col-3">{{ form.pain|as_crispy_field }}</div>
-        </div>
-        <div class="row">
+            <div class="col-3">{{ form.pain_notes|as_crispy_field }}</div>
             <div class="col-3">{{ form.arthritis|as_crispy_field }}</div>
-            <div class="col-3">{{ form.heart|as_crispy_field }}</div>
-            <div class="col-3">{{ form.high_bp|as_crispy_field }}</div>
-            <div class="col-3">{{ form.stroke|as_crispy_field }}</div>
+            <div class="col-3">{{ form.arthritis_notes|as_crispy_field }}</div>
         </div>
         <div class="row">
+            <div class="col-3">{{ form.heart|as_crispy_field }}</div>
+            <div class="col-3">{{ form.heart_notes|as_crispy_field }}</div>
+            <div class="col-3">{{ form.high_bp|as_crispy_field }}</div>
+            <div class="col-3">{{ form.high_bp_notes|as_crispy_field }}</div>
+        </div>
+        <div class="row">
+            <div class="col-3">{{ form.stroke|as_crispy_field }}</div>
+            <div class="col-3">{{ form.stroke_notes|as_crispy_field }}</div>
             <div class="col-3">{{ form.seizure|as_crispy_field }}</div>
-{#            <div class="col-3">{{ form.mobility|as_crispy_field }}</div>#}
+            <div class="col-3">{{ form.seizure_notes|as_crispy_field }}</div>
+        </div>
+        <div class="row">
+            <div class="col-3">{{ form.migraine|as_crispy_field }}</div>
+            <div class="col-3">{{ form.migraine_notes|as_crispy_field }}</div>
             <div class="col-3">{{ form.diabetes|as_crispy_field }}</div>
+            <div class="col-3">{{ form.diabetes_notes|as_crispy_field }}</div>
+        </div>
+        <div class="row">
             <div class="col-3">{{ form.dialysis|as_crispy_field }}</div>
+            <div class="col-3">{{ form.dialysis_notes|as_crispy_field }}</div>
             <div class="col-3">{{ form.neuropathy|as_crispy_field }}</div>
+            <div class="col-3">{{ form.neuropathy_notes|as_crispy_field }}</div>
         </div>
         <div class="row">
             <div class="col-3">{{ form.cancer|as_crispy_field }}</div>
+            <div class="col-3">{{ form.cancer_notes|as_crispy_field }}</div>
             <div class="col-6">{{ form.mental_health|as_crispy_field  }}</div>
-            <div class="col-3">{{ form.substance_abuse|as_crispy_field }}</div>
         </div>
         <div class="row">
+            <div class="col-3">{{ form.substance_abuse|as_crispy_field }}</div>
+            <div class="col-3">{{ form.substance_abuse_notes|as_crispy_field }}</div>
             <div class="col-3">{{ form.memory_loss|as_crispy_field }}</div>
+            <div class="col-3">{{ form.memory_loss_notes|as_crispy_field }}</div>
+        </div>
+        <div class="row">
             <div class="col-3">{{ form.learning_disability|as_crispy_field }}</div>
+            <div class="col-3">{{ form.learning_disability_notes|as_crispy_field }}</div>
             <div class="col-3">{{ form.alzheimers|as_crispy_field }}</div>
+            <div class="col-3">{{ form.alzheimers_notes|as_crispy_field }}</div>
+        </div>
+        <div class="row">
             <div class="col-3">{{ form.asthma|as_crispy_field }}</div>
+            <div class="col-3">{{ form.asthma_notes|as_crispy_field }}</div>
         </div>
         <div class="row">
             <div class="col-6">{{ form.allergies|as_crispy_field }}</div>
             <div class="col-6">{{ form.geriatric|as_crispy_field }}</div>
-       </div>
-{#        <div class="row">#}
-{#            <div class="col-12"> {{ form.other_medical|as_crispy_field }}</div>#}
-{#       </div>#}
+        </div>
         <div class="row">
             <div class="col-12"> {{ form.medications|as_crispy_field }}</div>
         </div>
@@ -137,9 +174,6 @@
         </div>
         <div class="row">
             <div class="col-12">{{ form.hobbies|as_crispy_field }}</div>
-        </div>
-        <div class="row">
-            <div class="col-12">{{ form.hired|as_crispy_field }}</div>
         </div>
         <div class="row">
             <div class="col-12">{{ form.other|as_crispy_field }}</div>

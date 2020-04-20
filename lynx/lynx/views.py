@@ -378,14 +378,15 @@ class LessonNoteDetailView(LoginRequiredMixin, DetailView):
 class ClientUpdateView(LoginRequiredMixin, UpdateView):
     model = Contact
     fields = ['first_name', 'middle_name', 'last_name', 'company', 'do_not_contact', 'donor', 'deceased',
-              'remove_mailing', 'active', 'contact_notes', 'sip_client', 'core_client', 'careers_plus', 'careers_plus_youth', 'volunteer', 'access_news', 'other_services']
+              'remove_mailing', 'active', 'contact_notes', 'sip_client', 'core_client', 'careers_plus',
+              'careers_plus_youth', 'volunteer', 'access_news', 'other_services']
     template_name_suffix = '_edit'
 
 
 class AddressUpdateView(LoginRequiredMixin, UpdateView):
     model = Address
     fields = ['address_one', 'address_two', 'suite', 'city', 'state', 'zip_code', 'county', 'country', 'region',
-              'cross_streets', 'bad_address', 'address_notes']
+              'cross_streets', 'bad_address', 'address_notes', 'preferred_medium']
     template_name_suffix = '_edit'
 
 
@@ -416,8 +417,10 @@ class IntakeUpdateView(LoginRequiredMixin, UpdateView):
               'cancer_notes', 'musculoskeletal', 'musculoskeletal_notes', 'alzheimers', 'alzheimers_notes', 'geriatric',
               'geriatric_notes', ' allergies', 'mental_health', 'substance_abuse', 'substance_abuse_notes',
               'memory_loss', 'memory_loss_notes', 'learning_disability', 'learning_disability_notes', 'other_medical',
-              'medications', 'medical_notes', 'hobbies', 'employment_goals', 'hired']
+              'medications', 'medical_notes', 'hobbies', 'employment_goals', 'hired', 'employer', 'position',
+              'hire_date', 'payment', 'referred_by']
     template_name_suffix = '_edit'
+
 
     def get_form(self, form_class=None):
         form = super().get_form(form_class=form_class)
@@ -435,6 +438,10 @@ class IntakeUpdateView(LoginRequiredMixin, UpdateView):
         form.fields["hobbies"].label = "Hobbies/Interests"
         form.fields["high_bp"].label = "High BP"
         form.fields["geriatric"].label = "Other Major Geriatric Concerns"
+        form.fields["migraine"].label = "Migraine Headache"
+        form.fields["dexterity"].label = "Use of Hands, Limbs, and Fingers"
+        form.fields["hire_date"].label = "Date of Hire"
+        form.fields["hired"].label = "Currently Employed?"
         return form
 
 
@@ -544,7 +551,6 @@ def billing_report(request):
     return render(request, 'lynx/billing_report.html', {'form': form})
 
 
-
 def units_to_hours(units):
     minutes = units * 15
     hours = minutes/60
@@ -558,7 +564,7 @@ def hours_to_units(hours):
 
 
 def dictfetchall(cursor):
-    "Return all rows from a cursor as a dict"
+    """Return all rows from a cursor as a dict"""
     columns = [col[0] for col in cursor.description]
     return [
         dict(zip(columns, row))

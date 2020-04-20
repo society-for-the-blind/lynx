@@ -18,10 +18,11 @@
             {% if address.address_two %}{{ address.address_two }}<br>{% endif %}
             {% if address.suite %}Suite {{ address.suite }}<br>{% endif %}
             {{ address.city }}, {{ address.state }} {{ address.zip_code }}<br>
+            {{ address.county }}<br>
             {{ address.country }}<br>
             <a href="/lynx/address-edit/{{ address.id }}">(Edit)</a>
         </p>
-        {% if address.region %}<p class="tab"><strong>Region:</strong> {{ address.region }}</p>{% endif %}
+        {% if address.region %}<p class="tab"><strong>SIR Region:</strong> {{ address.region }}</p>{% endif %}
         {% if address.cross_streets %}<p class="tab"><strong>Cross Streets:</strong> {{ address.cross_streets }}</p>{% endif %}
         {% if address.preferred_medium %}<p class="tab"><strong>Preferred Mailing Medium:</strong> {{ address.preferred_medium }}</p>{% endif %}
         {% if address.address_notes %}<p class="tab"><strong>Notes:</strong> {{ address.address_notes }}</p>{% endif %}
@@ -59,16 +60,16 @@
 {% for emergency in emergency_list %}
     <h3 class="tab">{{ emergency.name }}</h3>
     <p class="tab">
-        <strong>Emergency Contact Address:</strong><br>
+        <strong>Address:</strong><br>
         {{ emergency.emergency_address_one }}<br>
         {% if emergency.emergency_address_two %}{{ emergency.emergency_address_two }}<br>{% endif %}
         {{ emergency.emergency_city }}, {{ emergency.emergency_state }} {{ emergency.emergency_zip_code }}<br>
         {{ emergency.emergency_country }}<br>
         <a href="/lynx/emergency-contact-edit/{{ emergency.id }}">(Edit)</a><br>
     </p>
-    {% if emergency.phone_day %}<p class="tab"><strong>Emergency Contact Daytime Phone Number:</strong> {{ emergency.phone_day }}</p>{% endif %}
-    {% if emergency.phone_other %}<p class="tab"><strong>Emergency Contact Other Phone Number:</strong> {{ emergency.phone_other }}</p>{% endif %}
-    {% if emergency.email %}<p class="tab"><strong>Emergency Email Address:</strong> {{ emergency.emergency_email }}</p>{% endif %}
+    {% if emergency.phone_day %}<p class="tab"><strong>Daytime Phone Number:</strong> {{ emergency.phone_day }}</p>{% endif %}
+    {% if emergency.phone_other %}<p class="tab"><strong>Other Phone Number:</strong> {{ emergency.phone_other }}</p>{% endif %}
+    {% if emergency.email %}<p class="tab"><strong>Email Address:</strong> {{ emergency.emergency_email }}</p>{% endif %}
 {% empty %}
     <p class="tab">Sorry, no emergency contacts for this client</p>
 {% endfor %}
@@ -76,8 +77,9 @@
 
 
 <h2>Intake Information</h2>
+    <input type="button" onclick="location.href='/lynx/intake-edit/{{ intake.id }}';" value="Edit Intake Information" />
 {% for intake in intake_list %}
-    <p class="tab"><strong>Intake Date:</strong> {{intake_date|date:'m-d-Y'}} <a href="/lynx/intake-edit/{{ intake.id }}">(Edit Intake)</a></p>
+    <p class="tab"><strong>Intake Date:</strong> {{intake.intake_date|date:'m-d-Y'}} </p>
 <!--    {% if intake.intake_type %}<p class="tab"><strong>Intake Type:</strong> {{ intake.intake_type }}</p>{% endif %}-->
     <h3>Demographics</h3>
         {% if intake.birth_date %}<p class="tab"><strong>Birth Date:</strong> {{ intake.birth_date|date:'m-d-Y' }}</p>{% endif %}
@@ -93,46 +95,54 @@
         {% if intake.living_arrangement %}<p class="tab"><strong>Living Arrangements:</strong> {{ intake.living_arrangement }}</p>{% endif %}
         {% if intake.residence_type %}<p class="tab"><strong>Residence Types:</strong> {{ intake.residence_type }}</p>{% endif %}
         {% if intake.veteran %}<p class="tab"><strong>Veteran:</strong> {{ intake.veteran }}</p>{% endif %}
+        {% if intake.hired %}<p class="tab"><strong>Has been hired since training</strong></p>{% else %}<p class="tab"><strong>Has not been hired since training</strong></p>{% endif %}
+        {% if intake.employer %}<p class="tab"><strong>Employer:</strong> {{ intake.employer }}</p>{% endif %}
+        {% if intake.hire_date %}<p class="tab"><strong>Hire Date: </strong> {{ intake.hire_date|date:'m-d-Y' }}</p>{% endif %}
+        {% if intake.position %}<p class="tab"><strong>Position: </strong> {{ intake.position }}</p>{% endif %}
         {% if intake.work_history %}<p class="tab"><strong>Work History:</strong> {{ intake.work_history|linebreaks }}</p>{% endif %}
         {% if intake.notes %}<p class="tab"><strong>Notes:</strong> {{ intake.notes|linebreaks }}</p>{% endif %}
      {% if intake.crime %}<h3>Criminal Background</h3>{% endif %}
         {% if intake.crime %}<p class="tab"><strong>Criminal History:</strong> {{ intake.crime }}</p>{% endif %}
-        {% if intake.crime_info %}<p class="tab"><strong>Criminal History Information:</strong> {{ intake.crime_info|linebreaks }}</p>{% endif %}
-        {% if intake.crime_other %}<p class="tab"><strong>Criminal History (Other):</strong> {{ intake.crime_other|linebreaks }}</p>{% endif %}
-        {% if intake.parole %}<p class="tab"><strong>Parole:</strong> {{ intake.parole }}</p>{% endif %}
-        {% if intake.parole_info %}<p class="tab"><strong>Parole Information:</strong> {{ intake.parole_info|linebreaks }}</p>{% endif %}
-        {% if intake.crime_history %}<p class="tab"><strong>Other Criminal Information:</strong> {{ intake.crime_history|linebreaks }}</p>{% endif %}
+        {% if intake.crime_info %}<p class="tab"><strong>Criminal Details:</strong> {{ intake.crime_info|linebreaks }}</p>{% endif %}
+<!--        {% if intake.crime_other %}<p class="tab"><strong>Criminal History (Other):</strong> {{ intake.crime_other|linebreaks }}</p>{% endif %}-->
+<!--        {% if intake.parole %}<p class="tab"><strong>Parole:</strong> {{ intake.parole }}</p>{% endif %}-->
+<!--        {% if intake.parole_info %}<p class="tab"><strong>Parole Information:</strong> {{ intake.parole_info|linebreaks }}</p>{% endif %}-->
+<!--        {% if intake.crime_history %}<p class="tab"><strong>Other Criminal Information:</strong> {{ intake.crime_history|linebreaks }}</p>{% endif %}-->
     <h3>Ocular Medical History</h3>
         {% if intake.eye_condition %}<p class="tab"><strong>Eye Condition:</strong> {{ intake.eye_condition }} ({{ intake.eye_condition_date|date:'m-d-Y' }})</p>{% endif %}
-        {% if intake.secondary_eye_condition %}<p class="tab"><strong>Secondary eye condition/Other notes:</strong> {{ intake.secondary_eye_condition|linebreaks  }}</p>{% endif %}
-        {% if intake.degree %}<p class="tab"><strong>Degree:</strong> {{ intake.degree }}</p>{% endif %}
+        {% if intake.secondary_eye_condition %}<p class="tab"><strong>Notes:</strong> {{ intake.secondary_eye_condition|linebreaks }}</p>{% endif %}
+        {% if intake.degree %}<p class="tab"><strong>Degree of Vision Loss:</strong> {{ intake.degree }}</p>{% endif %}
         {% if intake.prognosis %}<p class="tab"><strong>Prognosis:</strong> {{ intake.prognosis }}</p>{% endif %}
+        {% if intake.payment %}<p class="tab"><strong>Payment:</strong> {{ intake.payment }}</p>{% endif %}
+        {% if intake.referred_by %}<p class="tab"><strong>Referred By:</strong> {{ intake.referred_by }}</p>{% endif %}
     <h3>Other Medical History</h3>
-        <p class="tab">
-            {% if intake.hearing_loss %}Hearing Loss, {% endif %}
-            {% if intake.mobility %}Mobility, {% endif %}
-            {% if intake.musculoskeletal %}Musculoskeletal Disorders, {% endif %}
-            {% if intake.pain %}Pain, {% endif %}
-            {% if intake.arthritis %}Arthritis, {% endif %}
-            {% if intake.heart %}Cardiovascular Disease, {% endif %}
-            {% if intake.high_bp %}High BP, {% endif %}
-            {% if intake.stroke %}Stroke, {% endif %}
-            {% if intake.seizure %}Seizure, {% endif %}
-            {% if intake.diabetes %}Diabetes, {% endif %}
-            {% if intake.dialysis %}Dialysis, {% endif %}
-            {% if intake.neuropathy %}Neuropathy, {% endif %}
-            {% if intake.cancer %}Cancer, {% endif %}
-            {% if intake.substance_abuse %}Substance Abuse, {% endif %}
-            {% if intake.memory_loss %}Memory Loss, {% endif %}
-            {% if intake.learning_disability %}Learning Disability{% endif %}
-            {% if intake.alzheimers %}Alzheimer’s Disease/Cognitive Impairment, {% endif %}
-            {% if intake.asthma %}Asthma, {% endif %}
-        </p>
+        <h4>Other Conditions</h4>
+        <ul>
+            {% if intake.hearing_loss %}<li>Hearing Loss: {{ intake.hearing_loss_notes }} </li>{% endif %}
+            {% if intake.mobility %}<li>Mobility: {{ intake.mobility_notes }} </li>{% endif %}
+            {% if intake.dexterity %}<li>Use of Hands, Arms, and Fingers: {{ intake.dexterity_notes }} </li>{% endif %}}
+            {% if intake.musculoskeletal %}<li>Musculoskeletal Disorders: {{ intake.musculoskeletal_notes }} </li>{% endif %}
+            {% if intake.pain %}<li>Pain: {{ intake.pain_notes }} </li>{% endif %}
+            {% if intake.arthritis %}<li>Arthritis: {{ intake.arthritis_notes }} </li>{% endif %}
+            {% if intake.heart %}<li>Cardiovascular Disease: {{ intake.heart_notes }} </li>{% endif %}
+            {% if intake.high_bp %}<li>High BP: {{ intake.high_bp_notes }} </li>{% endif %}
+            {% if intake.stroke %}<li>Stroke: {{ intake.stroke_notes }} </li>{% endif %}
+            {% if intake.seizure %}<li>Seizure: {{ intake.seizure_notes }} </li>{% endif %}
+            {% if intake.migraine %}<li>Migraine Headache: {{ intake.migraine_notes }} </li>{% endif %}
+            {% if intake.diabetes %}<li>Diabetes: {{ intake.diabetes_notes }} </li>{% endif %}
+            {% if intake.dialysis %}<li>Dialysis: {{ intake.dialysis_notes }} </li>{% endif %}
+            {% if intake.neuropathy %}<li>Neuropathy: {{ intake.neuropathy_notes }} </li>{% endif %}
+            {% if intake.cancer %}<li>Cancer: {{ intake.cancer_notes }} </li>{% endif %}
+            {% if intake.substance_abuse %}<li>Substance Abuse: {{ intake.substance_abuse_notes }} </li>{% endif %}
+            {% if intake.memory_loss %}<li>Memory Loss: {{ intake.memory_loss_notes }} </li>{% endif %}
+            {% if intake.learning_disability %}<li>Learning Disability: {{ intake.learning_disability_notes }} </li>{% endif %}
+            {% if intake.alzheimers %}<li>Alzheimer’s Disease/Cognitive Impairment: {{ intake.alzheimers_notes }} </li>{% endif %}
+            {% if intake.asthma %}<li>Asthma: {{ intake.asthma_notes }} </li>{% endif %}
+        </ul>
         {% if intake.allergies %}<p class="tab"><strong>Allergies:</strong> {{ intake.allergies|linebreaks }}</p>{% endif %}
         {% if intake.geriatric %}<p class="tab"><strong>Other Major Geriatric Concerns:</strong> {{ intake.geriatric|linebreaks }}</p>{% endif %}
         {% if intake.mental_health %}<p class="tab"><strong>Mental Health:</strong> {{ intake.mental_health|linebreaks }}</p>{% endif %}
         {% if intake.medications %}<p class="tab"><strong>Medications:</strong> {{ intake.medications|linebreaks }}</p>{% endif %}
-{#        {% if intake.other_medical %}<p class="tab"><strong>Other:</strong> {{ intake.other_medical|linebreaks }}</p>{% endif %}#}
         {% if intake.medical_notes %}<p class="tab"><strong>Medical Notes:</strong> {{ intake.medical_notes|linebreaks }}</p>{% endif %}
 
     <h3>Blindness Skills/Other Information</h3>
@@ -141,10 +151,9 @@
         {% if intake.training_goals %}<p class="tab"><strong>Training Goals:</strong> {{ intake.training_goals|linebreaks }}</p>{% endif %}
         {% if intake.training_preferences %}<p class="tab"><strong>Training Preferences:</strong> {{ intake.training_preferences|linebreaks }}</p>{% endif %}
         {% if intake.employment_goals %}<p class="tab"><strong>Employment Goals:</strong> {{ intake.employment_goals|linebreaks }}</p>{% endif %}
-        {% if intake.hired %}<p class="tab"><strong>Has been hired since training</strong></p>{% endif %}
         {% if intake.hobbies %}<p class="tab"><strong>Hobbies/Interests:</strong> {{ intake.hobbies|linebreaks }}</p>{% endif %}
         {% if intake.other %}<p class="tab"><strong>Other Notes:</strong> {{ intake.other|linebreaks }}</p>{% endif %}
-    <input type="button" onclick="location.href='/lynx/intake-edit/{{ intake.id }}/';" value="Edit Intake Information" />
+    <input type="button" onclick="location.href='/lynx/intake-edit/{{ intake.id }}';" value="Edit Intake Information" />
 {% empty %}
     <p class="tab">Sorry, no intake information for this client</p>
     <input type="button" onclick="location.href='/lynx/add-intake/{{ object.id }}/';" value="Add Intake Information" />
