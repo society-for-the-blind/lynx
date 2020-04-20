@@ -7,7 +7,10 @@
 <p class="tab"><strong>Name:</strong> {{ object.first_name }} {% if object.middle_name %}{{ object.middle_name }} {% endif %}{{ object.last_name }}</p>
 {% if object.company %}<p class="tab"><strong>Company:</strong> {{ object.company }}</p>{% endif %}
 {% if object.deceased %}<p class="tab"><strong>Deceased</strong></p>{% endif %}
-{% if object.donor %}<p class="tab"><strong>Donor</strong></p>{% endif %}
+<p class="tab"><strong>Services:</strong> {% if object.donor %}Donor, {% endif %}{% if object.sip_client %}SIP Client, {% endif %}
+    {% if object.core_client %}Core Client, {% endif %}{% if object.careers_plus %}Careers Plus, {% endif %}
+    {% if object.careers_plus_youth %}Careers Plus Youth, {% endif %}{% if object.volunteer %}Volunteer, {% endif %}
+    {% if object.access_news %}Access News, {% endif %}{% if object.other_services %} {{object.other_services}} {% endif %}</p>
 <p class="tab"><a href="/lynx/contact-edit/{{ object.id }}">Edit Client Information</a></p>
 
 {% for address in address_list %}
@@ -59,17 +62,19 @@
 <h2>Emergency Contacts</h2>
 {% for emergency in emergency_list %}
     <h3 class="tab">{{ emergency.name }}</h3>
-    <p class="tab">
-        <strong>Address:</strong><br>
-        {{ emergency.emergency_address_one }}<br>
-        {% if emergency.emergency_address_two %}{{ emergency.emergency_address_two }}<br>{% endif %}
-        {{ emergency.emergency_city }}, {{ emergency.emergency_state }} {{ emergency.emergency_zip_code }}<br>
-        {{ emergency.emergency_country }}<br>
-        <a href="/lynx/emergency-contact-edit/{{ emergency.id }}">(Edit)</a><br>
-    </p>
+    {% if emergency.emergency_address_one %}
+        <p class="tab">
+            <strong>Address:</strong><br>
+            {{ emergency.emergency_address_one }}<br>
+            {% if emergency.emergency_address_two %}{{ emergency.emergency_address_two }}<br>{% endif %}
+            {{ emergency.emergency_city }}, {{ emergency.emergency_state }} {{ emergency.emergency_zip_code }}<br>
+            {{ emergency.emergency_country }}
+        </p>
+    {% endif %}
     {% if emergency.phone_day %}<p class="tab"><strong>Daytime Phone Number:</strong> {{ emergency.phone_day }}</p>{% endif %}
     {% if emergency.phone_other %}<p class="tab"><strong>Other Phone Number:</strong> {{ emergency.phone_other }}</p>{% endif %}
     {% if emergency.email %}<p class="tab"><strong>Email Address:</strong> {{ emergency.emergency_email }}</p>{% endif %}
+    <input type="button" onclick="location.href='/lynx/emergency-contact-edit/{{ emergency.id }}';" value="Edit Contact" />
 {% empty %}
     <p class="tab">Sorry, no emergency contacts for this client</p>
 {% endfor %}
@@ -83,7 +88,7 @@
 <!--    {% if intake.intake_type %}<p class="tab"><strong>Intake Type:</strong> {{ intake.intake_type }}</p>{% endif %}-->
     <h3>Demographics</h3>
         {% if intake.birth_date %}<p class="tab"><strong>Birth Date:</strong> {{ intake.birth_date|date:'m-d-Y' }}</p>{% endif %}
-        {% if intake.age_group %}<p class="tab"><strong>Age Group:</strong> {{ intake.age_group|date:'m-d-Y' }}</p>{% endif %}
+        {% if intake.age_group %}<p class="tab"><strong>Age Group:</strong> {{ intake.age_group }}</p>{% endif %}
         {% if intake.gender %}<p class="tab"><strong>Gender:</strong> {{ intake.gender }}</p>{% endif %}
         {% if intake.pronouns %}<p class="tab"><strong>Pronouns:</strong> {{ intake.pronouns }}</p>{% endif %}
         {% if intake.ethnicity %}<p class="tab"><strong>Ethnicity:</strong> {{ intake.ethnicity }}{% if intake.other_ethnicity %}, {{ intake.other_ethnicity }}{% endif %}</p>{% endif %}
@@ -138,9 +143,9 @@
             {% if intake.learning_disability %}<li>Learning Disability: {{ intake.learning_disability_notes }} </li>{% endif %}
             {% if intake.alzheimers %}<li>Alzheimer’s Disease/Cognitive Impairment: {{ intake.alzheimers_notes }} </li>{% endif %}
             {% if intake.asthma %}<li>Asthma: {{ intake.asthma_notes }} </li>{% endif %}
+            {% if intake.geriatric %}<li>Other Major Geriatric Concerns: {{ intake.geriatric_notes }} </li>{% endif %}
         </ul>
         {% if intake.allergies %}<p class="tab"><strong>Allergies:</strong> {{ intake.allergies|linebreaks }}</p>{% endif %}
-        {% if intake.geriatric %}<p class="tab"><strong>Other Major Geriatric Concerns:</strong> {{ intake.geriatric|linebreaks }}</p>{% endif %}
         {% if intake.mental_health %}<p class="tab"><strong>Mental Health:</strong> {{ intake.mental_health|linebreaks }}</p>{% endif %}
         {% if intake.medications %}<p class="tab"><strong>Medications:</strong> {{ intake.medications|linebreaks }}</p>{% endif %}
         {% if intake.medical_notes %}<p class="tab"><strong>Medical Notes:</strong> {{ intake.medical_notes|linebreaks }}</p>{% endif %}

@@ -53,7 +53,9 @@ class IntakeForm(forms.ModelForm):
         self.fields['degree'].label = "Degree of Vision Loss"
         self.fields['secondary_eye_condition'].label = "Notes"
         self.fields['heart'].label = "Cardiovascular Disease"
+        self.fields['heart_notes'].label = "Cardiovascular Disease Notes"
         self.fields['dexterity'].label = "Use of Hands, Arms, and Fingers"
+        self.fields['dexterity_notes'].label = "Use of Hands, Arms, and Fingers Notes"
         self.fields['migraine'].label = "Migraine Headache"
 
 
