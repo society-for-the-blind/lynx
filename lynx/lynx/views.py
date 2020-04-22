@@ -415,10 +415,10 @@ class IntakeUpdateView(LoginRequiredMixin, UpdateView):
               'arthritis_notes', 'high_bp', 'high_bp_notes', 'neuropathy', 'neuropathy_notes', 'dexterity',
               'dexterity_notes', 'migraine', 'migraine_notes', 'pain', 'pain_notes', 'asthma', 'asthma_notes', 'cancer',
               'cancer_notes', 'musculoskeletal', 'musculoskeletal_notes', 'alzheimers', 'alzheimers_notes', 'geriatric',
-              'geriatric_notes', ' allergies', 'mental_health', 'substance_abuse', 'substance_abuse_notes',
+              'geriatric_notes', 'allergies', 'mental_health', 'substance_abuse', 'substance_abuse_notes',
               'memory_loss', 'memory_loss_notes', 'learning_disability', 'learning_disability_notes', 'other_medical',
               'medications', 'medical_notes', 'hobbies', 'employment_goals', 'hired', 'employer', 'position',
-              'hire_date', 'payment', 'referred_by']
+              'hire_date', 'payment_source', 'referred_by']
     template_name_suffix = '_edit'
 
 
@@ -481,7 +481,15 @@ class ProgressReportUpdateView(LoginRequiredMixin, UpdateView):
         return form
 
 
-def billing_report(request):
+class SipNoteUpdateView(LoginRequiredMixin, UpdateView):
+    model = SipNote
+    fields = ['note', 'note_date', 'vision_screening', 'treatment', 'at_devices', 'at_services', 'independent_living',
+              'orientation', 'communications', 'dls', 'support', 'advocacy', 'counseling', 'information', 'services',
+              'retreat', 'in_home', 'seminar', 'modesto', 'group', 'community']
+    template_name_suffix = '_edit'
+
+
+def billing_report(request): #TODO: alphabetize last name fix header to be classes/hours remove hours from billed time
     form = BillingReportForm()
     if request.method == 'POST':
         form = BillingReportForm(request.POST)

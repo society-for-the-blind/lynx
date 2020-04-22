@@ -29,6 +29,7 @@ urlpatterns = [
     path('email-edit/<int:pk>', views.EmailUpdateView.as_view(), name='email-edit'),
     path('intake-edit/<int:pk>', views.IntakeUpdateView.as_view(), name='intake-edit'),
     path('intake-note-edit/<int:pk>', views.IntakeNoteUpdateView.as_view(), name='intake-note-edit'),
+    path('sip-note-edit/<int:pk>', views.SipNoteUpdateView.as_view(), name='sip-note-edit'),
     path('progress-report-edit/<int:pk>', views.ProgressReportUpdateView.as_view(), name='progresss-report-edit'),
     path('emergency-contact-edit/<int:pk>', views.EmergencyContactUpdateView.as_view(), name='emergency-contact-edit'),
     path('client-search', views.client_result_view, name='client_search'),

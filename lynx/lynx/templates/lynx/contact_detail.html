@@ -12,7 +12,7 @@
     {% if object.careers_plus_youth %}Careers Plus Youth, {% endif %}{% if object.volunteer %}Volunteer, {% endif %}
     {% if object.access_news %}Access News, {% endif %}{% if object.other_services %} {{object.other_services}} {% endif %}</p>
 <p class="tab"><a href="/lynx/contact-edit/{{ object.id }}">Edit Client Information</a></p>
-
+<!--TODO all edits buttons not links-->
 {% for address in address_list %}
     {% if not address.bad_address and address.address_one %}
         <p class="tab">
@@ -59,12 +59,14 @@
 <input type="button" onclick="location.href='/lynx/add-phone/{{ object.id }}/';" value="Add Phone Number" />
 <input type="button" onclick="location.href='/lynx/add-email/{{ object.id }}/';" value="Add Email" />
 
+<!--#TODO: dates displayed may 1, 2016 etc-->
+
 <h2>Emergency Contacts</h2>
 {% for emergency in emergency_list %}
     <h3 class="tab">{{ emergency.name }}</h3>
     {% if emergency.emergency_address_one %}
         <p class="tab">
-            <strong>Address:</strong><br>
+            <strong>Address:</strong><br> <!-- #TODO remove address, add links to phone/email tables -->
             {{ emergency.emergency_address_one }}<br>
             {% if emergency.emergency_address_two %}{{ emergency.emergency_address_two }}<br>{% endif %}
             {{ emergency.emergency_city }}, {{ emergency.emergency_state }} {{ emergency.emergency_zip_code }}<br>
@@ -80,7 +82,7 @@
 {% endfor %}
 <input type="button" onclick="location.href='/lynx/add-emergency/{{ object.id }}/';" value="Add Emergency Contact" />
 
-
+<!--#TODO veteran false-->
 <h2>Intake Information</h2>
     <input type="button" onclick="location.href='/lynx/intake-edit/{{ intake.id }}';" value="Edit Intake Information" />
 {% for intake in intake_list %}
@@ -114,6 +116,7 @@
 <!--        {% if intake.parole_info %}<p class="tab"><strong>Parole Information:</strong> {{ intake.parole_info|linebreaks }}</p>{% endif %}-->
 <!--        {% if intake.crime_history %}<p class="tab"><strong>Other Criminal Information:</strong> {{ intake.crime_history|linebreaks }}</p>{% endif %}-->
     <h3>Ocular Medical History</h3>
+<!--#TODO date of onset-->
         {% if intake.eye_condition %}<p class="tab"><strong>Eye Condition:</strong> {{ intake.eye_condition }} ({{ intake.eye_condition_date|date:'m-d-Y' }})</p>{% endif %}
         {% if intake.secondary_eye_condition %}<p class="tab"><strong>Notes:</strong> {{ intake.secondary_eye_condition|linebreaks }}</p>{% endif %}
         {% if intake.degree %}<p class="tab"><strong>Degree of Vision Loss:</strong> {{ intake.degree }}</p>{% endif %}
