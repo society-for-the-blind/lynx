@@ -84,8 +84,8 @@
 
 <!--#TODO veteran false-->
 <h2>Intake Information</h2>
-    <input type="button" onclick="location.href='/lynx/intake-edit/{{ object.intake_id }}';" value="Edit Intake Information" />
 {% for intake in intake_list %}
+    <input type="button" onclick="location.href='/lynx/intake-edit/{{ intake.id }}';" value="Edit Intake Information" />
     <p class="tab"><strong>Intake Date:</strong> {{intake.intake_date|date:'m-d-Y'}} </p>
 <!--    {% if intake.intake_type %}<p class="tab"><strong>Intake Type:</strong> {{ intake.intake_type }}</p>{% endif %}-->
     <h3>Demographics</h3>
