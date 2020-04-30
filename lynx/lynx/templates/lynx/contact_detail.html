@@ -11,8 +11,7 @@
     {% if object.core_client %}Core Client, {% endif %}{% if object.careers_plus %}Careers Plus, {% endif %}
     {% if object.careers_plus_youth %}Careers Plus Youth, {% endif %}{% if object.volunteer %}Volunteer, {% endif %}
     {% if object.access_news %}Access News, {% endif %}{% if object.other_services %} {{object.other_services}} {% endif %}</p>
-<p class="tab"><a href="/lynx/contact-edit/{{ object.id }}">Edit Client Information</a></p>
-<!--TODO all edits buttons not links-->
+<p class="tab"><input type="button" onclick="location.href='/lynx/contact-edit/{{ object.id }}';" value="Edit Client Information" /></p>
 {% for address in address_list %}
     {% if not address.bad_address and address.address_one %}
         <p class="tab">
@@ -23,7 +22,7 @@
             {{ address.city }}, {{ address.state }} {{ address.zip_code }}<br>
             {{ address.county }}<br>
             {{ address.country }}<br>
-            <a href="/lynx/address-edit/{{ address.id }}">(Edit)</a>
+            <input type="button" onclick="location.href='/lynx/address-edit/{{ address.id }}';" value="Edit Address" />
         </p>
         {% if address.region %}<p class="tab"><strong>SIR Region:</strong> {{ address.region }}</p>{% endif %}
         {% if address.cross_streets %}<p class="tab"><strong>Cross Streets:</strong> {{ address.cross_streets }}</p>{% endif %}
@@ -38,7 +37,8 @@
 {% for phone in phone_list %}
     {% if phone.active %}
         <p class="tab">
-            <strong>{{ phone.phone_type }} Phone Number:</strong> {{ phone.phone }} <a href="/lynx/phone-edit/{{ phone.id }}">(Edit)</a>
+            <strong>{{ phone.phone_type }} Phone Number:</strong> {{ phone.phone }} <br>
+            <input type="button" onclick="location.href='/lynx/phone-edit/{{ phone.id }}';" value="Edit Number" />
         </p>
     {% endif %}
 {% empty %}
@@ -49,7 +49,8 @@
 {% for email in email_list %}
     {% if email.active %}
         <p class="tab">
-            <strong>{{ email.email_type }} Email Address:</strong> {{ email.email }} <a href="/lynx/email-edit/{{ email.id }}">(Edit)</a>
+            <strong>{{ email.email_type }} Email Address:</strong> {{ email.email }} <br>
+            <input type="button" onclick="location.href='/lynx/email-edit/{{ email.id }}';" value="Edit Email" />
         </p>
     {% endif %}
 {% empty %}
@@ -59,20 +60,11 @@
 <input type="button" onclick="location.href='/lynx/add-phone/{{ object.id }}/';" value="Add Phone Number" />
 <input type="button" onclick="location.href='/lynx/add-email/{{ object.id }}/';" value="Add Email" />
 
-<!--#TODO: dates displayed may 1, 2016 etc-->
 
 <h2>Emergency Contacts</h2>
 {% for emergency in emergency_list %}
     <h3 class="tab">{{ emergency.name }}</h3>
-    {% if emergency.emergency_address_one %}
-        <p class="tab">
-            <strong>Address:</strong><br> <!-- #TODO remove address, add links to phone/email tables -->
-            {{ emergency.emergency_address_one }}<br>
-            {% if emergency.emergency_address_two %}{{ emergency.emergency_address_two }}<br>{% endif %}
-            {{ emergency.emergency_city }}, {{ emergency.emergency_state }} {{ emergency.emergency_zip_code }}<br>
-            {{ emergency.emergency_country }}
-        </p>
-    {% endif %}
+<!-- #TODO  add links to phone/email tables -->
     {% if emergency.phone_day %}<p class="tab"><strong>Daytime Phone Number:</strong> {{ emergency.phone_day }}</p>{% endif %}
     {% if emergency.phone_other %}<p class="tab"><strong>Other Phone Number:</strong> {{ emergency.phone_other }}</p>{% endif %}
     {% if emergency.email %}<p class="tab"><strong>Email Address:</strong> {{ emergency.emergency_email }}</p>{% endif %}
@@ -82,14 +74,12 @@
 {% endfor %}
 <input type="button" onclick="location.href='/lynx/add-emergency/{{ object.id }}/';" value="Add Emergency Contact" />
 
-<!--#TODO veteran false-->
 <h2>Intake Information</h2>
 {% for intake in intake_list %}
     <input type="button" onclick="location.href='/lynx/intake-edit/{{ intake.id }}';" value="Edit Intake Information" />
-    <p class="tab"><strong>Intake Date:</strong> {{intake.intake_date|date:'m-d-Y'}} </p>
-<!--    {% if intake.intake_type %}<p class="tab"><strong>Intake Type:</strong> {{ intake.intake_type }}</p>{% endif %}-->
+    <p class="tab"><strong>Intake Date:</strong> {{intake.intake_date|date:'F j, Y'}} </p>
     <h3>Demographics</h3>
-        {% if intake.birth_date %}<p class="tab"><strong>Birth Date:</strong> {{ intake.birth_date|date:'m-d-Y' }}</p>{% endif %}
+        {% if intake.birth_date %}<p class="tab"><strong>Birth Date:</strong> {{ intake.birth_date|date:'F j, Y' }}</p>{% endif %}
         {% if intake.age_group %}<p class="tab"><strong>Age Group:</strong> {{ intake.age_group }}</p>{% endif %}
         {% if intake.gender %}<p class="tab"><strong>Gender:</strong> {{ intake.gender }}</p>{% endif %}
         {% if intake.pronouns %}<p class="tab"><strong>Pronouns:</strong> {{ intake.pronouns }}</p>{% endif %}
@@ -102,27 +92,28 @@
         {% if intake.living_arrangement %}<p class="tab"><strong>Living Arrangements:</strong> {{ intake.living_arrangement }}</p>{% endif %}
         {% if intake.residence_type %}<p class="tab"><strong>Residence Types:</strong> {{ intake.residence_type }}</p>{% endif %}
         {% if intake.veteran %}<p class="tab"><strong>Veteran:</strong> {{ intake.veteran }}</p>{% endif %}
-        {% if intake.hired %}<p class="tab"><strong>Has been hired since training</strong></p>{% else %}<p class="tab"><strong>Has not been hired since training</strong></p>{% endif %}
+        {% if intake.hired %}<p class="tab"><strong>Hired:</strong>{{ intake.hired}}</p>{% endif %}
         {% if intake.employer %}<p class="tab"><strong>Employer:</strong> {{ intake.employer }}</p>{% endif %}
-        {% if intake.hire_date %}<p class="tab"><strong>Hire Date: </strong> {{ intake.hire_date|date:'m-d-Y' }}</p>{% endif %}
+        {% if intake.hire_date %}<p class="tab"><strong>Hire Date: </strong> {{ intake.hire_date|date:'F j, Y' }}</p>{% endif %}
         {% if intake.position %}<p class="tab"><strong>Position: </strong> {{ intake.position }}</p>{% endif %}
         {% if intake.work_history %}<p class="tab"><strong>Work History:</strong> {{ intake.work_history|linebreaks }}</p>{% endif %}
+        {% if intake.payment_source %}<p class="tab"><strong>Payment:</strong> {{ intake.payment_source }}</p>{% endif %}
+        {% if intake.referred_by %}<p class="tab"><strong>Referred By:</strong> {{ intake.referred_by }}</p>{% endif %}
         {% if intake.notes %}<p class="tab"><strong>Notes:</strong> {{ intake.notes|linebreaks }}</p>{% endif %}
      {% if intake.crime %}<h3>Criminal Background</h3>{% endif %}
         {% if intake.crime %}<p class="tab"><strong>Criminal History:</strong> {{ intake.crime }}</p>{% endif %}
         {% if intake.crime_info %}<p class="tab"><strong>Criminal Details:</strong> {{ intake.crime_info|linebreaks }}</p>{% endif %}
-<!--        {% if intake.crime_other %}<p class="tab"><strong>Criminal History (Other):</strong> {{ intake.crime_other|linebreaks }}</p>{% endif %}-->
-<!--        {% if intake.parole %}<p class="tab"><strong>Parole:</strong> {{ intake.parole }}</p>{% endif %}-->
-<!--        {% if intake.parole_info %}<p class="tab"><strong>Parole Information:</strong> {{ intake.parole_info|linebreaks }}</p>{% endif %}-->
-<!--        {% if intake.crime_history %}<p class="tab"><strong>Other Criminal Information:</strong> {{ intake.crime_history|linebreaks }}</p>{% endif %}-->
+        {% if intake.crime_other %}<p class="tab"><strong>Criminal History (Other):</strong> {{ intake.crime_other|linebreaks }}</p>{% endif %}
+        {% if intake.parole %}<p class="tab"><strong>Parole:</strong> {{ intake.parole }}</p>{% endif %}
+        {% if intake.parole_info %}<p class="tab"><strong>Parole Information:</strong> {{ intake.parole_info|linebreaks }}</p>{% endif %}
+        {% if intake.crime_history %}<p class="tab"><strong>Other Criminal Information:</strong> {{ intake.crime_history|linebreaks }}</p>{% endif %}
     <h3>Ocular Medical History</h3>
-<!--#TODO date of onset-->
-        {% if intake.eye_condition %}<p class="tab"><strong>Eye Condition:</strong> {{ intake.eye_condition }} ({{ intake.eye_condition_date|date:'m-d-Y' }})</p>{% endif %}
+        {% if intake.eye_condition %}<p class="tab"><strong>Eye Condition:</strong> {{ intake.eye_condition }} </p>{% endif %}
+        {% if intake.eye_condition_date %}<p class="tab"><strong>Date of Onset:</strong> {{ intake.eye_condition_date|date:'F j, Y' }}</p>{% endif %}
         {% if intake.secondary_eye_condition %}<p class="tab"><strong>Notes:</strong> {{ intake.secondary_eye_condition|linebreaks }}</p>{% endif %}
         {% if intake.degree %}<p class="tab"><strong>Degree of Vision Loss:</strong> {{ intake.degree }}</p>{% endif %}
         {% if intake.prognosis %}<p class="tab"><strong>Prognosis:</strong> {{ intake.prognosis }}</p>{% endif %}
-        {% if intake.payment_source %}<p class="tab"><strong>Payment:</strong> {{ intake.payment_source }}</p>{% endif %}
-        {% if intake.referred_by %}<p class="tab"><strong>Referred By:</strong> {{ intake.referred_by }}</p>{% endif %}
+
     <h3>Other Medical History</h3>
         <h4>Other Conditions</h4>
         <ul>
@@ -171,7 +162,7 @@
     <h2>Authorizations</h2>
     <ul>
         {% for auth in authorization_list %}
-            <li><a href='/lynx/authorization/{{ auth.id }}'>{{ auth.intake_service_area }}: {{ auth.start_date|date:'m-d-Y' }}- {{ auth.end_date|date:'m-d-Y' }}. {{ auth.authorization_number }}</a></li>
+            <li><a href='/lynx/authorization/{{ auth.id }}'>{{ auth.intake_service_area }}: {{ auth.start_date|date:'F j, Y' }}- {{ auth.end_date|date:'F j, Y' }}. {{ auth.authorization_number }}</a></li>
         {% empty %}
             <li><p class="tab">Sorry, no authorizations for this client</p></li>
         {% endfor %}
@@ -182,9 +173,9 @@
 {% if object.sip_client %}
     <h2>SIP Notes</h2>
     {% for sip in sip_list %}
-        <h3 class="tab">{{ sip.note_date|date:'m-d-Y' }}</h3>
-            <p class="tab">{{ sip.created|date:'m-d-Y' }}: {{ sip.note|linebreaks }}<br>
-              -{{ sip.user.first_name }} {{ sip.user.last_name }} </p> <!-- TODO: add edit button-->
+        <h3 class="tab">{{ sip.note_date|date:'F j, Y' }}</h3>
+            <p class="tab">{{ sip.created|date:'F j, Y' }}: {{ sip.note|linebreaks }}<br>
+              -{{ sip.user.first_name }} {{ sip.user.last_name }} <input type="button" onclick="location.href='/lynx/sip-note-edit/{{ sip.id }}';" value="Edit Note" /></p>
             <p class="tab"><strong>Services: </strong>{% if sip.vision_screening %}Vision screening/examination/low vision evaluation, {% endif %}{% if sip.treatment %}Surgical or therapeutic treatment, {% endif %}{% if sip.at_devices %}AT devices and aids, {% endif %}{% if sip.at_services %}AT Services, {% endif %}{% if sip.independent_living %}ILS, {% endif %}{% if sip.orientation %}O & M, {% endif %}{% if sip.communications %}Communication skills, {% endif %}{% if sip.dls %}DLS, {% endif %}{% if sip.support %}Support services, {% endif %}{% if sip.advocacy %}Advocacy, {% endif %}{% if sip.counseling %}Counseling, {% endif %}{% if sip.information %}I & R, {% endif %}{% if sip.services %}Other IL services{% endif %}</p>
             <p class="tab"><strong>Service Delivery: </strong>{% if sip.retreat %}Retreat, {% endif %}{% if sip.in_home %}In-home Training, {% endif %}{% if sip.seminar %}Training Seminar, {% endif %}{% if sip.modesto %}Modesto training site, {% endif %}{% if sip.group %}Support group(s), {% endif %}{% if sip.community %}Community Integration{% endif %}</p>
     {% empty %}
@@ -195,11 +186,11 @@
 
 <h2>Notes</h2>
 {% for note in note_list %}
-    <p class="tab">{{ note.created|date:'m-d-Y' }}: {{ note.note|linebreaks }}<br>
+    <p class="tab">{{ note.created|date:'F j, Y' }}: {{ note.note|linebreaks }}<br>
         -{{ note.user.first_name }} {{ note.user.last_name }} <a href="/lynx/intake-note-edit/{{ note.id }}">(Edit)</a></p>
 {% endfor %}
     {% if object.contact_notes %}
-        <p class="tab">{{ object.created|date:'m-d-Y' }}: {{ object.contact_notes|linebreaks }}<br>
+        <p class="tab">{{ object.created|date:'F j, Y' }}: {{ object.contact_notes|linebreaks }}<br>
             -{{ user.first_name }} {{ user.last_name }} <a href="/lynx/intake-note-edit/{{ note.id }}">(Edit)</a></p>
     {% endif %}
 <h3>New Note</h3>

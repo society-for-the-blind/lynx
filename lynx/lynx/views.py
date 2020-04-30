@@ -489,7 +489,7 @@ class SipNoteUpdateView(LoginRequiredMixin, UpdateView):
     template_name_suffix = '_edit'
 
 
-def billing_report(request): #TODO: alphabetize last name fix header to be classes/hours remove hours from billed time
+def billing_report(request):
     form = BillingReportForm()
     if request.method == 'POST':
         form = BillingReportForm(request.POST)
@@ -506,7 +506,8 @@ def billing_report(request): #TODO: alphabetize last name fix header to be class
                                     LEFT JOIN lynx_lessonnote as ln  on ln.authorization_id = auth.id
                                     LEFT JOIN lynx_intakeservicearea as sa on auth.intake_service_area_id = sa.id
                                     LEFT JOIN lynx_outsideagency as oa on auth.outside_agency_id = oa.id
-                                    where extract(month FROM date) = '%s' and extract(year FROM date) = '%s';""" % (month, year))
+                                    where extract(month FROM date) = '%s' and extract(year FROM date) = '%s'
+                                    order by c.last_name, c.first_name, sa.agency;;""" % (month, year))
                 auth_set = dictfetchall(cursor)
 
             reports = {}
@@ -543,13 +544,13 @@ def billing_report(request): #TODO: alphabetize last name fix header to be class
 
             writer = csv.writer(response)
             writer.writerow(
-                ['Client', 'Service Area', 'Authorization', 'Authorization Type', 'Billed Time', 'Billing Rate',
+                ['Client', 'Service Area', 'Authorization', 'Authorization Type', 'Billed Time (Classes/Hours)', 'Billing Rate',
                  'Amount', 'Payment Source'])
 
             for key, value in reports.items():
                 in_hours = 'No hours'
                 if value['billed_time']:
-                    in_hours = str(float(value['billed_time'])/4) + ' hours'
+                    in_hours = str(float(value['billed_time'])/4)
                 writer.writerow([value['client'], value['service_area'], value['authorization_number'],
                                  value['authorization_type'], in_hours, value['rate'], value['amount'],
                                  value['outside_agency']])

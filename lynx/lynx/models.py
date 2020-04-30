@@ -278,7 +278,7 @@ class Intake(models.Model):
     degree = models.CharField(max_length=250, blank=True, choices=DEGREE, null=True)
     prognosis = models.CharField(max_length=250, blank=True, choices=PROGNOSIS, null=True)
     referred_by = models.CharField(max_length=250, blank=True, choices=REFERER, null=True)
-    payment_source = models.CharField(max_length=250, blank=True, null=True)
+    payment_source = models.CharField(max_length=250, blank=True, null=True) #todo link to table in slate
     diabetes = models.BooleanField(blank=True, default=False)
     diabetes_notes = models.CharField(max_length=255, blank=True, null=True)
     dialysis = models.BooleanField(blank=True, default=False)
