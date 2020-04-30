@@ -145,6 +145,7 @@ class Email (models.Model):
     EMAIL_TYPES = (("Work", "Work"), ("Personal", "Personal"))
 
     contact = models.ForeignKey('Contact', on_delete=models.CASCADE)
+    emergency_contact = models.ForeignKey('EmergencyContact', on_delete=models.CASCADE)
     email = models.EmailField()
     email_type = models.CharField(max_length=25, choices=EMAIL_TYPES, blank=True)
     active = models.BooleanField(blank=True, default=False)
@@ -161,6 +162,7 @@ class Phone (models.Model):
                    ("Fax", "Fax"), ("Other", "Other"))
 
     contact = models.ForeignKey('Contact', on_delete=models.CASCADE)
+    emergency_contact = models.ForeignKey('EmergencyContact', on_delete=models.CASCADE)
     phone = models.CharField(max_length=20)
     phone_type = models.CharField(max_length=25, choices=PHONE_TYPES, blank=True, null=True)
     active = models.BooleanField(blank=True, default=False)
@@ -184,6 +186,7 @@ class Employee(models.Model):
 # Addresses for Contacts.
 class Address(models.Model):
     contact = models.ForeignKey('Contact', on_delete=models.CASCADE)
+    emergency_contact = models.ForeignKey('EmergencyContact', on_delete=models.CASCADE)
     address_one = models.CharField(max_length=150, blank=True, null=True)
     address_two = models.CharField(max_length=150, blank=True, null=True)
     suite = models.CharField(max_length=50, blank=True, null=True)

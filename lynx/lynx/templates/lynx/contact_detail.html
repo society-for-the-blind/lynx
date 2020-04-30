@@ -21,7 +21,6 @@
             {% if address.suite %}Suite {{ address.suite }}<br>{% endif %}
             {{ address.city }}, {{ address.state }} {{ address.zip_code }}<br>
             {{ address.county }}<br>
-            {{ address.country }}<br>
             <input type="button" onclick="location.href='/lynx/address-edit/{{ address.id }}';" value="Edit Address" />
         </p>
         {% if address.region %}<p class="tab"><strong>SIR Region:</strong> {{ address.region }}</p>{% endif %}
