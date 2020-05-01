@@ -190,8 +190,8 @@ def add_emergency_email(request, emergency_contact_id):
             form.contact_id = emergency_contact_id
             form.active = 1
             form.save()
-            emergency = EmergencyContact.objects.get(id='emergency_contact_id')
-            contact_id = emergency.contact_id
+            emergency = EmergencyContact.objects.get(id=emergency_contact_id)
+            contact_id = int(emergency.contact_id)
             return HttpResponseRedirect(reverse('lynx:client',  args=(contact_id,)))
     return render(request, 'lynx/add_email.html', {'form': form})
 
@@ -220,8 +220,8 @@ def add_emergency_phone(request, emergency_contact_id):
             form.emergency_contact_id = emergency_contact_id
             form.active = 1
             form.save()
-            emergency = EmergencyContact.objects.get(id='emergency_contact_id')
-            contact_id = emergency.contact_id
+            emergency = EmergencyContact.objects.get(id=emergency_contact_id)
+            contact_id = int(emergency.contact_id)
             return HttpResponseRedirect(reverse('lynx:client',  args=(contact_id,)))
     return render(request, 'lynx/add_phone.html', {'form': form})
 
