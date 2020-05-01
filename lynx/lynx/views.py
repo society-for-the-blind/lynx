@@ -168,35 +168,60 @@ def add_address(request, contact_id):
 
 
 @login_required
-def add_email(request, contact_id, emergency=None):
+def add_email(request, contact_id):
     form = EmailForm()
     if request.method == 'POST':
         form = EmailForm(request.POST)
         if form.is_valid():
             form = form.save(commit=False)
-            if emergency:
-                form.emergency_contact_id = contact_id
-            else:
-                form.contact_id = contact_id
+            form.contact_id = contact_id
             form.active = 1
             form.save()
             return HttpResponseRedirect(reverse('lynx:client',  args=(contact_id,)))
     return render(request, 'lynx/add_email.html', {'form': form})
 
 
+def add_emergency_email(request, emergency_contact_id):
+    form = EmailForm()
+    if request.method == 'POST':
+        form = EmailForm(request.POST)
+        if form.is_valid():
+            form = form.save(commit=False)
+            form.contact_id = emergency_contact_id
+            form.active = 1
+            form.save()
+            emergency = EmergencyContact.objects.get(id='emergency_contact_id')
+            contact_id = emergency.contact_id
+            return HttpResponseRedirect(reverse('lynx:client',  args=(contact_id,)))
+    return render(request, 'lynx/add_email.html', {'form': form})
+
+
 @login_required
-def add_phone(request, contact_id, emergency=None):
+def add_phone(request, contact_id):
     form = PhoneForm()
     if request.method == 'POST':
         form = PhoneForm(request.POST)
         if form.is_valid():
             form = form.save(commit=False)
-            if emergency is not None:
-                form.emergency_contact_id = contact_id
-            else:
-                form.contact_id = contact_id
+            form.contact_id = contact_id
             form.active = 1
             form.save()
+            return HttpResponseRedirect(reverse('lynx:client',  args=(contact_id,)))
+    return render(request, 'lynx/add_phone.html', {'form': form})
+
+
+@login_required
+def add_emergency_phone(request, emergency_contact_id):
+    form = PhoneForm()
+    if request.method == 'POST':
+        form = PhoneForm(request.POST)
+        if form.is_valid():
+            form = form.save(commit=False)
+            form.emergency_contact_id = emergency_contact_id
+            form.active = 1
+            form.save()
+            emergency = EmergencyContact.objects.get(id='emergency_contact_id')
+            contact_id = emergency.contact_id
             return HttpResponseRedirect(reverse('lynx:client',  args=(contact_id,)))
     return render(request, 'lynx/add_phone.html', {'form': form})
 
@@ -227,6 +252,7 @@ def add_progress_report(request, authorization_id):
             form.save()
             return HttpResponseRedirect(reverse('lynx:authorization_detail',  args=(authorization_id,)))
     return render(request, 'lynx/add_progress_report.html', {'form': form})
+
 
 @login_required
 def add_lesson_note(request, authorization_id):
@@ -312,7 +338,6 @@ class ContactDetailView(LoginRequiredMixin, DetailView):
             # form.user.add(*[request.user])
             action = "/lynx/client/" + str(self.kwargs['pk'])
             return HttpResponseRedirect(action)
-
 
 
 class AuthorizationDetailView(LoginRequiredMixin, DetailView):
