@@ -125,7 +125,6 @@ def add_sip_note(request, contact_id):
     return render(request, 'lynx/add_sip_note.html', {'form': form})
 
 
-
 @login_required
 def add_emergency(request, contact_id):
     form = EmergencyForm()
@@ -141,15 +140,15 @@ def add_emergency(request, contact_id):
             form.active = 1
             form.save()
             emergency_contact_id = form.pk
-
-            if phone_form.cleaned_data['phone']:
+            if phone_form.data['phone']:
                 phone_form = phone_form.save(commit=False)
                 phone_form.emergency_contact_id = emergency_contact_id
                 phone_form.save()
-            if email_form.cleaned_data['email']:
+            if email_form.data['email']:
                 email_form = email_form.save(commit=False)
                 email_form.emergency_contact_id = emergency_contact_id
                 email_form.save()
+
             return HttpResponseRedirect(reverse('lynx:client', args=(contact_id,)))
     return render(request, 'lynx/add_emergency.html', {'phone_form': phone_form, 'email_form': email_form, 'form': form})
 
