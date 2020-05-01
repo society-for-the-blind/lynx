@@ -63,11 +63,29 @@
 <h2>Emergency Contacts</h2>
 {% for emergency in emergency_list %}
     <h3 class="tab">{{ emergency.name }}</h3>
-<!-- #TODO  add links to phone/email tables -->
-    {% if emergency.phone_day %}<p class="tab"><strong>Daytime Phone Number:</strong> {{ emergency.phone_day }}</p>{% endif %}
-    {% if emergency.phone_other %}<p class="tab"><strong>Other Phone Number:</strong> {{ emergency.phone_other }}</p>{% endif %}
-    {% if emergency.email %}<p class="tab"><strong>Email Address:</strong> {{ emergency.emergency_email }}</p>{% endif %}
-    <input type="button" onclick="location.href='/lynx/emergency-contact-edit/{{ emergency.id }}';" value="Edit Contact" />
+    {% for phone in emergency.phone %}
+        {% if phone.active %}
+            <p class="tab">
+                <strong>{{ phone.phone_type }} Phone Number:</strong> {{ phone.phone }} <br>
+                <input type="button" onclick="location.href='/lynx/phone-edit/{{ phone.id }}';" value="Edit Number" />
+            </p>
+        {% endif %}
+    {% empty %}
+        <p class="tab">Sorry, no associated phone numbers for this emergency contact</p>
+    {% endfor %}
+    {% for email in email_list %}
+        {% if email.active %}
+            <p class="tab">
+                <strong>{{ email.email_type }} Email Address:</strong> {{ email.email }} <br>
+                <input type="button" onclick="location.href='/lynx/email-edit/{{ email.id }}';" value="Edit Email" />
+            </p>
+        {% endif %}
+    {% empty %}
+        <p class="tab">Sorry, no associated emails for this client</p>
+    {% endfor %}
+    <input type="button" onclick="location.href='/lynx/emergency-contact-edit/{{ emergency.id }}';" value="Edit Emergency Contact" />
+<input type="button" onclick="location.href='/lynx/add-phone/{{ object.id }}/';" value="Add Emergency Phone Number" />
+<input type="button" onclick="location.href='/lynx/add-email/{{ object.id }}/';" value="Add Emergency Email" />
 {% empty %}
     <p class="tab">Sorry, no emergency contacts for this client</p>
 {% endfor %}
