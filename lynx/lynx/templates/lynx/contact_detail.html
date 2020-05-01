@@ -63,7 +63,7 @@
 <h2>Emergency Contacts</h2>
 {% for emergency in emergency_list %}
     <h3 class="tab">{{ emergency.name }}</h3>
-    {% for phone in emergency.phone %}
+    {% for phone in emergency.phone_set.all %}
         {% if phone.active %}
             <p class="tab">
                 <strong>{{ phone.phone_type }} Phone Number:</strong> {{ phone.phone }} <br>
@@ -73,7 +73,7 @@
     {% empty %}
         <p class="tab">Sorry, no associated phone numbers for this emergency contact</p>
     {% endfor %}
-    {% for email in email_list %}
+    {% for email in emergency.email_set.all %}
         {% if email.active %}
             <p class="tab">
                 <strong>{{ email.email_type }} Email Address:</strong> {{ email.email }} <br>
@@ -81,7 +81,7 @@
             </p>
         {% endif %}
     {% empty %}
-        <p class="tab">Sorry, no associated emails for this client</p>
+        <p class="tab">Sorry, no associated emergency emails for this client</p>
     {% endfor %}
     <input type="button" onclick="location.href='/lynx/emergency-contact-edit/{{ emergency.id }}';" value="Edit Emergency Contact" />
 <input type="button" onclick="location.href='/lynx/add-phone/{{ object.id }}/';" value="Add Emergency Phone Number" />
