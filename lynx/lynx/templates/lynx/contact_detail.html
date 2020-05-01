@@ -64,9 +64,9 @@
 {% for emergency in emergency_list %}
     <h3 class="tab">{{ emergency.name }}</h3>
     {% for phone in emergency.phone_set.all %}
-        {% if phone.active %}
+        {% if phone.active and phone.phone %}
             <p class="tab">
-                <strong>{{ phone.phone_type }} Phone Number:</strong> {{ phone.phone }} <br>
+                <strong>{{ phone.phone_type|default_if_none:"" }} Phone Number:</strong> {{ phone.phone }} <br>
                 <input type="button" onclick="location.href='/lynx/phone-edit/{{ phone.id }}';" value="Edit Number" />
             </p>
         {% endif %}
@@ -74,9 +74,9 @@
         <p class="tab">Sorry, no associated phone numbers for this emergency contact</p>
     {% endfor %}
     {% for email in emergency.email_set.all %}
-        {% if email.active %}
+        {% if email.active and email.email%}
             <p class="tab">
-                <strong>{{ email.email_type }} Email Address:</strong> {{ email.email }} <br>
+                <strong>{{ email.email_type|default_if_none:"" }} Email Address:</strong> {{ email.email }} <br>
                 <input type="button" onclick="location.href='/lynx/email-edit/{{ email.id }}';" value="Edit Email" />
             </p>
         {% endif %}
