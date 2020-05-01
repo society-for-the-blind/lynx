@@ -191,7 +191,7 @@ def add_phone(request, contact_id, emergency=None):
         form = PhoneForm(request.POST)
         if form.is_valid():
             form = form.save(commit=False)
-            if emergency:
+            if emergency is not None:
                 form.emergency_contact_id = contact_id
             else:
                 form.contact_id = contact_id
