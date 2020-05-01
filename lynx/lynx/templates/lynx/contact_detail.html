@@ -84,8 +84,8 @@
         <p class="tab">Sorry, no associated emergency emails for this client</p>
     {% endfor %}
     <input type="button" onclick="location.href='/lynx/emergency-contact-edit/{{ emergency.id }}';" value="Edit Emergency Contact" />
-    <input type="button" onclick="location.href='/lynx/add-emergency-phone/{{ object.id }}/';" value="Add Emergency Phone Number" />
-    <input type="button" onclick="location.href='/lynx/add-emergency-email/{{ object.id }}/';" value="Add Emergency Email" />
+    <input type="button" onclick="location.href='/lynx/add-emergency-phone/{{ emergency.id }}/';" value="Add Emergency Phone Number" />
+    <input type="button" onclick="location.href='/lynx/add-emergency-email/{{ emergency.id }}/';" value="Add Emergency Email" />
 {% empty %}
     <p class="tab">Sorry, no emergency contacts for this client</p>
 {% endfor %}
