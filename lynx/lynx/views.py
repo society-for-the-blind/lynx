@@ -141,6 +141,7 @@ def add_emergency(request, contact_id):
             form.active = 1
             form.save()
             emergency_contact_id = form.pk
+            print(phone_form)
             if phone_form.phone:
                 phone_form = phone_form.save(commit=False)
                 phone_form.emergency_contact_id = emergency_contact_id
