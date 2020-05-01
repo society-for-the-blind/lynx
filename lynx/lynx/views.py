@@ -129,15 +129,28 @@ def add_sip_note(request, contact_id):
 @login_required
 def add_emergency(request, contact_id):
     form = EmergencyForm()
+    phone_form = PhoneForm()
+    email_form = EmailForm()
     if request.method == 'POST':
+        phone_form = PhoneForm(request.POST)
+        email_form = EmailForm(request.POST)
         form = EmergencyForm(request.POST)
-        if form.is_valid():
+        if phone_form.is_valid() & email_form.is_valid() & form.is_valid():
             form = form.save(commit=False)
             form.contact_id = contact_id
             form.active = 1
             form.save()
-            return HttpResponseRedirect(reverse('lynx:client',  args=(contact_id,)))
-    return render(request, 'lynx/add_emergency.html', {'form': form})
+            emergency_contact_id = form.pk
+            if phone_form.phone:
+                phone_form = phone_form.save(commit=False)
+                phone_form.emergency_contact_id = emergency_contact_id
+                phone_form.save()
+            if email_form.email:
+                email_form = email_form.save(commit=False)
+                email_form.emergency_contact_id = emergency_contact_id
+                email_form.save()
+            return HttpResponseRedirect(reverse('lynx:client', args=(contact_id,)))
+    return render(request, 'lynx/add_emergency.html', {'phone_form': phone_form, 'email_form': email_form, 'form': form})
 
 
 @login_required
@@ -155,13 +168,16 @@ def add_address(request, contact_id):
 
 
 @login_required
-def add_email(request, contact_id):
+def add_email(request, contact_id, emergency=None):
     form = EmailForm()
     if request.method == 'POST':
         form = EmailForm(request.POST)
         if form.is_valid():
             form = form.save(commit=False)
-            form.contact_id = contact_id
+            if emergency:
+                form.emergency_contact_id = contact_id
+            else:
+                form.contact_id = contact_id
             form.active = 1
             form.save()
             return HttpResponseRedirect(reverse('lynx:client',  args=(contact_id,)))
@@ -169,13 +185,16 @@ def add_email(request, contact_id):
 
 
 @login_required
-def add_phone(request, contact_id):
+def add_phone(request, contact_id, emergency=None):
     form = PhoneForm()
     if request.method == 'POST':
         form = PhoneForm(request.POST)
         if form.is_valid():
             form = form.save(commit=False)
-            form.contact_id = contact_id
+            if emergency:
+                form.emergency_contact_id = contact_id
+            else:
+                form.contact_id = contact_id
             form.active = 1
             form.save()
             return HttpResponseRedirect(reverse('lynx:client',  args=(contact_id,)))
