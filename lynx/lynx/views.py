@@ -181,13 +181,14 @@ def add_email(request, contact_id):
     return render(request, 'lynx/add_email.html', {'form': form})
 
 
+@login_required
 def add_emergency_email(request, emergency_contact_id):
     form = EmailForm()
     if request.method == 'POST':
         form = EmailForm(request.POST)
         if form.is_valid():
             form = form.save(commit=False)
-            form.contact_id = emergency_contact_id
+            form.emergency_contact_id = emergency_contact_id
             form.active = 1
             form.save()
             emergency = EmergencyContact.objects.get(id=emergency_contact_id)
