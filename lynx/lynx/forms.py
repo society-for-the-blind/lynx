@@ -80,7 +80,7 @@ class EmailForm(forms.ModelForm):
     class Meta:
 
         model = Email
-        exclude = ('created', 'modified', 'user', 'contact', 'active')
+        exclude = ('created', 'modified', 'user', 'contact', 'active', 'emergency_contact')
 
 
 class PhoneForm(forms.ModelForm):
@@ -88,7 +88,7 @@ class PhoneForm(forms.ModelForm):
     class Meta:
 
         model = Phone
-        exclude = ('created', 'modified', 'user', 'contact', 'active')
+        exclude = ('created', 'modified', 'user', 'contact', 'active', 'emergency_contact')
 
 
 class IntakeNoteForm(forms.ModelForm):
