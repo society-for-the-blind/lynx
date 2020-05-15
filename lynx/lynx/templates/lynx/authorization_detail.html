@@ -12,13 +12,13 @@
 {% if object.intake_service_area %}<p class="tab"><strong>Intake Service Area:</strong> {{ object.intake_service_area }}</p>{% endif %}
 {% if object.authorization_number %}<p class="tab"><strong>Authorization Number:</strong> {{ object.authorization_number }}</p>{% endif %}
 {% if object.authorization_type %}<p class="tab"><strong>Authorization Type:</strong> {{ object.authorization_type }}</p>{% endif %}
-{% if object.start_date %}<p class="tab"><strong>Start Date:</strong> {{ object.start_date|date:'m-d-Y' }}</p>{% endif %}
-{% if object.end_date %}<p class="tab"><strong>End Date:</strong> {{ object.end_date|date:'m-d-Y' }}</p>{% endif %}
+{% if object.start_date %}<p class="tab"><strong>Start Date:</strong> {{ object.start_date|date:'F j, Y' }}</p>{% endif %}
+{% if object.end_date %}<p class="tab"><strong>End Date:</strong> {{ object.end_date|date:'F j, Y' }}</p>{% endif %}
 {% if object.total_time %}<p class="tab"><strong>Total Time Authorized:</strong> {{ object.total_time }}</p>{% endif %} <!--TODO FIX THIS DISPLAY so that isn't text?-->
 {% if object.billing_rate %}<p class="tab"><strong>Billing Rate:</strong> {{ rate }}</p>{% endif %}
-{% if object.outside_agency %}<p class="tab"><strong>Name of Outside Agency:</strong> {{ object.outside_agency }}</p>{% endif %}
+{% if object.outside_agency %}<p class="tab"><strong>Name of Payment Source:</strong> {{ object.outside_agency }}</p>{% endif %}
 {% if object.notes %}<p class="tab"><strong>Notes:</strong> {{ object.notes }}</p>{% endif %}
-<p class="tab">Created by {{ user.first_name }} {{ user.last_name }} on {{ object.created|date:'m-d-Y' }}</p>
+<p class="tab">Created by {{ user.first_name }} {{ user.last_name }} on {{ object.created|date:'F j, Y' }}</p>
 <br>
 <h2>Lesson Notes</h2>
     <div class="alert alert-success" role="alert">
@@ -40,7 +40,7 @@
         </tr>
         {% for note in note_list %}
             <tr>
-                <th>{{ note.date|date:'m-d-Y' }}</th>
+                <th>{{ note.date|date:'F j, Y' }}</th>
                 <td>{{ note.attendance }}</td>
                 <td>{{ note.billed_units }}</td>
                 <td>{{ note.instructional_units }}</td>
@@ -73,17 +73,24 @@
 <input type="button" onclick="location.href='/lynx/add-lesson-note/{{ object.id }}/';" value="Add Lesson Note" />
 <br><br>
 <h2>Progress Reports</h2>
-{% for report in report_list %}
-    <h3 class="tab">{{ report.month }} by {{ report.instructor }}</h3>
-    <p class="tab"><strong>Accomplishments:</strong> {{ report.accomplishments }}</p>
-    <p class="tab"><strong>Remaining Objectives:</strong> {{ report.remaining_objectives }}</p>
-    <p class="tab"><strong>Estimated Hours:</strong> {{ report.estimated_hours }}</p>
-    <p class="tab"><strong>Client Behavior:</strong> {{ report.client_behavior }}</p>
-    <p class="tab"><strong>Notes:</strong> {{ report.notes }}</p>
-    <p class="tab">Entered by {{ report.user.first_name }} {{ report.user.last_name }} on {{ report.created|date:'m-d-Y' }}</p>
-{% empty %}
-    <p class="tab">Sorry, no progress reports for this authorization.</p>
-{% endfor %}
+<!--{% for report in report_list %}-->
+    <ul>
+        {% for report in report_list %}
+            <li><a href='/lynx/progress-report/{{ report.id }}/'>{{ report.month }} by {{ report.instructor }}</a></li>
+        {% empty %}
+            <li>Sorry, no progress reports for this authorization</li>
+        {% endfor %}
+    </ul>
+<!--    <h3 class="tab">{{ report.month }} by {{ report.instructor }}</h3>-->
+<!--    <p class="tab"><strong>Accomplishments:</strong> {{ report.accomplishments }}</p>-->
+<!--    <p class="tab"><strong>Remaining Objectives:</strong> {{ report.remaining_objectives }}</p>-->
+<!--    <p class="tab"><strong>Estimated Hours:</strong> {{ report.estimated_hours }}</p>-->
+<!--    <p class="tab"><strong>Client Behavior:</strong> {{ report.client_behavior }}</p>-->
+<!--    <p class="tab"><strong>Notes:</strong> {{ report.notes }}</p>-->
+<!--    <p class="tab">Entered by {{ report.user.first_name }} {{ report.user.last_name }} on {{ report.created|date:'m-d-Y' }}</p>-->
+<!--{% empty %}-->
+<!--    <p class="tab">Sorry, no progress reports for this authorization.</p>-->
+<!--{% endfor %}-->
 <input type="button" onclick="location.href='/lynx/add-progress-report/{{ object.id }}/';" value="Add Progress Report" />
 <br><br>
 <h2>Billing Information</h2>
@@ -97,7 +104,7 @@
         </tr>
         {% for note in note_list %}
             <tr>
-                <td>{{ note.date|date:"F d, Y" }}</td>
+                <td>{{ note.date|date:'F j, Y' }}</td>
                 <td>{{ note.billed_units }}</td>
                 <td>{{ object.billing_rate }}</td>
                 <td>{{ object.intake_service_area }}</td>

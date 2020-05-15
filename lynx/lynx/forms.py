@@ -40,15 +40,16 @@ class IntakeForm(forms.ModelForm):
         self.fields['other_ethnicity'].label = "Ethnicity (if other)"
         self.fields['crime'].label = "Have you been convicted of a crime?"
         self.fields['crime_info'].label = "Criminal Details"
-        # self.fields['crime_other'].label = "Criminal Conviction Information"
-        # self.fields['parole'].label = "Are you on parole?"
-        # self.fields['parole_info'].label = "Parole Information"
-        # self.fields['crime_history'].label = "Additional Criminal History"
+        self.fields['crime_other'].label = "Criminal Conviction Information"
+        self.fields['parole'].label = "Are you on parole?"
+        self.fields['parole_info'].label = "Parole Information"
+        self.fields['crime_history'].label = "Additional Criminal History"
         self.fields['musculoskeletal'].label = "Musculoskeletal Disorders"
         self.fields['alzheimers'].label = "Alzheimer’s Disease/Cognitive Impairment"
         self.fields['medical_notes'].label = "Medical History"
         self.fields['hobbies'].label = "Hobbies/Interests"
-        self.fields['high_bp'].label = "High BP"
+        self.fields['high_bp'].label = "Hypertension"
+        self.fields['high_bp_notes'].label = "Hypertension Notes"
         self.fields['geriatric'].label = "Other Major Geriatric Concerns"
         self.fields['degree'].label = "Degree of Vision Loss"
         self.fields['secondary_eye_condition'].label = "Notes"
@@ -57,6 +58,8 @@ class IntakeForm(forms.ModelForm):
         self.fields['dexterity'].label = "Use of Hands, Arms, and Fingers"
         self.fields['dexterity_notes'].label = "Use of Hands, Arms, and Fingers Notes"
         self.fields['migraine'].label = "Migraine Headache"
+        self.fields['memory_loss'].label = "Memory Loss/Tension"
+        self.fields['memory_loss_notes'].label = "Memory Loss/Tension Notes"
 
 
 class AddressForm(forms.ModelForm):
@@ -66,6 +69,9 @@ class AddressForm(forms.ModelForm):
         model = Address
         exclude = ('created', 'modified', 'user', 'billing', 'contact')
 
+    def __init__(self, *args, **kwargs):
+        super(AddressForm, self).__init__(*args, **kwargs)
+        self.fields['suite'].label = "Apt/Suite"
 
 class EmergencyForm(forms.ModelForm):
 

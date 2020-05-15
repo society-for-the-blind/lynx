@@ -19,7 +19,7 @@
             <strong>Address:</strong><br>
             {{ address.address_one }}<br>
             {% if address.address_two %}{{ address.address_two }}<br>{% endif %}
-            {% if address.suite %}Suite {{ address.suite }}<br>{% endif %}
+            {% if address.suite %}Apt/Suite {{ address.suite }}<br>{% endif %}
             {{ address.city }}, {{ address.state }} {{ address.zip_code }}<br>
             {{ address.county }}<br>
             <input type="button" class="btn btn-primary" aria-label="Edit Address" onclick="location.href='/lynx/address-edit/{{ address.id }}';" value="Edit Address" />
@@ -138,24 +138,24 @@
         <ul>
             {% if intake.hearing_loss %}<li>Hearing Loss: {{ intake.hearing_loss_notes }} </li>{% endif %}
             {% if intake.mobility %}<li>Mobility: {{ intake.mobility_notes }} </li>{% endif %}
-            {% if intake.dexterity %}<li>Use of Hands, Arms, and Fingers: {{ intake.dexterity_notes }} </li>{% endif %}}
-            {% if intake.musculoskeletal %}<li>Musculoskeletal Disorders: {{ intake.musculoskeletal_notes }} </li>{% endif %}
+<!--            {% if intake.dexterity %}<li>Use of Hands, Arms, and Fingers: {{ intake.dexterity_notes }} </li>{% endif %}}-->
+<!--            {% if intake.musculoskeletal %}<li>Musculoskeletal Disorders: {{ intake.musculoskeletal_notes }} </li>{% endif %}-->
             {% if intake.pain %}<li>Pain: {{ intake.pain_notes }} </li>{% endif %}
             {% if intake.arthritis %}<li>Arthritis: {{ intake.arthritis_notes }} </li>{% endif %}
             {% if intake.heart %}<li>Cardiovascular Disease: {{ intake.heart_notes }} </li>{% endif %}
-            {% if intake.high_bp %}<li>High BP: {{ intake.high_bp_notes }} </li>{% endif %}
+            {% if intake.high_bp %}<li>Hypertension: {{ intake.high_bp_notes }} </li>{% endif %}
             {% if intake.stroke %}<li>Stroke: {{ intake.stroke_notes }} </li>{% endif %}
             {% if intake.seizure %}<li>Seizure: {{ intake.seizure_notes }} </li>{% endif %}
             {% if intake.migraine %}<li>Migraine Headache: {{ intake.migraine_notes }} </li>{% endif %}
             {% if intake.diabetes %}<li>Diabetes: {{ intake.diabetes_notes }} </li>{% endif %}
             {% if intake.dialysis %}<li>Dialysis: {{ intake.dialysis_notes }} </li>{% endif %}
             {% if intake.neuropathy %}<li>Neuropathy: {{ intake.neuropathy_notes }} </li>{% endif %}
-            {% if intake.cancer %}<li>Cancer: {{ intake.cancer_notes }} </li>{% endif %}
-            {% if intake.substance_abuse %}<li>Substance Abuse: {{ intake.substance_abuse_notes }} </li>{% endif %}
-            {% if intake.memory_loss %}<li>Memory Loss: {{ intake.memory_loss_notes }} </li>{% endif %}
+            {% if intake.memory_loss %}<li>Memory Loss/Retention: {{ intake.memory_loss_notes }} </li>{% endif %}
             {% if intake.learning_disability %}<li>Learning Disability: {{ intake.learning_disability_notes }} </li>{% endif %}
-            {% if intake.alzheimers %}<li>Alzheimer’s Disease/Cognitive Impairment: {{ intake.alzheimers_notes }} </li>{% endif %}
+            {% if intake.alzheimers %}<li>Alzheimer’s Disease: {{ intake.alzheimers_notes }} </li>{% endif %}
+            {% if intake.substance_abuse %}<li>Substance Abuse: {{ intake.substance_abuse_notes }} </li>{% endif %}
             {% if intake.asthma %}<li>Asthma: {{ intake.asthma_notes }} </li>{% endif %}
+            {% if intake.cancer %}<li>Cancer: {{ intake.cancer_notes }} </li>{% endif %}
             {% if intake.geriatric %}<li>Other Major Geriatric Concerns: {{ intake.geriatric_notes }} </li>{% endif %}
         </ul>
         {% if intake.allergies %}<p class="tab"><strong>Allergies:</strong> {{ intake.allergies|linebreaks }}</p>{% endif %}

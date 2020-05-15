@@ -94,7 +94,7 @@ AGES = (("Less than 54", "Less than 54"), ("50-54", "50-54"), ("55-59", "55-59")
         ("65-69", "65-69"), ("70-74", "70-74"), ("75-79", "75-79"), ("80-84", "80-84"), ("85-89", "85-89"),
         ("90-94", "90-94"), ("95-99", "95-99"), ("100+", "100+"))
 
-TASKS = (('Visually', 'Visually'), ('Non-Visually', 'Non-Visually'), ('Both', 'Both'))
+TASKS = (('Visually', 'Visually'), ('Non-Visually', 'Non-Visually'), ('Both Visually and Non-Visually', 'Both Visually and Non-Visually'))
 
 CONDITIONS = (('Cataracts', 'Cataracts'), ('Cone Rod Dystrophy', 'Cone Rod Dystrophy'),
               ('Diabetic Retinopathy', 'Diabetic Retinopathy'), ('Glaucoma', 'Glaucoma'), ('Keratoconus','Keratoconus'),

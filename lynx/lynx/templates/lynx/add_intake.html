@@ -104,12 +104,12 @@
             <div class="col-3">{{ form.mobility|as_crispy_field }}</div>
             <div class="col-3">{{ form.mobility_notes|as_crispy_field }}</div>
         </div>
-        <div class="row">
-            <div class="col-3">{{ form.dexterity|as_crispy_field }}</div>
-            <div class="col-3">{{ form.dexterity_notes|as_crispy_field }}</div>
-            <div class="col-3">{{ form.musculoskeletal|as_crispy_field }}</div>
-            <div class="col-3">{{ form.musculoskeletal_notes|as_crispy_field }}</div>
-        </div>
+<!--        <div class="row">-->
+<!--            <div class="col-3">{{ form.dexterity|as_crispy_field }}</div>-->
+<!--            <div class="col-3">{{ form.dexterity_notes|as_crispy_field }}</div>-->
+<!--            <div class="col-3">{{ form.musculoskeletal|as_crispy_field }}</div>-->
+<!--            <div class="col-3">{{ form.musculoskeletal_notes|as_crispy_field }}</div>-->
+<!--        </div>-->
         <div class="row">
             <div class="col-3">{{ form.pain|as_crispy_field }}</div>
             <div class="col-3">{{ form.pain_notes|as_crispy_field }}</div>
@@ -141,34 +141,31 @@
             <div class="col-3">{{ form.neuropathy_notes|as_crispy_field }}</div>
         </div>
         <div class="row">
-            <div class="col-3">{{ form.cancer|as_crispy_field }}</div>
-            <div class="col-3">{{ form.cancer_notes|as_crispy_field }}</div>
-            <div class="col-6">{{ form.mental_health|as_crispy_field  }}</div>
+            <div class="col-3">{{ form.memory_loss|as_crispy_field }}</div>
+            <div class="col-3">{{ form.memory_loss_notes|as_crispy_field }}</div>
+            <div class="col-3">{{ form.learning_disability|as_crispy_field }}</div>
+            <div class="col-3">{{ form.learning_disability_notes|as_crispy_field }}</div>
         </div>
+         <div class="row">
+            <div class="col-3">{{ form.alzheimers|as_crispy_field }}</div>
+            <div class="col-3">{{ form.alzheimers_notes|as_crispy_field }}</div>
+            <div class="col-6">{{ form.mental_health|as_crispy_field  }}</div>
+         </div>
         <div class="row">
             <div class="col-3">{{ form.substance_abuse|as_crispy_field }}</div>
             <div class="col-3">{{ form.substance_abuse_notes|as_crispy_field }}</div>
-            <div class="col-3">{{ form.memory_loss|as_crispy_field }}</div>
-            <div class="col-3">{{ form.memory_loss_notes|as_crispy_field }}</div>
-        </div>
-        <div class="row">
-            <div class="col-3">{{ form.learning_disability|as_crispy_field }}</div>
-            <div class="col-3">{{ form.learning_disability_notes|as_crispy_field }}</div>
-            <div class="col-3">{{ form.alzheimers|as_crispy_field }}</div>
-            <div class="col-3">{{ form.alzheimers_notes|as_crispy_field }}</div>
-        </div>
-        <div class="row">
             <div class="col-3">{{ form.asthma|as_crispy_field }}</div>
             <div class="col-3">{{ form.asthma_notes|as_crispy_field }}</div>
         </div>
         <div class="row">
             <div class="col-6">{{ form.allergies|as_crispy_field }}</div>
+            <div class="col-3">{{ form.cancer|as_crispy_field }}</div>
+            <div class="col-3">{{ form.cancer_notes|as_crispy_field }}</div>
+        </div>
+        <div class="row">
             <div class="col-3">{{ form.geriatric|as_crispy_field }}</div>
             <div class="col-3">{{ form.geriatric_notes|as_crispy_field }}</div>
-       </div>
-{#        <div class="row">#}
-{#            <div class="col-12"> {{ form.other_medical|as_crispy_field }}</div>#}
-{#       </div>#}
+        </div>
         <div class="row">
             <div class="col-12"> {{ form.medications|as_crispy_field }}</div>
         </div>
