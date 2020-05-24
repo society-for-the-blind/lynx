@@ -34,6 +34,7 @@ urlpatterns = [
     path('sip-note-edit/<int:pk>', views.SipNoteUpdateView.as_view(), name='sip-note-edit'),
     path('progress-report-edit/<int:pk>', views.ProgressReportUpdateView.as_view(), name='progresss-report-edit'),
     path('emergency-contact-edit/<int:pk>', views.EmergencyContactUpdateView.as_view(), name='emergency-contact-edit'),
+    path('authorization-edit/<int:pk>', views.AuthorizationUpdateView.as_view(), name='authorization-edit'),
     path('client-search', views.client_result_view, name='client_search'),
     path("", views.index, name='index')
 ]

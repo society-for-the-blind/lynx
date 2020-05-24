@@ -534,6 +534,13 @@ class SipNoteUpdateView(LoginRequiredMixin, UpdateView):
     template_name_suffix = '_edit'
 
 
+class AuthorizationUpdateView(LoginRequiredMixin, UpdateView):
+    model = Authorization
+    fields = ['intake_service_area', 'authorization_number', 'authorization_type', 'start_date', 'end_date',
+              'total_time', 'billing_rate', 'outside_agency', 'student_plan', 'notes']
+    template_name_suffix = '_edit'
+
+
 def billing_report(request):
     form = BillingReportForm()
     if request.method == 'POST':

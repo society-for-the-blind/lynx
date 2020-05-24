@@ -6,6 +6,7 @@
 <!--<input type="button" onclick="location.href='/lynx/client/{{ object.contact_id }}';" value="" />-->
 <form>
   <button class="btn btn-success" formaction="/lynx/client/{{ object.contact_id }}">Return to {{ object.contact.first_name }} {{ object.contact.last_name }}'s Information </button>
+  <button class="btn btn-success" formaction="/lynx/authorization-edit/{{ object.id }}"> Edit Authorization </button>
 </form>
 <hr>
 <h2>Authorization Details</h2>
@@ -73,7 +74,6 @@
 <input type="button" onclick="location.href='/lynx/add-lesson-note/{{ object.id }}/';" value="Add Lesson Note" />
 <br><br>
 <h2>Progress Reports</h2>
-<!--{% for report in report_list %}-->
     <ul>
         {% for report in report_list %}
             <li><a href='/lynx/progress-report/{{ report.id }}/'>{{ report.month }} by {{ report.instructor }}</a></li>
@@ -88,9 +88,7 @@
 <!--    <p class="tab"><strong>Client Behavior:</strong> {{ report.client_behavior }}</p>-->
 <!--    <p class="tab"><strong>Notes:</strong> {{ report.notes }}</p>-->
 <!--    <p class="tab">Entered by {{ report.user.first_name }} {{ report.user.last_name }} on {{ report.created|date:'m-d-Y' }}</p>-->
-<!--{% empty %}-->
 <!--    <p class="tab">Sorry, no progress reports for this authorization.</p>-->
-<!--{% endfor %}-->
 <input type="button" onclick="location.href='/lynx/add-progress-report/{{ object.id }}/';" value="Add Progress Report" />
 <br><br>
 <h2>Billing Information</h2>
