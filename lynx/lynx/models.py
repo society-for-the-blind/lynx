@@ -347,7 +347,7 @@ class Intake(models.Model):
         return "/lynx/client/%i" % self.contact_id
 
     def __str__(self):
-        return '%s Intake' % (self.contact.name,)
+        return '%s Intake' % (self.contact_id,)
 
 
 class Referral(models.Model):
