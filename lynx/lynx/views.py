@@ -427,6 +427,7 @@ class ProgressReportDetailView(LoginRequiredMixin, DetailView):
             context['total_hours'] = total_hours
             hours_used = units_to_hours(total_units)
             context['hours_used'] = hours_used
+            # context['total_units'] = total_units
             if authorization[0]['total_time'] is None:
                 context['remaining_hours'] = "Need to enter total time"
             else:

@@ -11,9 +11,9 @@
 
 <h2>Authorization Information</h2>
 <p class="tab"><strong>Authorization Number:</strong> {{ object.authorization.authorization_number }}</p>
-<p class="tab"><strong>Hours Used for Authorization:</strong> {{ object.authorization.hours_used }}</p>
-<p class="tab"><strong>Hours Remaining:</strong> {{ object.authorization.remaining_hours }}</p>
-<p class="tab"><strong>Total Hours:</strong> {{ object.authorization.total_hours }}</p>
+<p class="tab"><strong>Hours Used for Authorization:</strong> {{ object.hours_used }}</p>
+<p class="tab"><strong>Hours Remaining:</strong> {{ object.remaining_hours }}</p>
+<p class="tab"><strong>Total Hours:</strong> {{ object.total_hours }}</p>
 <p class="tab"><strong>Hours Used this Month:</strong> </p>
 <p class="tab"><strong>Start Date:</strong> {{ object.authorization.start_date|date:'F j, Y' }}</p>
 <p class="tab"><strong>End Date:</strong> {{ object.authorization.end_date|date:'F j, Y' }}</p>
