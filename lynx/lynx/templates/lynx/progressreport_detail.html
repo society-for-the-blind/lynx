@@ -2,13 +2,27 @@
 
 {% block content %}
 
-<h1>{{ object.contact.first_name }} {{ object.contact.last_name }} Progress Report for {{ object.month }} by {{ object.instructor }}</h1>
+<h1>{{ object.contact.first_name }} {{ object.contact.last_name }} Progress Report for {{ object.month }} {{ object.}}</h1>
 <h2>Client Information</h2>
 <input type="button" onclick="location.href='/lynx/authorization/{{ object.authorization_id }}';" value="Return to Authorization" /> <input type="button" onclick="location.href='/lynx/client/{{ object.authorization.contact.id}}';" value="Return to Client" />
-<p class="tab"><strong>Accomplishments:</strong> {{ object.accomplishments }}</p>
+<p class="tab"><strong>Client:</strong> {{ object.contact.first_name }} {{ object.contact.last_name }}</p>
+<p class="tab"><strong>Counselor:</strong> {{ object.authorization.outside_agency }}</p>
+<p class="tab"><strong>Instructor:</strong> {{ object.instructor }}</p>
+
+<h2>Authorization Information</h2>
+<p class="tab"><strong>Authorization Number:</strong> {{ object.authorization.authorization_number }}</p>
+<p class="tab"><strong>Hours Used for Authorization:</strong> {{ object.authorization.hours_used }}</p>
+<p class="tab"><strong>Hours Remaining:</strong> {{ object.authorization.remaining_hours }}</p>
+<p class="tab"><strong>Total Hours:</strong> {{ object.authorization.total_hours }}</p>
+<p class="tab"><strong>Hours Used this Month:</strong> </p>
+<p class="tab"><strong>Start Date:</strong> {{ object.authorization.start_date|date:'F j, Y' }}</p>
+<p class="tab"><strong>End Date:</strong> {{ object.authorization.end_date|date:'F j, Y' }}</p>
+
+<h2>Report</h2>
+<p class="tab"><strong>Client Accomplishments:</strong> {{ object.accomplishments }}</p>
 <p class="tab"><strong>Remaining Objectives:</strong> {{ object.remaining_objectives }}</p>
-<p class="tab"><strong>Estimated Hours:</strong> {{ object.estimated_hours }}</p>
-<p class="tab"><strong>Client Behavior:</strong> {{ object.client_behavior }}</p>
-<p class="tab"><strong>Notes:</strong> {{ object.notes }}</p>
+<p class="tab"><strong>Estimated number of Hours needed for completion of objectives:</strong> {{ object.estimated_hours }}</p>
+<p class="tab"><strong>The client's attendance, attitude, and motivation during current month:</strong> {{ object.client_behavior }}</p>
+<p class="tab"><strong>Additional comments:</strong> {{ object.notes }}</p>
 
 {% endblock %}

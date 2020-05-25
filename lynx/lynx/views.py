@@ -362,12 +362,11 @@ class AuthorizationDetailView(LoginRequiredMixin, DetailView):
             if note['attendance'] == 'Present':
                 total_present += 1
             if note['billed_units']:
-
                 units = float(note['billed_units'])
                 total_units += units
-            if note['instructional_units']:
-                i_units = float(note['instructional_units'])
-                total_instruction += i_units
+            # if note['instructional_units']:
+            #     i_units = float(note['instructional_units'])
+            #     total_instruction += i_units
 
         if authorization[0]['billing_rate'] is None:
             context['total_billed'] = 'Need to enter billing rate'
@@ -390,7 +389,7 @@ class AuthorizationDetailView(LoginRequiredMixin, DetailView):
         context['total_notes'] = total_notes
 
         context['total_present'] = total_present
-        context['total_instruction'] = total_instruction
+        # context['total_instruction'] = total_instruction
         context['form'] = LessonNoteForm
         return context
 
@@ -412,6 +411,26 @@ class ProgressReportDetailView(LoginRequiredMixin, DetailView):
     def get_context_data(self, **kwargs):
         # Call the base implementation first to get a context
         context = super(ProgressReportDetailView, self).get_context_data(**kwargs)
+        notes = LessonNote.objects.filter(authorization_id=self.kwargs['authorization_id']).values()
+        authorization = Authorization.objects.filter(id=self.kwargs['authorization_id']).values()
+
+        total_units = 0
+        for note in notes:
+            if note['billed_units']:
+                units = float(note['billed_units'])
+                total_units += units
+
+            total_hours = units_to_hours(float(authorization[0]['total_time']) )
+            context['total_hours'] = total_hours
+            hours_used = units_to_hours(total_units)
+            context['hours_used'] = hours_used
+            if authorization[0]['total_time'] is None:
+                context['remaining_hours'] = "Need to enter total time"
+            else:
+                remaining = float(authorization[0]['total_time']) - total_units
+                remaining_hours = units_to_hours(remaining)
+                context['remaining_hours'] = remaining_hours
+
         return context
 
 
