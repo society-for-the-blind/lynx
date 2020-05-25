@@ -412,9 +412,10 @@ class ProgressReportDetailView(LoginRequiredMixin, DetailView):
         # Call the base implementation first to get a context
         context = super(ProgressReportDetailView, self).get_context_data(**kwargs)
 
-        print(context)
-        notes = LessonNote.objects.filter(authorization_id=context['authorization_id']).values()
-        authorization = Authorization.objects.filter(id=context['authorization_id']).values()
+        # print(context)
+        report = ProgressReport.objects.filter(id=self.kwargs['pk']).values()
+        notes = LessonNote.objects.filter(authorization_id=report[0]['authorization_id']).values()
+        authorization = Authorization.objects.filter(id=report[0]['authorization_id']).values()
 
         total_units = 0
         for note in notes:
@@ -422,7 +423,7 @@ class ProgressReportDetailView(LoginRequiredMixin, DetailView):
                 units = float(note['billed_units'])
                 total_units += units
 
-            total_hours = units_to_hours(float(authorization[0]['total_time']) )
+            total_hours = units_to_hours(float(authorization[0]['total_time']))
             context['total_hours'] = total_hours
             hours_used = units_to_hours(total_units)
             context['hours_used'] = hours_used
