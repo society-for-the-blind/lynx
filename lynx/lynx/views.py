@@ -411,8 +411,8 @@ class ProgressReportDetailView(LoginRequiredMixin, DetailView):
     def get_context_data(self, **kwargs):
         # Call the base implementation first to get a context
         context = super(ProgressReportDetailView, self).get_context_data(**kwargs)
-        notes = LessonNote.objects.filter(authorization_id=self.kwargs['authorization_id']).values()
-        authorization = Authorization.objects.filter(id=self.kwargs['authorization_id']).values()
+        notes = LessonNote.objects.filter(authorization_id=context.authorization.id).values()
+        authorization = Authorization.objects.filter(id=context.authorization.id).values()
 
         total_units = 0
         for note in notes:
