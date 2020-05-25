@@ -156,6 +156,9 @@ class Email (models.Model):
     def get_absolute_url(self):
         return "/lynx/client/%i" % self.contact_id
 
+    def __str__(self):
+        return self.email
+
 
 class Phone (models.Model):
     PHONE_TYPES = (("Work", "Work"), ("Home", "Home"), ("Cell", "Cell"), ("Evening", "Evening"), ("Day", "Day"),
@@ -172,7 +175,9 @@ class Phone (models.Model):
 
     def get_absolute_url(self):
         return "/lynx/client/%i" % self.contact_id
-#TODO check for duplicates
+
+    def __str__(self):
+        return self.phone
 
 # Employee information. Contact information in Contact table, addresses in Address table.
 class Employee(models.Model):
@@ -341,6 +346,9 @@ class Intake(models.Model):
     def get_absolute_url(self):
         return "/lynx/client/%i" % self.contact_id
 
+    def __str__(self):
+        return '%s Intake' % (self.contact.name,)
+
 
 class Referral(models.Model):
     intake = models.ForeignKey('Intake', on_delete=models.CASCADE)
@@ -391,6 +399,9 @@ class Authorization(models.Model):
     created = models.DateTimeField(auto_now_add=True, null=True)
     modified = models.DateTimeField(auto_now=True, null=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET(get_sentinel_user))
+
+    def get_absolute_url(self):
+        return "/lynx/authorization/%i" % self.id
 
 
 class OutsideAgency(models.Model):

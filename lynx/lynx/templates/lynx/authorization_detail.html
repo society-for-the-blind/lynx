@@ -6,7 +6,7 @@
 <!--<input type="button" onclick="location.href='/lynx/client/{{ object.contact_id }}';" value="" />-->
 <form>
   <button class="btn btn-success" formaction="/lynx/client/{{ object.contact_id }}">Return to {{ object.contact.first_name }} {{ object.contact.last_name }}'s Information </button>
-  <button class="btn btn-success" formaction="/lynx/authorization-edit/{{ object.id }}"> Edit Authorization </button>
+  <button class="btn btn-primary" formaction="/lynx/authorization-edit/{{ object.id }}"> Edit Authorization </button>
 </form>
 <hr>
 <h2>Authorization Details</h2>
