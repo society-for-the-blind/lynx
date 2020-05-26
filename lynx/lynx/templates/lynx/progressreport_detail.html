@@ -11,9 +11,9 @@
 
 <h2>Authorization Information</h2>
 <p class="tab"><strong>Authorization Number:</strong> {{ object.authorization.authorization_number }}</p>
-<p class="tab"><strong>Hours Used for Authorization:</strong> {{ object.hours_used }}</p>
-<p class="tab"><strong>Hours Remaining:</strong> {{ object.remaining_hours }}</p>
-<p class="tab"><strong>Total Hours:</strong> {{ object.total_hours }}</p>
+<p class="tab"><strong>Hours Used for Authorization:</strong> {{ hours_used }}</p>
+<p class="tab"><strong>Hours Remaining:</strong> {{ remaining_hours }}</p>
+<p class="tab"><strong>Total Hours:</strong> {{ total_hours }}</p>
 <p class="tab"><strong>Hours Used this Month:</strong> </p>
 <p class="tab"><strong>Start Date:</strong> {{ object.authorization.start_date|date:'F j, Y' }}</p>
 <p class="tab"><strong>End Date:</strong> {{ object.authorization.end_date|date:'F j, Y' }}</p>
@@ -22,7 +22,7 @@
 <p class="tab"><strong>Client Accomplishments:</strong> {{ object.accomplishments }}</p>
 <p class="tab"><strong>Remaining Short Term Objectives:</strong> {{ object.short_term_goals }}</p>
 <p class="tab"><strong>Remaining Long Term Objectives:</strong> {{ object.long_term_goals }}</p>
-<p class="tab"><strong>Estimated number of Hours needed for completion of objectives:</strong> Long Term - {{ object.long_term_goals_time }}. Short Term - {{ object.short_term_goals_time }}</p>
+<p class="tab"><strong>Estimated number of Hours needed for completion of objectives:</strong> Long Term - {{ object.long_term_goals_time }}. </p><p>Short Term - {{ object.short_term_goals_time }}</p>
 <p class="tab"><strong>The client's attendance, attitude, and motivation during current month:</strong> {{ object.client_behavior }}</p>
 <p class="tab"><strong>Additional comments:</strong> {{ object.notes }}</p>
 
