@@ -591,16 +591,18 @@ def billing_report(request):
                 auth_set = dictfetchall(cursor)
 
             reports = {}
+            total_amount = 0
+            total_hours = 0
             for report in auth_set:
                 # print(report)
                 authorization_number = report['authorization_number']
                 billing_rate = float(report['billing_rate'])
                 if authorization_number in reports.keys():
                     if report['billed_units'] and reports[authorization_number]['billed_time']:
-                        reports[authorization_number]['billed_time']  = float(report['billed_units']) + float(reports[authorization_number]['billed_time'])
+                        reports[authorization_number]['billed_time'] = float(report['billed_units']) + float(reports[authorization_number]['billed_time'])
                         reports[authorization_number]['amount'] = billing_rate * float(reports[authorization_number]['billed_time'])
                     elif report['billed_units']:
-                        reports[authorization_number]['billed_time']  = float(report['billed_units'])
+                        reports[authorization_number]['billed_time'] = float(report['billed_units'])
                         reports[authorization_number]['amount'] = billing_rate * float(reports[authorization_number]['billed_time'])
                 else:
                     service_area = report['service_area']
@@ -613,6 +615,7 @@ def billing_report(request):
                         amount = float(billed_time) * billing_rate
                     else:
                         amount = 0
+                    total_amount += amount
                     auth = {'service_area': service_area, 'authorization_number': authorization_number,
                             'authorization_type': authorization_type, 'outside_agency': outside_agency, 'rate': rate,
                             'client': client, 'billed_time': billed_time, 'amount': amount}
@@ -631,9 +634,12 @@ def billing_report(request):
                 in_hours = 'No hours'
                 if value['billed_time']:
                     in_hours = str(float(value['billed_time'])/4)
+                    total_hours += in_hours
                 writer.writerow([value['client'], value['service_area'], value['authorization_number'],
                                  value['authorization_type'], in_hours, value['rate'], value['amount'],
                                  value['outside_agency']])
+
+            writer.writerow(['', '', '', '', total_hours, '', '$' + str(total_amount), ''])
 
             return response
 
