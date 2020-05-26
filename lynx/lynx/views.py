@@ -634,7 +634,7 @@ def billing_report(request):
                 in_hours = 'No hours'
                 if value['billed_time']:
                     in_hours = str(float(value['billed_time'])/4)
-                    total_hours += in_hours
+                    total_hours += int(in_hours)
                 writer.writerow([value['client'], value['service_area'], value['authorization_number'],
                                  value['authorization_type'], in_hours, value['rate'], value['amount'],
                                  value['outside_agency']])
