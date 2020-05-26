@@ -428,11 +428,6 @@ class ProgressReportDetailView(LoginRequiredMixin, DetailView):
             context['total_hours'] = total_hours
             hours_used = units_to_hours(total_units)
             context['hours_used'] = hours_used
-            print(context)
-            print('th')
-            print(context['total_hours'])
-            print('hu')
-            print(context['hours_used'])
             if authorization[0]['total_time'] is None:
                 context['remaining_hours'] = "Need to enter total time"
             else:
@@ -493,7 +488,6 @@ class IntakeUpdateView(LoginRequiredMixin, UpdateView):
               'medications', 'medical_notes', 'hobbies', 'employment_goals', 'hired', 'employer', 'position',
               'hire_date', 'payment_source', 'referred_by']
     template_name_suffix = '_edit'
-
 
     def get_form(self, form_class=None):
         form = super().get_form(form_class=form_class)
