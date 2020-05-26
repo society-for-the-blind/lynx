@@ -414,8 +414,9 @@ class ProgressReportDetailView(LoginRequiredMixin, DetailView):
 
         # print(context)
         report = ProgressReport.objects.filter(id=self.kwargs['pk']).values()
-        notes = LessonNote.objects.filter(authorization_id=report[0]['authorization_id']).values()
-        authorization = Authorization.objects.filter(id=report[0]['authorization_id']).values()
+        auth_id = report[0]['authorization_id']
+        notes = LessonNote.objects.filter(authorization_id=auth_id).values()
+        authorization = Authorization.objects.filter(id=auth_id).values()
 
         total_units = 0
         for note in notes:
@@ -427,7 +428,11 @@ class ProgressReportDetailView(LoginRequiredMixin, DetailView):
             context['total_hours'] = total_hours
             hours_used = units_to_hours(total_units)
             context['hours_used'] = hours_used
-            # context['total_units'] = total_units
+            print(context)
+            print('th')
+            print(context['total_hours'])
+            print('hu')
+            print(context['hours_used'])
             if authorization[0]['total_time'] is None:
                 context['remaining_hours'] = "Need to enter total time"
             else:
