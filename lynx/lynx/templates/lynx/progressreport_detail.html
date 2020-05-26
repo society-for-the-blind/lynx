@@ -2,10 +2,10 @@
 
 {% block content %}
 
-<h1>{{ object.contact.first_name }} {{ object.contact.last_name }} Progress Report for {{ object.month }} {{ object.}}</h1>
+<h1>{{ object.authorization.contact.first_name }} {{ object.authorization.contact.last_name }} Progress Report for {{ object.month }} </h1>
 <h2>Client Information</h2>
 <input type="button" onclick="location.href='/lynx/authorization/{{ object.authorization_id }}';" value="Return to Authorization" /> <input type="button" onclick="location.href='/lynx/client/{{ object.authorization.contact.id}}';" value="Return to Client" />
-<p class="tab"><strong>Client:</strong> {{ object.contact.first_name }} {{ object.contact.last_name }}</p>
+<p class="tab"><strong>Client:</strong> {{ object.authorization.contact.first_name }} {{ object.authorization.contact.last_name }}</p>
 <p class="tab"><strong>Counselor:</strong> {{ object.authorization.outside_agency }}</p>
 <p class="tab"><strong>Instructor:</strong> {{ object.instructor }}</p>
 
@@ -20,8 +20,9 @@
 
 <h2>Report</h2>
 <p class="tab"><strong>Client Accomplishments:</strong> {{ object.accomplishments }}</p>
-<p class="tab"><strong>Remaining Objectives:</strong> {{ object.remaining_objectives }}</p>
-<p class="tab"><strong>Estimated number of Hours needed for completion of objectives:</strong> {{ object.estimated_hours }}</p>
+<p class="tab"><strong>Remaining Short Term Objectives:</strong> {{ object.short_term_goals }}</p>
+<p class="tab"><strong>Remaining Long Term Objectives:</strong> {{ object.long_term_goals }}</p>
+<p class="tab"><strong>Estimated number of Hours needed for completion of objectives:</strong> Long Term - {{ object.long_term_goals_time }}. Short Term - {{ object.short_term_goals_time }}</p>
 <p class="tab"><strong>The client's attendance, attitude, and motivation during current month:</strong> {{ object.client_behavior }}</p>
 <p class="tab"><strong>Additional comments:</strong> {{ object.notes }}</p>
 
