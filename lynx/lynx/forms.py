@@ -114,6 +114,10 @@ class AuthorizationForm(forms.ModelForm):
         model = Authorization
         exclude = ('created', 'modified', 'user', 'contact')
 
+    def __init__(self, *args, **kwargs):
+        super(AuthorizationForm, self).__init__(*args, **kwargs)
+        self.fields['outside_agency'].label = "Payment Source"
+
 
 class ProgressReportForm(forms.ModelForm):
 
