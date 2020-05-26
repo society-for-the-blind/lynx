@@ -355,7 +355,7 @@ class AuthorizationDetailView(LoginRequiredMixin, DetailView):
         total_units = 0
         total_notes = 0
         total_present = 0
-        total_instruction = 0
+        # total_instruction = 0
         for note in notes:
             if note['attendance'] != 'Other':
                 total_notes += 1
@@ -387,6 +387,7 @@ class AuthorizationDetailView(LoginRequiredMixin, DetailView):
         total_hours = units_to_hours(total_units)
         context['total_hours'] = total_hours
         context['total_notes'] = total_notes
+        context['total_time'] = units_to_hours(authorization[0]['total_time'])
 
         context['total_present'] = total_present
         # context['total_instruction'] = total_instruction

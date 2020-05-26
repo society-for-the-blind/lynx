@@ -15,7 +15,7 @@
 {% if object.authorization_type %}<p class="tab"><strong>Authorization Type:</strong> {{ object.authorization_type }}</p>{% endif %}
 {% if object.start_date %}<p class="tab"><strong>Start Date:</strong> {{ object.start_date|date:'F j, Y' }}</p>{% endif %}
 {% if object.end_date %}<p class="tab"><strong>End Date:</strong> {{ object.end_date|date:'F j, Y' }}</p>{% endif %}
-<p class="tab"><strong>Total {{ object.authorization_type }} Authorized:</strong> {{ object.total_time }}</p>
+<p class="tab"><strong>Total {{ object.authorization_type }} Authorized:</strong> {{ total_time }}</p>
 <p class="tab"><strong>Total {{ object.authorization_type }} Used:</strong> {{ total_hours }}</p>
 <p class="tab"><strong>Total {{ object.authorization_type }} Remaining:</strong> {{ remaining_hours }}</p>
 {% if object.billing_rate %}<p class="tab"><strong>Billing Rate:</strong> {{ rate }}</p>{% endif %}
