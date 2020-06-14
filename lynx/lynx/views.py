@@ -376,8 +376,9 @@ class AuthorizationDetailView(LoginRequiredMixin, DetailView):
             if authorization[0]['authorization_type'] == 'Classes':
                 context['rate'] = '$' + str(authorization[0]['billing_rate']) + '/class'
             if authorization[0]['authorization_type'] == 'Hours':
-                billing = 4 * float(authorization[0]['billing_rate'])
-                context['rate'] = '$' + str(billing) + '/hour'
+                # billing = 4 * float(authorization[0]['billing_rate'])
+                # context['rate'] = '$' + str(billing) + '/hour'
+                context['rate'] = '$' + str(authorization[0]['billing_rate']) + '/hour'
         if authorization[0]['total_time'] is None:
             context['remaining_hours'] = "Need to enter total time"
         else:
