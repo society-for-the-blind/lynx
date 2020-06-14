@@ -606,7 +606,8 @@ def billing_report(request):
                     outside_agency = report['outside_agency']
                     client = report['name']
                     billed_time = report['billed_units']
-                    rate = str(billing_rate * 4) + '/hour'
+                    rate = str(billing_rate) + '/hour'
+                    # rate = str(billing_rate * 4) + '/hour'
                     if billed_time:
                         amount = float(billed_time) * billing_rate
                     else:
