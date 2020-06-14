@@ -367,7 +367,7 @@ class AuthorizationDetailView(LoginRequiredMixin, DetailView):
             # if note['instructional_units']:
             #     i_units = float(note['instructional_units'])
             #     total_instruction += i_units
-
+        total_hours = units_to_hours(total_units)
         if authorization[0]['billing_rate'] is None:
             context['total_billed'] = 'Need to enter billing rate'
             context['rate'] = 'Need to enter billing rate'
@@ -382,13 +382,13 @@ class AuthorizationDetailView(LoginRequiredMixin, DetailView):
         if authorization[0]['total_time'] is None:
             context['remaining_hours'] = "Need to enter total time"
         else:
-            remaining_hours = float(authorization[0]['total_time']) - total_units
+            remaining_hours = float(authorization[0]['total_time']) - total_hours
             # remaining_hours = units_to_hours(remaining)
             context['remaining_hours'] = remaining_hours
-        total_hours = units_to_hours(total_units)
+
         context['total_hours'] = total_hours
         context['total_notes'] = total_notes
-        context['total_time'] = units_to_hours(float(authorization[0]['total_time']))
+        context['total_time'] = authorization[0]['total_time']
 
         context['total_present'] = total_present
         # context['total_instruction'] = total_instruction
