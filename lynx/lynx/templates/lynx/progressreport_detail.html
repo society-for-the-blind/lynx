@@ -26,4 +26,9 @@
 <p class="tab"><strong>The client's attendance, attitude, and motivation during current month:</strong> {{ object.client_behavior }}</p>
 <p class="tab"><strong>Additional comments:</strong> {{ object.notes }}</p>
 
+{% if not request.GET.print %}
+<form>
+  <button class="btn btn-success" formaction="/lynx/progress-report/{{ object.id }}/?print=true">Print View </button>
+</form>
+{% endif %}}
 {% endblock %}
