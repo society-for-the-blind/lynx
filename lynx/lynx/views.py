@@ -372,7 +372,7 @@ class AuthorizationDetailView(LoginRequiredMixin, DetailView):
             context['total_billed'] = 'Need to enter billing rate'
             context['rate'] = 'Need to enter billing rate'
         else:
-            context['total_billed'] = '$' + str(total_units * float(authorization[0]['billing_rate']))
+            context['total_billed'] = '$' + str(total_hours * float(authorization[0]['billing_rate']))
             if authorization[0]['authorization_type'] == 'Classes':
                 context['rate'] = '$' + str(authorization[0]['billing_rate']) + '/class'
             if authorization[0]['authorization_type'] == 'Hours':
