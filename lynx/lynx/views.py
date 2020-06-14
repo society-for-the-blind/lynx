@@ -382,8 +382,8 @@ class AuthorizationDetailView(LoginRequiredMixin, DetailView):
         if authorization[0]['total_time'] is None:
             context['remaining_hours'] = "Need to enter total time"
         else:
-            remaining = float(authorization[0]['total_time']) - total_units
-            remaining_hours = units_to_hours(remaining)
+            remaining_hours = float(authorization[0]['total_time']) - total_units
+            # remaining_hours = units_to_hours(remaining)
             context['remaining_hours'] = remaining_hours
         total_hours = units_to_hours(total_units)
         context['total_hours'] = total_hours
