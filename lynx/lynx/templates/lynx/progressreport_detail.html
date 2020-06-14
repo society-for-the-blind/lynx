@@ -1,6 +1,4 @@
-{% if not request.GET.print %}
-{% extends 'lynx/base.html' %}
-{% endif %}
+{% extends request.GET.print|yesno:"base_print.html,base.html" %}
 
 {% block content %}
 
