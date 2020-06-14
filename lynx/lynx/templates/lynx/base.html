@@ -22,6 +22,7 @@
 </head>
 <body>
      <!-- Side navigation -->
+     {% if not request.GET.print %}
     <nav role="navigation">
         <div class="sidenav">
             <img src="{% static 'lynx/images/logo.jpg' %}" alt="" style="width:160px;">
@@ -35,6 +36,7 @@
          <div class="sidebar">
          </div>
     </nav>
+     {% endif %}
 
     <!-- Page content -->
     <main role="main">
