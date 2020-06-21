@@ -11,10 +11,10 @@
 
 <h2>Authorization Information</h2>
 <p class="tab"><strong>Authorization Number:</strong> {{ object.authorization.authorization_number }}</p>
-<p class="tab"><strong>Hours Used for Authorization:</strong> {{ hours_used }}</p>
+<p class="tab"><strong>Hours Used for Authorization:</strong> {{ total_hours }}</p>
 <p class="tab"><strong>Hours Remaining:</strong> {{ remaining_hours }}</p>
-<p class="tab"><strong>Total Hours:</strong> {{ total_hours }}</p>
-<p class="tab"><strong>Hours Used this Month:</strong> </p> <!--TODO add hours used-->
+<p class="tab"><strong>Total Hours:</strong> {{ total_time }}</p>
+<p class="tab"><strong>Hours Used this Month:</strong> {{ month_used }}</p> <!--TODO add hours used-->
 <p class="tab"><strong>Start Date:</strong> {{ object.authorization.start_date|date:'F j, Y' }}</p>
 <p class="tab"><strong>End Date:</strong> {{ object.authorization.end_date|date:'F j, Y' }}</p>
 

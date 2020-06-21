@@ -413,29 +413,40 @@ class ProgressReportDetailView(LoginRequiredMixin, DetailView):
     def get_context_data(self, **kwargs):
         # Call the base implementation first to get a context
         context = super(ProgressReportDetailView, self).get_context_data(**kwargs)
+        MONTHS = (("January", 1), ("February", 2), ("March", 3), ("April", 4), ("May", 5), ("June", 6), ("July", 7),
+                  ("August", 8), ("September", 9), ("October", 10), ("November", 11), ("December", 12))
 
         # print(context)
         report = ProgressReport.objects.filter(id=self.kwargs['pk']).values()
         auth_id = report[0]['authorization_id']
-        notes = LessonNote.objects.filter(authorization_id=auth_id).values()
+        month_number = MONTHS[report[0]['month']]
+        notes = LessonNote.objects.filter(authorization_id=auth_id).filter(date__month=month_number).values()
+        all_notes = LessonNote.objects.filter(authorization_id=auth_id).values()
         authorization = Authorization.objects.filter(id=auth_id).values()
 
         total_units = 0
+        all_units = 0
+
+        for note in all_notes:
+            if note['billed_units']:
+                units = float(note['billed_units'])
+                all_units += units
         for note in notes:
             if note['billed_units']:
                 units = float(note['billed_units'])
                 total_units += units
 
-            total_hours = units_to_hours(total_units)
-            context['total_hours'] = total_hours
-            hours_used = (total_units)
-            context['hours_used'] = hours_used
-            if authorization[0]['total_time'] is None:
-                context['remaining_hours'] = "Need to enter total time"
-            else:
-                remaining_hours = float(authorization[0]['total_time']) - total_hours
-                # remaining_hours = units_to_hours(remaining)
-                context['remaining_hours'] = remaining_hours
+        total_hours = units_to_hours(all_units)
+        context['total_hours'] = total_hours #used in total
+        month_used = units_to_hours(total_units)
+        context['month_used'] = month_used #used this month
+        context['total_time'] = authorization[0]['total_time']
+        if authorization[0]['total_time'] is None:
+            context['remaining_hours'] = "Need to enter total time"
+        else:
+            remaining_hours = float(authorization[0]['total_time']) - total_hours
+            # remaining_hours = units_to_hours(remaining)
+            context['remaining_hours'] = remaining_hours
 
         return context
 
@@ -662,3 +673,5 @@ def dictfetchall(cursor):
         dict(zip(columns, row))
         for row in cursor.fetchall()
     ]
+
+
