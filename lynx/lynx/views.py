@@ -413,13 +413,14 @@ class ProgressReportDetailView(LoginRequiredMixin, DetailView):
     def get_context_data(self, **kwargs):
         # Call the base implementation first to get a context
         context = super(ProgressReportDetailView, self).get_context_data(**kwargs)
-        MONTHS = {("January", 1), ("February", 2), ("March", 3), ("April", 4), ("May", 5), ("June", 6), ("July", 7),
-                  ("August", 8), ("September", 9), ("October", 10), ("November", 11), ("December", 12)}
+        MONTHS = {"January": 1, "February": 2, "March": 3, "April": 4, "May": 5, "June": 6, "July": 7,
+                  "August": 8, "September": 9, "October": 10, "November": 11, "December": 12}
 
         # print(context)
         report = ProgressReport.objects.filter(id=self.kwargs['pk']).values()
         auth_id = report[0]['authorization_id']
-        month_number = MONTHS[report[0]['month']]
+        month = report[0]['month']
+        month_number = MONTHS[month]
         notes = LessonNote.objects.filter(authorization_id=auth_id).filter(date__month=month_number).values()
         all_notes = LessonNote.objects.filter(authorization_id=auth_id).values()
         authorization = Authorization.objects.filter(id=auth_id).values()
