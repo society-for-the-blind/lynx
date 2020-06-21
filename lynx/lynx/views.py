@@ -426,15 +426,15 @@ class ProgressReportDetailView(LoginRequiredMixin, DetailView):
                 units = float(note['billed_units'])
                 total_units += units
 
-            total_hours = units_to_hours(float(authorization[0]['total_time']))
+            total_hours = units_to_hours(total_units)
             context['total_hours'] = total_hours
-            hours_used = units_to_hours(total_units)
+            hours_used = (total_units)
             context['hours_used'] = hours_used
             if authorization[0]['total_time'] is None:
                 context['remaining_hours'] = "Need to enter total time"
             else:
-                remaining = float(authorization[0]['total_time']) - total_units
-                remaining_hours = units_to_hours(remaining)
+                remaining_hours = float(authorization[0]['total_time']) - total_hours
+                # remaining_hours = units_to_hours(remaining)
                 context['remaining_hours'] = remaining_hours
 
         return context
