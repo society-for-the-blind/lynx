@@ -2,15 +2,14 @@
 
 {% block javascript %}
 <script>
-    function getYears() {
+
+
+    $(document).ready(function() {
         var year = new Date().getFullYear();
-        var options = "";
         for (var i = 1999; i <= year; i++) {
-            options += '<option value="' + i + '">' + i + '</option>';
+            $('#selYear').append("<option value="+ i +">"+ i +"</option>");
         }
-        document.getElementById('selYear').innerHTML = options;
-    }
-    getYears();
+    });
 
 </script>
 {% endblock %}
