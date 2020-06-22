@@ -1,14 +1,17 @@
 {% extends 'lynx/base.html' %}
 
 {% block javascript %}
+<script>
 
-function selectOne() {
-  var year = new Date().getFullYear()
-  var select = document.getElementById('selYear');
-  for (i = 1999; i <= year; i++) {
-     select.options[select.options.length] = new Option(i, i);
-  }
-}
+    var year = new Date().getFullYear();
+
+    for (var i=1999; i <= year; i++)
+    {
+        document.write("<select name='selYear'>");
+        document.write("<option>" + i + "</option>");
+
+    }
+</script>
 {% endblock %}
 
 {% block content %}
