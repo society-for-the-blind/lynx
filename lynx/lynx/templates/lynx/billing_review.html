@@ -1,0 +1,62 @@
+{% extends 'lynx/base.html' %}
+
+{% block javascript %}
+
+function selectOne() {
+  var year = new Date().getFullYear()
+  var select = document.getElementById('selYear');
+  for (i = 1999; i <= year; i++) {
+     select.options[select.options.length] = new Option(i, i);
+  }
+}
+{% endblock %}
+
+{% block content %}
+
+<h1>{{ object.authorization.contact.first_name }} {{ object.authorization.contact.last_name }} Billing Review for {{ object.month }}, {{ object.year }} </h1>
+<input type="button" onclick="location.href='/lynx/authorization/{{ object.authorization_id }}';" value="Return to Authorization" /> <input type="button" onclick="location.href='/lynx/client/{{ object.authorization.contact.id}}';" value="Return to Client" />
+
+<p>Please review the following information. Listed below is the billing information on file for this authorization. You can modify the contact information for the payment source, or view a printable invoice.</p>
+<div>
+    <form action='/lynx/billing_review/{{ object.id}}' method="get">
+        <select name="selMonth" id="selMonth" title="Month">
+            <option value="January">January</option>
+            <option value="February">February</option>
+            <option value="March">March</option>
+            <option value="April">April</option>
+            <option value="May">May</option>
+            <option value="June">June</option>
+            <option value="July">July</option>
+            <option value="August">August</option>
+            <option value="September">September</option>
+            <option value="October">October</option>
+            <option value="November">November</option>
+            <option value="December">December</option>
+        </select>
+        <select name="selYear" id="selYear" title="Year">
+        </select>
+        <button type="submit" value="Submit">Submit</button>
+    </form>
+</div>
+
+
+<h2>Invoice Information</h2>
+<p class="tab"><strong>Invoice Date:</strong> Today's Date </p>  <!--# TODO-->
+<p class="tab"><strong>Client:</strong> {{ object.authorization.contact.last_name }}, {{ object.authorization.contact.first_name }} </p>
+<p class="tab"><strong>Authorization Number:</strong> {{ object.authorization.authorization_number }} </p>
+<p class="tab"><strong>Authorization Type:</strong> {{ object.authorization.authorization_type }}</p>
+<p class="tab"><strong>Total Hours on Authorization:</strong> {{ total_hours }}</p>
+<p class="tab"><strong>Hours Taught This Month:</strong> {{ month_hours }}</p>
+<p class="tab"><strong>Instructor(s):</strong> {{ instructors }}</p>
+
+<h2>Payment Source Information</h2>
+<p class="tab"><strong>Payment Source:</strong> {{ object.authorization.authorization_number }}</p>
+<p class="tab"><strong>Billing Address:</strong> {{ total_hours }}</p>
+<p class="tab"><strong>Phone Number:</strong> {{ remaining_hours }}</p>
+
+{% if not request.GET.print %}
+<form>
+  <button class="btn btn-success" formaction="/lynx/progress-report/{{ object.id }}/?print=true">Print View </button>
+</form>
+{% endif %}
+{% endblock %}
