@@ -444,7 +444,7 @@ class BillingName(models.Model):
 
 class ProgressReport(models.Model):
     month = models.CharField(max_length=25, choices=MONTHS, blank=True, null=True)
-    # year = models.CharField(max_length=25, blank=True, null=True)
+    year = models.CharField(max_length=25, blank=True, null=True)
     authorization = models.ForeignKey('Authorization', on_delete=models.CASCADE)
     instructor = models.CharField(max_length=150, blank=True, null=True)
     accomplishments = models.TextField(blank=True, null=True)

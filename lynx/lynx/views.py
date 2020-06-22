@@ -421,7 +421,7 @@ class ProgressReportDetailView(LoginRequiredMixin, DetailView):
         auth_id = report[0]['authorization_id']
         month = report[0]['month']
         month_number = MONTHS[month]
-        notes = LessonNote.objects.filter(authorization_id=auth_id).filter(date__month=month_number).values()
+        notes = LessonNote.objects.filter(authorization_id=auth_id).filter(date__month=month_number).values() #TODO: filter by year, wait until live data in
         all_notes = LessonNote.objects.filter(authorization_id=auth_id).values()
         authorization = Authorization.objects.filter(id=auth_id).values()
 
@@ -455,6 +455,11 @@ class ProgressReportDetailView(LoginRequiredMixin, DetailView):
 class LessonNoteDetailView(LoginRequiredMixin, DetailView):
 
     model = LessonNote
+
+
+class BillingReviewDetailView(LoginRequiredMixin, DetailView):
+
+    model = ProgressReport
 
 
 class ClientUpdateView(LoginRequiredMixin, UpdateView):
@@ -674,5 +679,3 @@ def dictfetchall(cursor):
         dict(zip(columns, row))
         for row in cursor.fetchall()
     ]
-
-
