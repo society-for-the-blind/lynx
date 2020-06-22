@@ -97,7 +97,7 @@
     <table class="table">
         <tr>
             <th>Lesson Date</th>
-            <th>Billed Time</th>
+            <th>Billed Time (in Hours)</th>
             <th>Rate</th>
             <th>Service Area</th>
             <th>Authorization Type</th>
@@ -105,7 +105,7 @@
         {% for note in note_list %}
             <tr>
                 <td>{{ note.date|date:'F j, Y' }}</td>
-                <td>{{ note.billed_units }}</td>
+                <td>{{ total_hours }}</td>
                 <td>{{ object.billing_rate }}</td>
                 <td>{{ object.intake_service_area }}</td>
                 <td>{{ object.authorization_type }}</td>
@@ -113,6 +113,6 @@
         {% endfor %}
     </table>
 <p class="tab"><strong>Total Billed:</strong> {{ total_billed }}</p>
-<p class="tab"><strong>Remaining Units:</strong> {{ remaining_units }}</p>
+<p class="tab"><strong>Remaining Units:</strong> {{ remaining_hours }}</p>
 <!--todo check this math-->
 {% endblock %}
