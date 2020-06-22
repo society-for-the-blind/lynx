@@ -2,15 +2,13 @@
 
 {% block javascript %}
 <script>
-
-    var year = new Date().getFullYear();
-
-    for (var i=1999; i <= year; i++)
-    {
-        document.write("<select name='selYear'>");
-        document.write("<option>" + i + "</option>");
-
-    }
+    function yearOptions(){
+        var select = document.getElementById('selYear');
+        for (var i=1999; i <= year; i++){
+            select.options[select.options.length] = new Option(i, i);
+          }
+        }
+    yearOptions();
 </script>
 {% endblock %}
 
@@ -59,7 +57,7 @@
 
 {% if not request.GET.print %}
 <form>
-  <button class="btn btn-success" formaction="/lynx/progress-report/{{ object.id }}/?print=true">Print View </button>
+  <button class="btn btn-success" formaction="/lynx/billing-review/{{ object.id }}/?print=true">Print View </button>
 </form>
 {% endif %}
 {% endblock %}
