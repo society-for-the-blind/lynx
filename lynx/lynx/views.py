@@ -460,6 +460,7 @@ class LessonNoteDetailView(LoginRequiredMixin, DetailView):
 class BillingReviewDetailView(LoginRequiredMixin, DetailView):
 
     model = ProgressReport
+    template_name = 'lynx/billing_review.html'
 
 
 class ClientUpdateView(LoginRequiredMixin, UpdateView):
