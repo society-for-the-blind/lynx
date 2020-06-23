@@ -466,8 +466,8 @@ class BillingReviewDetailView(LoginRequiredMixin, DetailView):
         # Call the base implementation first to get a context
         context = super(BillingReviewDetailView, self).get_context_data(**kwargs)
         current_time = datetime.now()
-        month = self.request.GET.get('month', current_time.month)
-        year = self.request.GET.get('year', current_time.year)
+        month = self.request.GET.get('selMonth', current_time.month)
+        year = self.request.GET.get('selYear', current_time.year)
 
         auth_id = self.kwargs['pk']
         report = ProgressReport.objects.filter(authorization_id=auth_id).values() #TODO: filter by month and year, wait until live data in
@@ -475,7 +475,7 @@ class BillingReviewDetailView(LoginRequiredMixin, DetailView):
         authorization = Authorization.objects.filter(id=auth_id).values()
 
         total_units = 0
-        context['instructors'] = report[0]['instructor']
+        # context['instructors'] = report[0]['instructor']
         for note in notes:
             if note['billed_units']:
                 units = float(note['billed_units'])
