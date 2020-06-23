@@ -22,7 +22,7 @@
 
 <p>Please review the following information. Listed below is the billing information on file for this authorization. You can modify the contact information for the payment source, or view a printable invoice.</p>
 <div>
-    <form action='/lynx/billing_review/{{ object.id}}' method="get">
+    <form action='/lynx/billing-review/{{ object.id}}' method="get">
         <select name="selMonth" id="selMonth" title="Month">
             <option value="1">January</option>
             <option value="2">February</option>
@@ -52,6 +52,8 @@
 <p class="tab"><strong>Total Hours on Authorization:</strong> {{ total_time }}</p>
 <p class="tab"><strong>Hours Taught This Month:</strong> {{ month_hours }}</p>
 <p class="tab"><strong>Instructor(s):</strong> {{ instructors }}</p>
+
+{{request.GET.selMonth}}
 
 <h2>Payment Source Information</h2>
 <p class="tab"><strong>Payment Source:</strong> {{ object.outside_agency.name }} - {{ object.outside_agency.contact }}</p>
