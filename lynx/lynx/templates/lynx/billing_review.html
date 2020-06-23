@@ -3,12 +3,13 @@
 {% block javascript %}
 <script>
 
-
     $(document).ready(function() {
         var year = new Date().getFullYear();
         for (var i = 1999; i <= year; i++) {
             $('#selYear').append("<option value="+ i +">"+ i +"</option>");
         }
+        var dt = new Date();
+        document.getElementById("today").innerHTML = dt.toLocaleString();
     });
 
 </script>
@@ -16,25 +17,25 @@
 
 {% block content %}
 
-<h1>{{ object.authorization.contact.first_name }} {{ object.authorization.contact.last_name }} Billing Review for {{ object.month }}, {{ object.year }} </h1>
+<h1> Billing Review</h1>
 <input type="button" onclick="location.href='/lynx/authorization/{{ object.authorization_id }}';" value="Return to Authorization" /> <input type="button" onclick="location.href='/lynx/client/{{ object.authorization.contact.id}}';" value="Return to Client" />
 
 <p>Please review the following information. Listed below is the billing information on file for this authorization. You can modify the contact information for the payment source, or view a printable invoice.</p>
 <div>
     <form action='/lynx/billing_review/{{ object.id}}' method="get">
         <select name="selMonth" id="selMonth" title="Month">
-            <option value="January">January</option>
-            <option value="February">February</option>
-            <option value="March">March</option>
-            <option value="April">April</option>
-            <option value="May">May</option>
-            <option value="June">June</option>
-            <option value="July">July</option>
-            <option value="August">August</option>
-            <option value="September">September</option>
-            <option value="October">October</option>
-            <option value="November">November</option>
-            <option value="December">December</option>
+            <option value="1">January</option>
+            <option value="2">February</option>
+            <option value="3">March</option>
+            <option value="4">April</option>
+            <option value="5">May</option>
+            <option value="6">June</option>
+            <option value="7">July</option>
+            <option value="8">August</option>
+            <option value="9">September</option>
+            <option value="10">October</option>
+            <option value="11">November</option>
+            <option value="12">December</option>
         </select>
         <select name="selYear" id="selYear" title="Year">
         </select>
@@ -44,18 +45,18 @@
 
 
 <h2>Invoice Information</h2>
-<p class="tab"><strong>Invoice Date:</strong> Today's Date </p>  <!--# TODO-->
-<p class="tab"><strong>Client:</strong> {{ object.authorization.contact.last_name }}, {{ object.authorization.contact.first_name }} </p>
-<p class="tab"><strong>Authorization Number:</strong> {{ object.authorization.authorization_number }} </p>
-<p class="tab"><strong>Authorization Type:</strong> {{ object.authorization.authorization_type }}</p>
-<p class="tab"><strong>Total Hours on Authorization:</strong> {{ total_hours }}</p>
+<p class="tab"><strong>Invoice Date:</strong><div id="today"></div> </p>
+<p class="tab"><strong>Client:</strong> {{ object.contact.last_name }}, {{ object.contact.first_name }} </p>
+<p class="tab"><strong>Authorization Number:</strong> {{ object.authorization_number }} </p>
+<p class="tab"><strong>Authorization Type:</strong> {{ object.authorization_type }}</p>
+<p class="tab"><strong>Total Hours on Authorization:</strong> {{ total_time }}</p>
 <p class="tab"><strong>Hours Taught This Month:</strong> {{ month_hours }}</p>
 <p class="tab"><strong>Instructor(s):</strong> {{ instructors }}</p>
 
 <h2>Payment Source Information</h2>
-<p class="tab"><strong>Payment Source:</strong> {{ object.authorization.authorization_number }}</p>
-<p class="tab"><strong>Billing Address:</strong> {{ total_hours }}</p>
-<p class="tab"><strong>Phone Number:</strong> {{ remaining_hours }}</p>
+<p class="tab"><strong>Payment Source:</strong> {{ object.outside_agency.name }} - {{ object.outside_agency.contact }}</p>
+<p class="tab"><strong>Billing Address:</strong> </p>
+<p class="tab"><strong>Phone Number:</strong> </p>
 
 {% if not request.GET.print %}
 <form>

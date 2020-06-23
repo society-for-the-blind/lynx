@@ -459,8 +459,40 @@ class LessonNoteDetailView(LoginRequiredMixin, DetailView):
 
 class BillingReviewDetailView(LoginRequiredMixin, DetailView):
 
-    model = ProgressReport
+    model = Authorization
     template_name = 'lynx/billing_review.html'
+
+    def get_context_data(self, **kwargs):
+        # Call the base implementation first to get a context
+        context = super(BillingReviewDetailView, self).get_context_data(**kwargs)
+        current_time = datetime.datetime.now()
+        month = self.request.GET.get('month', current_time.month)
+        year = self.request.GET.get('year', current_time.year)
+
+        auth_id = self.kwargs['pk']
+        report = ProgressReport.objects.filter(authorization_id=auth_id).filter(date__month=month).filter(date__year=year).values()
+        notes = LessonNote.objects.filter(authorization_id=auth_id).filter(date__month=month).values() #TODO: filter by year, wait until live data in
+        authorization = Authorization.objects.filter(id=auth_id).values()
+
+        total_units = 0
+        context['instructors'] = report[0]['instructor']
+        for note in notes:
+            if note['billed_units']:
+                units = float(note['billed_units'])
+                total_units += units
+
+        # total_hours = units_to_hours(all_units)
+        # context['total_hours'] = total_hours #used in total
+        month_used = units_to_hours(total_units)
+        context['month_used'] = month_used #used this month
+        context['total_time'] = authorization[0]['total_time']
+        # if authorization[0]['total_time'] is None:
+        #     context['remaining_hours'] = "Need to enter total time"
+        # else:
+        #     remaining_hours = float(authorization[0]['total_time']) - total_hours
+        #     context['remaining_hours'] = remaining_hours
+
+        return context
 
 
 class ClientUpdateView(LoginRequiredMixin, UpdateView):
