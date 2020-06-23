@@ -465,7 +465,7 @@ class BillingReviewDetailView(LoginRequiredMixin, DetailView):
     def get_context_data(self, **kwargs):
         # Call the base implementation first to get a context
         context = super(BillingReviewDetailView, self).get_context_data(**kwargs)
-        current_time = datetime.datetime.now()
+        current_time = datetime.now()
         month = self.request.GET.get('month', current_time.month)
         year = self.request.GET.get('year', current_time.year)
 
