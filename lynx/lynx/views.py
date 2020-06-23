@@ -470,7 +470,7 @@ class BillingReviewDetailView(LoginRequiredMixin, DetailView):
         year = self.request.GET.get('year', current_time.year)
 
         auth_id = self.kwargs['pk']
-        report = ProgressReport.objects.filter(authorization_id=auth_id).filter(date__month=month).filter(date__year=year).values()
+        report = ProgressReport.objects.filter(authorization_id=auth_id).filter(month=month).values()
         notes = LessonNote.objects.filter(authorization_id=auth_id).filter(date__month=month).values() #TODO: filter by year, wait until live data in
         authorization = Authorization.objects.filter(id=auth_id).values()
 
