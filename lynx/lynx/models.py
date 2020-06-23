@@ -56,9 +56,13 @@ MAILINGS = (("N/A", "N/A"), ("Print", "Print"), ("Large Print", "Large Print"), 
 
 TRINARY = (('Yes', 'Yes'), ('No', 'No'), ('Other', 'Other'))
 
-MONTHS = (("January", "January"), ("February", "February"), ("March", "March"), ("April", "April"),
-            ("May", "May"), ("June", "June"), ("July", "July"), ("August", "August"), ("September", "September"),
-            ("October", "October"), ("November", "November"), ("December", "December"))
+# MONTHS = (("January", "January"), ("February", "February"), ("March", "March"), ("April", "April"),
+#             ("May", "May"), ("June", "June"), ("July", "July"), ("August", "August"), ("September", "September"),
+#             ("October", "October"), ("November", "November"), ("December", "December"))
+
+MONTHS = (("1", "January"), ("2", "February"), ("3", "March"), ("4", "April"),
+            ("5", "May"), ("6", "June"), ("7", "July"), ("8", "August"), ("9", "September"),
+            ("10", "October"), ("11", "November"), ("12", "December"))
 
 LANGUAGES = (("English", "English"), ("Armenian", "Armenian"), ("Arabic", "Arabic"), ("Bengali", "Bengali"),
              ("Cantonese", "Cantonese"), ("Czech", "Czech"), ("Danish", "Danish"), ("Dutch", "Dutch"),
