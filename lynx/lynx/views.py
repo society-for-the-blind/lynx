@@ -373,9 +373,11 @@ class AuthorizationDetailView(LoginRequiredMixin, DetailView):
             if authorization[0]['authorization_type'] == 'Classes':
                 context['rate'] = '$' + str(authorization[0]['billing_rate']) + '/class'
                 context['total_billed'] = '$' + str(class_count * float(authorization[0]['billing_rate']))
+                context['total_hours'] = class_count
             if authorization[0]['authorization_type'] == 'Hours':
                 context['rate'] = '$' + str(authorization[0]['billing_rate']) + '/hour'
                 context['total_billed'] = '$' + str(total_hours * float(authorization[0]['billing_rate']))
+                context['total_hours'] = total_hours
         if authorization[0]['total_time'] is None:
             context['remaining_hours'] = "Need to enter total time"
         else:
@@ -388,7 +390,7 @@ class AuthorizationDetailView(LoginRequiredMixin, DetailView):
                 # remaining_hours = units_to_hours(remaining)
                 context['remaining_hours'] = remaining_hours
 
-        context['total_hours'] = total_hours
+
         context['total_notes'] = total_notes
         context['total_time'] = authorization[0]['total_time']
 
@@ -429,27 +431,39 @@ class ProgressReportDetailView(LoginRequiredMixin, DetailView):
 
         total_units = 0
         all_units = 0
+        class_count = 0
+        month_count = 0
 
         for note in all_notes:
             if note['billed_units']:
                 units = float(note['billed_units'])
                 all_units += units
+                class_count += 1
         for note in notes:
             if note['billed_units']:
                 units = float(note['billed_units'])
                 total_units += units
+                month_count += 1
+        if authorization[0]['authorization_type'] == 'Classes':
+            context['total_hours'] = class_count #used in total
+            context['month_used'] = month_count #used this month
+            context['total_time'] = authorization[0]['total_time']
+        if authorization[0]['authorization_type'] == 'Hours':
+            total_hours = units_to_hours(all_units)
+            context['total_hours'] = total_hours #used in total
+            month_used = units_to_hours(total_units)
+            context['month_used'] = month_used #used this month
+            context['total_time'] = authorization[0]['total_time']
 
-        total_hours = units_to_hours(all_units)
-        context['total_hours'] = total_hours #used in total
-        month_used = units_to_hours(total_units)
-        context['month_used'] = month_used #used this month
-        context['total_time'] = authorization[0]['total_time']
         if authorization[0]['total_time'] is None:
             context['remaining_hours'] = "Need to enter total time"
         else:
-            remaining_hours = float(authorization[0]['total_time']) - total_hours
-            # remaining_hours = units_to_hours(remaining)
-            context['remaining_hours'] = remaining_hours
+            if authorization[0]['authorization_type'] == 'Classes':
+                remaining_hours = float(authorization[0]['total_time']) - class_count
+                context['remaining_hours'] = remaining_hours
+            if authorization[0]['authorization_type'] == 'Hours':
+                remaining_hours = float(authorization[0]['total_time']) - total_hours
+                context['remaining_hours'] = remaining_hours
 
         return context
 
