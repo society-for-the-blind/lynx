@@ -355,36 +355,38 @@ class AuthorizationDetailView(LoginRequiredMixin, DetailView):
         total_units = 0
         total_notes = 0
         total_present = 0
-        # total_instruction = 0
+        class_count = 0
         for note in notes:
             if note['attendance'] != 'Other':
                 total_notes += 1
             if note['attendance'] == 'Present':
                 total_present += 1
+                class_count += 1
             if note['billed_units']:
                 units = float(note['billed_units'])
                 total_units += units
-            # if note['instructional_units']:
-            #     i_units = float(note['instructional_units'])
-            #     total_instruction += i_units
         total_hours = units_to_hours(total_units)
         if authorization[0]['billing_rate'] is None:
             context['total_billed'] = 'Need to enter billing rate'
             context['rate'] = 'Need to enter billing rate'
         else:
-            context['total_billed'] = '$' + str(total_hours * float(authorization[0]['billing_rate']))
             if authorization[0]['authorization_type'] == 'Classes':
                 context['rate'] = '$' + str(authorization[0]['billing_rate']) + '/class'
+                context['total_billed'] = '$' + str(class_count * float(authorization[0]['billing_rate']))
             if authorization[0]['authorization_type'] == 'Hours':
-                # billing = 4 * float(authorization[0]['billing_rate'])
-                # context['rate'] = '$' + str(billing) + '/hour'
                 context['rate'] = '$' + str(authorization[0]['billing_rate']) + '/hour'
+                context['total_billed'] = '$' + str(total_hours * float(authorization[0]['billing_rate']))
         if authorization[0]['total_time'] is None:
             context['remaining_hours'] = "Need to enter total time"
         else:
-            remaining_hours = float(authorization[0]['total_time']) - total_hours
-            # remaining_hours = units_to_hours(remaining)
-            context['remaining_hours'] = remaining_hours
+            if authorization[0]['authorization_type'] == 'Classes':
+                remaining_hours = float(authorization[0]['total_time']) - class_count
+                # remaining_hours = units_to_hours(remaining)
+                context['remaining_hours'] = remaining_hours
+            if authorization[0]['authorization_type'] == 'Hours':
+                remaining_hours = float(authorization[0]['total_time']) - total_hours
+                # remaining_hours = units_to_hours(remaining)
+                context['remaining_hours'] = remaining_hours
 
         context['total_hours'] = total_hours
         context['total_notes'] = total_notes
