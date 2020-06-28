@@ -49,8 +49,8 @@
 <p class="tab"><strong>Client:</strong> {{ object.contact.last_name }}, {{ object.contact.first_name }} </p>
 <p class="tab"><strong>Authorization Number:</strong> {{ object.authorization_number }} </p>
 <p class="tab"><strong>Authorization Type:</strong> {{ object.authorization_type }}</p>
-<p class="tab"><strong>Total Hours on Authorization:</strong> {{ total_time }}</p>
-<p class="tab"><strong>Hours Taught This Month:</strong> {{ month_used }}</p>
+<p class="tab"><strong>Total {{ object.authorization_type }} on Authorization:</strong> {{ total_time }}</p>
+<p class="tab"><strong>{{ object.authorization_type }} Taught This Month:</strong> {{ month_used }}</p>
 <p class="tab"><strong>Instructor(s):</strong> {{ instructors }}</p>
 
 <h2>Payment Source Information</h2>

@@ -491,22 +491,20 @@ class BillingReviewDetailView(LoginRequiredMixin, DetailView):
         authorization = Authorization.objects.filter(id=auth_id).values()
 
         total_units = 0
+        total_notes = 0
         # context['instructors'] = report[0]['instructor']
         for note in notes:
             if note['billed_units']:
                 units = float(note['billed_units'])
                 total_units += units
+                total_notes += 1
 
-        # total_hours = units_to_hours(all_units)
-        # context['total_hours'] = total_hours #used in total
-        month_used = units_to_hours(total_units)
-        context['month_used'] = month_used #used this month
+        if authorization[0]['authorization_type'] == 'Classes':
+            context['month_used'] = total_notes #used this month
+        if authorization[0]['authorization_type'] == 'Hours':
+            month_used = units_to_hours(total_units)
+            context['month_used'] = month_used #used this month
         context['total_time'] = authorization[0]['total_time']
-        # if authorization[0]['total_time'] is None:
-        #     context['remaining_hours'] = "Need to enter total time"
-        # else:
-        #     remaining_hours = float(authorization[0]['total_time']) - total_hours
-        #     context['remaining_hours'] = remaining_hours
 
         return context
 
@@ -655,27 +653,39 @@ def billing_report(request):
             reports = {}
             total_amount = 0
             total_hours = 0
+            total_classes = 0
             for report in auth_set:
                 # print(report)
                 authorization_number = report['authorization_number']
                 billing_rate = float(report['billing_rate'])
                 if authorization_number in reports.keys():
-                    if report['billed_units'] and reports[authorization_number]['billed_time']:
+                    if report['billed_units'] and reports[authorization_number]['billed_time'] and report['authorization_type'] == 'Hours':
                         reports[authorization_number]['billed_time'] = float(report['billed_units']) + float(reports[authorization_number]['billed_time'])
                         reports[authorization_number]['amount'] = billing_rate * float(reports[authorization_number]['billed_time'])
-                    elif report['billed_units']:
+                    elif report['billed_units'] and reports[authorization_number]['billed_time'] and report['authorization_type'] == 'Classes':
+                        reports[authorization_number]['billed_time'] = 1 + float(reports[authorization_number]['billed_time'])
+                        reports[authorization_number]['amount'] = billing_rate * float(reports[authorization_number]['billed_time'])
+                    elif report['billed_units'] and report['authorization_type'] == 'Hours':
                         reports[authorization_number]['billed_time'] = float(report['billed_units'])
                         reports[authorization_number]['amount'] = billing_rate * float(reports[authorization_number]['billed_time'])
+                    elif report['billed_units'] and report['authorization_type'] == 'Classes':
+                        reports[authorization_number]['billed_time'] = 1
+                        reports[authorization_number]['amount'] = billing_rate
                 else:
                     service_area = report['service_area']
                     authorization_type = report['authorization_type']
                     outside_agency = report['outside_agency']
                     client = report['name']
                     billed_time = report['billed_units']
-                    rate = str(billing_rate) + '/hour'
+                    if authorization_type == 'Hours':
+                        rate = str(billing_rate) + '/hour'
+                    else:
+                        rate = str(billing_rate) + '/class'
                     # rate = str(billing_rate * 4) + '/hour'
-                    if billed_time:
+                    if billed_time and authorization_type == 'Hours':
                         amount = float(billed_time) * billing_rate
+                    elif billed_time and authorization_type == 'Classes':
+                        amount = billing_rate
                     else:
                         amount = 0
                     total_amount += amount
@@ -695,9 +705,11 @@ def billing_report(request):
 
             for key, value in reports.items():
                 in_hours = 'No hours'
-                if value['billed_time']:
+                if value['billed_time'] and value['authorization_type'] == 'Hours':
                     in_hours = str(float(value['billed_time'])/4)
                     total_hours += int(value['billed_time'])
+                elif value['billed_time'] and value['authorization_type'] == 'Classes':
+                    total_hours += 1
                 writer.writerow([value['client'], value['service_area'], value['authorization_number'],
                                  value['authorization_type'], in_hours, value['rate'], value['amount'],
                                  value['outside_agency']])
