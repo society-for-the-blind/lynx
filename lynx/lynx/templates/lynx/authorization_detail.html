@@ -46,7 +46,7 @@
             <tr>
                 <th>{{ note.date|date:'F j, Y' }}</th>
                 <td>{{ note.attendance }}</td>
-                <td>{% if object.authorization_type == 'Hours' %} {{ note.billed_units|div:4 }} Hours {% elif note.billed_units %}} 1 Class {% endif %}</td>
+                <td>{% if object.authorization_type == 'Hours' %} {{ note.billed_units|div:4 }} Hours {% elif note.billed_units %} 1 Class {% endif %}</td>
                 <td>{{ note.instructional_units }}</td>
                 <td>{{ note.successes }}</td>
                 <td>{{ note.obstacles }}</td>
@@ -84,16 +84,10 @@
             <li>Sorry, no progress reports for this authorization</li>
         {% endfor %}
     </ul>
-<!--    <h3 class="tab">{{ report.month }} by {{ report.instructor }}</h3>-->
-<!--    <p class="tab"><strong>Accomplishments:</strong> {{ report.accomplishments }}</p>-->
-<!--    <p class="tab"><strong>Remaining Objectives:</strong> {{ report.remaining_objectives }}</p>-->
-<!--    <p class="tab"><strong>Estimated Hours:</strong> {{ report.estimated_hours }}</p>-->
-<!--    <p class="tab"><strong>Client Behavior:</strong> {{ report.client_behavior }}</p>-->
-<!--    <p class="tab"><strong>Notes:</strong> {{ report.notes }}</p>-->
-<!--    <p class="tab">Entered by {{ report.user.first_name }} {{ report.user.last_name }} on {{ report.created|date:'m-d-Y' }}</p>-->
-<!--    <p class="tab">Sorry, no progress reports for this authorization.</p>-->
 <input type="button" onclick="location.href='/lynx/add-progress-report/{{ object.id }}/';" value="Add Progress Report" />
+
 <br><br>
+
 <h2>Billing Information</h2>
     <table class="table">
         <tr>
@@ -106,7 +100,7 @@
         {% for note in note_list %}
             <tr>
                 <td>{{ note.date|date:'F j, Y' }}</td>
-                <td>{% if object.authorization_type == 'Hours' %} {{ note.billed_units|div:4 }} Hours {% elif note.billed_units %}} 1 Class {% endif %}</td>
+                <td>{% if object.authorization_type == 'Hours' %} {{ note.billed_units|div:4 }} Hours {% elif note.billed_units %} 1 Class {% endif %}</td>
                 <td>{{ object.billing_rate }}</td>
                 <td>{{ object.intake_service_area }}</td>
                 <td>{{ object.authorization_type }}</td>
