@@ -105,7 +105,7 @@
         {% for note in note_list %}
             <tr>
                 <td>{{ note.date|date:'F j, Y' }}</td>
-                <td>{{ hours }}</td>
+                <td>{{ note.hours }}</td>
                 <td>{{ object.billing_rate }}</td>
                 <td>{{ object.intake_service_area }}</td>
                 <td>{{ object.authorization_type }}</td>
