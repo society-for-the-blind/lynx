@@ -365,6 +365,7 @@ class AuthorizationDetailView(LoginRequiredMixin, DetailView):
             if note['billed_units']:
                 units = float(note['billed_units'])
                 total_units += units
+            note['hours'] = float(note['billed_units'])/4
         total_hours = units_to_hours(total_units)
         if authorization[0]['billing_rate'] is None:
             context['total_billed'] = 'Need to enter billing rate'
@@ -647,15 +648,13 @@ def billing_report(request):
                                     LEFT JOIN lynx_intakeservicearea as sa on auth.intake_service_area_id = sa.id
                                     LEFT JOIN lynx_outsideagency as oa on auth.outside_agency_id = oa.id
                                     where extract(month FROM date) = '%s' and extract(year FROM date) = '%s'
-                                    order by c.last_name, c.first_name, sa.agency;;""" % (month, year))
+                                    order by c.last_name, c.first_name, sa.agency;""" % (month, year))
                 auth_set = dictfetchall(cursor)
 
             reports = {}
             total_amount = 0
             total_hours = 0
-            total_classes = 0
             for report in auth_set:
-                # print(report)
                 authorization_number = report['authorization_number']
                 billing_rate = float(report['billing_rate'])
                 if authorization_number in reports.keys():
@@ -709,6 +708,7 @@ def billing_report(request):
                     in_hours = str(float(value['billed_time'])/4)
                     total_hours += int(value['billed_time'])
                 elif value['billed_time'] and value['authorization_type'] == 'Classes':
+                    in_hours = 1
                     total_hours += 1
                 writer.writerow([value['client'], value['service_area'], value['authorization_number'],
                                  value['authorization_type'], in_hours, value['rate'], value['amount'],
