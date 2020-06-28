@@ -97,7 +97,7 @@
     <table class="table">
         <tr>
             <th>Lesson Date</th>
-            <th>Billed Time (in Hours)</th>
+            {% if object.authorization_type == 'Hours' %}<th>Billed Time (in Hours)</th>{% else %}}<th>Billed Time (Classes)</th>{% endif %}
             <th>Rate</th>
             <th>Service Area</th>
             <th>Authorization Type</th>
