@@ -46,7 +46,7 @@
             <tr>
                 <th>{{ note.date|date:'F j, Y' }}</th>
                 <td>{{ note.attendance }}</td>
-                <td>{{ note.billed_units|div:4 }} ({{ object.authorization_type }})</td>
+                <td>{% if object.authorization_type = 'Hours' %} {{ note.billed_units|div:4 }} Hours {% elif note.billed_units %}} 1 Class {% endif %}</td>
                 <td>{{ note.instructional_units }}</td>
                 <td>{{ note.successes }}</td>
                 <td>{{ note.obstacles }}</td>
@@ -106,7 +106,7 @@
         {% for note in note_list %}
             <tr>
                 <td>{{ note.date|date:'F j, Y' }}</td>
-                <td>{{ note.billed_units|div:4 }}  ({{ object.authorization_type }})</td>
+                <td>{% if object.authorization_type = 'Hours' %} {{ note.billed_units|div:4 }} Hours {% elif note.billed_units %}} 1 Class {% endif %}</td>
                 <td>{{ object.billing_rate }}</td>
                 <td>{{ object.intake_service_area }}</td>
                 <td>{{ object.authorization_type }}</td>
