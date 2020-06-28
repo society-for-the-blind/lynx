@@ -682,7 +682,7 @@ def billing_report(request):
                         rate = str(billing_rate) + '/class'
                     # rate = str(billing_rate * 4) + '/hour'
                     if billed_time and authorization_type == 'Hours':
-                        amount = float(billed_time) * billing_rate
+                        amount = (float(billed_time) * billing_rate)/4
                     elif billed_time and authorization_type == 'Classes':
                         amount = billing_rate
                     else:

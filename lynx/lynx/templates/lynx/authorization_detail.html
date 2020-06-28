@@ -108,6 +108,6 @@
         {% endfor %}
     </table>
 <p class="tab"><strong>Total Billed:</strong> {{ total_billed }}</p>
-<p class="tab"><strong>Remaining Units:</strong> {{ remaining_hours }}</p>
+<p class="tab"><strong>Remaining {{ object.authorization_type }}:</strong> {{ remaining_hours }}</p>
 <!--todo check this math-->
 {% endblock %}
