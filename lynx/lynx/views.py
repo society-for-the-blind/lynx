@@ -678,17 +678,18 @@ def billing_report(request):
                     outside_agency = report['outside_agency']
                     client = report['name']
                     billed_time = report['billed_units']
+                    reports[authorization_number] = {}
                     if authorization_type == 'Hours':
                         rate = str(billing_rate) + '/hour'
                     else:
                         rate = str(billing_rate) + '/class'
 
                     if report['authorization_type'] == 'Hours':
-                            reports[authorization_number]['billed_time'] = float(report['billed_units'])/4
-                            reports[authorization_number]['amount'] = billing_rate * float(reports[authorization_number]['billed_time'])
+                        reports[authorization_number]['billed_time'] = float(report['billed_units'])/4
+                        reports[authorization_number]['amount'] = billing_rate * float(reports[authorization_number]['billed_time'])
                     if report['authorization_type'] == 'Classes':
-                            reports[authorization_number]['billed_time'] = 1
-                            reports[authorization_number]['amount'] = billing_rate
+                        reports[authorization_number]['billed_time'] = 1
+                        reports[authorization_number]['amount'] = billing_rate
 
                     # if billed_time and authorization_type == 'Hours':
                     #     amount = (float(billed_time) * billing_rate)/4
