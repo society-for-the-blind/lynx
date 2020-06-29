@@ -658,21 +658,20 @@ def billing_report(request):
                 authorization_number = report['authorization_number']
                 billing_rate = float(report['billing_rate'])
                 if authorization_number in reports.keys():
-                    continue
-                    # if report['authorization_type'] == 'Hours':
-                    #     if report['billed_units'] and reports[authorization_number]['billed_time']:
-                    #         reports[authorization_number]['billed_time'] = (float(report['billed_units'])/4) + float(reports[authorization_number]['billed_time'])
-                    #         reports[authorization_number]['amount'] = (billing_rate * float(reports[authorization_number]['billed_time'])) + reports[authorization_number]['amount']
-                    #     elif report['billed_units']:
-                    #         reports[authorization_number]['billed_time'] = float(report['billed_units'])/4
-                    #         reports[authorization_number]['amount'] = billing_rate * float(reports[authorization_number]['billed_time'])
-                    # if report['authorization_type'] == 'Classes':
-                    #     if report['billed_units'] and reports[authorization_number]['billed_time']:
-                    #         reports[authorization_number]['billed_time'] = 1 + float(reports[authorization_number]['billed_time'])
-                    #         reports[authorization_number]['amount'] = billing_rate + reports[authorization_number]['amount']
-                    #     elif report['billed_units']:
-                    #         reports[authorization_number]['billed_time'] = 1
-                    #         reports[authorization_number]['amount'] = billing_rate
+                    if report['authorization_type'] == 'Hours':
+                        if report['billed_units'] and reports[authorization_number]['billed_time']:
+                            reports[authorization_number]['billed_time'] = (float(report['billed_units'])/4) + float(reports[authorization_number]['billed_time'])
+                            reports[authorization_number]['amount'] = (billing_rate * float(reports[authorization_number]['billed_time'])) + reports[authorization_number]['amount']
+                        elif report['billed_units']:
+                            reports[authorization_number]['billed_time'] = float(report['billed_units'])/4
+                            reports[authorization_number]['amount'] = billing_rate * float(reports[authorization_number]['billed_time'])
+                    if report['authorization_type'] == 'Classes':
+                        if report['billed_units'] and reports[authorization_number]['billed_time']:
+                            reports[authorization_number]['billed_time'] = 1 + float(reports[authorization_number]['billed_time'])
+                            reports[authorization_number]['amount'] = billing_rate + reports[authorization_number]['amount']
+                        elif report['billed_units']:
+                            reports[authorization_number]['billed_time'] = 1
+                            reports[authorization_number]['amount'] = billing_rate
                 else:
                     service_area = report['service_area']
                     authorization_type = report['authorization_type']
