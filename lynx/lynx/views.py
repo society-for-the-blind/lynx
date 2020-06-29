@@ -661,7 +661,7 @@ def billing_report(request):
                     if report['authorization_type'] == 'Hours':
                         if report['billed_units'] and reports[authorization_number]['billed_time']:
                             reports[authorization_number]['billed_time'] = (float(report['billed_units'])/4) + float(reports[authorization_number]['billed_time'])
-                            reports[authorization_number]['amount'] = (billing_rate * float(reports[authorization_number]['billed_time'])) + reports[authorization_number]['amount']
+                            reports[authorization_number]['amount'] = (billing_rate * float(reports[authorization_number]['billed_time']))
                         elif report['billed_units']:
                             reports[authorization_number]['billed_time'] = float(report['billed_units'])/4
                             reports[authorization_number]['amount'] = billing_rate * float(reports[authorization_number]['billed_time'])
@@ -672,6 +672,7 @@ def billing_report(request):
                         elif report['billed_units']:
                             reports[authorization_number]['billed_time'] = 1
                             reports[authorization_number]['amount'] = billing_rate
+                    total_amount += reports[authorization_number]['amount']
                 else:
                     service_area = report['service_area']
                     authorization_type = report['authorization_type']
