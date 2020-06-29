@@ -677,32 +677,28 @@ def billing_report(request):
                     authorization_type = report['authorization_type']
                     outside_agency = report['outside_agency']
                     client = report['name']
-                    billed_time = report['billed_units']
-                    reports[authorization_number] = {}
+                    billed_units = report['billed_units']
                     if authorization_type == 'Hours':
                         rate = str(billing_rate) + '/hour'
                     else:
                         rate = str(billing_rate) + '/class'
 
                     if report['authorization_type'] == 'Hours':
-                        reports[authorization_number]['billed_time'] = float(report['billed_units'])/4
-                        reports[authorization_number]['amount'] = billing_rate * float(reports[authorization_number]['billed_time'])
-                    if report['authorization_type'] == 'Classes':
-                        reports[authorization_number]['billed_time'] = 1
-                        reports[authorization_number]['amount'] = billing_rate
+                        billed_time = float(report['billed_units'])/4
+                        amount = billing_rate * billed_units
+                    elif report['authorization_type'] == 'Classes':
+                        if billed_units:
+                            amount = 1
+                        else:
+                            amount = 0
+                    else:
+                        amount = 0
 
-                    # if billed_time and authorization_type == 'Hours':
-                    #     amount = (float(billed_time) * billing_rate)/4
-                    # elif billed_time and authorization_type == 'Classes':
-                    #     amount = billing_rate
-                    # else:
-                    #     amount = 0
-                amount = reports[authorization_number]['amount']
-                total_amount += amount
-                auth = {'service_area': service_area, 'authorization_number': authorization_number,
-                        'authorization_type': authorization_type, 'outside_agency': outside_agency, 'rate': rate,
-                        'client': client, 'billed_time': billed_time, 'amount': amount}
-                reports[authorization_number] = auth
+                    total_amount += amount
+                    auth = {'service_area': service_area, 'authorization_number': authorization_number,
+                            'authorization_type': authorization_type, 'outside_agency': outside_agency, 'rate': rate,
+                            'client': client, 'billed_time': billed_time, 'amount': amount}
+                    reports[authorization_number] = auth
 
             filename = "Core Lynx Excel Billing - " + month + " - " + year
             response = HttpResponse(content_type='text/csv')
