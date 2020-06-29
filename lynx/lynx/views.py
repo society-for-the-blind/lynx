@@ -712,12 +712,10 @@ def billing_report(request):
 
             for key, value in reports.items():
                 in_hours = 'No hours'
-                if value['billed_time'] and value['authorization_type'] == 'Hours':
-                    in_hours = str(float(value['billed_time'])/4)
+                if value['billed_time']:
+                    in_hours = float(value['billed_time'])
                     total_hours += int(value['billed_time'])
-                elif value['billed_time'] and value['authorization_type'] == 'Classes':
-                    in_hours = 1
-                    total_hours += 1
+
                 writer.writerow([value['client'], value['service_area'], value['authorization_number'],
                                  value['authorization_type'], in_hours, value['rate'], value['amount'],
                                  value['outside_agency']])
