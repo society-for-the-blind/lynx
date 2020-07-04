@@ -760,7 +760,7 @@ def sip_demographic_report(request):
                 month_string = " and c.id not in (" + month_string + ')'
 
             with connection.cursor() as cursor:
-                cursor.execute("""SELECT CONCAT(c.first_name, ' ', c.last_name) as name, client.id as id, int.created as date, int.age_group, int.gender, int.ethnicity,
+                cursor.execute("""SELECT CONCAT(c.first_name, ' ', c.last_name) as name, c.id as id, int.created as date, int.age_group, int.gender, int.ethnicity,
                     int.degree, int.eye_condition, int.eye_condition_date, int.education, int.living_arrangement, int.residence_type,
                     int.dialysis, int.stroke, int.seizure, int.heart, int.arthritis, int.high_bp, int.neuropathy, int.pain, int.asthma,
                     int.cancer, int.musculoskeletal, int.alzheimers, int.allergies, int.mental_health, int.substance_abuse, int.memory_loss,
