@@ -834,8 +834,8 @@ def sip_demographic_report(request):
 
                 writer.writerow(
                     [client['name'], client['age_group'], client['gender'], client['ethnicity'], client['degree'],
-                     client['eye_condition'], impairments, client['education'], client['living_arrangement'],
-                     client['residence_type'], client['referred_by']])
+                     client['eye_condition'], impairments, client['eye_condition_date'], client['education'],
+                     client['living_arrangement'], client['residence_type'], client['referred_by']])
 
             return response
 
