@@ -16,7 +16,7 @@ from datetime import datetime
 from .models import Contact, Address, Phone, Email, Intake, IntakeNote, EmergencyContact, Authorization, \
     ProgressReport, LessonNote, SipNote
 from .forms import ContactForm, IntakeForm, IntakeNoteForm, EmergencyForm, AddressForm, EmailForm, PhoneForm, \
-    AuthorizationForm, ProgressReportForm, LessonNoteForm, SipNoteForm, BillingReportForm
+    AuthorizationForm, ProgressReportForm, LessonNoteForm, SipNoteForm, BillingReportForm, SipDemographicReportForm
 
 
 @login_required
@@ -729,6 +729,114 @@ def billing_report(request):
             return response
 
     return render(request, 'lynx/billing_report.html', {'form': form})
+
+
+def sip_demographic_report(request):
+    form = SipDemographicReportForm()
+    if request.method == 'POST':
+        form = SipDemographicReportForm(request.POST)
+        if form.is_valid():
+            data = request.POST.copy()
+            month = data.get('month')
+            year = data.get('year')
+
+            fiscal_months = ['10', '11', '12', '1', '2', '3', '4', '5', '6', '7', '8', '9']
+
+            first = True
+            month_string = ''
+            for month_no in fiscal_months:
+                if month_no == month:
+                    break
+                else:
+                    if first:
+                        month_string = """SELECT client.id FROM lynx_sipnote AS sip 
+                        LEFT JOIN lynx_contact AS client ON client.id = sip.contact_id 
+                        WHERE extract(month FROM sip.note_date) = """ + month_no
+                        first = False
+                    else:
+                        month_string = month_string + ' or extract(month FROM sip.note_date) = ' + month_no
+
+            if len(month_string) > 0:
+                month_string = " and c.id not in (" + month_string + ')'
+
+            with connection.cursor() as cursor:
+                cursor.execute("""SELECT CONCAT(c.first_name, ' ', c.last_name) as name, int.created as date, int.age_group, int.gender, int.ethnicity,
+                    int.degree, int.eye_condition, int.eye_condition_date, int.education, int.living_arrangement, int.residence_type,
+                    int.dialysis, int.stroke, int.seizure, int.heart, int.arthritis, int.high_bp, int.neuropathy, int.pain, int.asthma,
+                    int.cancer, int.musculoskeletal, int.alzheimers, int.allergies, int.mental_health, int.substance_abuse, int.memory_loss,
+                    int.learning_disability, int.geriatric, int.dexterity, int.migraine, int.referred_by
+                    FROM lynx_intake as int
+                    LEFT JOIN lynx_contact as c  on int.contact_id = c.id
+                    LEFT JOIN lynx_sipnote ls on c.id = ls.contact_id
+                    where extract(month FROM int.created) = '%s' and extract(year FROM date) = '%s' and c.sip_client is true %s
+                    order by c.last_name, c.first_name;""" % (month, year, month_string))
+                client_set = dictfetchall(cursor)
+
+            filename = "Core Lynx Excel Billing - " + month + " - " + year
+            response = HttpResponse(content_type='text/csv')
+            response['Content-Disposition'] = 'attachment; filename="' + filename + '.csv"'
+
+            writer = csv.writer(response)
+            writer.writerow(
+                ['Client Name', 'Age', 'Gender', 'Race/Ethnicity', 'Visual Impairment at Time of Intake', 'Major Cause of Visual Impairment',
+                 'Non-Visual Impairment', 'On-Set of Significant Vision Loss', 'Highest Level of Education Completed',
+                 'Type of Living Arrangement', 'Setting of Residence', 'Source of Referral'])
+
+            for client in client_set:
+                impairments = ''
+                if client['dialysis']:
+                    impairments += 'Dialysis, '
+                if client['stroke']:
+                    impairments += 'Stroke, '
+                if client['seizure']:
+                    impairments += 'Seizure, '
+                if client['heart']:
+                    impairments += 'Cardiovascular, '
+                if client['arthritis']:
+                    impairments += 'Arthritis, '
+                if client['high_bp']:
+                    impairments += 'Hypertension, '
+                if client['neuropathy']:
+                    impairments += 'Neuropathy, '
+                if client['pain']:
+                    impairments += 'Pain, '
+                if client['asthma']:
+                    impairments += 'Asthma, '
+                if client['cancer']:
+                    impairments += 'Cancer, '
+                if client['musculoskeletal']:
+                    impairments += 'Musculoskeletal, '
+                if client['alzheimers']:
+                    impairments += 'Alzheimers, '
+                if client['allergies']:
+                    impairments += 'Allergies, '
+                if client['mental_health']:
+                    impairments += 'Mental Health, '
+                if client['substance_abuse']:
+                    impairments += 'Substance Abuse, '
+                if client['memory_loss']:
+                    impairments += 'Memory Loss, '
+                if client['learning_disability']:
+                    impairments += 'Learning Disability, '
+                if client['geriatric']:
+                    impairments += 'Other Geriatric, '
+                if client['dexterity']:
+                    impairments += 'Mobility, '
+                if client['migraine']:
+                    impairments += 'Migraine, '
+
+                if impairments:
+                    impairments = impairments[:-2]
+
+                writer.writerow(
+                    [client['name'], client['age_group'], client['gender'], client['ethnicity'], client['degree'],
+                     client['eye_condition'], impairments, client['education'], client['living_arrangement'],
+                     client['residence_type'], client['referred_by']])
+
+            return response
+
+    return render(request, 'lynx/billing_report.html', {'form': form})
+
 
 
 def units_to_hours(units):
