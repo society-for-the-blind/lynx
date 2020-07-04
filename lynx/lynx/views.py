@@ -765,10 +765,10 @@ def sip_demographic_report(request):
                     int.dialysis, int.stroke, int.seizure, int.heart, int.arthritis, int.high_bp, int.neuropathy, int.pain, int.asthma,
                     int.cancer, int.musculoskeletal, int.alzheimers, int.allergies, int.mental_health, int.substance_abuse, int.memory_loss,
                     int.learning_disability, int.geriatric, int.dexterity, int.migraine, int.referred_by
-                    FROM lynx_intake as int
-                    LEFT JOIN lynx_contact as c  on int.contact_id = c.id
-                    LEFT JOIN lynx_sipnote ls on c.id = ls.contact_id
-                    where extract(month FROM int.created) = '%s' and extract(year FROM date) = '%s' and c.sip_client is true %s
+                    FROM lynx_sipnote ls
+                    left JOIN lynx_contact as c  on c.id = ls.contact_id
+                    left JOIN lynx_intake as int  on int.contact_id = c.id
+                    where extract(month FROM ls.note_date) = '%s' and extract(year FROM ls.note_date) = '%s' and c.sip_client is true %s
                     order by c.last_name, c.first_name;""" % (month, year, month_string))
                 client_set = dictfetchall(cursor)
 
