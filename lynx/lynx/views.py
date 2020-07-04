@@ -782,8 +782,12 @@ def sip_demographic_report(request):
                  'Non-Visual Impairment', 'On-Set of Significant Vision Loss', 'Highest Level of Education Completed',
                  'Type of Living Arrangement', 'Setting of Residence', 'Source of Referral'])
 
+            client_ids = []
             for client in client_set:
+                if client['id'] in client_ids:
+                    continue
                 impairments = ''
+                client_ids.append(client['id'])
                 if client['dialysis']:
                     impairments += 'Dialysis, '
                 if client['stroke']:
