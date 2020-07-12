@@ -463,13 +463,15 @@ class ProgressReportDetailView(LoginRequiredMixin, DetailView):
         # print(context)
         report = ProgressReport.objects.filter(id=self.kwargs['pk']).values()
         auth_id = report[0]['authorization_id']
-        if report[0]['month']:
+        month_number = report[0]['month']
+        if len(month_number) >2:
+        # if report[0]['month']:
             month = report[0]['month']
             month_number = MONTHS[month]
-        else:
-            created = report[0]['created']
-            date_created = datetime.strptime(created, "%Y-%m-%d %I:%M:%S")
-            month_number = date_created.month
+        # else:
+        #     created = report[0]['created']
+        #     date_created = datetime.strptime(created, "%Y-%m-%d %I:%M:%S")
+        #     month_number = date_created.month
         notes = LessonNote.objects.filter(authorization_id=auth_id).filter(date__month=month_number).values() #TODO: filter by year, wait until live data in
         all_notes = LessonNote.objects.filter(authorization_id=auth_id).values()
         authorization = Authorization.objects.filter(id=auth_id).values()
