@@ -130,7 +130,7 @@ class Contact(models.Model):
     core_client = models.BooleanField(blank=True, default=False)
     careers_plus = models.BooleanField(blank=True, default=False)
     careers_plus_youth = models.BooleanField(blank=True, default=False)
-    volunteer = models.BooleanField(blank=True, default=False)
+    volunteer_check = models.BooleanField(blank=True, default=False)
     access_news = models.BooleanField(blank=True, default=False)
     other_services = models.BooleanField(blank=True, default=False)
     contact_notes = models.TextField(blank=True, null=True)
