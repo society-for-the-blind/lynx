@@ -1,6 +1,6 @@
 {% extends 'lynx/base.html' %}
 
-{% block title %}
+{% block header %}
   {% if request.GET.print %}
     <h1>{{ object.authorization.contact.first_name }} {{ object.authorization.contact.last_name }} Progress Report for {{ object.month }} {{object.year}}</h1>
   {% endif %}
