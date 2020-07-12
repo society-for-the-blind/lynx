@@ -1,8 +1,14 @@
 {% extends 'lynx/base.html' %}
 
+{% block title %}
+  {% if request.GET.print %}
+    <h1>{{ object.authorization.contact.first_name }} {{ object.authorization.contact.last_name }} Progress Report for {{ object.month }} {{object.year}}</h1>
+  {% endif %}
+{% endblock %}
+
 {% block content %}
 
-<h1>{{ object.authorization.contact.first_name }} {{ object.authorization.contact.last_name }} Progress Report for {{ object.month }} </h1>
+{% if not request.GET.print %}<h1>{{ object.authorization.contact.first_name }} {{ object.authorization.contact.last_name }} Progress Report for {{ object.month }} {{ object.year }}</h1>{% endif %}}
 <h2>Client Information</h2>
 <input type="button" onclick="location.href='/lynx/authorization/{{ object.authorization_id }}';" value="Return to Authorization" /> <input type="button" onclick="location.href='/lynx/client/{{ object.authorization.contact.id}}';" value="Return to Client" />
 <p class="tab"><strong>Client:</strong> {{ object.authorization.contact.first_name }} {{ object.authorization.contact.last_name }}</p>

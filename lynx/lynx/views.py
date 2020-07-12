@@ -12,11 +12,13 @@ from django.db import connection
 
 import csv
 from datetime import datetime
+from openpyxl import Workbook
 
 from .models import Contact, Address, Phone, Email, Intake, IntakeNote, EmergencyContact, Authorization, \
-    ProgressReport, LessonNote, SipNote
+    ProgressReport, LessonNote, SipNote, Volunteer
 from .forms import ContactForm, IntakeForm, IntakeNoteForm, EmergencyForm, AddressForm, EmailForm, PhoneForm, \
-    AuthorizationForm, ProgressReportForm, LessonNoteForm, SipNoteForm, BillingReportForm, SipDemographicReportForm
+    AuthorizationForm, ProgressReportForm, LessonNoteForm, SipNoteForm, BillingReportForm, SipDemographicReportForm, \
+    VolunteerForm, SipCSFReportForm
 
 
 @login_required
@@ -253,6 +255,43 @@ def add_progress_report(request, authorization_id):
             form.save()
             return HttpResponseRedirect(reverse('lynx:authorization_detail',  args=(authorization_id,)))
     return render(request, 'lynx/add_progress_report.html', {'form': form})
+
+
+@login_required
+def add_volunteer(request):
+    form = VolunteerForm()
+    contact_form = ContactForm()
+    address_form = AddressForm()
+    phone_form = PhoneForm()
+    email_form = EmailForm()
+    if request.method == 'POST':
+        form = VolunteerForm(request.POST)
+        contact_form = ContactForm(request.POST)
+        address_form = AddressForm(request.POST)
+        phone_form = PhoneForm(request.POST)
+        email_form = EmailForm(request.POST)
+        if address_form.is_valid() & phone_form.is_valid() & email_form.is_valid() & form.is_valid() & contact_form.is_valid():
+            contact_form = contact_form.save()
+            contact_id = contact_form.pk
+            form = form.save(commit=False)
+            form.contact_id = contact_id
+            volunteer_id = form.pk
+            form.save()
+            if address_form['address_one']:
+                address_form = address_form.save(commit=False)
+                address_form.contact_id = contact_id
+                address_form.save()
+            if phone_form.phone:
+                phone_form = phone_form.save(commit=False)
+                phone_form.contact_id = contact_id
+                phone_form.save()
+            if email_form.email:
+                email_form = email_form.save(commit=False)
+                email_form.contact_id = contact_id
+                email_form.save()
+            return HttpResponseRedirect(reverse('lynx:volunteer_detail',  args=(volunteer_id,)))
+    return render(request, 'lynx/add_volunteer.html', {'address_form': address_form, 'phone_form': phone_form,
+                                                     'email_form': email_form, 'form': form, 'contact_form': contact_form})
 
 
 @login_required
@@ -507,6 +546,21 @@ class BillingReviewDetailView(LoginRequiredMixin, DetailView):
             context['month_used'] = month_used #used this month
         context['total_time'] = authorization[0]['total_time']
 
+        return context
+
+
+class VolunteerDetailView(LoginRequiredMixin, DetailView):
+
+    model = Volunteer
+
+    def get_context_data(self, **kwargs):
+        # Call the base implementation first to get a context
+        context = super(VolunteerDetailView, self).get_context_data(**kwargs)
+        context['contact_list'] = Contact.objects.filter(id=self.kwargs['pk'])
+        context['address_list'] = Address.objects.filter(contact_id=self.kwargs['pk'])
+        context['phone_list'] = Phone.objects.filter(contact_id=self.kwargs['pk'])
+        context['email_list'] = Email.objects.filter(contact_id=self.kwargs['pk'])
+        context['emergency_list'] = EmergencyContact.objects.filter(contact_id=self.kwargs['pk'])
         return context
 
 
@@ -771,6 +825,7 @@ def sip_demographic_report(request):
                     where extract(month FROM ls.note_date) = '%s' and extract(year FROM ls.note_date) = '%s' and c.sip_client is true %s
                     order by c.last_name, c.first_name;""" % (month, year, month_string))
                 client_set = dictfetchall(cursor)
+                #TODO make sure this works with year
 
             filename = "Core Lynx Excel Billing - " + month + " - " + year
             response = HttpResponse(content_type='text/csv')
@@ -841,6 +896,83 @@ def sip_demographic_report(request):
 
     return render(request, 'lynx/billing_report.html', {'form': form})
 
+
+def sip_csf_report(request):
+    form = SipCSFReportForm()
+    if request.method == 'POST':
+        form = SipCSFReportForm(request.POST)
+        if form.is_valid():
+            data = request.POST.copy()
+            month = data.get('month')
+            year = data.get('year')
+
+            wb1 = Workbook()
+            for i in range(n):
+                ws = wb1.create_sheet("run " + str(i))
+
+                # code on formatting sheet, optimization problem
+
+            fiscal_months = ['10', '11', '12', '1', '2', '3', '4', '5', '6', '7', '8', '9']
+
+            COUNTIES = (("Alameda", "Alameda"), ("Alpine", "Alpine"), ("Amador", "Amador"), ("Butte", "Butte"),
+                        ("Colusa", "Colusa"), ("Calaveras", "Calaveras"), ("Contra Costa", "Contra Costa"),
+                        ("Del Norte", "Del Norte"), ("El Dorado", "El Dorado"), ("Fresno", "Fresno"),
+                        ("Glenn", "Glenn"), ("Humboldt", "Humboldt"), ("Imperial", "Imperial"), ("Inyo", "Inyo"),
+                        ("Kern", "Kern"), ("Kings", "Kings"), ("Klamath", "Klamath"), ("Lake", "Lake"),
+                        ("Lassen", "Lassen"), ("Los Angeles", "Los Angeles"), ("Madera", "Madera"), ("Marin", "Marin"),
+                        ("Mariposa", "Mariposa"), ("Mendocino", "Mendocino"), ("Merced", "Merced"), ("Modoc", "Modoc"),
+                        ("Mono", "Mono"), ("Monterey", "Monterey"), ("Napa", "Napa"), ("Nevada", "Nevada"),
+                        ("Orange", "Orange"), ("Placer", "Placer"), ("Plumas", "Plumas"), ("Riverside", "Riverside"),
+                        ("Sacramento", "Sacramento"), ("San Benito", "San Benito"), ("San Bernardino", "San Bernardino"),
+                        ("San Diego", "San Diego"), ("San Francisco", "San Francisco"), ("San Joaquin", "San Joaquin"),
+                        ("San Luis Obispo", "San Luis Obispo"), ("San Mateo", "San Mateo"),
+                        ("Santa Barbara", "Santa Barbara"), ("Santa Clara", "Santa Clara"), ("Santa Cruz", "Santa Cruz"),
+                        ("Shasta", "Shasta"), ("Sierra", "Sierra"), ("Siskiyou", "Siskiyou"),  ("Solano", "Solano"),
+                        ("Sonoma", "Sonoma"), ("Stanislaus", "Stanislaus"), ("Sutter", "Sutter"), ("Tehama", "Tehama"),
+                        ("Trinity", "Trinity"), ("Tulare", "Tulare"), ("Tuolumne", "Tuolumne"), ("Ventura", "Ventura"),
+                        ("Yolo", "Yolo"), ("Yuba", "Yuba"), ("Other/None", "Other/None"))
+
+            first = True
+            month_string = ''
+            for month_no in fiscal_months:
+                if month_no == month:
+                    break
+                else:
+                    if first:
+                        month_string = """SELECT client.id FROM lynx_sipnote AS sip 
+                        LEFT JOIN lynx_contact AS client ON client.id = sip.contact_id 
+                        WHERE extract(month FROM sip.note_date) = """ + month_no
+                        first = False
+                    else:
+                        month_string = month_string + ' or extract(month FROM sip.note_date) = ' + month_no
+
+            if len(month_string) > 0:
+                month_string = " and c.id not in (" + month_string + ')'
+
+            with connection.cursor() as cursor:
+                cursor.execute("""SELECT CONCAT(c.first_name, ' ', c.last_name) as name, c.id as id, int.created as date, int.age_group, int.gender, int.ethnicity,
+                    int.degree, int.eye_condition, int.eye_condition_date, int.education, int.living_arrangement, int.residence_type,
+                    int.dialysis, int.stroke, int.seizure, int.heart, int.arthritis, int.high_bp, int.neuropathy, int.pain, int.asthma,
+                    int.cancer, int.musculoskeletal, int.alzheimers, int.allergies, int.mental_health, int.substance_abuse, int.memory_loss,
+                    int.learning_disability, int.geriatric, int.dexterity, int.migraine, int.referred_by
+                    FROM lynx_sipnote ls
+                    left JOIN lynx_contact as c  on c.id = ls.contact_id
+                    left JOIN lynx_intake as int  on int.contact_id = c.id
+                    where extract(month FROM ls.note_date) = '%s' and extract(year FROM ls.note_date) = '%s' and c.sip_client is true %s
+                    order by c.last_name, c.first_name;""" % (month, year, month_string))
+                client_set = dictfetchall(cursor)
+                #TODO make sure this works with year
+
+            filename = "Core Lynx Excel Billing - " + month + " - " + year
+            response = HttpResponse(content_type='text/csv')
+            response['Content-Disposition'] = 'attachment; filename="' + filename + '.csv"'
+
+
+
+            wb1.save('outfile.xlsx')
+            return response
+
+    return render(request, 'lynx/billing_report.html', {'form': form})
 
 
 def units_to_hours(units):

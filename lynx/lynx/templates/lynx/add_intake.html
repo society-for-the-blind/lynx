@@ -23,10 +23,11 @@
 <form method="post"> {% csrf_token %}
     {{ form.errors }}
     <h2>Intake Information</h2>
-            <div class="row">
-          <div class="col-3">
-        {{ form.intake_date|as_crispy_field }}
-          </div></div>
+        <div class="row">
+            <div class="col-3">
+                {{ form.intake_date|as_crispy_field }}
+            </div>
+        </div>
     <h2>Demographics</h2>
         <div class="row">
           <div class="col-6">{{ form.birth_date|as_crispy_field }}</div>

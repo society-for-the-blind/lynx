@@ -1,0 +1,22 @@
+{% extends 'lynx/base.html' %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<h1>Add Volunteer</h1>
+<br>
+<form method="post"> {% csrf_token %}
+    <h2>Volunteer Information</h2>
+        {{ form|crispy }}
+        {{ form.errors }}
+    <h2>Address</h2>
+        {{ address_form|crispy }}
+        {{ address_form.errors }}
+    <h2>Email</h2>
+        {{ email_form|crispy }}
+        {{ email_form.errors }}
+    <h2>Phone</h2>
+        {{ phone_form|crispy }}
+        {{ phone_form.errors }}
+    <input type="submit" value="Submit">
+</form>
+{% endblock %}

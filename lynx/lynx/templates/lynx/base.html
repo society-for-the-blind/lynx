@@ -22,7 +22,7 @@
 </head>
 <body>
      <!-- Side navigation -->
-     {% if not request.GET.print %}
+    {% if not request.GET.print %}
     <nav role="navigation">
         <div class="sidenav">
             <img src="{% static 'lynx/images/logo.jpg' %}" alt="" style="width:160px;">
@@ -36,12 +36,21 @@
          <div class="sidebar">
          </div>
     </nav>
-     {% endif %}
+    {% else %}
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-9">{% block title %}{% endblock %}</div>
+            <div class="col-3"><img src="{% static 'lynx/images/logo.jpg' %}" alt="sftb logo" style="width:160px;"></div>
+        </div>
+    </div>
+    {% endif %}
 
     <!-- Page content -->
     <main role="main">
         <div class="main">
-            {% block content %} {% endblock %}
+            <div class="container-fluid">
+                {% block content %} {% endblock %}
+            </div>
         </div>
     </main>
 </body>

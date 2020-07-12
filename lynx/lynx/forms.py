@@ -2,7 +2,7 @@ from django import forms
 from django.utils.translation import gettext_lazy
 
 from .models import Contact, Address, Intake, Email, Phone, Referral, IntakeNote, EmergencyContact, Authorization, \
-    ProgressReport, LessonNote, SipNote
+    ProgressReport, LessonNote, SipNote, Volunteer
 
 from datetime import datetime
 
@@ -172,6 +172,7 @@ class BillingReportForm(forms.Form):
         current_year = datetime.now().year
         self.initial['year'] = str(current_year)
 
+
 class SipDemographicReportForm(forms.Form):
     current_year = datetime.now().year
     old_year = current_year - 20
@@ -190,3 +191,31 @@ class SipDemographicReportForm(forms.Form):
         super(SipDemographicReportForm, self).__init__(*args, **kwargs)
         current_year = datetime.now().year
         self.initial['year'] = str(current_year)
+
+
+class SipCSFReportForm(forms.Form):
+        current_year = datetime.now().year
+        old_year = current_year - 20
+        high_year = current_year + 2
+
+        years = []
+        for x in range(old_year, high_year):
+            year_str = str(x)
+            year_pair = (year_str, year_str)
+            years.append(year_pair)
+
+        month = forms.ChoiceField(choices=months)
+        year = forms.ChoiceField(choices=years)
+
+        def __init__(self, *args, **kwargs):
+            super(SipCSFReportForm, self).__init__(*args, **kwargs)
+            current_year = datetime.now().year
+            self.initial['year'] = str(current_year)
+
+
+class VolunteerForm(forms.ModelForm):
+
+    class Meta:
+
+        model = Volunteer
+        exclude = ('created', 'modified', 'user')
