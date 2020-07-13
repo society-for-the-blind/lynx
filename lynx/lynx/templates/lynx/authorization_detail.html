@@ -1,5 +1,6 @@
 {% extends 'lynx/base.html' %}
 {% load mathfilters %}
+{% load date_tags %}
 
 {% block content %}
 
@@ -79,7 +80,7 @@
 <h2>Progress Reports</h2>
     <ul>
         {% for report in report_list %}
-            <li><a href='/lynx/progress-report/{{ report.id }}/'>{{ report.month }} by {{ report.instructor }}</a></li>
+            <li><a href='/lynx/progress-report/{{ report.id }}/'>{{ report.month|month_name }} by {{ report.instructor }}</a></li>
         {% empty %}
             <li>Sorry, no progress reports for this authorization</li>
         {% endfor %}
