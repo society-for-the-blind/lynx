@@ -37,9 +37,13 @@
 <p class="tab"><strong>Additional comments:</strong> {{ object.notes }}</p>
 
 {% if not request.GET.print %}
-<form>
-<!--  <input type="button" value="Click Me" class="btn btn-primary">-->
-  <button class="btn btn-success" onclick="window.location.href=/lynx/progress-report/{{ object.id }}/?print=true">Print View </button>
+<!--<form>-->
+<!--&lt;!&ndash;  <input type="button" value="Click Me" class="btn btn-primary">&ndash;&gt;-->
+<!--  <button class="btn btn-success" onclick="window.location.href=/lynx/progress-report/{{ object.id }}/?print=true">Print View </button>-->
+<!--</form>-->
+<form action="/lynx/progress-report/{{ object.id }}/" method="GET">
+  <input type="hidden" name="print" value="true" />
+  <input type="submit" />
 </form>
 {% endif %}
 {% endblock %}
