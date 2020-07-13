@@ -38,7 +38,8 @@
 
 {% if not request.GET.print %}
 <form>
-  <button class="btn btn-success" formaction="/lynx/progress-report/{{ object.id }}/?print=true">Print View </button>
+<!--  <input type="button" value="Click Me" class="btn btn-primary">-->
+  <button class="btn btn-success" onclick="window.location.href=/lynx/progress-report/{{ object.id }}/?print=true">Print View </button>
 </form>
 {% endif %}
 {% endblock %}
