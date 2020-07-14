@@ -49,15 +49,15 @@ def add_contact(request):
         if address_form.is_valid() & phone_form.is_valid() & email_form.is_valid() & form.is_valid():
             form = form.save()
             contact_id = form.pk
-            if address_form['address_one']:
+            if len(address_form['address_one']) > 0:
                 address_form = address_form.save(commit=False)
                 address_form.contact_id = contact_id
                 address_form.save()
-            if phone_form['phone']:
+            if len(phone_form['phone']) > 0:
                 phone_form = phone_form.save(commit=False)
                 phone_form.contact_id = contact_id
                 phone_form.save()
-            if email_form['email']:
+            if len(email_form['email']) > 0:
                 email_form = email_form.save(commit=False)
                 email_form.contact_id = contact_id
                 email_form.save()
