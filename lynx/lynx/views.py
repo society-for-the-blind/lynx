@@ -53,11 +53,11 @@ def add_contact(request):
                 address_form = address_form.save(commit=False)
                 address_form.contact_id = contact_id
                 address_form.save()
-            if phone_form.phone:
+            if phone_form['phone']:
                 phone_form = phone_form.save(commit=False)
                 phone_form.contact_id = contact_id
                 phone_form.save()
-            if email_form.email:
+            if email_form['email']:
                 email_form = email_form.save(commit=False)
                 email_form.contact_id = contact_id
                 email_form.save()
