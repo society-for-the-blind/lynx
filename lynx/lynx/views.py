@@ -22,6 +22,9 @@ from .forms import ContactForm, IntakeForm, IntakeNoteForm, EmergencyForm, Addre
     VolunteerForm, SipCSFReportForm
 
 
+logger = logging.getLogger(__name__)
+
+
 @login_required
 def index(request):
     context = {
