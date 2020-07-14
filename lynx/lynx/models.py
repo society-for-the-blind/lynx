@@ -150,7 +150,7 @@ class Email (models.Model):
 
     contact = models.ForeignKey('Contact', on_delete=models.CASCADE, null=True, blank=True)
     emergency_contact = models.ForeignKey('EmergencyContact', on_delete=models.CASCADE, null=True, blank=True)
-    email = models.EmailField()
+    email = models.EmailField(blank=True, null=True)
     email_type = models.CharField(max_length=25, choices=EMAIL_TYPES, blank=True)
     active = models.BooleanField(blank=True, default=False)
     created = models.DateTimeField(auto_now_add=True)
@@ -170,7 +170,7 @@ class Phone (models.Model):
 
     contact = models.ForeignKey('Contact', on_delete=models.CASCADE, null=True, blank=True)
     emergency_contact = models.ForeignKey('EmergencyContact', on_delete=models.CASCADE, null=True, blank=True)
-    phone = models.CharField(max_length=20)
+    phone = models.CharField(max_length=20, blank=True, null=True)
     phone_type = models.CharField(max_length=25, choices=PHONE_TYPES, blank=True, null=True)
     active = models.BooleanField(blank=True, default=False)
     created = models.DateTimeField(auto_now_add=True)
