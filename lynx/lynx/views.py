@@ -13,6 +13,7 @@ from django.db import connection
 import csv
 from datetime import datetime
 from openpyxl import Workbook
+import logging
 
 from .models import Contact, Address, Phone, Email, Intake, IntakeNote, EmergencyContact, Authorization, \
     ProgressReport, LessonNote, SipNote, Volunteer
@@ -49,6 +50,8 @@ def add_contact(request):
         if address_form.is_valid() & phone_form.is_valid() & email_form.is_valid() & form.is_valid():
             form = form.save()
             contact_id = form.pk
+            logging.debug(address_form)
+            logging.debug(phone_form)
             if len(address_form['address_one']) > 0:
                 address_form = address_form.save(commit=False)
                 address_form.contact_id = contact_id
