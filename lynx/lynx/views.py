@@ -53,15 +53,15 @@ def add_contact(request):
         if address_form.is_valid() & phone_form.is_valid() & email_form.is_valid() & form.is_valid():
             form = form.save()
             contact_id = form.pk
-            if len(address_form.address_one) > 0:
+            if hasattr(address_form, 'address_one'):
                 address_form = address_form.save(commit=False)
                 address_form.contact_id = contact_id
                 address_form.save()
-            if len(phone_form.phone) > 0:
+            if hasattr(phone_form, 'phone'):
                 phone_form = phone_form.save(commit=False)
                 phone_form.contact_id = contact_id
                 phone_form.save()
-            if len(email_form.email) > 0:
+            if hasattr(email_form, 'email'):
                 email_form = email_form.save(commit=False)
                 email_form.contact_id = contact_id
                 email_form.save()
