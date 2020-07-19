@@ -53,17 +53,15 @@ def add_contact(request):
         if address_form.is_valid() & phone_form.is_valid() & email_form.is_valid() & form.is_valid():
             form = form.save()
             contact_id = form.pk
-            logging.debug(address_form)
-            logging.debug(phone_form)
-            if len(address_form['address_one']) > 0:
+            if len(address_form.address_one) > 0:
                 address_form = address_form.save(commit=False)
                 address_form.contact_id = contact_id
                 address_form.save()
-            if len(phone_form['phone']) > 0:
+            if len(phone_form.phone) > 0:
                 phone_form = phone_form.save(commit=False)
                 phone_form.contact_id = contact_id
                 phone_form.save()
-            if len(email_form['email']) > 0:
+            if len(email_form.email) > 0:
                 email_form = email_form.save(commit=False)
                 email_form.contact_id = contact_id
                 email_form.save()
@@ -86,37 +84,37 @@ def add_intake(request, contact_id):
     return render(request, 'lynx/add_intake.html', {'form': form})
 
 
-@login_required
-def add_contact_information(request, contact_id):
-    address_form = AddressForm()
-    phone_form = PhoneForm()
-    email_form = EmailForm()
-    emergency_form = EmergencyForm()
-    if request.method == 'POST':
-        address_form = AddressForm(request.POST)
-        phone_form = PhoneForm(request.POST)
-        email_form = EmailForm(request.POST)
-        emergency_form = EmergencyForm(request.POST)
-        if address_form.is_valid() & phone_form.is_valid() & email_form.is_valid() & emergency_form.is_valid():
-            if address_form.address_one:
-                address_form = address_form.save(commit=False)
-                address_form.contact_id = contact_id
-                address_form.save()
-            if phone_form.phone:
-                phone_form = phone_form.save(commit=False)
-                phone_form.contact_id = contact_id
-                phone_form.save()
-            if email_form.email:
-                email_form = email_form.save(commit=False)
-                email_form.contact_id = contact_id
-                email_form.save()
-            if emergency_form.name:
-                emergency_form = emergency_form.save(commit=False)
-                emergency_form.contact_id = contact_id
-                emergency_form.save()
-            return HttpResponseRedirect(reverse('lynx:add_intake',  args=(contact_id,)))
-    return render(request, 'lynx/add_contact_information.html', {'address_form': address_form, 'phone_form': phone_form,
-                                                    'email_form': email_form, 'emergency_form': emergency_form})
+# @login_required
+# def add_contact_information(request, contact_id):
+#     address_form = AddressForm()
+#     phone_form = PhoneForm()
+#     email_form = EmailForm()
+#     emergency_form = EmergencyForm()
+#     if request.method == 'POST':
+#         address_form = AddressForm(request.POST)
+#         phone_form = PhoneForm(request.POST)
+#         email_form = EmailForm(request.POST)
+#         emergency_form = EmergencyForm(request.POST)
+#         if address_form.is_valid() & phone_form.is_valid() & email_form.is_valid() & emergency_form.is_valid():
+#             if address_form.address_one:
+#                 address_form = address_form.save(commit=False)
+#                 address_form.contact_id = contact_id
+#                 address_form.save()
+#             if phone_form.phone:
+#                 phone_form = phone_form.save(commit=False)
+#                 phone_form.contact_id = contact_id
+#                 phone_form.save()
+#             if email_form.email:
+#                 email_form = email_form.save(commit=False)
+#                 email_form.contact_id = contact_id
+#                 email_form.save()
+#             if emergency_form.name:
+#                 emergency_form = emergency_form.save(commit=False)
+#                 emergency_form.contact_id = contact_id
+#                 emergency_form.save()
+#             return HttpResponseRedirect(reverse('lynx:add_intake',  args=(contact_id,)))
+#     return render(request, 'lynx/add_contact_information.html', {'address_form': address_form, 'phone_form': phone_form,
+#                                                     'email_form': email_form, 'emergency_form': emergency_form})
 
 
 @login_required
