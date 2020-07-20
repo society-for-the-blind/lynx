@@ -249,7 +249,7 @@ def add_authorization(request, contact_id):
 
 @login_required
 def add_progress_report(request, authorization_id):
-    form = ProgressReportForm()
+    form = ProgressReportForm(initial={'instructor': request.user.first_name})
     if request.method == 'POST':
         form = ProgressReportForm(request.POST)
         if form.is_valid():
