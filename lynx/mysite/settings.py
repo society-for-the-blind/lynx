@@ -26,7 +26,7 @@ SECRET_KEY = '5++)nw##nae9#ee2tv6g@p80p@+@j)+gd^@*4zggjgee%wpv+h'
 DEBUG = True
 
 #ALLOWED_HOSTS = ['192.168.1.82', 'localhost', '127.0.0.1', '35.231.66.229', '192.168.1.76', '51.141.168.67']
-ALLOWED_HOSTS = ['localhost','10.0.0.4', '52.250.111.118', 'lynx.societyfortheblind.org']
+ALLOWED_HOSTS = ['localhost', '10.0.0.4', '52.250.111.118', 'lynx.societyfortheblind.org']
 
 # Application definition
 

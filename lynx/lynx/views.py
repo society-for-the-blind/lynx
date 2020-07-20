@@ -53,16 +53,19 @@ def add_contact(request):
         if address_form.is_valid() & phone_form.is_valid() & email_form.is_valid() & form.is_valid():
             form = form.save()
             contact_id = form.pk
+            address_form = address_form.save(commit=False)
+            phone_form = phone_form.save(commit=False)
+            email_form = email_form.save(commit=False)
             if hasattr(address_form, 'address_one'):
-                address_form = address_form.save(commit=False)
+                # address_form = address_form.save(commit=False)
                 address_form.contact_id = contact_id
                 address_form.save()
             if hasattr(phone_form, 'phone'):
-                phone_form = phone_form.save(commit=False)
+                # phone_form = phone_form.save(commit=False)
                 phone_form.contact_id = contact_id
                 phone_form.save()
             if hasattr(email_form, 'email'):
-                email_form = email_form.save(commit=False)
+                # email_form = email_form.save(commit=False)
                 email_form.contact_id = contact_id
                 email_form.save()
             return HttpResponseRedirect(reverse('lynx:add_intake',  args=(contact_id,)))
