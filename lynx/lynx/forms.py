@@ -132,6 +132,9 @@ class ProgressReportForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(ProgressReportForm, self).__init__(*args, **kwargs)
+        self.fields['instructor'].label = "Instructor(s)"
+        self.fields['accomplishments'].label = "Client Accomplishments"
+        self.fields['instructor'].label = "Instructor(s)"
         self.fields['client_behavior'].label = "Client Attendance and Behavior"
         self.fields['short_term_goals'].label = "Short Term Learning Goals"
         self.fields['short_term_goals_time'].label = "Estimated Time for Short Term Goals"

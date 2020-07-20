@@ -58,6 +58,25 @@
 <p class="tab"><strong>Billing Address:</strong> </p>
 <p class="tab"><strong>Phone Number:</strong> </p>
 
+    <table class="table">
+        <tr>
+            <th>Lesson Date</th>
+            <th>Billed Time ({{ object.authorization_type }})</th>
+            <th>Rate</th>
+            <th>Service Area</th>
+            <th>Authorization Type</th>
+        </tr>
+        {% for note in note_list %}
+            <tr>
+                <td>{{ note.date|date:'F j, Y' }}</td>
+                <td>{% if object.authorization_type == 'Hours' %} {{ note.billed_units|div:4 }} Hours {% elif note.billed_units %} 1 Class {% endif %}</td>
+                <td>{{ object.billing_rate }}</td>
+                <td>{{ object.intake_service_area }}</td>
+                <td>{{ object.authorization_type }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+
 {% if not request.GET.print %}
 <form>
   <button class="btn btn-success" formaction="/lynx/billing-review/{{ object.id }}/?print=true">Print View </button>

@@ -249,7 +249,11 @@ def add_authorization(request, contact_id):
 
 @login_required
 def add_progress_report(request, authorization_id):
-    form = ProgressReportForm(initial={'instructor': request.user.first_name})
+    full_name = request.user.first_name + ' ' + request.user.last_name
+    current_time = datetime.now()
+    current_month = current_time.month
+    current_year = current_time.year
+    form = ProgressReportForm(initial={'instructor': full_name, 'month': current_month, 'year': current_year})
     if request.method == 'POST':
         form = ProgressReportForm(request.POST)
         if form.is_valid():
@@ -434,7 +438,6 @@ class AuthorizationDetailView(LoginRequiredMixin, DetailView):
                 # remaining_hours = units_to_hours(remaining)
                 context['remaining_hours'] = remaining_hours
 
-
         context['total_notes'] = total_notes
         context['total_time'] = authorization[0]['total_time']
 
@@ -538,8 +541,9 @@ class BillingReviewDetailView(LoginRequiredMixin, DetailView):
 
         auth_id = self.kwargs['pk']
         report = ProgressReport.objects.filter(authorization_id=auth_id).values() #TODO: filter by month and year, wait until live data in
-        notes = LessonNote.objects.filter(authorization_id=auth_id).filter(date__month=month).values() #TODO: filter by year, wait until live data in
+        notes = LessonNote.objects.filter(authorization_id=auth_id).filter(date__month=month).order_by('-created').values() #TODO: filter by year, wait until live data in
         authorization = Authorization.objects.filter(id=auth_id).values()
+        context['note_list'] = notes
 
         total_units = 0
         total_notes = 0
