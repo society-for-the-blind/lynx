@@ -48,7 +48,7 @@
 {% endif %}
 
 <h2>Invoice Information</h2>
-<p class="tab"><strong>Invoice Date:</strong><div id="today"></div> </p>
+<p class="tab"><strong>Invoice Date:</strong><span id="today"></span> </p>
 <p class="tab"><strong>Client:</strong> {{ object.contact.last_name }}, {{ object.contact.first_name }} </p>
 <p class="tab"><strong>Authorization Number:</strong> {{ object.authorization_number }} </p>
 <p class="tab"><strong>Authorization Type:</strong> {{ object.authorization_type }}</p>
