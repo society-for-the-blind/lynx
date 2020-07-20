@@ -57,15 +57,12 @@ def add_contact(request):
             phone_form = phone_form.save(commit=False)
             email_form = email_form.save(commit=False)
             if hasattr(address_form, 'address_one'):
-                # address_form = address_form.save(commit=False)
                 address_form.contact_id = contact_id
                 address_form.save()
             if hasattr(phone_form, 'phone'):
-                # phone_form = phone_form.save(commit=False)
                 phone_form.contact_id = contact_id
                 phone_form.save()
             if hasattr(email_form, 'email'):
-                # email_form = email_form.save(commit=False)
                 email_form.contact_id = contact_id
                 email_form.save()
             return HttpResponseRedirect(reverse('lynx:add_intake',  args=(contact_id,)))
@@ -582,7 +579,7 @@ class ClientUpdateView(LoginRequiredMixin, UpdateView):
     model = Contact
     fields = ['first_name', 'middle_name', 'last_name', 'company', 'do_not_contact', 'donor', 'deceased',
               'remove_mailing', 'active', 'contact_notes', 'sip_client', 'core_client', 'careers_plus',
-              'careers_plus_youth', 'volunteer', 'access_news', 'other_services']
+              'careers_plus_youth', 'volunteer_check', 'access_news', 'other_services']
     template_name_suffix = '_edit'
 
 
