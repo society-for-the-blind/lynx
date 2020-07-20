@@ -585,6 +585,7 @@ class ClientUpdateView(LoginRequiredMixin, UpdateView):
     def get_form(self, form_class=None):
         form = super().get_form(form_class=form_class)
         form.fields["volunteer_check"].label = "Volunteer"
+        return form
 
 
 class AddressUpdateView(LoginRequiredMixin, UpdateView):
