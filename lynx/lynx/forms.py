@@ -17,6 +17,10 @@ class ContactForm(forms.ModelForm):
         model = Contact
         exclude = ('created', 'modified', 'user')
 
+    def __init__(self, *args, **kwargs):
+        super(ContactForm, self).__init__(*args, **kwargs)
+        self.fields['volunteer_check'].label = "Volunteer"
+
 
 class IntakeForm(forms.ModelForm):
     currentYear = datetime.now().year
