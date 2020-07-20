@@ -23,7 +23,7 @@
 {% if not request.GET.print %}
 <input type="button" onclick="location.href='/lynx/authorization/{{ object.authorization_id }}';" value="Return to Authorization" /> <input type="button" onclick="location.href='/lynx/client/{{ object.authorization.contact.id}}';" value="Return to Client" />
 <p>Please review the following information. Listed below is the billing information on file for this authorization. You can modify the contact information for the payment source, or view a printable invoice.</p>
-{% endif %}}
+
 <div>
     <form action='/lynx/billing-review/{{ object.id}}/' method="get">
         <select name="selMonth" id="selMonth" title="Month">
@@ -45,7 +45,7 @@
         <button type="submit" value="Submit">Submit</button>
     </form>
 </div>
-
+{% endif %}
 
 <h2>Invoice Information</h2>
 <p class="tab"><strong>Invoice Date:</strong><div id="today"></div> </p>
