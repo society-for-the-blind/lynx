@@ -582,6 +582,10 @@ class ClientUpdateView(LoginRequiredMixin, UpdateView):
               'careers_plus_youth', 'volunteer_check', 'access_news', 'other_services']
     template_name_suffix = '_edit'
 
+    def get_form(self, form_class=None):
+        form = super().get_form(form_class=form_class)
+        form.fields["volunteer_check"].label = "Volunteer"
+
 
 class AddressUpdateView(LoginRequiredMixin, UpdateView):
     model = Address
