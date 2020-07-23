@@ -219,9 +219,10 @@
         </div>
     {% endfor %}
     </div>
+<br>
     <input type="button" class="btn btn-success" aria-label="Add New SIP Note" onclick="location.href='/lynx/add-sip-note/{{ object.id }}/';" value="Add New SIP Note" />
 {% endif %}
-
+<br>
 <h2>Notes</h2>
 {% for note in note_list %}
     <p class="tab">{{ note.created|date:'F j, Y' }}: {{ note.note|linebreaks }}<br>
@@ -231,7 +232,7 @@
     <p class="tab">{{ object.note_date|date:'F j, Y' }}: {{ object.contact_notes|linebreaks }}<br>
         Note By: {{ user.first_name }} {{ user.last_name }} <input type="button" class="btn btn-primary" aria-label="Edit Note" onclick="location.href='/lynx/intake-note-edit/{{ note.id }}';" value="Edit Note" /></p>
 {% endif %}
-
+<br>
 <h3>New Client Note</h3>
 <form action="/lynx/client/{{ object.id }}" method="post">
     <p>These notes are for high level client information. Please don't record lesson or service information here.</p>
