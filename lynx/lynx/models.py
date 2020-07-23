@@ -145,7 +145,7 @@ class Contact(models.Model):
         return "/lynx/client/%i" % self.id
 
     class Meta:
-        ordering = ('last_name', 'first_name',)
+        ordering = ['last_name', 'first_name']
 
 
 class Email (models.Model):

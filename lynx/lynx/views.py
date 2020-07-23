@@ -347,7 +347,7 @@ class ContactResultsView(LoginRequiredMixin, ListView):
     model = Contact
     template_name = 'client_search.html'
 
-    def get_queryset(self): # new
+    def get_queryset(self):  # new
         query = self.request.GET.get('q')
         if query:
             object_list = Contact.objects.filter(
