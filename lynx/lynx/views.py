@@ -352,7 +352,7 @@ class ContactResultsView(LoginRequiredMixin, ListView):
         if query:
             object_list = Contact.objects.filter(
                 Q(first_name__icontains=query) | Q(last_name__icontains=query)
-            )
+            ).order_by('last_name', 'first_name')
         else:
             object_list = None
         return object_list
@@ -371,7 +371,7 @@ class ContactDetailView(LoginRequiredMixin, DetailView):
         context['intake_list'] = Intake.objects.filter(contact_id=self.kwargs['pk'])
         context['authorization_list'] = Authorization.objects.filter(contact_id=self.kwargs['pk']).order_by('-created')
         context['note_list'] = IntakeNote.objects.filter(contact_id=self.kwargs['pk']).order_by('-created')
-        context['sip_list'] = SipNote.objects.filter(contact_id=self.kwargs['pk']).order_by('-created')
+        context['sip_list'] = SipNote.objects.filter(contact_id=self.kwargs['pk']).order_by('-note_date')
         context['emergency_list'] = EmergencyContact.objects.filter(contact_id=self.kwargs['pk'])
         context['form'] = IntakeNoteForm
         return context

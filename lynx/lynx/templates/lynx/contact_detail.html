@@ -192,13 +192,12 @@
 {% if object.sip_client %}
     <h2>SIP Notes</h2>
     {% for sip in sip_list %}
-        <h3 class="tab">{{ sip.note_date|date:'F j, Y' }}</h3>
-            <p class="tab">{{ sip.created|date:'F j, Y' }}: {{ sip.note|linebreaks }}<br>
-              -{{ sip.user.first_name }} {{ sip.user.last_name }} <input type="button" class="btn btn-primary" aria-label="Edit Note" onclick="location.href='/lynx/sip-note-edit/{{ sip.id }}';" value="Edit Note" /></p>
-            <p class="tab"><strong>Services: </strong>{% if sip.vision_screening %}Vision screening/examination/low vision evaluation, {% endif %}{% if sip.treatment %}Surgical or therapeutic treatment, {% endif %}{% if sip.at_devices %}AT devices and aids, {% endif %}{% if sip.at_services %}AT Services, {% endif %}{% if sip.independent_living %}ILS, {% endif %}{% if sip.orientation %}O & M, {% endif %}{% if sip.communications %}Communication skills, {% endif %}{% if sip.dls %}DLS, {% endif %}{% if sip.support %}Support services, {% endif %}{% if sip.advocacy %}Advocacy, {% endif %}{% if sip.counseling %}Counseling, {% endif %}{% if sip.information %}I & R, {% endif %}{% if sip.services %}Other IL services{% endif %}</p>
-            <p class="tab"><strong>Service Delivery: </strong>{% if sip.retreat %}Retreat, {% endif %}{% if sip.in_home %}In-home Training, {% endif %}{% if sip.seminar %}Training Seminar, {% endif %}{% if sip.modesto %}Modesto training site, {% endif %}{% if sip.group %}Support group(s), {% endif %}{% if sip.community %}Community Integration{% endif %}</p>
+        <p class="tab">{{ sip.created|date:'F j, Y' }}: {{ sip.note|linebreaks }}<br>
+          Instructor: {{ sip.user.first_name }} {{ sip.user.last_name }} <input type="button" class="btn btn-primary" aria-label="Edit Note" onclick="location.href='/lynx/sip-note-edit/{{ sip.id }}';" value="Edit Note  {{ object.note_date|date:'F j' }}" /></p>
+        <p class="tab"><strong>Services: </strong>{% if sip.vision_screening %}Vision screening/examination/low vision evaluation, {% endif %}{% if sip.treatment %}Surgical or therapeutic treatment, {% endif %}{% if sip.at_devices %}AT devices and aids, {% endif %}{% if sip.at_services %}AT Services, {% endif %}{% if sip.independent_living %}ILS, {% endif %}{% if sip.orientation %}O & M, {% endif %}{% if sip.communications %}Communication skills, {% endif %}{% if sip.dls %}DLS, {% endif %}{% if sip.support %}Support services, {% endif %}{% if sip.advocacy %}Advocacy, {% endif %}{% if sip.counseling %}Counseling, {% endif %}{% if sip.information %}I & R, {% endif %}{% if sip.services %}Other IL services{% endif %}</p>
+        <p class="tab"><strong>Service Delivery: </strong>{% if sip.retreat %}Retreat, {% endif %}{% if sip.in_home %}In-home Training, {% endif %}{% if sip.seminar %}Training Seminar, {% endif %}{% if sip.modesto %}Modesto training site, {% endif %}{% if sip.group %}Support group(s), {% endif %}{% if sip.community %}Community Integration{% endif %}</p>
     {% empty %}
-        <p class="tab">Sorry, no SIP Notes for this client</p>
+        <p class="tab">Sorry, no SIP Notes have been entered for this client</p>
     {% endfor %}
     <input type="button" class="btn btn-success" aria-label="Add New SIP Note" onclick="location.href='/lynx/add-sip-note/{{ object.id }}/';" value="Add New SIP Note" />
 {% endif %}
@@ -208,15 +207,17 @@
     <p class="tab">{{ note.created|date:'F j, Y' }}: {{ note.note|linebreaks }}<br>
         -{{ note.user.first_name }} {{ note.user.last_name }} <input type="button" class="btn btn-primary" aria-label="Edit Note" onclick="location.href='/lynx/intake-note-edit/{{ note.id }}';" value="Edit Note" /></p>
 {% endfor %}
-    {% if object.contact_notes %}
-        <p class="tab">{{ object.created|date:'F j, Y' }}: {{ object.contact_notes|linebreaks }}<br>
-            -{{ user.first_name }} {{ user.last_name }} <input type="button" class="btn btn-primary" aria-label="Edit Note" onclick="location.href='/lynx/intake-note-edit/{{ note.id }}';" value="Edit Note" /></p>
-    {% endif %}
-<h3>New Note</h3>
+{% if object.contact_notes %}
+    <p class="tab">{{ object.note_date|date:'F j, Y' }}: {{ object.contact_notes|linebreaks }}<br>
+        Note By: {{ user.first_name }} {{ user.last_name }} <input type="button" class="btn btn-primary" aria-label="Edit Note" onclick="location.href='/lynx/intake-note-edit/{{ note.id }}';" value="Edit Note" /></p>
+{% endif %}
+
+<h3>New Client Note</h3>
 <form action="/lynx/client/{{ object.id }}" method="post">
+    <p>These notes are for high level client information. Please don't record lesson or service information here.</p>
     {% csrf_token %}
     {{ form.as_p }}
-    <input type="submit" value="Submit">
+    <input type="submit" class="btn btn-success" value="Submit Client Note">
 </form>
 
 {% endblock %}
