@@ -191,14 +191,28 @@
 
 {% if object.sip_client %}
     <h2>SIP Notes</h2>
+    <div class="container-fluid">
     {% for sip in sip_list %}
-        <p class="tab">{{ sip.created|date:'F j, Y' }}: {{ sip.note|linebreaks }}<br>
-          Instructor: {{ sip.user.first_name }} {{ sip.user.last_name }} <input type="button" class="btn btn-primary" aria-label="Edit Note" onclick="location.href='/lynx/sip-note-edit/{{ sip.id }}';" value="Edit Note  {{ object.note_date|date:'F j' }}" /></p>
-        <p class="tab"><strong>Services: </strong>{% if sip.vision_screening %}Vision screening/examination/low vision evaluation, {% endif %}{% if sip.treatment %}Surgical or therapeutic treatment, {% endif %}{% if sip.at_devices %}AT devices and aids, {% endif %}{% if sip.at_services %}AT Services, {% endif %}{% if sip.independent_living %}ILS, {% endif %}{% if sip.orientation %}O & M, {% endif %}{% if sip.communications %}Communication skills, {% endif %}{% if sip.dls %}DLS, {% endif %}{% if sip.support %}Support services, {% endif %}{% if sip.advocacy %}Advocacy, {% endif %}{% if sip.counseling %}Counseling, {% endif %}{% if sip.information %}I & R, {% endif %}{% if sip.services %}Other IL services{% endif %}</p>
-        <p class="tab"><strong>Service Delivery: </strong>{% if sip.retreat %}Retreat, {% endif %}{% if sip.in_home %}In-home Training, {% endif %}{% if sip.seminar %}Training Seminar, {% endif %}{% if sip.modesto %}Modesto training site, {% endif %}{% if sip.group %}Support group(s), {% endif %}{% if sip.community %}Community Integration{% endif %}</p>
-    {% empty %}
-        <p class="tab">Sorry, no SIP Notes have been entered for this client</p>
+        <div class="row">
+            <div class="col-1"></div>
+            <div class="col-11">{{ sip.created|date:'F j, Y' }}: {{ sip.note|linebreaks }}<br>
+                Instructor: {{ sip.user.first_name }} {{ sip.user.last_name }} <input type="button" class="btn btn-primary" aria-label="Edit Note" onclick="location.href='/lynx/sip-note-edit/{{ sip.id }}';" value="Edit Note  {{ object.note_date|date:'F j' }}" /></div>
+        </div>
+        <div class="row">
+            <div class="col-1"></div>
+            <div class="col-11"><strong>Services: </strong>{% if sip.vision_screening %}Vision screening/examination/low vision evaluation, {% endif %}{% if sip.treatment %}Surgical or therapeutic treatment, {% endif %}{% if sip.at_devices %}AT devices and aids, {% endif %}{% if sip.at_services %}AT Services, {% endif %}{% if sip.independent_living %}ILS, {% endif %}{% if sip.orientation %}O & M, {% endif %}{% if sip.communications %}Communication skills, {% endif %}{% if sip.dls %}DLS, {% endif %}{% if sip.support %}Support services, {% endif %}{% if sip.advocacy %}Advocacy, {% endif %}{% if sip.counseling %}Counseling, {% endif %}{% if sip.information %}I & R, {% endif %}{% if sip.services %}Other IL services{% endif %}</div>
+        </div>
+        <div class="row">
+            <div class="col-1"></div>
+            <div class="col-11"><strong>Service Delivery: </strong>{% if sip.retreat %}Retreat, {% endif %}{% if sip.in_home %}In-home Training, {% endif %}{% if sip.seminar %}Training Seminar, {% endif %}{% if sip.modesto %}Modesto training site, {% endif %}{% if sip.group %}Support group(s), {% endif %}{% if sip.community %}Community Integration{% endif %}</div>
+        </div>
+        {% empty %}
+        <div class="row">
+            <div class="col-1"></div>
+            <div class="col-11">Sorry, no SIP Notes have been entered for this client</div>
+        </div>
     {% endfor %}
+    </div>
     <input type="button" class="btn btn-success" aria-label="Add New SIP Note" onclick="location.href='/lynx/add-sip-note/{{ object.id }}/';" value="Add New SIP Note" />
 {% endif %}
 
