@@ -144,6 +144,9 @@ class Contact(models.Model):
     def get_absolute_url(self):
         return "/lynx/client/%i" % self.id
 
+    class Meta:
+        ordering = ('last_name', 'first_name',)
+
 
 class Email (models.Model):
     EMAIL_TYPES = (("Work", "Work"), ("Personal", "Personal"))
