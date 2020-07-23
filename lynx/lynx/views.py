@@ -352,7 +352,7 @@ class ContactResultsView(LoginRequiredMixin, ListView):
         if query:
             object_list = Contact.objects.filter(
                 Q(first_name__icontains=query) | Q(last_name__icontains=query)
-            ).order_by('last_name', 'first_name')
+            ).order_by('last_name')
         else:
             object_list = None
         return object_list
