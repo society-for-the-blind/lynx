@@ -195,8 +195,10 @@
     {% for sip in sip_list %}
         <div class="row">
             <div class="col-1"></div>
-            <div class="col-11">{{ sip.created|date:'F j, Y' }}: {{ sip.note|linebreaks }}<br>
-                Instructor: {{ sip.user.first_name }} {{ sip.user.last_name }} <input type="button" class="btn btn-primary" aria-label="Edit Note" onclick="location.href='/lynx/sip-note-edit/{{ sip.id }}';" value="Edit Note  {{ object.note_date|date:'F j' }}" /></div>
+            <div class="col-11">
+                {{ sip.created|date:'F j, Y' }}: {{ sip.note|linebreaks }}
+                Instructor: {{ sip.user.first_name }} {{ sip.user.last_name }}
+            </div>
         </div>
         <div class="row">
             <div class="col-1"></div>
@@ -205,6 +207,10 @@
         <div class="row">
             <div class="col-1"></div>
             <div class="col-11"><strong>Service Delivery: </strong>{% if sip.retreat %}Retreat, {% endif %}{% if sip.in_home %}In-home Training, {% endif %}{% if sip.seminar %}Training Seminar, {% endif %}{% if sip.modesto %}Modesto training site, {% endif %}{% if sip.group %}Support group(s), {% endif %}{% if sip.community %}Community Integration{% endif %}</div>
+        </div>
+        <div class="row">
+            <div class="col-1"></div>
+            <div class="col-11"><input type="button" class="btn btn-primary" aria-label="Edit Note" onclick="location.href='/lynx/sip-note-edit/{{ sip.id }}';" value="Edit Note  {{ object.note_date|date:'F j' }}" /></div>
         </div>
         {% empty %}
         <div class="row">
