@@ -152,7 +152,12 @@ class LessonNoteForm(forms.ModelForm):
 
 
 class SipNoteForm(forms.ModelForm):
+    currentYear = datetime.now().year
+    oldYear = currentYear - 10
+    highYear = currentYear + 1
+
     note_date = forms.DateField(widget=forms.SelectDateWidget(empty_label="Nothing"))
+    currentYear = datetime.now().year
 
     class Meta:
 
