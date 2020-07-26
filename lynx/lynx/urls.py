@@ -40,6 +40,6 @@ urlpatterns = [
     path('emergency-contact-edit/<int:pk>', views.EmergencyContactUpdateView.as_view(), name='emergency-contact-edit'),
     path('authorization-edit/<int:pk>', views.AuthorizationUpdateView.as_view(), name='authorization-edit'),
     path('client-search', views.client_result_view, name='client_search'),
-    path('monthly-collection', views.ProgressReportListView.as_view(), name='report_search'),
+    path('report-search', views.progress_result_view, name='report_search'),
     path("", views.index, name='index')
 ]
