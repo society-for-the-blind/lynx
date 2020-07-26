@@ -306,9 +306,12 @@ def client_result_view(request):
 def progress_result_view(request):
     if request.GET.get('selMonth') and request.GET.get('selYear'):
         object_list = ProgressReport.objects.filter(month=request.GET.get('selMonth')).filter(year=request.GET.get('selYear'))
+        MONTHS = {"January": 1, "February": 2, "March": 3, "April": 4, "May": 5, "June": 6, "July": 7,
+                  "August": 8, "September": 9, "October": 10, "November": 11, "December": 12}
+        given_month = MONTHS[request.GET.get('selMonth')]
     else:
         object_list = None
-    return render(request, 'lynx/monthly_progress_reports.html', {'object_list': object_list, 'givenMonth': request.GET.get('selMonth'), 'givenYear': request.GET.get('selYear')})
+    return render(request, 'lynx/monthly_progress_reports.html', {'object_list': object_list, 'givenMonth': given_month, 'givenYear': request.GET.get('selYear')})
 
 
 class ContactDetailView(LoginRequiredMixin, DetailView):
