@@ -84,39 +84,6 @@ def add_intake(request, contact_id):
     return render(request, 'lynx/add_intake.html', {'form': form})
 
 
-# @login_required
-# def add_contact_information(request, contact_id):
-#     address_form = AddressForm()
-#     phone_form = PhoneForm()
-#     email_form = EmailForm()
-#     emergency_form = EmergencyForm()
-#     if request.method == 'POST':
-#         address_form = AddressForm(request.POST)
-#         phone_form = PhoneForm(request.POST)
-#         email_form = EmailForm(request.POST)
-#         emergency_form = EmergencyForm(request.POST)
-#         if address_form.is_valid() & phone_form.is_valid() & email_form.is_valid() & emergency_form.is_valid():
-#             if address_form.address_one:
-#                 address_form = address_form.save(commit=False)
-#                 address_form.contact_id = contact_id
-#                 address_form.save()
-#             if phone_form.phone:
-#                 phone_form = phone_form.save(commit=False)
-#                 phone_form.contact_id = contact_id
-#                 phone_form.save()
-#             if email_form.email:
-#                 email_form = email_form.save(commit=False)
-#                 email_form.contact_id = contact_id
-#                 email_form.save()
-#             if emergency_form.name:
-#                 emergency_form = emergency_form.save(commit=False)
-#                 emergency_form.contact_id = contact_id
-#                 emergency_form.save()
-#             return HttpResponseRedirect(reverse('lynx:add_intake',  args=(contact_id,)))
-#     return render(request, 'lynx/add_contact_information.html', {'address_form': address_form, 'phone_form': phone_form,
-#                                                     'email_form': email_form, 'emergency_form': emergency_form})
-
-
 @login_required
 def add_sip_note(request, contact_id):
     form = SipNoteForm()
@@ -321,15 +288,6 @@ def add_lesson_note(request, authorization_id):
             return HttpResponseRedirect(reverse('lynx:authorization_detail',  args=(authorization_id,)))
     return render(request, 'lynx/add_lesson_note.html', {'form': form, 'client': client, 'auth_type': auth_type})
 
-#
-# class ContactListView(LoginRequiredMixin, ListView):
-#
-#     model = Contact
-#     paginate_by = 100  # if contact_id
-#     # pagination is desired
-#
-#     ordering = ['last_name', 'first_name']
-
 
 @login_required
 def client_result_view(request):
@@ -379,7 +337,6 @@ class ContactDetailView(LoginRequiredMixin, DetailView):
             form.contact_id = self.kwargs['pk']
             form.user_id = request.user.id
             form.save()
-            # form.user.add(*[request.user])
             action = "/lynx/client/" + str(self.kwargs['pk'])
             return HttpResponseRedirect(action)
 
@@ -427,18 +384,15 @@ class AuthorizationDetailView(LoginRequiredMixin, DetailView):
         else:
             if authorization[0]['authorization_type'] == 'Classes':
                 remaining_hours = float(authorization[0]['total_time']) - class_count
-                # remaining_hours = units_to_hours(remaining)
                 context['remaining_hours'] = remaining_hours
             if authorization[0]['authorization_type'] == 'Hours':
                 remaining_hours = float(authorization[0]['total_time']) - total_hours
-                # remaining_hours = units_to_hours(remaining)
                 context['remaining_hours'] = remaining_hours
 
         context['total_notes'] = total_notes
         context['total_time'] = authorization[0]['total_time']
 
         context['total_present'] = total_present
-        # context['total_instruction'] = total_instruction
         context['form'] = LessonNoteForm
         return context
 
@@ -463,18 +417,12 @@ class ProgressReportDetailView(LoginRequiredMixin, DetailView):
         MONTHS = {"January": 1, "February": 2, "March": 3, "April": 4, "May": 5, "June": 6, "July": 7,
                   "August": 8, "September": 9, "October": 10, "November": 11, "December": 12}
 
-        # print(context)
         report = ProgressReport.objects.filter(id=self.kwargs['pk']).values()
         auth_id = report[0]['authorization_id']
         month_number = report[0]['month']
         if len(month_number) >2:
-        # if report[0]['month']:
             month = report[0]['month']
             month_number = MONTHS[month]
-        # else:
-        #     created = report[0]['created']
-        #     date_created = datetime.strptime(created, "%Y-%m-%d %I:%M:%S")
-        #     month_number = date_created.month
         notes = LessonNote.objects.filter(authorization_id=auth_id).filter(date__month=month_number).values() #TODO: filter by year, wait until live data in
         all_notes = LessonNote.objects.filter(authorization_id=auth_id).values()
         authorization = Authorization.objects.filter(id=auth_id).values()
