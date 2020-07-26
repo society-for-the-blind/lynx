@@ -758,10 +758,7 @@ def billing_report(request):
                     outside_agency = report['outside_agency']
                     client = report['name']
                     billed_units = report['billed_units']
-                    if authorization_type == 'Hours':
-                        rate = str(billing_rate) + '/hour'
-                    else:
-                        rate = str(billing_rate) + '/class'
+                    rate = str(billing_rate)
 
                     if report['authorization_type'] == 'Hours':
                         billed_time = float(report['billed_units'])/4
@@ -787,11 +784,11 @@ def billing_report(request):
 
             writer = csv.writer(response)
             writer.writerow(
-                ['Client', 'Service Area', 'Authorization', 'Authorization Type', 'Billed Time (Classes/Hours)', 'Billing Rate',
+                ['Client', 'Service Area', 'Authorization', 'Authorization Type', 'Billed Time', 'Billing Rate',
                  'Amount', 'Payment Source'])
 
             for key, value in reports.items():
-                in_hours = 'No hours'
+                in_hours = '0'
                 if value['billed_time']:
                     in_hours = float(value['billed_time'])
                     total_hours += int(value['billed_time'])

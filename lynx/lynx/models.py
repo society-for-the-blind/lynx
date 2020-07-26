@@ -485,7 +485,7 @@ class LessonNote(models.Model):
 class SipNote(models.Model):
     contact = models.ForeignKey('Contact', on_delete=models.CASCADE)
     note = models.TextField(null=True)
-    note_date = models.DateField(blank=True, null=True, initial=date.today())
+    note_date = models.DateField(blank=True, null=True)
     vision_screening = models.BooleanField(blank=True, default=False)
     treatment = models.BooleanField(blank=True, default=False)
     at_devices = models.BooleanField(blank=True, default=False)
