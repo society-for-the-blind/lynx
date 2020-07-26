@@ -338,23 +338,21 @@ def client_result_view(request):
         object_list = Contact.objects.filter(
             Q(first_name__icontains=query) | Q(last_name__icontains=query)
         )
+        object_list = object_list.order_by('last_name', 'first_name')
     else:
         object_list = None
     return render(request, 'lynx/client_search.html', {'object_list': object_list})
 
 
-class ContactResultsView(LoginRequiredMixin, ListView):
-    model = Contact
-    template_name = 'client_search.html'
+class ProgressReportListView(LoginRequiredMixin, ListView):
+    model = ProgressReport
+    template_name = 'monthly_progress_collection.html'
 
     def get_queryset(self):  # new
-        query = self.request.GET.get('q')
-        if query:
-            object_list = Contact.objects.filter(
-                Q(first_name__icontains=query) |
-                Q(last_name__icontains=query)
-            )
-            object_list = object_list.order_by('last_name', 'first_name')
+        # query = self.request.GET.get('month')
+        if self.request.GET.get('month') and self.request.GET.get('year'):
+            reports = ProgressReport.objects.filter(month=self.request.GET.get('month')).filter(year=self.request.GET.get('year'))
+            object_list = reports.order_by('contact.last_name', 'contact.first_name')
         else:
             object_list = None
         return object_list
