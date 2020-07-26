@@ -348,7 +348,7 @@ def client_result_view(request):
 def progress_result_view(request):
     if request.GET.get('selMonth') and request.GET.get('selYear'):
         reports = ProgressReport.objects.filter(month=request.GET.get('selMonth')).filter(year=request.GET.get('selYear'))
-        object_list = reports.order_by('contact.last_name', 'contact.first_name')
+        object_list = reports.order_by('created')
     else:
         object_list = None
     return render(request, 'lynx/monthly_progress_reports.html', {'object_list': object_list})
