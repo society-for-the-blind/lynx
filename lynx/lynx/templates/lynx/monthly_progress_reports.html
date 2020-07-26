@@ -24,7 +24,7 @@
 {% block content %}
     <h1>Progress Reports and Invoices for Billing</h1>
 
-    <form action='/lynx/report-search' method="get">
+    <form action="{% url 'lynx:report_search' %}"  method="get">
         <select name="selMonth" id="selMonth" title="Month">
             <option value="1">January</option>
             <option value="2">February</option>
