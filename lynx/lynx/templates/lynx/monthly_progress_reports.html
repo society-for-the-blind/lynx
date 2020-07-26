@@ -1,13 +1,26 @@
 {% extends 'lynx/base.html' %}
+{% load mathfilters %}
+{% load date_tags %}
+
+{% block javascript %}
+<script>
+
+    $(document).ready(function() {
+        var year = new Date().getFullYear();
+        for (var i = 1999; i <= year; i++) {
+            $('#selYear').append("<option value="+ i +">"+ i +"</option>");
+        }
+        var dt = new Date();
+        document.getElementById("today").innerHTML = dt.toLocaleString();
+    });
+
+</script>
+{% endblock %}
 
 {% block title %}Progress Reports and Invoices for Billing{% endblock %}
 
 {% block content %}
-    <h1>Client Search Results</h1>
-
-<!--    <form action="{% url 'lynx:client_search' %}" method="get">-->
-<!--        <input name="q" type="text" placeholder="Search...">-->
-<!--        <input type="submit" value="Search All Clients" />-->
+    <h1>Progress Reports and Invoices for Billing</h1>
 
     <form action='/lynx/monthly-collection/' method="get">
         <select name="selMonth" id="selMonth" title="Month">
