@@ -308,7 +308,7 @@ def progress_result_view(request):
         object_list = ProgressReport.objects.filter(month=request.GET.get('selMonth')).filter(year=request.GET.get('selYear'))
     else:
         object_list = None
-    return render(request, 'lynx/monthly_progress_reports.html', {'object_list': object_list})
+    return render(request, 'lynx/monthly_progress_reports.html', {'object_list': object_list, 'givenMonth': request.GET.get('selMonth'), 'givenYear': request.GET.get('selYear')})
 
 
 class ContactDetailView(LoginRequiredMixin, DetailView):
