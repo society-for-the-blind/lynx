@@ -346,8 +346,8 @@ def client_result_view(request):
 
 @login_required
 def progress_result_view(request):
-    if request.GET.get('month') and request.GET.get('year'):
-        reports = ProgressReport.objects.filter(month=request.GET.get('month')).filter(year=request.GET.get('year'))
+    if request.GET.get('selMonth') and request.GET.get('selYear'):
+        reports = ProgressReport.objects.filter(month=request.GET.get('selMonth')).filter(year=request.GET.get('selYear'))
         object_list = reports.order_by('contact.last_name', 'contact.first_name')
     else:
         object_list = None

@@ -6,12 +6,14 @@
 <script>
 
     $(document).ready(function() {
-        var year = new Date().getFullYear();
-        for (var i = 1999; i <= year; i++) {
+        var thisYear = new Date().getFullYear();
+        for (var i = 1999; i <= thisYear; i++) {
             $('#selYear').append("<option value="+ i +">"+ i +"</option>");
         }
-        var dt = new Date();
-        document.getElementById("today").innerHTML = dt.toLocaleString();
+        $("#selYear").val(thisYear);
+
+        var thisMonth = new Date().getMonth() + 1;
+        $("#selMonth").val(thisMonth);
     });
 
 </script>
@@ -22,7 +24,7 @@
 {% block content %}
     <h1>Progress Reports and Invoices for Billing</h1>
 
-    <form action='/lynx/monthly-collection/' method="get">
+    <form action='/lynx/report-search/' method="get">
         <select name="selMonth" id="selMonth" title="Month">
             <option value="1">January</option>
             <option value="2">February</option>
