@@ -12,7 +12,8 @@
         }
         $("#selYear").val(thisYear);
 
-        var thisMonth = new Date().getMonth() + 1;
+        var months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+        var thisMonth = months[new Date().getMonth()];
         $("#selMonth").val(thisMonth);
     });
 
@@ -45,7 +46,7 @@
     </form>
     <ul>
         {% for report in object_list %}
-            <li><a href="progress-report/{{ report.id }}/">{{ report.contact.last_name }}, {{ report.contact.first_name }} {% if report.contact.middle_name %}{{ report.contact.middle_name }} {% endif %} {{ client.created|date:"Y-n-j" }}</a></li>
+            <li><a href="progress-report/{{ report.id }}/">{{ report.authorization.contact.last_name }}, {{ report.authorization.contact.first_name }} </a></li>
         {% endfor %}
     </ul>
 {% endblock %}
