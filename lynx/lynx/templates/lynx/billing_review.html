@@ -64,18 +64,18 @@
     <table class="table">
         <tr>
             <th>Lesson Date</th>
+            <th>Authorization Type</th>
             <th>Billed Time</th>
             <th>Rate</th>
             <th>Service Area</th>
-            <th>Authorization Type</th>
         </tr>
         {% for note in note_list %}
             <tr>
                 <td>{{ note.date|date:'F j, Y' }}</td>
+                <td>{{ object.authorization_type }}</td>
                 <td>{% if object.authorization_type == 'Hours' %} {{ note.billed_units|div:4 }} {% elif note.billed_units %} 1 {% endif %}</td>
                 <td>${{ object.billing_rate }}</td>
                 <td>{{ object.intake_service_area }}</td>
-                <td>{{ object.authorization_type }}</td>
             </tr>
         {% endfor %}
     </table>
