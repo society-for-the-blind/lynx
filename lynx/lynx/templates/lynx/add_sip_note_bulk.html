@@ -27,6 +27,10 @@
 <form method="post"> {% csrf_token %}
     <div class="container-fluid">
         <h2>Select Clients</h2>
+            {% for client in client_list %}
+                {{client.first_name}}, {{client.last_name}}
+            {% endfor %}
+
         <select id="multiselect">
             {% for client in client_list %}
                 <option>{{client.first_name}}, {{client.last_name}}</option>
