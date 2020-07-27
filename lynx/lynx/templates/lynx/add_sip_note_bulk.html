@@ -5,7 +5,11 @@
 <script>
 
     $(document).ready(function() {
-        $("#multiselect").kendoMultiSelect();
+        // $("#multiselect").kendoMultiSelect();
+
+        // create MultiSelect from select HTML element
+        var multiselect = $("#multiselect").kendoMultiSelect().data("kendoMultiSelect");
+
 
         var thisYear = new Date().getFullYear();
         $("#id_note_date_year").val(thisYear);
@@ -27,11 +31,11 @@
 <form method="post"> {% csrf_token %}
     <div class="container-fluid">
         <h2>Select Clients</h2>
-            {% for client in client_list %}
-                {{client.first_name}}, {{client.last_name}}
-            {% endfor %}
+<!--            {% for client in client_list %}-->
+<!--                {{client.first_name}}, {{client.last_name}}-->
+<!--            {% endfor %}-->
 
-        <select id="multiselect">
+        <select id="multiselect" multiple="multiple">
             {% for client in client_list %}
                 <option>{{client.first_name}}, {{client.last_name}}</option>
             {% endfor %}
