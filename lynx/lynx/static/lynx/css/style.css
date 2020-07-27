@@ -41,7 +41,7 @@ h3 {
 .sidenav a {
   padding: 6px 8px 6px 16px;
   text-decoration: none;
-  font-size: 15px;
+  font-size: 18px;
   color: #ffffff;
   display: block;
 }
@@ -60,7 +60,7 @@ h3 {
 /* On smaller screens, where height is less than 450px, change the style of the sidebar (less padding and a smaller font size) */
 @media screen and (max-height: 450px) {
   .sidenav {padding-top: 15px;}
-  .sidenav a {font-size: 18px;}
+  .sidenav a {font-size: 10px;}
 }
 
 .tab { margin-left: 40px; }
