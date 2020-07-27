@@ -157,7 +157,6 @@ class SipNoteForm(forms.ModelForm):
     clients = forms.ModelMultipleChoiceField(widget=forms.CheckboxSelectMultiple, queryset=client_list)
 
     class Meta:
-
         model = SipNote
         exclude = ('created', 'modified', 'user', 'contact')
 

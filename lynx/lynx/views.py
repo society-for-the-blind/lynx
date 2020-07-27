@@ -100,17 +100,23 @@ def add_sip_note(request, contact_id):
 
 @login_required
 def add_sip_note_bulk(request):
-    # client_list = Contact.objects.filter(active=1).filter(sip_client=1).order_by('last_name')
     form = SipNoteForm()
     if request.method == 'POST':
         form = SipNoteForm(request.POST)
         if form.is_valid():
+            first = True
             for client in form.cleaned_data['clients']:
-                form = form.save(commit=False)
-                form.pk = None
-                form.contact_id = client.id
-                form.user_id = request.user.id
-                form.save()
+                if first:
+                    form = form.save(commit=False)
+                    form.contact_id = client.id
+                    form.user_id = request.user.id
+                    form.save()
+                    id_to_copy = form.pk
+                else:
+                    form.pk = None
+                    form.contact_id = client.id
+                    form.user_id = request.user.id
+                    form.save()
         return HttpResponseRedirect(reverse('lynx:contact_list'))
     return render(request, 'lynx/add_sip_note_bulk.html', {'form': form})
 
