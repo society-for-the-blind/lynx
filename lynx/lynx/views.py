@@ -107,6 +107,7 @@ def add_sip_note_bulk(request):
         for client in request.GET.get('multiselect'):
             if form.is_valid():
                 form = form.save(commit=False)
+                form.pk = None
                 form.contact_id = client.id
                 form.user_id = request.user.id
                 form.save()
