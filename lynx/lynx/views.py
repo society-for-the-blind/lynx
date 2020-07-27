@@ -335,6 +335,7 @@ def progress_result_view(request):
         given_month = MONTHS[request.GET.get('selMonth')]
     else:
         object_list = None
+        given_month = None
     return render(request, 'lynx/monthly_progress_reports.html', {'object_list': object_list, 'givenMonth': given_month, 'givenYear': request.GET.get('selYear')})
 
 
