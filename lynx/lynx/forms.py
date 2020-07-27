@@ -153,6 +153,8 @@ class LessonNoteForm(forms.ModelForm):
 
 class SipNoteForm(forms.ModelForm):
     note_date = forms.DateField(widget=forms.SelectDateWidget(empty_label="Nothing"))
+    client_list = Contact.objects.filter(active=1).filter(sip_client=1).order_by('last_name')
+    clients = forms.MultipleChoiceField(choices=client_list)
 
     class Meta:
 

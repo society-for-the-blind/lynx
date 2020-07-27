@@ -4,8 +4,6 @@
 {% block javascript %}
 <script>
     $(document).ready(function() {
-        $('#multiselect').multiSelect({});
-
         var thisYear = new Date().getFullYear();
         $("#id_note_date_year").val(thisYear);
 
@@ -26,10 +24,9 @@
     <div class="container-fluid">
         <h2>Select Clients</h2>
         <select id="multiselect" multiple="multiple">
-            {% for client in client_list %}
-                <option value = {{client.id}}>{{client.first_name}}, {{client.last_name}}</option>
-            {% endfor %}
-        </select>
+            <div class="row">
+              <div class="col-12">{{ form.clients|as_crispy_field }}</div>
+            </div>
         <h2>Notes</h2>
             <div class="row">
               <div class="col-12">{{ form.note|as_crispy_field }}</div>
