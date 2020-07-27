@@ -24,37 +24,63 @@
 <h1>Add New SIP Note</h1>
 <br>
 <form method="post"> {% csrf_token %}
-    <h2>Select Clients</h2>
+    <div class="container-fluid">
+        <h2>Select Clients</h2>
         <select id="multiselect">
             {% for client in client_list %}
                 <option>{{client.first_name}}, {{client.last_name}}</option>
             {% endfor %}
         </select>
-    <h2>Notes</h2>
-        <p><label for="id_note">Notes:</label> {{ form.note }}</p>
-        <p><label for="id_note_date">Date:</label> {{ form.note_date }}</p>
-    <h2>Services (check all that apply):</h2>
-        <p><label for="id_vision_screening">Vision screening/examination/low vision evaluation:</label> {{ form.vision_screening }}</p>
-        <p><label for="id_treatment">Surgical or therapeutic treatment:</label> {{ form.treatment }}</p>
-        <p><label for="id_at_devices">Provision of assistive technology devices and aids (non prescription optics):</label> {{ form.at_devices }}</p>
-        <p><label for="id_at_services">Provision of assistive technology services:</label> {{ form.at_services }}</p>
-        <p><label for="id_independent_living">Independent living and adjustment skills training:</label> {{ form.independent_living }}</p>
-        <p><label for="id_orientation">Orientation and Mobility training:</label> {{ form.orientation }}</p>
-        <p><label for="id_communications">Communication skills</label> {{ form.communications }}</p>
-        <p><label for="id_dls">Daily Living skills:</label> {{ form.dls }}</p>
-        <p><label for="id_support">Support services:</label> {{ form.support }}</p>
-        <p><label for="id_advocacy">Advocacy training and support networks:</label> {{ form.advocacy }}</p>
-        <p><label for="id_counseling">Counseling :</label> {{ form.counseling }}</p>
-        <p><label for="id_information">Information, referral, and community integration:</label> {{ form.information }}</p>
-        <p><label for="id_services">Other IL services:</label> {{ form.services }}</p>
-    <h2>Method of delivering service (check all that apply):</h2>
-        <p><label for="id_retreat">Retreat:</label> {{ form.retreat }}</p>
-        <p><label for="id_in_home">In-home training:</label> {{ form.in_home }}</p>
-        <p><label for="id_seminar">Training Seminar:</label> {{ form.seminar }}</p>
-        <p><label for="id_modesto">Modesto training site:</label> {{ form.modesto }}</p>
-        <p><label for="id_group">Support group(s):</label> {{ form.group }}</p>
-        <p><label for="id_community">Community Integration:</label> {{ form.community }}</p>
-    {{ form.errors }}
+        <h2>Notes</h2>
+            <div class="row">
+              <div class="col-12">{{ form.note|as_crispy_field }}</div>
+            </div>
+            <div class="row">
+              <div class="col-12">{{ form.note_date|as_crispy_field }}</div>
+            </div>
+        <h2>Services (check all that apply):</h2>
+            <div class="row">
+              <div class="col-6">{{ form.vision_screening|as_crispy_field }}</div>
+              <div class="col-6">{{ form.treatment|as_crispy_field }}</div>
+            </div>
+            <div class="row">
+              <div class="col-6">{{ form.at_devices|as_crispy_field }}</div>
+              <div class="col-6">{{ form.at_services|as_crispy_field }}</div>
+            </div>
+            <div class="row">
+              <div class="col-6">{{ form.independent_living|as_crispy_field }}</div>
+              <div class="col-6">{{ form.orientation|as_crispy_field }}</div>
+            </div>
+            <div class="row">
+              <div class="col-6">{{ form.communications|as_crispy_field }}</div>
+              <div class="col-6">{{ form.dls|as_crispy_field }}</div>
+            </div>
+            <div class="row">
+              <div class="col-6">{{ form.support|as_crispy_field }}</div>
+              <div class="col-6">{{ form.advocacy|as_crispy_field }}</div>
+            </div>
+            <div class="row">
+              <div class="col-6">{{ form.counseling|as_crispy_field }}</div>
+              <div class="col-6">{{ form.information|as_crispy_field }}</div>
+            </div>
+            <div class="row">
+              <div class="col-6">{{ form.services|as_crispy_field }}</div>
+            </div>
+        <h2>Method of delivering service (check all that apply):</h2>
+            <div class="row">
+              <div class="col-6">{{ form.retreat|as_crispy_field }}</div>
+              <div class="col-6">{{ form.in_home|as_crispy_field }}</div>
+            </div>
+            <div class="row">
+              <div class="col-6">{{ form.seminar|as_crispy_field }}</div>
+              <div class="col-6">{{ form.modesto|as_crispy_field }}</div>
+            </div>
+            <div class="row">
+              <div class="col-6">{{ form.group|as_crispy_field }}</div>
+              <div class="col-6">{{ form.community|as_crispy_field }}</div>
+            </div>
+        {{ form.errors }}
+    </div>
     <input type="submit" value="Submit">
 </form>
 {% endblock %}

@@ -99,6 +99,22 @@ def add_sip_note(request, contact_id):
 
 
 @login_required
+def add_sip_note_bulk(request):
+    client_list = Contact.objects.filter(active=1).filter(sip_client=1).order_by('last_name', 'first_name')
+    form = SipNoteForm()
+    if request.method == 'POST':
+        form = SipNoteForm(request.POST)
+        for client in request.GET['multiselect']:
+            if form.is_valid():
+                form = form.save(commit=False)
+                form.contact_id = client.id
+                form.user_id = request.user.id
+                form.save()
+        return HttpResponseRedirect(reverse('lynx:contact_list'))
+    return render(request, 'lynx/add_sip_note_bulk.html', {'form': form, 'client_list':client_list})
+
+
+@login_required
 def add_emergency(request, contact_id):
     form = EmergencyForm()
     phone_form = PhoneForm()
