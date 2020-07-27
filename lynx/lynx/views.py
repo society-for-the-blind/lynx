@@ -104,7 +104,7 @@ def add_sip_note_bulk(request):
     form = SipNoteForm()
     if request.method == 'POST':
         form = SipNoteForm(request.POST)
-        for client in form.clients:
+        for client in request.GET.get('clients'):
             if form.is_valid():
                 form = form.save(commit=False)
                 form.pk = None
