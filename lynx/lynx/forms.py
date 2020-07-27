@@ -152,6 +152,7 @@ class LessonNoteForm(forms.ModelForm):
 
 
 class SipNoteForm(forms.ModelForm):
+    note_date = forms.DateField(widget=forms.SelectDateWidget(empty_label="Nothing"))
 
     class Meta:
 
