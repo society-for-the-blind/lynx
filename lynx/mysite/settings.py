@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'crispy_forms',
     'mathfilters',
     'openpyxl',
+    'debug_toolbar',
 ]
 
 MIDDLEWARE = [
