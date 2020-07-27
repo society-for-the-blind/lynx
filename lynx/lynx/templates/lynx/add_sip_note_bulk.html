@@ -22,7 +22,7 @@
 {% block content %}
 <h1>Add New SIP Note</h1>
 <br>
-<form method="get"> {% csrf_token %}
+<form method="post"> {% csrf_token %}
     <div class="container-fluid">
         <h2>Select Clients</h2>
         <select id="multiselect" multiple="multiple">
