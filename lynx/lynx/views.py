@@ -111,6 +111,7 @@ def add_sip_note_bulk(request):
                     form.contact_id = client.id
                     form.user_id = request.user.id
                     form.save()
+                    first = False
                     id_to_copy = form.pk
                 else:
                     form.pk = None
