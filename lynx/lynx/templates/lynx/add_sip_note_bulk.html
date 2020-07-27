@@ -3,13 +3,8 @@
 
 {% block javascript %}
 <script>
-
     $(document).ready(function() {
-        // $("#multiselect").kendoMultiSelect();
-
-        // create MultiSelect from select HTML element
-        // $("#multiselect").kendoMultiSelect().data("kendoMultiSelect");
-
+        $('#multiselect').multiSelect({});
 
         var thisYear = new Date().getFullYear();
         $("#id_note_date_year").val(thisYear);
@@ -21,7 +16,6 @@
         var thisDay = new Date().getDate();
         $("#id_note_date_day").val(thisDay);
     });
-
 </script>
 {% endblock %}
 
