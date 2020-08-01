@@ -74,19 +74,27 @@
   </div>
   <div class="row">
     <div class="col-1"></div>
-    <div class="col-11"><strong>Remaining Short Term Objectives:</strong> {{ object.short_term_goals }}</div>
+    <div class="col-11"><strong>Remaining Objectives:</strong> </div>
   </div>
   <div class="row">
     <div class="col-1"></div>
-    <div class="col-11"><strong>Remaining Long Term Objectives:</strong> {{ object.long_term_goals }}</div>
+    <div class="col-11"><strong>Short Term:</strong> {{ object.short_term_goals }}</div>
   </div>
   <div class="row">
     <div class="col-1"></div>
-    <div class="col-11"><strong>Estimated number of Hours needed for completion of objectives:</strong> Long Term - {{ object.long_term_goals_time }}</div>
+    <div class="col-11"><strong>Long Term:</strong> {{ object.long_term_goals }}</div>
   </div>
   <div class="row">
     <div class="col-1"></div>
-    <div class="col-11">Short Term - {{ object.short_term_goals_time }}</div>
+    <div class="col-11"><strong>Estimated number of Hours needed for completion of objectives:</strong></div>
+  </div>
+  <div class="row">
+    <div class="col-1"></div>
+    <div class="col-11"><em>Short Term: </em>{{ object.short_term_goals_time }}</div>
+  </div>
+  <div class="row">
+    <div class="col-1"></div>
+    <div class="col-11"><em>Long Term: </em>{{ object.long_term_goals_time }}</div>
   </div>
   <div class="row">
     <div class="col-1"></div>

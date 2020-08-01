@@ -510,6 +510,8 @@ class BillingReviewDetailView(LoginRequiredMixin, DetailView):
         current_time = datetime.now()
         month = self.request.GET.get('selMonth', current_time.month)
         year = self.request.GET.get('selYear', current_time.year)
+        context['month'] = month
+        context['year'] = year
 
         auth_id = self.kwargs['pk']
         report = ProgressReport.objects.filter(authorization_id=auth_id).values() #TODO: filter by month and year, wait until live data in
@@ -653,11 +655,13 @@ class ProgressReportUpdateView(LoginRequiredMixin, UpdateView):
 
     def get_form(self, form_class=None):
         form = super().get_form(form_class=form_class)
+        form.fields["instructor"].label = "Instructor(s)"
+        form.fields["accomplishments"].label = "Client Accomplishments"
         form.fields["client_behavior"].label = "Client Attendance and Behavior"
-        form.fields["short_term_goals"].label = "Short Term Learning Goals"
-        form.fields["short_term_goals_time"].label = "Estimated Time for Short Term Goals"
-        form.fields["long_term_goals"].label = "Long Term Learning Goals"
-        form.fields["long_term_goals_time"].label = "Estimated Time for Long Term Goals"
+        form.fields["short_term_goals"].label = "Remaining Short Term Objectives"
+        form.fields["short_term_goals_time"].label = "Estimated number of Hours needed for completion of short term objectives"
+        form.fields["long_term_goals"].label = "Remaining Long Term Objectives"
+        form.fields["long_term_goals_time"].label = "Estimated number of Hours needed for completion of long term objectives"
         return form
 
 
