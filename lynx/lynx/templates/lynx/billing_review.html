@@ -19,7 +19,7 @@
 
 {% block header %}
   {% if request.GET.print %}
-    <h1>{{ object.contact.first_name }} {{ object.contact.last_name }} Invoice for {{ object.month|month_name }} {{object.year}}</h1>
+    <h1>{{ object.contact.first_name }} {{ object.contact.last_name }} Invoice for {{month }} {{year}}</h1>
   {% endif %}
 {% endblock %}
 
