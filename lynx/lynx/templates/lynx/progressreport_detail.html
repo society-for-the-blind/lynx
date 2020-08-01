@@ -15,10 +15,24 @@
 {% endif %}
 
 <h2>Client Information</h2>
-<p class="tab"><strong>Client:</strong> {{ object.authorization.contact.first_name }} {{ object.authorization.contact.last_name }}</p>
-<p class="tab"><strong>Counselor:</strong> {{ object.authorization.outside_agency }}</p>
-<p class="tab"><strong>Instructor(s):</strong> {{ object.instructor }}</p>
-<p class="tab"><strong>Service Area:</strong> {{ object.authorization.intake_service_area }}</p>
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-1"></div>
+    <div class="col-11"><strong>Client:</strong> {{ object.authorization.contact.first_name }} {{ object.authorization.contact.last_name }}</div>
+  </div>
+  <div class="row">
+    <div class="col-1"></div>
+    <div class="col-11"><strong>Counselor:</strong> {{ object.authorization.outside_agency }}</div>
+  </div>
+  <div class="row">
+    <div class="col-1"></div>
+    <div class="col-11"><strong>Instructor(s):</strong> {{ object.instructor }}</div>
+  </div>
+  <div class="row">
+    <div class="col-1"></div>
+    <div class="col-11"><strong>Service Area:</strong> {{ object.authorization.intake_service_area }}</div>
+  </div>
+</div>
 
 <h2>Authorization Information</h2>
 <p class="tab"><strong>Authorization Number:</strong> {{ object.authorization.authorization_number }}</p>

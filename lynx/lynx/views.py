@@ -336,7 +336,8 @@ def progress_result_view(request):
     else:
         object_list = None
         given_month = None
-    return render(request, 'lynx/monthly_progress_reports.html', {'object_list': object_list, 'givenMonth': given_month, 'givenYear': request.GET.get('selYear')})
+    return render(request, 'lynx/monthly_progress_reports.html', {'object_list': object_list, 'givenMonth': given_month,
+                                                                  'givenYear': request.GET.get('selYear')})
 
 
 class ContactDetailView(LoginRequiredMixin, DetailView):
