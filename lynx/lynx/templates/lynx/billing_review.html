@@ -19,14 +19,14 @@
 
 {% block header %}
   {% if request.GET.print %}
-    <h1>{{ object.contact.first_name }} {{ object.contact.last_name }} Invoice for {{ month|month_name }} {{year}}</h1>
+    <h1>{{ object.contact.first_name }} {{ object.contact.last_name }} Invoice for {{ month|month_name }}, {{year}}</h1>
   {% endif %}
 {% endblock %}
 
 {% block content %}
 
 {% if not request.GET.print %}
-<h1>{{ object.contact.first_name }} {{ object.contact.last_name }} Progress Report for {{ month }} {{ year }}</h1>
+<h1>{{ object.contact.first_name }} {{ object.contact.last_name }} Progress Report for {{ month|month_name }}, {{ year }}</h1>
 <input type="button" onclick="location.href='/lynx/authorization/{{ object.id }}';" value="Return to Authorization" /> <input type="button" onclick="location.href='/lynx/client/{{ object.authorization.contact.id}}';" value="Return to Client" />
 <p>Please review the following information. Listed below is the billing information on file for this authorization. You can modify the contact information for the payment source, or view a printable invoice.</p>
 
@@ -53,20 +53,51 @@
 </div>
 {% endif %}
 
-<h2>Invoice Information</h2>
-<p class="tab"><strong>Invoice Date:</strong><span id="today"></span> </p>
-<p class="tab"><strong>Client:</strong> {{ object.contact.last_name }}, {{ object.contact.first_name }} </p>
-<p class="tab"><strong>Authorization Number:</strong> {{ object.authorization_number }} </p>
-<p class="tab"><strong>Authorization Type:</strong> {{ object.authorization_type }}</p>
-<p class="tab"><strong>Total {{ object.authorization_type }} on Authorization:</strong> {{ total_time }}</p>
-<p class="tab"><strong>{{ object.authorization_type }} Taught This Month:</strong> {{ month_used }}</p>
-<p class="tab"><strong>Instructor(s):</strong> {{ instructors }}</p>
-
 <h2>Payment Source Information</h2>
-<p class="tab"><strong>Payment Source:</strong> {{ object.outside_agency.name }} - {{ object.outside_agency.contact }}</p>
-<p class="tab"><strong>Billing Address:</strong> </p>
-<p class="tab"><strong>Phone Number:</strong> </p>
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-1"></div>
+    <div class="col-11"><strong>Payment Source:</strong> {{ object.outside_agency.name }} - {{ object.outside_agency.contact }}</div>
+  </div>
+  <div class="row">
+    <div class="col-1"></div>
+    <div class="col-11"><strong>Billing Address:</strong> </div>
+<!--      TODO: add -->
+  </div>
+  <div class="row">
+    <div class="col-1"></div>
+    <div class="col-11"><strong>Phone Number:</strong> </div>
+  </div>
+<!--TODO: add-->
+</div>
 
+<h2>Invoice Information</h2>
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-1"></div>
+    <div class="col-11"><strong>Invoice Date:</strong><span id="today"></span> </div>
+  </div>
+  <div class="row">
+    <div class="col-1"></div>
+    <div class="col-11">Client:</strong> {{ object.contact.last_name }}, {{ object.contact.first_name }}</div>
+  </div>
+  <div class="row">
+    <div class="col-1"></div>
+    <div class="col-11"><strong>Authorization Number:</strong> {{ object.authorization_number }} </div>
+  </div>
+   <div class="row">
+    <div class="col-1"></div>
+    <div class="col-11"><strong>Authorization Type:</strong> {{ object.authorization_type }}</div>
+  </div>
+  <div class="row">
+    <div class="col-1"></div>
+    <div class="col-11"><strong>Total {{ object.authorization_type }} on Authorization:</strong> {{ total_time }}</div>
+  </div>
+  <div class="row">
+    <div class="col-1"></div>
+    <div class="col-11"><strong>Instructor(s):</strong> {{ instructors }}</div>
+  </div>
+</div>
     <table class="table">
         <tr>
             <th>Lesson Date</th>
