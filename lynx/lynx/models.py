@@ -139,7 +139,7 @@ class Contact(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET(get_sentinel_user))
 
     def __str__(self):
-        return '%s %s' % (self.first_name, self.last_name)
+        return '%s %s' % (self.last_name, self.first_name)
 
     def get_absolute_url(self):
         return "/lynx/client/%i" % self.id
