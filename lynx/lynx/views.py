@@ -944,7 +944,7 @@ def sip_csf_report(request):
                 int.heart, int.arthritis, int.high_bp, int.neuropathy, int.pain, int.asthma, int.cancer, 
                 int.musculoskeletal, int.alzheimers, int.allergies, int.mental_health, int.substance_abuse, 
                 int.memory_loss, int.learning_disability, int.geriatric, int.dexterity, int.migraine, int.hearing_loss, 
-                int.referred_by  
+                int.referred_by, ls.note_date  
                     FROM lynx_sipnote as ls
                     left JOIN lynx_contact as c on c.id = ls.contact_id
                     left JOIN lynx_intake as int on int.contact_id = c.id
