@@ -1091,7 +1091,7 @@ def sip_csf_report(request):
                     if client['services'] == 1:
                         aggregated_data[client_id][quarter]['services'] += 1
 
-            for key, value in aggregated_data:
+            for value in aggregated_data:
                 if value['Q1']:
                     writer.writerow([value['client_data']['name'], value['client_data']['fiscal_year'], 'Q1',
                                      value['Q1']['vision_screening'], value['Q1']['treatment'], value['Q1']['at_devices'],
