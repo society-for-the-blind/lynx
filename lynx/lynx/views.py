@@ -1051,8 +1051,8 @@ def sip_csf_report(request):
                     quarter = 'Q4'
 
                 if quarter not in aggregated_data[client_id]:
-                    aggregated_data[client_id][quarter] = {}
-                    aggregated_data[client_id][quarter]['vision_screening'] = client['vision_screening']
+                    # aggregated_data[client_id][quarter] = {}
+                    aggregated_data[client_id][quarter]['vision_screening'] = int(client['vision_screening'])
                     aggregated_data[client_id][quarter]['treatment'] = int(client['treatment'])
                     aggregated_data[client_id][quarter]['at_devices'] = int(client['at_devices'])
                     aggregated_data[client_id][quarter]['at_services'] = int(client['at_services'])
@@ -1065,7 +1065,7 @@ def sip_csf_report(request):
                     aggregated_data[client_id][quarter]['information'] = int(client['information'])
                     aggregated_data[client_id][quarter]['services'] = int(client['services'])
                 else:
-                    aggregated_data[client_id][quarter] = {}
+                    # aggregated_data[client_id][quarter] = {}
                     if client['vision_screening'] == 1:
                         aggregated_data[client_id][quarter]['vision_screening'] += 1
                     if client['treatment'] == 1:
