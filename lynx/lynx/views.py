@@ -1092,7 +1092,7 @@ def sip_csf_report(request):
                         aggregated_data[client_id][quarter]['services'] += 1
 
             for key, value in aggregated_data.items():
-                if value['Q1']:
+                if 'Q1' in value:
                     writer.writerow([value['client_data']['name'], value['client_data']['fiscal_year'], 'Q1',
                                      value['Q1']['vision_screening'], value['Q1']['treatment'], value['Q1']['at_devices'],
                                      value['Q1']['at_services'], value['Q1']['orientation'], value['Q1']['communications'],
@@ -1103,7 +1103,7 @@ def sip_csf_report(request):
                                      value['client_data']['degree'], value['client_data']['cause'],
                                      value['client_data']['impairments'], value['client_data']['residence'],
                                      value['client_data']['referral']])
-                if value['Q2']:
+                if 'Q2' in value:
                     writer.writerow([value['client_data']['name'], value['client_data']['fiscal_year'], 'Q2',
                                      value['Q2']['vision_screening'], value['Q2']['treatment'], value['Q2']['at_devices'],
                                      value['Q2']['at_services'], value['Q2']['orientation'], value['Q2']['communications'],
@@ -1114,7 +1114,7 @@ def sip_csf_report(request):
                                      value['client_data']['degree'], value['client_data']['cause'],
                                      value['client_data']['impairments'], value['client_data']['residence'],
                                      value['client_data']['referral']])
-                if value['Q3']:
+                if 'Q3' in value:
                     writer.writerow([value['client_data']['name'], value['client_data']['fiscal_year'], 'Q3',
                                      value['Q3']['vision_screening'], value['Q3']['treatment'], value['Q3']['at_devices'],
                                      value['Q3']['at_services'], value['Q3']['orientation'], value['Q3']['communications'],
@@ -1125,7 +1125,7 @@ def sip_csf_report(request):
                                      value['client_data']['degree'], value['client_data']['cause'],
                                      value['client_data']['impairments'], value['client_data']['residence'],
                                      value['client_data']['referral']])
-                if value['Q4']:
+                if 'Q4' in value:
                     writer.writerow([value['client_data']['name'], value['client_data']['fiscal_year'], 'Q4',
                                      value['Q4']['vision_screening'], value['Q4']['treatment'], value['Q4']['at_devices'],
                                      value['Q4']['at_services'], value['Q4']['orientation'], value['Q4']['communications'],
