@@ -1169,7 +1169,8 @@ def getFiscalYear(year):
     last_digits = year_str[-2:]
     last_digits_int = int(last_digits)
     year_inc = last_digits_int + 1
-    if len(str(year_inc)) == 1:
+    year_inc = str(year_inc)
+    if len(year_inc) == 1:
         fiscal_year = year_str + '-0' + year_inc
     else:
         fiscal_year = year_str + '-' + year_inc
