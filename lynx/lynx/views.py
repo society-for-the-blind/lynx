@@ -949,8 +949,8 @@ def sip_csf_report(request):
                     left JOIN lynx_contact as c on c.id = ls.contact_id
                     left JOIN lynx_intake as int on int.contact_id = c.id
                     inner join lynx_address as addr on c.id= addr.contact_id
-                    where extract(month FROM ls.note_date) = '%s' and fiscal_year = '%s' and c.sip_client is true %s
-                    order by c.last_name, c.first_name;""" % (month, fiscal_year, month_string))
+                    where fiscal_year = '%s' and c.sip_client is true
+                    order by c.last_name, c.first_name;""" % (fiscal_year,))
                 client_set = dictfetchall(cursor)
 
             filename = "SIP Quarterly Report - " + str(month) + " - " + str(fiscal_year)
