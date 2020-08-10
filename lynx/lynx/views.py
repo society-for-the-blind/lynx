@@ -1052,18 +1052,18 @@ def sip_csf_report(request):
 
                 if quarter not in aggregated_data[client_id]:
                     aggregated_data[client_id][quarter] = {}
-                    aggregated_data[client_id][quarter]['vision_screening'] = client['vision_screening']
-                    aggregated_data[client_id][quarter]['treatment'] = client['treatment']
-                    aggregated_data[client_id][quarter]['at_devices'] = client['at_devices']
-                    aggregated_data[client_id][quarter]['at_services'] = client['at_services']
-                    aggregated_data[client_id][quarter]['orientation'] = client['orientation']
-                    aggregated_data[client_id][quarter]['communications'] = client['communications']
-                    aggregated_data[client_id][quarter]['dls'] = client['dls']
-                    aggregated_data[client_id][quarter]['support'] = client['support']
-                    aggregated_data[client_id][quarter]['advocacy'] = client['advocacy']
-                    aggregated_data[client_id][quarter]['counseling'] = client['counseling']
-                    aggregated_data[client_id][quarter]['information'] = client['information']
-                    aggregated_data[client_id][quarter]['services'] = client['services']
+                    aggregated_data[client_id][quarter]['vision_screening'] = int(client['vision_screening'])
+                    aggregated_data[client_id][quarter]['treatment'] = int(client['treatment'])
+                    aggregated_data[client_id][quarter]['at_devices'] = int(client['at_devices'])
+                    aggregated_data[client_id][quarter]['at_services'] = int(client['at_services'])
+                    aggregated_data[client_id][quarter]['orientation'] = int(client['orientation'])
+                    aggregated_data[client_id][quarter]['communications'] = int(client['communications'])
+                    aggregated_data[client_id][quarter]['dls'] = int(client['dls'])
+                    aggregated_data[client_id][quarter]['support'] = int(client['support'])
+                    aggregated_data[client_id][quarter]['advocacy'] = int(client['advocacy'])
+                    aggregated_data[client_id][quarter]['counseling'] = int(client['counseling'])
+                    aggregated_data[client_id][quarter]['information'] = int(client['information'])
+                    aggregated_data[client_id][quarter]['services'] = int(client['services'])
                 else:
                     aggregated_data[client_id][quarter] = {}
                     if client['vision_screening'] == 1:
