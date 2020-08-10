@@ -916,24 +916,24 @@ def sip_csf_report(request):
             year = data.get('year')
             fiscal_year = getFiscalYear(year)
 
-            fiscal_months = ['10', '11', '12', '1', '2', '3', '4', '5', '6', '7', '8', '9']
-
-            first = True
-            month_string = ''
-            for month_no in fiscal_months:
-                if month_no == month:
-                    break
-                else:
-                    if first:
-                        month_string = """SELECT client.id FROM lynx_sipnote AS sip 
-                        LEFT JOIN lynx_contact AS client ON client.id = sip.contact_id 
-                        WHERE extract(month FROM sip.note_date) = """ + month_no
-                        first = False
-                    else:
-                        month_string = month_string + ' or extract(month FROM sip.note_date) = ' + month_no
-
-            if len(month_string) > 0:
-                month_string = " and c.id not in (" + month_string + ')'
+            # fiscal_months = ['10', '11', '12', '1', '2', '3', '4', '5', '6', '7', '8', '9']
+            #
+            # first = True
+            # month_string = ''
+            # for month_no in fiscal_months:
+            #     if month_no == month:
+            #         break
+            #     else:
+            #         if first:
+            #             month_string = """SELECT client.id FROM lynx_sipnote AS sip
+            #             LEFT JOIN lynx_contact AS client ON client.id = sip.contact_id
+            #             WHERE extract(month FROM sip.note_date) = """ + month_no
+            #             first = False
+            #         else:
+            #             month_string = month_string + ' or extract(month FROM sip.note_date) = ' + month_no
+            #
+            # if len(month_string) > 0:
+            #     month_string = " and c.id not in (" + month_string + ')'
 
             with connection.cursor() as cursor:
                 cursor.execute("""SELECT CONCAT(c.first_name, ' ', c.last_name) as name, c.id as id, int.age_group, 
@@ -1038,8 +1038,8 @@ def sip_csf_report(request):
 
 
                 note_date = client['note_date']
-                note_formatted = datetime.strptime(note_date, "%Y-%m-%d")
-                note_month = note_formatted.month
+                # note_formatted = datetime.strptime(note_date, "%Y-%m-%d")
+                note_month = note_date.month
                 quarter = ''
                 if note_month in q1:
                     quarter = 'Q1'
