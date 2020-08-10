@@ -952,7 +952,7 @@ def sip_csf_report(request):
                     order by c.last_name, c.first_name;""" % (month, year, month_string))
                 client_set = dictfetchall(cursor)
 
-            filename = "SIP Quarterly Report - " + month + " - " + year
+            filename = "SIP Quarterly Report - " + str(month) + " - " + str(year)
             response = HttpResponse(content_type='text/csv')
             response['Content-Disposition'] = 'attachment; filename="' + filename + '.csv"'
             writer = csv.writer(response)
