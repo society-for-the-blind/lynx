@@ -3,14 +3,14 @@
 
 {% block header %}
   {% if request.GET.print %}
-    <h1>{{ object.authorization.contact.first_name }} {{ object.authorization.contact.last_name }} Progress Report for {{ object.month|month_name }} {{object.year}}</h1>
+    <h1>Progress Report for the month of {{ object.month|month_name }} {{object.year}}</h1>
   {% endif %}
 {% endblock %}
 
 {% block content %}
 
 {% if not request.GET.print %}
-<h1>{{ object.authorization.contact.first_name }} {{ object.authorization.contact.last_name }} Progress Report for {{ object.month|month_name }} {{ object.year }}</h1>
+<h1>Progress Report for the month of {{ object.month|month_name }} {{ object.year }}</h1>
 <input type="button" onclick="location.href='/lynx/authorization/{{ object.authorization_id }}';" value="Return to Authorization" /> <input type="button" onclick="location.href='/lynx/client/{{ object.authorization.contact.id}}';" value="Return to Client" />
 {% endif %}
 
@@ -42,19 +42,19 @@
   </div>
   <div class="row">
     <div class="col-1"></div>
-    <div class="col-11"><strong>Hours Used for Authorization:</strong> {{ total_hours }}</div>
+    <div class="col-11"><strong>{{ object.authorization.authorization_type }} Used for Authorization:</strong> {{ total_hours }}</div>
   </div>
   <div class="row">
     <div class="col-1"></div>
-    <div class="col-11"><strong>Hours Remaining:</strong> {{ remaining_hours }}</div>
+    <div class="col-11"><strong>{{ object.authorization.authorization_type }} Remaining:</strong> {{ remaining_hours }}</div>
   </div>
   <div class="row">
     <div class="col-1"></div>
-    <div class="col-11"><strong>Total Hours:</strong> {{ total_time }}</div>
+    <div class="col-11"><strong>Total {{ object.authorization.authorization_type }}:</strong> {{ total_time }}</div>
   </div>
   <div class="row">
     <div class="col-1"></div>
-    <div class="col-11"><strong>Hours Used this Month:</strong> {{ month_used }}</div>
+    <div class="col-11"><strong>{{ object.authorization.authorization_type }} Used this Month:</strong> {{ month_used }}</div>
   </div>
   <div class="row">
     <div class="col-1"></div>

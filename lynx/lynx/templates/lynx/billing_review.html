@@ -19,14 +19,14 @@
 
 {% block header %}
   {% if request.GET.print %}
-    <h1>{{ object.contact.first_name }} {{ object.contact.last_name }} Invoice for {{ month|month_name }}, {{year}}</h1>
+    <h1>Invoice for the month of {{ month|month_name }}, {{year}}</h1>
   {% endif %}
 {% endblock %}
 
 {% block content %}
 
 {% if not request.GET.print %}
-<h1>{{ object.contact.first_name }} {{ object.contact.last_name }} Progress Report for {{ month|month_name }}, {{ year }}</h1>
+<h1>Invoice for the month of {{ month|month_name }}, {{ year }}</h1>
 <input type="button" onclick="location.href='/lynx/authorization/{{ object.id }}';" value="Return to Authorization" /> <input type="button" onclick="location.href='/lynx/client/{{ object.authorization.contact.id}}';" value="Return to Client" />
 <p>Please review the following information. Listed below is the billing information on file for this authorization. You can modify the contact information for the payment source, or view a printable invoice.</p>
 

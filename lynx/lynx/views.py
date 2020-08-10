@@ -21,7 +21,6 @@ from .forms import ContactForm, IntakeForm, IntakeNoteForm, EmergencyForm, Addre
     AuthorizationForm, ProgressReportForm, LessonNoteForm, SipNoteForm, BillingReportForm, SipDemographicReportForm, \
     VolunteerForm, SipCSFReportForm
 
-
 logger = logging.getLogger(__name__)
 
 
@@ -65,7 +64,7 @@ def add_contact(request):
             if hasattr(email_form, 'email'):
                 email_form.contact_id = contact_id
                 email_form.save()
-            return HttpResponseRedirect(reverse('lynx:add_intake',  args=(contact_id,)))
+            return HttpResponseRedirect(reverse('lynx:add_intake', args=(contact_id,)))
     return render(request, 'lynx/add_contact.html', {'address_form': address_form, 'phone_form': phone_form,
                                                      'email_form': email_form, 'form': form})
 
@@ -80,7 +79,7 @@ def add_intake(request, contact_id):
             form.contact_id = contact_id
             form.active = 1
             form.save()
-            return HttpResponseRedirect(reverse('lynx:client',  args=(contact_id,)))
+            return HttpResponseRedirect(reverse('lynx:client', args=(contact_id,)))
     return render(request, 'lynx/add_intake.html', {'form': form})
 
 
@@ -94,7 +93,7 @@ def add_sip_note(request, contact_id):
             form.contact_id = contact_id
             form.user_id = request.user.id
             form.save()
-            return HttpResponseRedirect(reverse('lynx:client',  args=(contact_id,)))
+            return HttpResponseRedirect(reverse('lynx:client', args=(contact_id,)))
     return render(request, 'lynx/add_sip_note.html', {'form': form})
 
 
@@ -147,7 +146,8 @@ def add_emergency(request, contact_id):
                 email_form.save()
 
             return HttpResponseRedirect(reverse('lynx:client', args=(contact_id,)))
-    return render(request, 'lynx/add_emergency.html', {'phone_form': phone_form, 'email_form': email_form, 'form': form})
+    return render(request, 'lynx/add_emergency.html',
+                  {'phone_form': phone_form, 'email_form': email_form, 'form': form})
 
 
 @login_required
@@ -160,7 +160,7 @@ def add_address(request, contact_id):
             form.contact_id = contact_id
             form.active = 1
             form.save()
-            return HttpResponseRedirect(reverse('lynx:client',  args=(contact_id,)))
+            return HttpResponseRedirect(reverse('lynx:client', args=(contact_id,)))
     return render(request, 'lynx/add_address.html', {'form': form})
 
 
@@ -174,7 +174,7 @@ def add_email(request, contact_id):
             form.contact_id = contact_id
             form.active = 1
             form.save()
-            return HttpResponseRedirect(reverse('lynx:client',  args=(contact_id,)))
+            return HttpResponseRedirect(reverse('lynx:client', args=(contact_id,)))
     return render(request, 'lynx/add_email.html', {'form': form})
 
 
@@ -190,7 +190,7 @@ def add_emergency_email(request, emergency_contact_id):
             form.save()
             emergency = EmergencyContact.objects.get(id=emergency_contact_id)
             contact_id = int(emergency.contact_id)
-            return HttpResponseRedirect(reverse('lynx:client',  args=(contact_id,)))
+            return HttpResponseRedirect(reverse('lynx:client', args=(contact_id,)))
     return render(request, 'lynx/add_email.html', {'form': form})
 
 
@@ -204,7 +204,7 @@ def add_phone(request, contact_id):
             form.contact_id = contact_id
             form.active = 1
             form.save()
-            return HttpResponseRedirect(reverse('lynx:client',  args=(contact_id,)))
+            return HttpResponseRedirect(reverse('lynx:client', args=(contact_id,)))
     return render(request, 'lynx/add_phone.html', {'form': form})
 
 
@@ -220,7 +220,7 @@ def add_emergency_phone(request, emergency_contact_id):
             form.save()
             emergency = EmergencyContact.objects.get(id=emergency_contact_id)
             contact_id = int(emergency.contact_id)
-            return HttpResponseRedirect(reverse('lynx:client',  args=(contact_id,)))
+            return HttpResponseRedirect(reverse('lynx:client', args=(contact_id,)))
     return render(request, 'lynx/add_phone.html', {'form': form})
 
 
@@ -234,7 +234,7 @@ def add_authorization(request, contact_id):
             form.contact_id = contact_id
             form.active = 1
             form.save()
-            return HttpResponseRedirect(reverse('lynx:client',  args=(contact_id,)))
+            return HttpResponseRedirect(reverse('lynx:client', args=(contact_id,)))
     return render(request, 'lynx/add_authorization.html', {'form': form})
 
 
@@ -252,7 +252,7 @@ def add_progress_report(request, authorization_id):
             form.authorization_id = authorization_id
             form.user_id = request.user.id
             form.save()
-            return HttpResponseRedirect(reverse('lynx:authorization_detail',  args=(authorization_id,)))
+            return HttpResponseRedirect(reverse('lynx:authorization_detail', args=(authorization_id,)))
     return render(request, 'lynx/add_progress_report.html', {'form': form})
 
 
@@ -288,9 +288,10 @@ def add_volunteer(request):
                 email_form = email_form.save(commit=False)
                 email_form.contact_id = contact_id
                 email_form.save()
-            return HttpResponseRedirect(reverse('lynx:volunteer_detail',  args=(volunteer_id,)))
+            return HttpResponseRedirect(reverse('lynx:volunteer_detail', args=(volunteer_id,)))
     return render(request, 'lynx/add_volunteer.html', {'address_form': address_form, 'phone_form': phone_form,
-                                                     'email_form': email_form, 'form': form, 'contact_form': contact_form})
+                                                       'email_form': email_form, 'form': form,
+                                                       'contact_form': contact_form})
 
 
 @login_required
@@ -309,7 +310,7 @@ def add_lesson_note(request, authorization_id):
             form.authorization_id = authorization_id
             form.user_id = request.user.id
             form.save()
-            return HttpResponseRedirect(reverse('lynx:authorization_detail',  args=(authorization_id,)))
+            return HttpResponseRedirect(reverse('lynx:authorization_detail', args=(authorization_id,)))
     return render(request, 'lynx/add_lesson_note.html', {'form': form, 'client': client, 'auth_type': auth_type})
 
 
@@ -329,7 +330,8 @@ def client_result_view(request):
 @login_required
 def progress_result_view(request):
     if request.GET.get('selMonth') and request.GET.get('selYear'):
-        object_list = ProgressReport.objects.filter(month=request.GET.get('selMonth')).filter(year=request.GET.get('selYear'))
+        object_list = ProgressReport.objects.filter(month=request.GET.get('selMonth')).filter(
+            year=request.GET.get('selYear'))
         MONTHS = {"January": 1, "February": 2, "March": 3, "April": 4, "May": 5, "June": 6, "July": 7,
                   "August": 8, "September": 9, "October": 10, "November": 11, "December": 12}
         given_month = MONTHS[request.GET.get('selMonth')]
@@ -341,7 +343,6 @@ def progress_result_view(request):
 
 
 class ContactDetailView(LoginRequiredMixin, DetailView):
-
     model = Contact
 
     def get_context_data(self, **kwargs):
@@ -370,7 +371,6 @@ class ContactDetailView(LoginRequiredMixin, DetailView):
 
 
 class AuthorizationDetailView(LoginRequiredMixin, DetailView):
-
     model = Authorization
 
     def get_context_data(self, **kwargs):
@@ -393,7 +393,7 @@ class AuthorizationDetailView(LoginRequiredMixin, DetailView):
             if note['billed_units']:
                 units = float(note['billed_units'])
                 total_units += units
-            note['hours'] = float(note['billed_units'])/4
+            note['hours'] = float(note['billed_units']) / 4
         total_hours = units_to_hours(total_units)
         if authorization[0]['billing_rate'] is None:
             context['total_billed'] = 'Need to enter billing rate'
@@ -436,7 +436,6 @@ class AuthorizationDetailView(LoginRequiredMixin, DetailView):
 
 
 class ProgressReportDetailView(LoginRequiredMixin, DetailView):
-
     model = ProgressReport
 
     def get_context_data(self, **kwargs):
@@ -448,10 +447,11 @@ class ProgressReportDetailView(LoginRequiredMixin, DetailView):
         report = ProgressReport.objects.filter(id=self.kwargs['pk']).values()
         auth_id = report[0]['authorization_id']
         month_number = report[0]['month']
-        if len(month_number) >2:
+        if len(month_number) > 2:
             month = report[0]['month']
             month_number = MONTHS[month]
-        notes = LessonNote.objects.filter(authorization_id=auth_id).filter(date__month=month_number).values() #TODO: filter by year, wait until live data in
+        notes = LessonNote.objects.filter(authorization_id=auth_id).filter(
+            date__month=month_number).values()  # TODO: filter by year, wait until live data in
         all_notes = LessonNote.objects.filter(authorization_id=auth_id).values()
         authorization = Authorization.objects.filter(id=auth_id).values()
 
@@ -471,14 +471,14 @@ class ProgressReportDetailView(LoginRequiredMixin, DetailView):
                 total_units += units
                 month_count += 1
         if authorization[0]['authorization_type'] == 'Classes':
-            context['total_hours'] = class_count #used in total
-            context['month_used'] = month_count #used this month
+            context['total_hours'] = class_count  # used in total
+            context['month_used'] = month_count  # used this month
             context['total_time'] = authorization[0]['total_time']
         if authorization[0]['authorization_type'] == 'Hours':
             total_hours = units_to_hours(all_units)
-            context['total_hours'] = total_hours #used in total
+            context['total_hours'] = total_hours  # used in total
             month_used = units_to_hours(total_units)
-            context['month_used'] = month_used #used this month
+            context['month_used'] = month_used  # used this month
             context['total_time'] = authorization[0]['total_time']
 
         if authorization[0]['total_time'] is None:
@@ -495,12 +495,10 @@ class ProgressReportDetailView(LoginRequiredMixin, DetailView):
 
 
 class LessonNoteDetailView(LoginRequiredMixin, DetailView):
-
     model = LessonNote
 
 
 class BillingReviewDetailView(LoginRequiredMixin, DetailView):
-
     model = Authorization
     template_name = 'lynx/billing_review.html'
 
@@ -514,8 +512,10 @@ class BillingReviewDetailView(LoginRequiredMixin, DetailView):
         context['year'] = year
 
         auth_id = self.kwargs['pk']
-        report = ProgressReport.objects.filter(authorization_id=auth_id).values() #TODO: filter by month and year, wait until live data in
-        notes = LessonNote.objects.filter(authorization_id=auth_id).filter(date__month=month).order_by('-created').values() #TODO: filter by year, wait until live data in
+        report = ProgressReport.objects.filter(
+            authorization_id=auth_id).values()  # TODO: filter by month and year, wait until live data in
+        notes = LessonNote.objects.filter(authorization_id=auth_id).filter(date__month=month).order_by(
+            '-created').values()  # TODO: filter by year, wait until live data in
         authorization = Authorization.objects.filter(id=auth_id).values()
         context['note_list'] = notes
 
@@ -529,17 +529,16 @@ class BillingReviewDetailView(LoginRequiredMixin, DetailView):
                 total_notes += 1
 
         if authorization[0]['authorization_type'] == 'Classes':
-            context['month_used'] = total_notes #used this month
+            context['month_used'] = total_notes  # used this month
         if authorization[0]['authorization_type'] == 'Hours':
             month_used = units_to_hours(total_units)
-            context['month_used'] = month_used #used this month
+            context['month_used'] = month_used  # used this month
         context['total_time'] = authorization[0]['total_time']
 
         return context
 
 
 class VolunteerDetailView(LoginRequiredMixin, DetailView):
-
     model = Volunteer
 
     def get_context_data(self, **kwargs):
@@ -609,7 +608,8 @@ class IntakeUpdateView(LoginRequiredMixin, UpdateView):
         form.fields["other_languages"].label = "Other Language(s)"
         form.fields["other_ethnicity"].label = "Ethnicity (if other)"
         form.fields["crime"].label = "Have you been convicted of a crime?"
-        form.fields["crime_info"].label = "If yes, what and when did the convictions occur? What county did this conviction occur in?"
+        form.fields[
+            "crime_info"].label = "If yes, what and when did the convictions occur? What county did this conviction occur in?"
         form.fields["crime_other"].label = "Criminal Conviction Information"
         form.fields["parole"].label = "Are you on parole?"
         form.fields["parole_info"].label = "Parole Information"
@@ -635,7 +635,8 @@ class IntakeNoteUpdateView(LoginRequiredMixin, UpdateView):
 
 class EmergencyContactUpdateView(LoginRequiredMixin, UpdateView):
     model = EmergencyContact
-    fields = ['name', 'emergency_address_one', 'emergency_address_two', 'emergency_city', 'emergency_state', 'emergency_zip_code',
+    fields = ['name', 'emergency_address_one', 'emergency_address_two', 'emergency_city', 'emergency_state',
+              'emergency_zip_code',
               'emergency_country', 'phone_day', 'phone_other', 'emergency_notes', 'emergency_email']
     template_name_suffix = '_edit'
 
@@ -659,9 +660,11 @@ class ProgressReportUpdateView(LoginRequiredMixin, UpdateView):
         form.fields["accomplishments"].label = "Client Accomplishments"
         form.fields["client_behavior"].label = "Client Attendance and Behavior"
         form.fields["short_term_goals"].label = "Remaining Short Term Objectives"
-        form.fields["short_term_goals_time"].label = "Estimated number of Hours needed for completion of short term objectives"
+        form.fields[
+            "short_term_goals_time"].label = "Estimated number of Hours needed for completion of short term objectives"
         form.fields["long_term_goals"].label = "Remaining Long Term Objectives"
-        form.fields["long_term_goals_time"].label = "Estimated number of Hours needed for completion of long term objectives"
+        form.fields[
+            "long_term_goals_time"].label = "Estimated number of Hours needed for completion of long term objectives"
         return form
 
 
@@ -710,17 +713,22 @@ def billing_report(request):
                 if authorization_number in reports.keys():
                     if report['authorization_type'] == 'Hours':
                         if report['billed_units'] and reports[authorization_number]['billed_time']:
-                            reports[authorization_number]['billed_time'] = (float(report['billed_units'])/4) + float(reports[authorization_number]['billed_time'])
-                            loop_amount = billing_rate * (float(report['billed_units'])/4)
-                            reports[authorization_number]['amount'] = (billing_rate * float(reports[authorization_number]['billed_time']))
+                            reports[authorization_number]['billed_time'] = (float(report['billed_units']) / 4) + float(
+                                reports[authorization_number]['billed_time'])
+                            loop_amount = billing_rate * (float(report['billed_units']) / 4)
+                            reports[authorization_number]['amount'] = (
+                                        billing_rate * float(reports[authorization_number]['billed_time']))
                         elif report['billed_units']:
-                            reports[authorization_number]['billed_time'] = float(report['billed_units'])/4
-                            loop_amount = billing_rate * (float(report['billed_units'])/4)
-                            reports[authorization_number]['amount'] = billing_rate * float(reports[authorization_number]['billed_time'])
+                            reports[authorization_number]['billed_time'] = float(report['billed_units']) / 4
+                            loop_amount = billing_rate * (float(report['billed_units']) / 4)
+                            reports[authorization_number]['amount'] = billing_rate * float(
+                                reports[authorization_number]['billed_time'])
                     if report['authorization_type'] == 'Classes':
                         if report['billed_units'] and reports[authorization_number]['billed_time']:
-                            reports[authorization_number]['billed_time'] = 1 + float(reports[authorization_number]['billed_time'])
-                            reports[authorization_number]['amount'] = billing_rate + reports[authorization_number]['amount']
+                            reports[authorization_number]['billed_time'] = 1 + float(
+                                reports[authorization_number]['billed_time'])
+                            reports[authorization_number]['amount'] = billing_rate + reports[authorization_number][
+                                'amount']
                             loop_amount = billing_rate
                         elif report['billed_units']:
                             reports[authorization_number]['billed_time'] = 1
@@ -735,7 +743,7 @@ def billing_report(request):
                     rate = str(billing_rate)
 
                     if report['authorization_type'] == 'Hours':
-                        billed_time = float(report['billed_units'])/4
+                        billed_time = float(report['billed_units']) / 4
                         amount = billing_rate * float(billed_time)
                     elif report['authorization_type'] == 'Classes':
                         if billed_units:
@@ -811,14 +819,14 @@ def sip_demographic_report(request):
                     int.degree, int.eye_condition, int.eye_condition_date, int.education, int.living_arrangement, int.residence_type,
                     int.dialysis, int.stroke, int.seizure, int.heart, int.arthritis, int.high_bp, int.neuropathy, int.pain, int.asthma,
                     int.cancer, int.musculoskeletal, int.alzheimers, int.allergies, int.mental_health, int.substance_abuse, int.memory_loss,
-                    int.learning_disability, int.geriatric, int.dexterity, int.migraine, int.referred_by
+                    int.learning_disability, int.geriatric, int.dexterity, int.migraine, int.referred_by, int.hearing_loss
                     FROM lynx_sipnote ls
                     left JOIN lynx_contact as c  on c.id = ls.contact_id
                     left JOIN lynx_intake as int  on int.contact_id = c.id
                     where extract(month FROM ls.note_date) = '%s' and extract(year FROM ls.note_date) = '%s' and c.sip_client is true %s
                     order by c.last_name, c.first_name;""" % (month, year, month_string))
                 client_set = dictfetchall(cursor)
-                #TODO make sure this works with year
+                # TODO make sure this works with year
 
             filename = "Core Lynx Excel Billing - " + month + " - " + year
             response = HttpResponse(content_type='text/csv')
@@ -826,7 +834,8 @@ def sip_demographic_report(request):
 
             writer = csv.writer(response)
             writer.writerow(
-                ['Client Name', 'Age', 'Gender', 'Race/Ethnicity', 'Visual Impairment at Time of Intake', 'Major Cause of Visual Impairment',
+                ['Client Name', 'Age', 'Gender', 'Race/Ethnicity', 'Visual Impairment at Time of Intake',
+                 'Major Cause of Visual Impairment',
                  'Non-Visual Impairment', 'On-Set of Significant Vision Loss', 'Highest Level of Education Completed',
                  'Type of Living Arrangement', 'Setting of Residence', 'Source of Referral'])
 
@@ -848,6 +857,8 @@ def sip_demographic_report(request):
                     impairments += 'Arthritis, '
                 if client['high_bp']:
                     impairments += 'Hypertension, '
+                if client['hearing_loss']:
+                    impairments += 'Hearing Loss, '
                 if client['neuropathy']:
                     impairments += 'Neuropathy, '
                 if client['pain']:
@@ -891,39 +902,20 @@ def sip_demographic_report(request):
 
 
 def sip_csf_report(request):
+    q1 = ['October', 'November', 'December', 10, 11, 12, '10', '11', '12']
+    q2 = ['January', 'February', 'March', 1, 2, 3, '1', '2', '3']
+    q3 = ['April', 'May', 'June', 4, 5, 6, '4', '5', '6']
+    q4 = ['July', 'August', 'September', 7, 8, 9, '7', '8', '9']
+
     form = SipCSFReportForm()
     if request.method == 'POST':
         form = SipCSFReportForm(request.POST)
         if form.is_valid():
             data = request.POST.copy()
             month = data.get('month')
-            year = data.get('year')
-
-            wb1 = Workbook()
-            for i in range(n):
-                ws = wb1.create_sheet("run " + str(i))
-
-                # code on formatting sheet, optimization problem
+            year = data.get('fiscal_year')
 
             fiscal_months = ['10', '11', '12', '1', '2', '3', '4', '5', '6', '7', '8', '9']
-
-            COUNTIES = (("Alameda", "Alameda"), ("Alpine", "Alpine"), ("Amador", "Amador"), ("Butte", "Butte"),
-                        ("Colusa", "Colusa"), ("Calaveras", "Calaveras"), ("Contra Costa", "Contra Costa"),
-                        ("Del Norte", "Del Norte"), ("El Dorado", "El Dorado"), ("Fresno", "Fresno"),
-                        ("Glenn", "Glenn"), ("Humboldt", "Humboldt"), ("Imperial", "Imperial"), ("Inyo", "Inyo"),
-                        ("Kern", "Kern"), ("Kings", "Kings"), ("Klamath", "Klamath"), ("Lake", "Lake"),
-                        ("Lassen", "Lassen"), ("Los Angeles", "Los Angeles"), ("Madera", "Madera"), ("Marin", "Marin"),
-                        ("Mariposa", "Mariposa"), ("Mendocino", "Mendocino"), ("Merced", "Merced"), ("Modoc", "Modoc"),
-                        ("Mono", "Mono"), ("Monterey", "Monterey"), ("Napa", "Napa"), ("Nevada", "Nevada"),
-                        ("Orange", "Orange"), ("Placer", "Placer"), ("Plumas", "Plumas"), ("Riverside", "Riverside"),
-                        ("Sacramento", "Sacramento"), ("San Benito", "San Benito"), ("San Bernardino", "San Bernardino"),
-                        ("San Diego", "San Diego"), ("San Francisco", "San Francisco"), ("San Joaquin", "San Joaquin"),
-                        ("San Luis Obispo", "San Luis Obispo"), ("San Mateo", "San Mateo"),
-                        ("Santa Barbara", "Santa Barbara"), ("Santa Clara", "Santa Clara"), ("Santa Cruz", "Santa Cruz"),
-                        ("Shasta", "Shasta"), ("Sierra", "Sierra"), ("Siskiyou", "Siskiyou"),  ("Solano", "Solano"),
-                        ("Sonoma", "Sonoma"), ("Stanislaus", "Stanislaus"), ("Sutter", "Sutter"), ("Tehama", "Tehama"),
-                        ("Trinity", "Trinity"), ("Tulare", "Tulare"), ("Tuolumne", "Tuolumne"), ("Ventura", "Ventura"),
-                        ("Yolo", "Yolo"), ("Yuba", "Yuba"), ("Other/None", "Other/None"))
 
             first = True
             month_string = ''
@@ -943,26 +935,207 @@ def sip_csf_report(request):
                 month_string = " and c.id not in (" + month_string + ')'
 
             with connection.cursor() as cursor:
-                cursor.execute("""SELECT CONCAT(c.first_name, ' ', c.last_name) as name, c.id as id, int.created as date, int.age_group, int.gender, int.ethnicity,
-                    int.degree, int.eye_condition, int.eye_condition_date, int.education, int.living_arrangement, int.residence_type,
-                    int.dialysis, int.stroke, int.seizure, int.heart, int.arthritis, int.high_bp, int.neuropathy, int.pain, int.asthma,
-                    int.cancer, int.musculoskeletal, int.alzheimers, int.allergies, int.mental_health, int.substance_abuse, int.memory_loss,
-                    int.learning_disability, int.geriatric, int.dexterity, int.migraine, int.referred_by
-                    FROM lynx_sipnote ls
-                    left JOIN lynx_contact as c  on c.id = ls.contact_id
-                    left JOIN lynx_intake as int  on int.contact_id = c.id
-                    where extract(month FROM ls.note_date) = '%s' and extract(year FROM ls.note_date) = '%s' and c.sip_client is true %s
+                cursor.execute("""SELECT CONCAT(c.first_name, ' ', c.last_name) as name, c.id as id, int.age_group, 
+                int.gender, int.ethnicity, int.degree, int.eye_condition, int.eye_condition_date, int.education, 
+                int.living_arrangement, int.residence_type, ls.fiscal_year, ls.vision_screening, ls.treatment, 
+                ls.at_devices, ls.at_services, ls.orientation, ls.communications, ls.dls, ls.support, ls.advocacy, 
+                ls.counseling, ls.information, ls.services, addr.county, int.dialysis, int.stroke, int.seizure, 
+                int.heart, int.arthritis, int.high_bp, int.neuropathy, int.pain, int.asthma, int.cancer, 
+                int.musculoskeletal, int.alzheimers, int.allergies, int.mental_health, int.substance_abuse, 
+                int.memory_loss, int.learning_disability, int.geriatric, int.dexterity, int.migraine, int.hearing_loss, 
+                int.referred_by  
+                    FROM lynx_sipnote as ls
+                    left JOIN lynx_contact as c on c.id = ls.contact_id
+                    left JOIN lynx_intake as int on int.contact_id = c.id
+                    inner join lynx_address as addr on c.id= addr.contact_id
+                    where extract(month FROM ls.note_date) = '%s' and fiscal_year = '%s' and c.sip_client is true %s
                     order by c.last_name, c.first_name;""" % (month, year, month_string))
                 client_set = dictfetchall(cursor)
-                #TODO make sure this works with year
 
-            filename = "Core Lynx Excel Billing - " + month + " - " + year
+            filename = "SIP Quarterly Report - " + month + " - " + year
             response = HttpResponse(content_type='text/csv')
             response['Content-Disposition'] = 'attachment; filename="' + filename + '.csv"'
+            writer = csv.writer(response)
+            writer.writerow(["Client Name", "Fiscal Year", "Quarter",
+                             "Clinical/Functional Vision Screening/Vision Exam/Low Vision Evaluation",
+                             "Surgical or therapeutic treatment", "Received Assistive Technology Device/Aid",
+                             "Received Assistive Technology Service", "Orientation and Mobility Training",
+                             "Communication skills",
+                             "Daily living skills",
+                             "Support Service: Reader, Transportation, Personal Attendent, Support Service Providers, Interpreters",
+                             "Advocacy Training and Support Networks", "Counseling(peer, individual and group)",
+                             "Information, Referral, and Community Integration", "Other IL Services", "County",
+                             "Individuals served", "Age Group at time of application", "Gender", "Race",
+                             "Degree of Visual Impairment", "Major Cause of Visual Impairment",
+                             "Other Age-Related Impairments",
+                             "Type of Residence", "Source of Referral"])
+
+            client_ids = []
+            aggregated_data = {}
+            for client in client_set:
+                impairments = ''
+                client_id = client['id']
+                if client_id not in client_ids:
+                    client_ids.append(client_id)
+                    if client['dialysis']:
+                        impairments += 'Dialysis, '
+                    if client['stroke']:
+                        impairments += 'Stroke, '
+                    if client['seizure']:
+                        impairments += 'Seizure, '
+                    if client['heart']:
+                        impairments += 'Cardiovascular, '
+                    if client['arthritis']:
+                        impairments += 'Arthritis, '
+                    if client['high_bp']:
+                        impairments += 'Hypertension, '
+                    if client['neuropathy']:
+                        impairments += 'Neuropathy, '
+                    if client['hearing_loss']:
+                        impairments += 'Hearing Loss, '
+                    if client['pain']:
+                        impairments += 'Pain, '
+                    if client['asthma']:
+                        impairments += 'Asthma, '
+                    if client['cancer']:
+                        impairments += 'Cancer, '
+                    if client['musculoskeletal']:
+                        impairments += 'Musculoskeletal, '
+                    if client['alzheimers']:
+                        impairments += 'Alzheimers, '
+                    if client['allergies']:
+                        impairments += 'Allergies, '
+                    if client['mental_health']:
+                        impairments += 'Mental Health, '
+                    if client['substance_abuse']:
+                        impairments += 'Substance Abuse, '
+                    if client['memory_loss']:
+                        impairments += 'Memory Loss, '
+                    if client['learning_disability']:
+                        impairments += 'Learning Disability, '
+                    if client['geriatric']:
+                        impairments += 'Other Geriatric, '
+                    if client['dexterity']:
+                        impairments += 'Mobility, '
+                    if client['migraine']:
+                        impairments += 'Migraine, '
+
+                    if impairments:
+                        impairments = impairments[:-2]
+
+                    client_data = {'impairments': impairments, 'county': client['county'], 'gender': client['gender'],
+                                   'race': client['ethnicity'], 'age': client['age_group'], 'degree': client['degree'],
+                                   'cause': client['eye_condition'], 'referral': client['referred_by'],
+                                   'residence': client['residence_type'], 'name': client['name'],
+                                   'fiscal_year': client['fiscal_year']}
+                    aggregated_data[client_id] = {}
+                    aggregated_data[client_id]['client_data'] = client_data
+                    # aggregated_data[client_id]['Q1'] = {}
+                    # aggregated_data[client_id]['Q2'] = {}
+                    # aggregated_data[client_id]['Q3'] = {}
+                    # aggregated_data[client_id]['Q4'] = {}
 
 
+                note_date = client['note_date']
+                note_formatted = datetime.strptime(note_date, "%Y-%m-%d")
+                note_month = note_formatted.month
+                quarter = ''
+                if note_month in q1:
+                    quarter = 'Q1'
+                elif note_month in q2:
+                    quarter = 'Q2'
+                elif note_month in q3:
+                    quarter = 'Q3'
+                elif note_month in q4:
+                    quarter = 'Q4'
 
-            wb1.save('outfile.xlsx')
+                if quarter not in aggregated_data[client_id]:
+                    aggregated_data[client_id][quarter] = {}
+                    aggregated_data[client_id][quarter]['vision_screening'] = client['vision_screening']
+                    aggregated_data[client_id][quarter]['treatment'] = client['treatment']
+                    aggregated_data[client_id][quarter]['at_devices'] = client['at_devices']
+                    aggregated_data[client_id][quarter]['at_services'] = client['at_services']
+                    aggregated_data[client_id][quarter]['orientation'] = client['orientation']
+                    aggregated_data[client_id][quarter]['communications'] = client['communications']
+                    aggregated_data[client_id][quarter]['dls'] = client['dls']
+                    aggregated_data[client_id][quarter]['support'] = client['support']
+                    aggregated_data[client_id][quarter]['advocacy'] = client['advocacy']
+                    aggregated_data[client_id][quarter]['counseling'] = client['counseling']
+                    aggregated_data[client_id][quarter]['information'] = client['information']
+                    aggregated_data[client_id][quarter]['services'] = client['services']
+                else:
+                    aggregated_data[client_id][quarter] = {}
+                    if client['vision_screening'] == 1:
+                        aggregated_data[client_id][quarter]['vision_screening'] += 1
+                    if client['treatment'] == 1:
+                        aggregated_data[client_id][quarter]['treatment'] += 1
+                    if client['at_devices'] == 1:
+                        aggregated_data[client_id][quarter]['at_devices'] += 1
+                    if client['at_services'] == 1:
+                        aggregated_data[client_id][quarter]['at_services'] += 1
+                    if client['orientation'] == 1:
+                        aggregated_data[client_id][quarter]['orientation'] += 1
+                    if client['communications'] == 1:
+                        aggregated_data[client_id][quarter]['communications'] += 1
+                    if client['dls'] == 1:
+                        aggregated_data[client_id][quarter]['dls'] += 1
+                    if client['support'] == 1:
+                        aggregated_data[client_id][quarter]['support'] += 1
+                    if client['advocacy'] == 1:
+                        aggregated_data[client_id][quarter]['advocacy'] += 1
+                    if client['counseling'] == 1:
+                        aggregated_data[client_id][quarter]['counseling'] += 1
+                    if client['information'] == 1:
+                        aggregated_data[client_id][quarter]['information'] += 1
+                    if client['services'] == 1:
+                        aggregated_data[client_id][quarter]['services'] += 1
+
+            for key, value in aggregated_data:
+                if value['Q1']:
+                    writer.writerow([value['client_data']['name'], value['client_data']['fiscal_year'], 'Q1',
+                                     value['Q1']['vision_screening'], value['Q1']['treatment'], value['Q1']['at_devices'],
+                                     value['Q1']['at_services'], value['Q1']['orientation'], value['Q1']['communications'],
+                                     value['Q1']['dls'], value['Q1']['support'], value['Q1']['advocacy'],
+                                     value['Q1']['counseling'], value['Q1']['information'], value['Q1']['services'],
+                                     value['client_data']['county'], '-', value['client_data']['age'],
+                                     value['client_data']['gender'], value['client_data']['race'],
+                                     value['client_data']['degree'], value['client_data']['cause'],
+                                     value['client_data']['impairments'], value['client_data']['residence'],
+                                     value['client_data']['referral']])
+                if value['Q2']:
+                    writer.writerow([value['client_data']['name'], value['client_data']['fiscal_year'], 'Q2',
+                                     value['Q2']['vision_screening'], value['Q2']['treatment'], value['Q2']['at_devices'],
+                                     value['Q2']['at_services'], value['Q2']['orientation'], value['Q2']['communications'],
+                                     value['Q2']['dls'], value['Q2']['support'], value['Q2']['advocacy'],
+                                     value['Q2']['counseling'], value['Q2']['information'], value['Q2']['services'],
+                                     value['client_data']['county'], '-', value['client_data']['age'],
+                                     value['client_data']['gender'], value['client_data']['race'],
+                                     value['client_data']['degree'], value['client_data']['cause'],
+                                     value['client_data']['impairments'], value['client_data']['residence'],
+                                     value['client_data']['referral']])
+                if value['Q3']:
+                    writer.writerow([value['client_data']['name'], value['client_data']['fiscal_year'], 'Q3',
+                                     value['Q3']['vision_screening'], value['Q3']['treatment'], value['Q3']['at_devices'],
+                                     value['Q3']['at_services'], value['Q3']['orientation'], value['Q3']['communications'],
+                                     value['Q3']['dls'], value['Q3']['support'], value['Q3']['advocacy'],
+                                     value['Q3']['counseling'], value['Q3']['information'], value['Q3']['services'],
+                                     value['client_data']['county'], '-', value['client_data']['age'],
+                                     value['client_data']['gender'], value['client_data']['race'],
+                                     value['client_data']['degree'], value['client_data']['cause'],
+                                     value['client_data']['impairments'], value['client_data']['residence'],
+                                     value['client_data']['referral']])
+                if value['Q4']:
+                    writer.writerow([value['client_data']['name'], value['client_data']['fiscal_year'], 'Q4',
+                                     value['Q4']['vision_screening'], value['Q4']['treatment'], value['Q4']['at_devices'],
+                                     value['Q4']['at_services'], value['Q4']['orientation'], value['Q4']['communications'],
+                                     value['Q4']['dls'], value['Q4']['support'], value['Q4']['advocacy'],
+                                     value['Q4']['counseling'], value['Q4']['information'], value['Q4']['services'],
+                                     value['client_data']['county'], '-', value['client_data']['age'],
+                                     value['client_data']['gender'], value['client_data']['race'],
+                                     value['client_data']['degree'], value['client_data']['cause'],
+                                     value['client_data']['impairments'], value['client_data']['residence'],
+                                     value['client_data']['referral']])
+
             return response
 
     return render(request, 'lynx/billing_report.html', {'form': form})
@@ -970,13 +1143,13 @@ def sip_csf_report(request):
 
 def units_to_hours(units):
     minutes = units * 15
-    hours = minutes/60
+    hours = minutes / 60
     return hours
 
 
 def hours_to_units(hours):
     minutes = hours * 60
-    units = minutes/15
+    units = minutes / 15
     return units
 
 

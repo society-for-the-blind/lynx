@@ -155,6 +155,14 @@ class SipNoteForm(forms.ModelForm):
     client_list = Contact.objects.filter(active=1).filter(sip_client=1).order_by('last_name')
     clients = forms.ModelMultipleChoiceField(queryset=client_list)
 
+    currentYear = datetime.now().year
+    oldYear = 2000
+    highYear = currentYear + 2
+    x = range(2000, highYear)
+    years = []
+    for n in x:
+        print(n)
+    
     class Meta:
         model = SipNote
         exclude = ('created', 'modified', 'user', 'contact')

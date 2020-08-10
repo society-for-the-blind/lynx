@@ -22,6 +22,7 @@ urlpatterns = [
     path('add-volunteer/', views.add_volunteer, name='add_volunteer'),
     path('billing-report/', views.billing_report, name='billing_report'),
     path('sip-demographic-report/', views.sip_demographic_report, name='sip_demo_report'),
+    path('sip-quarterly-report/', views.sip_csf_report, name='sip_quarterly_report'),
     path('authorization/<int:pk>', views.AuthorizationDetailView.as_view(), name='authorization_detail'),
     path('client/<int:pk>', views.ContactDetailView.as_view(), name='client'),
     path('progress-report/<int:pk>/', views.ProgressReportDetailView.as_view(), name='progress_report_detail'),
