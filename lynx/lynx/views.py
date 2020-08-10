@@ -913,7 +913,8 @@ def sip_csf_report(request):
         if form.is_valid():
             data = request.POST.copy()
             month = data.get('month')
-            year = data.get('fiscal_year')
+            year = data.get('year')
+            fiscal_year = getFiscalYear(year)
 
             fiscal_months = ['10', '11', '12', '1', '2', '3', '4', '5', '6', '7', '8', '9']
 
@@ -949,10 +950,10 @@ def sip_csf_report(request):
                     left JOIN lynx_intake as int on int.contact_id = c.id
                     inner join lynx_address as addr on c.id= addr.contact_id
                     where extract(month FROM ls.note_date) = '%s' and fiscal_year = '%s' and c.sip_client is true %s
-                    order by c.last_name, c.first_name;""" % (month, year, month_string))
+                    order by c.last_name, c.first_name;""" % (month, fiscal_year, month_string))
                 client_set = dictfetchall(cursor)
 
-            filename = "SIP Quarterly Report - " + str(month) + " - " + str(year)
+            filename = "SIP Quarterly Report - " + str(month) + " - " + str(fiscal_year)
             response = HttpResponse(content_type='text/csv')
             response['Content-Disposition'] = 'attachment; filename="' + filename + '.csv"'
             writer = csv.writer(response)
@@ -1160,3 +1161,17 @@ def dictfetchall(cursor):
         dict(zip(columns, row))
         for row in cursor.fetchall()
     ]
+
+
+# This will not work past 2099 ;)
+def getFiscalYear(year):
+    year_str = str(year)
+    last_digits = year_str[-2:]
+    last_digits_int = int(last_digits)
+    year_inc = last_digits_int + 1
+    if len(year_inc) == 1:
+        fiscal_year = year_str + '-0' + year_inc
+    else:
+        fiscal_year = year_str + '-' + year_inc
+    return fiscal_year
+

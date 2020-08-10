@@ -162,7 +162,7 @@ class SipNoteForm(forms.ModelForm):
     years = []
     for n in x:
         print(n)
-    
+
     class Meta:
         model = SipNote
         exclude = ('created', 'modified', 'user', 'contact')
@@ -246,6 +246,7 @@ class SipCSFReportForm(forms.Form):
             super(SipCSFReportForm, self).__init__(*args, **kwargs)
             current_year = datetime.now().year
             self.initial['year'] = str(current_year)
+            self.fields['year'].label = "Year (Start of Fiscal Year)"
 
 
 class VolunteerForm(forms.ModelForm):
