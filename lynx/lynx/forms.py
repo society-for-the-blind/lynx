@@ -153,7 +153,7 @@ class LessonNoteForm(forms.ModelForm):
 class SipNoteForm(forms.ModelForm):
     note_date = forms.DateField(widget=forms.SelectDateWidget(empty_label="Nothing"))
     client_list = Contact.objects.filter(active=1).filter(sip_client=1).order_by('last_name')
-    clients = forms.ModelMultipleChoiceField(queryset=client_list)
+    clients = forms.ModelMultipleChoiceField(queryset=client_list, required=False)
 
     currentYear = datetime.now().year
     oldYear = 2000
