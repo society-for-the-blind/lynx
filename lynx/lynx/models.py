@@ -46,10 +46,10 @@ GENDERS = (("Female", "Female"), ("Male", "Male"), ("Non-Binary", "Non-Binary"),
            ("Gender Non-Conforming", "Gender Non-Conforming"), ("Other (in notes)", "Other (in notes)"),
            ("Prefer Not to Say", "Prefer Not to Say"), )
 
-ETHNICITIES = (("American Indian or Alaska Native", "American Indian or Alaska Native"), ("Asian", "Asian"),
-               ("Black or African American", "Black or African American"), ("Hispanic or Latino", "Hispanic or Latino"),
-               ("Native Hawaiian or Other Pacific Islander", "Native Hawaiian or Other Pacific Islander"), ("White", "White"),
-               ("Other", "Other"))
+ETHNICITIES = (("American Indian/Alaska Native", "American Indian/Alaska Native"), ("Asian", "Asian"),
+               ("Black/African American", "Black/African American"), ("Hispanic/Latino", "Hispanic/Latino"),
+               ("Native Hawaiian/Other Pacific Islander", "Native Hawaiian/Other Pacific Islander"), ("White", "White"),
+               ("Other", "Other"), ("Did Not Disclose", "Did Not Disclose"))
 
 MAILINGS = (("N/A", "N/A"), ("Print", "Print"), ("Large Print", "Large Print"), ("Braille", "Braille"),
             ("E-Mail", "E-Mail"), ("Cassette", "Cassette"))
@@ -91,21 +91,20 @@ UNITS = (("1", "15 Minutes"), ("2", "30 Minutes"), ("3", "45 Minutes"), ("4", "1
          ("26", "6 Hours 30 Minutes"), ("27", "6 Hours 45 Minutes"), ("28", "7 Hours"), ("29", "7 Hours 15 Minutes"),
          ("30", "7 Hours 30 Minutes"), ("31", "7 Hours 45 Minutes"), ("32", "8 Hours"))
 
-SIP_UNITS = ((.25, "15 Minutes"), (".5", "30 Minutes"), (".75", "45 Minutes"), ("1", "1 Hour"), ("1.25", "1 Hour 15 Minutes"),
-         ("1.5", "1 Hour 30 Minutes"), ("1.75", "1 Hour 45 Minutes"), ("2", "2 Hours"), ("2.25", "2 Hours 15 Minutes"),
-         ("2.5", "2 Hours 30 Minutes"), ("2.75", "2 Hours 45 Minutes"), ("3", "3 Hours"), ("3.25", "3 Hours 15 Minutes"),
-         ("3.5", "3 Hours 30 Minutes"), ("3.75", "3 Hours 45 Minutes"), ("4", "4 Hours"), ("4.25", "4 Hours 15 Minutes"),
-         ("4.5", "4 Hours 30 Minutes"), ("4.75", "4 Hours 45 Minutes"), ("5", "5 Hours"), ("5.25", "5 Hours 15 Minutes"),
-         ("5.5", "5 Hours 30 Minutes"), ("5.75", "5 Hours 45 Minutes"), ("6", "6 Hours"), ("6.25", "6 Hours 15 Minutes"),
-         ("6.5", "6 Hours 30 Minutes"), ("6.75", "6 Hours 45 Minutes"), ("7", "7 Hours"), ("7.25", "7 Hours 15 Minutes"),
-         ("7.5", "7 Hours 30 Minutes"), ("7.75", "7 Hours 45 Minutes"), ("8", "8 Hours"))
+SIP_UNITS = ((.25, "15 Minutes"), (.5, "30 Minutes"), (.75, "45 Minutes"), (1, "1 Hour"), (1.25, "1 Hour 15 Minutes"),
+         (1.5, "1 Hour 30 Minutes"), (1.75, "1 Hour 45 Minutes"), (2, "2 Hours"), (2.25, "2 Hours 15 Minutes"),
+         (2.5, "2 Hours 30 Minutes"), (2.75, "2 Hours 45 Minutes"), (3, "3 Hours"), (3.25, "3 Hours 15 Minutes"),
+         (3.5, "3 Hours 30 Minutes"), (3.75, "3 Hours 45 Minutes"), (4, "4 Hours"), (4.25, "4 Hours 15 Minutes"),
+         (4.5, "4 Hours 30 Minutes"), (4.75, "4 Hours 45 Minutes"), (5, "5 Hours"), (5.25, "5 Hours 15 Minutes"),
+         (5.5, "5 Hours 30 Minutes"), (5.75, "5 Hours 45 Minutes"), (6, "6 Hours"), (6.25, "6 Hours 15 Minutes"),
+         (6.5, "6 Hours 30 Minutes"), (6.75, "6 Hours 45 Minutes"), (7, "7 Hours"), (7.25, "7 Hours 15 Minutes"),
+         (7.5, "7 Hours 30 Minutes"), (7.75, "7 Hours 45 Minutes"), (8, "8 Hours"))
 
 SALUTATIONS = (("Mr.", "Mr."), ("Mrs.", "Mrs."), ("Miss", "Miss"), ("Ms.", "Ms."), ("Dr.", "Dr."), ("Prof.", "Prof."),
                ("Rev.", "Rev."))
 
-AGES = (("Less than 54", "Less than 54"), ("50-54", "50-54"), ("55-59", "55-59"), ("60-64", "60-64"),
-        ("65-69", "65-69"), ("70-74", "70-74"), ("75-79", "75-79"), ("80-84", "80-84"), ("85-89", "85-89"),
-        ("90-94", "90-94"), ("95-99", "95-99"), ("100+", "100+"))
+AGES = (("Less than 54", "Less than 54"), ("55-64", "55-54"), ("65-74", "65-74"), ("75-84", "75-84"),
+        ("84+", "84+"))
 
 TASKS = (('Visually', 'Visually'), ('Non-Visually', 'Non-Visually'), ('Both Visually and Non-Visually', 'Both Visually and Non-Visually'))
 
@@ -252,7 +251,7 @@ class Intake(models.Model):
 
     RESIDENCE = (("Private Residence", "Private Residence"), ("Community Residential", "Community Residential"),
                  ("Assisted Living", "Assisted Living"), ("Skilled Nursing Care", "Skilled Nursing Care"),
-                 ("Homeless", "Homeless"))
+                 ("Senior Living", "Senior Living"), ("Homeless", "Homeless"))
 
     PROGNOSIS = (("Stable", "Stable"), ("Diminishing", "Diminishing"))
 
@@ -346,6 +345,8 @@ class Intake(models.Model):
     memory_loss_notes = models.CharField(max_length=255, blank=True, null=True)
     learning_disability = models.BooleanField(blank=True, default=False)
     learning_disability_notes = models.CharField(max_length=255, blank=True, null=True)
+    communication = models.BooleanField(blank=True, default=False)
+    communication_notes = models.CharField(max_length=255, blank=True, null=True)
     other_medical = models.CharField(max_length=250, blank=True, null=True)
     medications = models.TextField(blank=True, null=True)
     medical_notes = models.TextField(blank=True, null=True)

@@ -355,7 +355,7 @@ class ContactDetailView(LoginRequiredMixin, DetailView):
         context['authorization_list'] = Authorization.objects.filter(contact_id=self.kwargs['pk']).order_by('-created')
         context['note_list'] = IntakeNote.objects.filter(contact_id=self.kwargs['pk']).order_by('-created')
         context['sip_list'] = SipNote.objects.filter(contact_id=self.kwargs['pk']).order_by('-note_date')
-        context['emergency_list'] = EmergencyContact.objects.filter(contact_id=self.kwargs['pk'])
+        context['emergency_list'] = EmergencyContact.objects.filter(contact_id=self.kwargs['pk']).order_by('-created')
         context['form'] = IntakeNoteForm
         return context
 
@@ -600,7 +600,7 @@ class IntakeUpdateView(LoginRequiredMixin, UpdateView):
               'geriatric_notes', 'allergies', 'mental_health', 'substance_abuse', 'substance_abuse_notes',
               'memory_loss', 'memory_loss_notes', 'learning_disability', 'learning_disability_notes', 'other_medical',
               'medications', 'medical_notes', 'hobbies', 'employment_goals', 'hired', 'employer', 'position',
-              'hire_date', 'payment_source', 'referred_by']
+              'hire_date', 'payment_source', 'referred_by', 'communication', 'communication_notes']
     template_name_suffix = '_edit'
 
     def get_form(self, form_class=None):
@@ -672,7 +672,7 @@ class SipNoteUpdateView(LoginRequiredMixin, UpdateView):
     model = SipNote
     fields = ['note', 'note_date', 'vision_screening', 'treatment', 'at_devices', 'at_services', 'independent_living',
               'orientation', 'communications', 'dls', 'support', 'advocacy', 'counseling', 'information', 'services',
-              'retreat', 'in_home', 'seminar', 'modesto', 'group', 'community']
+              'retreat', 'in_home', 'seminar', 'modesto', 'group', 'community', 'class_hours', 'fiscal_year']
     template_name_suffix = '_edit'
 
 
@@ -953,10 +953,25 @@ def sip_csf_report(request):
                     order by c.last_name, c.first_name;""" % (fiscal_year,))
                 client_set = dictfetchall(cursor)
 
-            filename = "SIP Quarterly Report - " + str(month) + " - " + str(fiscal_year)
+            filename = "SIP Quarterly Services Report - " + str(month) + " - " + str(fiscal_year)
             response = HttpResponse(content_type='text/csv')
             response['Content-Disposition'] = 'attachment; filename="' + filename + '.csv"'
             writer = csv.writer(response)
+            writer.writerow(["Program Participant", "$ Total expenditures from all sources of program funding", "Vision  Assessment (Screening/Exam/evaluation)",
+                "$ Cost of Vision Assessment", "Surgical or Therapeutic Treatment", "$ Cost of Surgical/ Therapeutic Treatment",
+                "$ Total expenditures from all sources of program funding", "Received AT Devices or Services B2", "$ Total for AT Devices",
+                "$ Total for AT Services", "Not assessed", "Assessed with improved independence", "Assessed and maintained independence",
+                "Assessed with decreased independence", "$ Total expenditures from all sources of program funding", "Received IL/A Services",
+                "Received O&M", "Received Communication Skills", "Received Daily Living Skills", "Received Advocacy training",
+                "Received Adjustment Counseling", "Received I&R", "Received Other Services", "Not assessed", "Assessed with improved independence",
+                "Assessed and maintained independence", "Assessed with decreased independence", "$ Total expenditures from all sources of program funding",
+                "Received Supportive Service", "# of Cases Assessed", "Plan not complete",
+                "Plan Completed - Reported feeling more confident in ability to maintain living situation",
+                "Plan Completed - Reported no difference in ability to maintain living situation",
+                "Plan Completed - Reported feeling less confident in ability to maintain living situation",
+                "Plan not complete", "Plan Completed - Reported an increased ability to engage in customary activities in the home and community",
+                "Plan Completed - Reported no difference in ability to engage in customary activities in the home and community",
+                "Plan Completed - Reported a decreased ability to engage in customary activities in the home and community"])
             writer.writerow(["Client Name", "Fiscal Year", "Quarter",
                              "Clinical/Functional Vision Screening/Vision Exam/Low Vision Evaluation",
                              "Surgical or therapeutic treatment", "Received Assistive Technology Device/Aid",

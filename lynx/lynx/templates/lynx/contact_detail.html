@@ -11,7 +11,7 @@
     {% if object.core_client %}Core Client, {% endif %}{% if object.careers_plus %}Careers Plus, {% endif %}
     {% if object.careers_plus_youth %}Careers Plus Youth, {% endif %}{% if object.volunteer %}Volunteer, {% endif %}
     {% if object.access_news %}Access News, {% endif %}{% if object.other_services %} {{object.other_services}} {% endif %}</p>
-<p class="tab"><input type="button" aria-label="Edit Client Information" class="btn btn-primary" onclick="location.href='/lynx/contact-edit/{{ object.id }}';" value="Edit Client Information" /></p>
+{% if not request.GET.print %}<p class="tab"><input type="button" aria-label="Edit Client Information" class="btn btn-primary" onclick="location.href='/lynx/contact-edit/{{ object.id }}';" value="Edit Client Information" /></p> {% endif %}
 <!--<p class="tab"><input type="button" aria-label="Edit Client Information" class="btn btn-primary fa fa-input" onclick="location.href='/lynx/contact-edit/{{ object.id }}';" value="&#xf044  Edit Client Information" /></p>-->
 {% for address in address_list %}
     {% if not address.bad_address and address.address_one %}
@@ -22,7 +22,7 @@
             {% if address.suite %}Apt/Suite {{ address.suite }}<br>{% endif %}
             {{ address.city }}, {{ address.state }} {{ address.zip_code }}<br>
             {{ address.county }}<br>
-            <input type="button" class="btn btn-primary" aria-label="Edit Address" onclick="location.href='/lynx/address-edit/{{ address.id }}';" value="Edit Address" />
+            {% if not request.GET.print %}<input type="button" class="btn btn-primary" aria-label="Edit Address" onclick="location.href='/lynx/address-edit/{{ address.id }}';" value="Edit Address" />{% endif %}
         </p>
         {% if address.region %}<p class="tab"><strong>SIR Region:</strong> {{ address.region }}</p>{% endif %}
         {% if address.cross_streets %}<p class="tab"><strong>Cross Streets:</strong> {{ address.cross_streets }}</p>{% endif %}
@@ -38,7 +38,7 @@
     {% if phone.active %}
         <p class="tab">
             <strong>{{ phone.phone_type }} Phone Number:</strong> {{ phone.phone }} <br>
-            <input type="button" class="btn btn-primary" aria-label="Edit Number" onclick="location.href='/lynx/phone-edit/{{ phone.id }}';" value="Edit Number" />
+            {% if not request.GET.print %}<input type="button" class="btn btn-primary" aria-label="Edit Number" onclick="location.href='/lynx/phone-edit/{{ phone.id }}';" value="Edit Number" />{% endif %}
         </p>
     {% endif %}
 {% empty %}
@@ -50,16 +50,17 @@
     {% if email.active %}
         <p class="tab">
             <strong>{{ email.email_type }} Email Address:</strong> {{ email.email }} <br>
-            <input type="button" class="btn btn-primary" aria-label="Edit Email" onclick="location.href='/lynx/email-edit/{{ email.id }}';" value="Edit Email" />
+            {% if not request.GET.print %}<input type="button" class="btn btn-primary" aria-label="Edit Email" onclick="location.href='/lynx/email-edit/{{ email.id }}';" value="Edit Email" />{% endif %}
         </p>
     {% endif %}
 {% empty %}
     <p class="tab">Sorry, no associated emails for this client</p>
 {% endfor %}
+{% if not request.GET.print %}
 <input type="button" class="btn btn-success" aria-label="Add Address" onclick="location.href='/lynx/add-address/{{ object.id }}/';" value="Add Address" />
 <input type="button" class="btn btn-success" aria-label="Add Phone Number" onclick="location.href='/lynx/add-phone/{{ object.id }}/';" value="Add Phone Number" />
 <input type="button" class="btn btn-success" aria-label="Add Email" onclick="location.href='/lynx/add-email/{{ object.id }}/';" value="Add Email" />
-
+{% endif %}
 
 <h2>Emergency Contacts</h2>
 {% for emergency in emergency_list %}
@@ -68,7 +69,7 @@
         {% if phone.active and phone.phone %}
             <p class="tab">
                 <strong>{{ phone.phone_type|default_if_none:"" }} Phone Number:</strong> {{ phone.phone }} <br>
-                <input type="button" class="btn btn-primary" aria-label="Edit Number" onclick="location.href='/lynx/phone-edit/{{ phone.id }}';" value="Edit Number" />
+                {% if not request.GET.print %}<input type="button" class="btn btn-primary" aria-label="Edit Number" onclick="location.href='/lynx/phone-edit/{{ phone.id }}';" value="Edit Number" />{% endif %}
             </p>
         {% endif %}
     {% empty %}
@@ -78,24 +79,26 @@
         {% if email.active and email.email%}
             <p class="tab">
                 <strong>{{ email.email_type|default_if_none:"" }} Email Address:</strong> {{ email.email }} <br>
-                <input type="button" class="btn btn-primary" aria-label="Edit Email" onclick="location.href='/lynx/email-edit/{{ email.id }}';" value="Edit Email" />
+                {% if not request.GET.print %}<input type="button" class="btn btn-primary" aria-label="Edit Email" onclick="location.href='/lynx/email-edit/{{ email.id }}';" value="Edit Email" />{% endif %}
             </p>
         {% endif %}
     {% empty %}
         <p class="tab">Sorry, no associated emergency emails for this client</p>
     {% endfor %}
-    <input type="button" class="btn btn-primary" aria-label="Edit Emergency Contact" onclick="location.href='/lynx/emergency-contact-edit/{{ emergency.id }}';" value="Edit Emergency Contact" />
-    <input type="button" class="btn btn-success" aria-label="Add Emergency Number" onclick="location.href='/lynx/add-emergency-phone/{{ emergency.id }}/';" value="Add Emergency Phone Number" />
-    <input type="button" class="btn btn-success" aria-label="Add Emergency Email" onclick="location.href='/lynx/add-emergency-email/{{ emergency.id }}/';" value="Add Emergency Email" />
+    {% if not request.GET.print %}
+        <input type="button" class="btn btn-primary" aria-label="Edit Emergency Contact" onclick="location.href='/lynx/emergency-contact-edit/{{ emergency.id }}';" value="Edit Emergency Contact" />
+        <input type="button" class="btn btn-success" aria-label="Add Emergency Number" onclick="location.href='/lynx/add-emergency-phone/{{ emergency.id }}/';" value="Add Emergency Phone Number" />
+        <input type="button" class="btn btn-success" aria-label="Add Emergency Email" onclick="location.href='/lynx/add-emergency-email/{{ emergency.id }}/';" value="Add Emergency Email" />
+    {% endif %}
 {% empty %}
     <p class="tab">Sorry, no emergency contacts for this client</p>
 {% endfor %}
 <br>
-<input type="button" class="btn btn-success" aria-label="Edit Emergency Contact" onclick="location.href='/lynx/add-emergency/{{ object.id }}/';" value="Add Emergency Contact" />
+{% if not request.GET.print %}<input type="button" class="btn btn-success" aria-label="Edit Emergency Contact" onclick="location.href='/lynx/add-emergency/{{ object.id }}/';" value="Add Emergency Contact" />{% endif %}
 
 <h2>Intake Information</h2>
 {% for intake in intake_list %}
-    <input type="button" class="btn btn-primary" aria-label="Edit Intake Information" onclick="location.href='/lynx/intake-edit/{{ intake.id }}';" value="Edit Intake Information" />
+    {% if not request.GET.print %}<input type="button" class="btn btn-primary" aria-label="Edit Intake Information" onclick="location.href='/lynx/intake-edit/{{ intake.id }}';" value="Edit Intake Information" />{% endif %}
     <p class="tab"><strong>Intake Date:</strong> {{intake.intake_date|date:'F j, Y'}} </p>
     <h3>Demographics</h3>
         {% if intake.birth_date %}<p class="tab"><strong>Birth Date:</strong> {{ intake.birth_date|date:'F j, Y' }}</p>{% endif %}
@@ -157,6 +160,7 @@
             {% if intake.asthma %}<li>Asthma: {{ intake.asthma_notes }} </li>{% endif %}
             {% if intake.cancer %}<li>Cancer: {{ intake.cancer_notes }} </li>{% endif %}
             {% if intake.geriatric %}<li>Other Major Geriatric Concerns: {{ intake.geriatric_notes }} </li>{% endif %}
+            {% if intake.communication %}<li>Communication Impairment(s): {{ intake.communication_notes }} </li>{% endif %}
         </ul>
         {% if intake.allergies %}<p class="tab"><strong>Allergies:</strong> {{ intake.allergies|linebreaks }}</p>{% endif %}
         {% if intake.mental_health %}<p class="tab"><strong>Mental Health:</strong> {{ intake.mental_health|linebreaks }}</p>{% endif %}
@@ -171,10 +175,10 @@
         {% if intake.employment_goals %}<p class="tab"><strong>Employment Goals:</strong> {{ intake.employment_goals|linebreaks }}</p>{% endif %}
         {% if intake.hobbies %}<p class="tab"><strong>Hobbies/Interests:</strong> {{ intake.hobbies|linebreaks }}</p>{% endif %}
         {% if intake.other %}<p class="tab"><strong>Other Notes:</strong> {{ intake.other|linebreaks }}</p>{% endif %}
-    <input type="button" class="btn btn-primary" aria-label="Edit Intake Information" onclick="location.href='/lynx/intake-edit/{{ intake.id }}';" value="Edit Intake Information" />
+    {% if not request.GET.print %}<input type="button" class="btn btn-primary" aria-label="Edit Intake Information" onclick="location.href='/lynx/intake-edit/{{ intake.id }}';" value="Edit Intake Information" />{% endif %}
 {% empty %}
     <p class="tab">Sorry, no intake information for this client</p>
-    <input type="button" class="btn btn-success" aria-label="Add Intake Information" onclick="location.href='/lynx/add-intake/{{ object.id }}/';" value="Add Intake Information" />
+    {% if not request.GET.print %}<input type="button" class="btn btn-success" aria-label="Add Intake Information" onclick="location.href='/lynx/add-intake/{{ object.id }}/';" value="Add Intake Information" />{% endif %}
 {% endfor %}
 
 {% if object.core_client %}
@@ -186,7 +190,7 @@
             <li><p class="tab">Sorry, no authorizations for this client</p></li>
         {% endfor %}
     </ul>
-    <input type="button" class="btn btn-success" aria-label="Add New Authorization" onclick="location.href='/lynx/add-authorization/{{ object.id }}/';" value="Add New Authorization" />
+    {% if not request.GET.print %}<input type="button" class="btn btn-success" aria-label="Add New Authorization" onclick="location.href='/lynx/add-authorization/{{ object.id }}/';" value="Add New Authorization" /> {% endif %}
 {% endif %}
 
 {% if object.sip_client %}
@@ -210,7 +214,7 @@
         </div>
         <div class="row">
             <div class="col-1"></div>
-            <div class="col-11"><input type="button" class="btn btn-primary" aria-label="Edit Note" onclick="location.href='/lynx/sip-note-edit/{{ sip.id }}';" value="Edit Note  {{ object.note_date|date:'F j' }}" /></div>
+            {% if not request.GET.print %}<div class="col-11"><input type="button" class="btn btn-primary" aria-label="Edit Note" onclick="location.href='/lynx/sip-note-edit/{{ sip.id }}';" value="Edit Note  {{ object.note_date|date:'F j' }}" /></div>{% endif %}
         </div>
         {% empty %}
         <div class="row">
@@ -220,19 +224,20 @@
     {% endfor %}
     </div>
 <br>
-    <input type="button" class="btn btn-success" aria-label="Add New SIP Note" onclick="location.href='/lynx/add-sip-note/{{ object.id }}/';" value="Add New SIP Note" />
+    {% if not request.GET.print %}<input type="button" class="btn btn-success" aria-label="Add New SIP Note" onclick="location.href='/lynx/add-sip-note/{{ object.id }}/';" value="Add New SIP Note" />{% endif %}
 {% endif %}
 <br>
 <h2>Notes</h2>
 {% for note in note_list %}
     <p class="tab">{{ note.created|date:'F j, Y' }}: {{ note.note|linebreaks }}<br>
-        -{{ note.user.first_name }} {{ note.user.last_name }} <input type="button" class="btn btn-primary" aria-label="Edit Note" onclick="location.href='/lynx/intake-note-edit/{{ note.id }}';" value="Edit Note" /></p>
+        -{{ note.user.first_name }} {{ note.user.last_name }} {% if not request.GET.print %}<input type="button" class="btn btn-primary" aria-label="Edit Note" onclick="location.href='/lynx/intake-note-edit/{{ note.id }}';" value="Edit Note" /></p>{% endif %}
 {% endfor %}
 {% if object.contact_notes %}
     <p class="tab">{{ object.note_date|date:'F j, Y' }}: {{ object.contact_notes|linebreaks }}<br>
-        Note By: {{ user.first_name }} {{ user.last_name }} <input type="button" class="btn btn-primary" aria-label="Edit Note" onclick="location.href='/lynx/intake-note-edit/{{ note.id }}';" value="Edit Note" /></p>
+        Note By: {{ user.first_name }} {{ user.last_name }} {% if not request.GET.print %}<input type="button" class="btn btn-primary" aria-label="Edit Note" onclick="location.href='/lynx/intake-note-edit/{{ note.id }}';" value="Edit Note" /></p>{% endif %}
 {% endif %}
 <br>
+{% if not request.GET.print %}
 <h3>New Client Note</h3>
 <form action="/lynx/client/{{ object.id }}" method="post">
     <p>These notes are for high level client information. Please don't record lesson or service information here.</p>
@@ -240,5 +245,13 @@
     {{ form.as_p }}
     <input type="submit" class="btn btn-success" value="Submit Client Note">
 </form>
+{% endif %}
+
+{% if not request.GET.print %}
+<form action="/lynx/progress-report/{{ object.id }}/" method="GET">
+  <input type="hidden" name="print" value="true" />
+  <input type="submit" value="Print View" class="btn btn-primary" />
+</form>
+{% endif %}
 
 {% endblock %}

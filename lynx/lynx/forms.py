@@ -64,6 +64,8 @@ class IntakeForm(forms.ModelForm):
         self.fields['migraine'].label = "Migraine Headache"
         self.fields['memory_loss'].label = "Memory Loss/Tension"
         self.fields['memory_loss_notes'].label = "Memory Loss/Tension Notes"
+        self.fields['communication'].label = "Communication Impairments"
+        self.fields['communication_notes'].label = "Communication Impairment Notes"
 
 
 class AddressForm(forms.ModelForm):
