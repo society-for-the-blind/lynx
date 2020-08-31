@@ -994,29 +994,29 @@ def sip_csf_services_report(request):
                         aggregated_data[client_id][quarter]['at_devices_services'] = "No"
                 else:
                     aggregated_data[client_id][quarter] = {}
-                    if int(client['vision_screening']) == 1:
+                    if int(client['vision_screening']) == '1':
                         aggregated_data[client_id][quarter]['vision_screening'] = "Yes"
-                    if int(client['independent_living']) == 1:
+                    if int(client['independent_living']) == '1':
                         aggregated_data[client_id][quarter]['independent_living'] = "Yes"
-                    if int(client['treatment']) == 1:
+                    if int(client['treatment']) == '1':
                         aggregated_data[client_id][quarter]['treatment'] = "Yes"
-                    if int(client['at_devices']) == 1 or int(client['at_services']) == 1:
+                    if int(client['at_devices']) == '1' or int(client['at_services']) == 1:
                         aggregated_data[client_id][quarter]['at_devices_services'] = "Yes"
-                    if int(client['orientation']) == 1:
+                    if int(client['orientation']) == '1':
                         aggregated_data[client_id][quarter]['orientation'] = "Yes"
-                    if int(client['communications']) == 1:
+                    if int(client['communications']) == '1':
                         aggregated_data[client_id][quarter]['communications'] = "Yes"
-                    if int(client['dls']) == 1:
+                    if int(client['dls']) == '1':
                         aggregated_data[client_id][quarter]['dls'] = "Yes"
-                    if int(client['support']) == 1:
+                    if int(client['support']) == '1':
                         aggregated_data[client_id][quarter]['support'] = "Yes"
-                    if int(client['advocacy']) == 1:
+                    if int(client['advocacy']) == '1':
                         aggregated_data[client_id][quarter]['advocacy'] = "Yes"
-                    if int(client['counseling']) == 1:
+                    if int(client['counseling']) == '1':
                         aggregated_data[client_id][quarter]['counseling'] = "Yes"
-                    if int(client['information']) == 1:
+                    if int(client['information']) == '1':
                         aggregated_data[client_id][quarter]['information'] = "Yes"
-                    if int(client['services']) == 1:
+                    if int(client['services']) == '1':
                         aggregated_data[client_id][quarter]['services'] = "Yes"
                     # aggregated_data[client_id][quarter] = {}
                     # if client['vision_screening'] == 1:
