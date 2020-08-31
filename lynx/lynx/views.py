@@ -958,9 +958,8 @@ def sip_csf_services_report(request):
                 client_id = client['id']
                 if client_id not in client_ids:
                     client_ids.append(client_id)
-                    client_name = client['name']
                     aggregated_data[client_id] = {}
-                    aggregated_data[client_id]['client_data'] = client_name
+                    aggregated_data[client_id]['client_name'] = client['name']
 
                 note_date = client['note_date']
                 note_month = note_date.month
