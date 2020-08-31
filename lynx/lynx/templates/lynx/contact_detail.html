@@ -12,6 +12,7 @@
     {% if object.careers_plus_youth %}Careers Plus Youth, {% endif %}{% if object.volunteer %}Volunteer, {% endif %}
     {% if object.access_news %}Access News, {% endif %}{% if object.other_services %} {{object.other_services}} {% endif %}</p>
 {% if not request.GET.print %}<p class="tab"><input type="button" aria-label="Edit Client Information" class="btn btn-primary" onclick="location.href='/lynx/contact-edit/{{ object.id }}';" value="Edit Client Information" /></p> {% endif %}
+<!--{% if not request.GET.print %}<p class="tab"><input type="button" aria-label="Edit Client Information" class="btn btn-primary" onclick="location.href='/lynx/contact-edit/{{ object.id }}';" value="Edit Client Information" /></p> {% endif %}-->
 <!--<p class="tab"><input type="button" aria-label="Edit Client Information" class="btn btn-primary fa fa-input" onclick="location.href='/lynx/contact-edit/{{ object.id }}';" value="&#xf044  Edit Client Information" /></p>-->
 {% for address in address_list %}
     {% if not address.bad_address and address.address_one %}
@@ -248,7 +249,7 @@
 {% endif %}
 
 {% if not request.GET.print %}
-<form action="/lynx/progress-report/{{ object.id }}/" method="GET">
+<form action="/lynx/client/{{ object.id }}/" method="GET">
   <input type="hidden" name="print" value="true" />
   <input type="submit" value="Print View" class="btn btn-primary" />
 </form>

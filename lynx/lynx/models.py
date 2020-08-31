@@ -46,10 +46,10 @@ GENDERS = (("Female", "Female"), ("Male", "Male"), ("Non-Binary", "Non-Binary"),
            ("Gender Non-Conforming", "Gender Non-Conforming"), ("Other (in notes)", "Other (in notes)"),
            ("Prefer Not to Say", "Prefer Not to Say"), )
 
-ETHNICITIES = (("American Indian/Alaska Native", "American Indian/Alaska Native"), ("Asian", "Asian"),
-               ("Black/African American", "Black/African American"), ("Hispanic/Latino", "Hispanic/Latino"),
-               ("Native Hawaiian/Other Pacific Islander", "Native Hawaiian/Other Pacific Islander"), ("White", "White"),
-               ("Other", "Other"), ("Did Not Disclose", "Did Not Disclose"))
+ETHNICITIES = (("American Indian or Alaska Native", "American Indian or Alaska Native"), ("Asian", "Asian"),
+               ("Black or African American", "Black or African American"), ("Hispanic or Latino", "Hispanic or Latino"),
+               ("Native Hawaiian or Pacific Islander", "Native Hawaiian or Pacific Islander"), ("White", "White"),
+               ("Other", "Other"), ("Did not self identify Race", "Did not self identify Race"))
 
 MAILINGS = (("N/A", "N/A"), ("Print", "Print"), ("Large Print", "Large Print"), ("Braille", "Braille"),
             ("E-Mail", "E-Mail"), ("Cassette", "Cassette"))

@@ -901,7 +901,7 @@ def sip_demographic_report(request):
     return render(request, 'lynx/billing_report.html', {'form': form})
 
 
-def sip_csf_report(request):
+def sip_csf_services_report(request):
     q1 = ['October', 'November', 'December', 10, 11, 12, '10', '11', '12']
     q2 = ['January', 'February', 'March', 1, 2, 3, '1', '2', '3']
     q3 = ['April', 'May', 'June', 4, 5, 6, '4', '5', '6']
@@ -916,38 +916,12 @@ def sip_csf_report(request):
             year = data.get('year')
             fiscal_year = getFiscalYear(year)
 
-            # fiscal_months = ['10', '11', '12', '1', '2', '3', '4', '5', '6', '7', '8', '9']
-            #
-            # first = True
-            # month_string = ''
-            # for month_no in fiscal_months:
-            #     if month_no == month:
-            #         break
-            #     else:
-            #         if first:
-            #             month_string = """SELECT client.id FROM lynx_sipnote AS sip
-            #             LEFT JOIN lynx_contact AS client ON client.id = sip.contact_id
-            #             WHERE extract(month FROM sip.note_date) = """ + month_no
-            #             first = False
-            #         else:
-            #             month_string = month_string + ' or extract(month FROM sip.note_date) = ' + month_no
-            #
-            # if len(month_string) > 0:
-            #     month_string = " and c.id not in (" + month_string + ')'
-
             with connection.cursor() as cursor:
-                cursor.execute("""SELECT CONCAT(c.first_name, ' ', c.last_name) as name, c.id as id, int.age_group, 
-                int.gender, int.ethnicity, int.degree, int.eye_condition, int.eye_condition_date, int.education, 
-                int.living_arrangement, int.residence_type, ls.fiscal_year, ls.vision_screening, ls.treatment, 
-                ls.at_devices, ls.at_services, ls.orientation, ls.communications, ls.dls, ls.support, ls.advocacy, 
-                ls.counseling, ls.information, ls.services, addr.county, int.dialysis, int.stroke, int.seizure, 
-                int.heart, int.arthritis, int.high_bp, int.neuropathy, int.pain, int.asthma, int.cancer, 
-                int.musculoskeletal, int.alzheimers, int.allergies, int.mental_health, int.substance_abuse, 
-                int.memory_loss, int.learning_disability, int.geriatric, int.dexterity, int.migraine, int.hearing_loss, 
-                int.referred_by, ls.note_date  
+                cursor.execute("""SELECT CONCAT(c.first_name, ' ', c.last_name) as name, c.id as id, ls.fiscal_year, 
+                ls.vision_screening, ls.treatment, ls.at_devices, ls.at_services, ls.orientation, ls.communications, 
+                ls.dls, ls.support, ls.advocacy, ls.counseling, ls.information, ls.services, addr.county, ls.note_date
                     FROM lynx_sipnote as ls
                     left JOIN lynx_contact as c on c.id = ls.contact_id
-                    left JOIN lynx_intake as int on int.contact_id = c.id
                     inner join lynx_address as addr on c.id= addr.contact_id
                     where fiscal_year = '%s' and c.sip_client is true
                     order by c.last_name, c.first_name;""" % (fiscal_year,))
@@ -972,88 +946,18 @@ def sip_csf_report(request):
                 "Plan not complete", "Plan Completed - Reported an increased ability to engage in customary activities in the home and community",
                 "Plan Completed - Reported no difference in ability to engage in customary activities in the home and community",
                 "Plan Completed - Reported a decreased ability to engage in customary activities in the home and community"])
-            writer.writerow(["Client Name", "Fiscal Year", "Quarter",
-                             "Clinical/Functional Vision Screening/Vision Exam/Low Vision Evaluation",
-                             "Surgical or therapeutic treatment", "Received Assistive Technology Device/Aid",
-                             "Received Assistive Technology Service", "Orientation and Mobility Training",
-                             "Communication skills",
-                             "Daily living skills",
-                             "Support Service: Reader, Transportation, Personal Attendent, Support Service Providers, Interpreters",
-                             "Advocacy Training and Support Networks", "Counseling(peer, individual and group)",
-                             "Information, Referral, and Community Integration", "Other IL Services", "County",
-                             "Individuals served", "Age Group at time of application", "Gender", "Race",
-                             "Degree of Visual Impairment", "Major Cause of Visual Impairment",
-                             "Other Age-Related Impairments",
-                             "Type of Residence", "Source of Referral"])
 
             client_ids = []
             aggregated_data = {}
             for client in client_set:
-                impairments = ''
                 client_id = client['id']
                 if client_id not in client_ids:
                     client_ids.append(client_id)
-                    if client['dialysis']:
-                        impairments += 'Dialysis, '
-                    if client['stroke']:
-                        impairments += 'Stroke, '
-                    if client['seizure']:
-                        impairments += 'Seizure, '
-                    if client['heart']:
-                        impairments += 'Cardiovascular, '
-                    if client['arthritis']:
-                        impairments += 'Arthritis, '
-                    if client['high_bp']:
-                        impairments += 'Hypertension, '
-                    if client['neuropathy']:
-                        impairments += 'Neuropathy, '
-                    if client['hearing_loss']:
-                        impairments += 'Hearing Loss, '
-                    if client['pain']:
-                        impairments += 'Pain, '
-                    if client['asthma']:
-                        impairments += 'Asthma, '
-                    if client['cancer']:
-                        impairments += 'Cancer, '
-                    if client['musculoskeletal']:
-                        impairments += 'Musculoskeletal, '
-                    if client['alzheimers']:
-                        impairments += 'Alzheimers, '
-                    if client['allergies']:
-                        impairments += 'Allergies, '
-                    if client['mental_health']:
-                        impairments += 'Mental Health, '
-                    if client['substance_abuse']:
-                        impairments += 'Substance Abuse, '
-                    if client['memory_loss']:
-                        impairments += 'Memory Loss, '
-                    if client['learning_disability']:
-                        impairments += 'Learning Disability, '
-                    if client['geriatric']:
-                        impairments += 'Other Geriatric, '
-                    if client['dexterity']:
-                        impairments += 'Mobility, '
-                    if client['migraine']:
-                        impairments += 'Migraine, '
-
-                    if impairments:
-                        impairments = impairments[:-2]
-
-                    client_data = {'impairments': impairments, 'county': client['county'], 'gender': client['gender'],
-                                   'race': client['ethnicity'], 'age': client['age_group'], 'degree': client['degree'],
-                                   'cause': client['eye_condition'], 'referral': client['referred_by'],
-                                   'residence': client['residence_type'], 'name': client['name'],
-                                   'fiscal_year': client['fiscal_year']}
+                    client_name = client['name']
                     aggregated_data[client_id] = {}
-                    aggregated_data[client_id]['client_data'] = client_data
-                    # aggregated_data[client_id]['Q1'] = {}
-                    # aggregated_data[client_id]['Q2'] = {}
-                    # aggregated_data[client_id]['Q3'] = {}
-                    # aggregated_data[client_id]['Q4'] = {}
-
+                    aggregated_data[client_id]['client_data'] = client_name
 
                 note_date = client['note_date']
-                # note_formatted = datetime.strptime(note_date, "%Y-%m-%d")
                 note_month = note_date.month
                 quarter = ''
                 if note_month in q1:
@@ -1067,94 +971,206 @@ def sip_csf_report(request):
 
                 if quarter not in aggregated_data[client_id]:
                     aggregated_data[client_id][quarter] = {}
-                    aggregated_data[client_id][quarter]['vision_screening'] = int(client['vision_screening'])
-                    aggregated_data[client_id][quarter]['treatment'] = int(client['treatment'])
-                    aggregated_data[client_id][quarter]['at_devices'] = int(client['at_devices'])
-                    aggregated_data[client_id][quarter]['at_services'] = int(client['at_services'])
-                    aggregated_data[client_id][quarter]['orientation'] = int(client['orientation'])
-                    aggregated_data[client_id][quarter]['communications'] = int(client['communications'])
-                    aggregated_data[client_id][quarter]['dls'] = int(client['dls'])
-                    aggregated_data[client_id][quarter]['support'] = int(client['support'])
-                    aggregated_data[client_id][quarter]['advocacy'] = int(client['advocacy'])
-                    aggregated_data[client_id][quarter]['counseling'] = int(client['counseling'])
-                    aggregated_data[client_id][quarter]['information'] = int(client['information'])
-                    aggregated_data[client_id][quarter]['services'] = int(client['services'])
+                    aggregated_data[client_id][quarter]['independent_living'] = booleanTransform(int(client['independent_living']))
+                    aggregated_data[client_id][quarter]['vision_screening'] = booleanTransform(int(client['vision_screening']))
+                    aggregated_data[client_id][quarter]['treatment'] = booleanTransform(int(client['treatment']))
+                    aggregated_data[client_id][quarter]['at_devices'] = booleanTransform(int(client['at_devices']))
+                    aggregated_data[client_id][quarter]['at_services'] = booleanTransform(int(client['at_services']))
+                    aggregated_data[client_id][quarter]['orientation'] = booleanTransform(int(client['orientation']))
+                    aggregated_data[client_id][quarter]['communications'] = booleanTransform(int(client['communications']))
+                    aggregated_data[client_id][quarter]['dls'] = booleanTransform(int(client['dls']))
+                    aggregated_data[client_id][quarter]['support'] = booleanTransform(int(client['support']))
+                    aggregated_data[client_id][quarter]['advocacy'] = booleanTransform(int(client['advocacy']))
+                    aggregated_data[client_id][quarter]['counseling'] = booleanTransform(int(client['counseling']))
+                    aggregated_data[client_id][quarter]['information'] = booleanTransform(int(client['information']))
+                    aggregated_data[client_id][quarter]['services'] = booleanTransform(int(client['services']))
+                    if aggregated_data[client_id][quarter]['at_services'] == "Yes" or aggregated_data[client_id][quarter]['at_devices'] == "Yes":
+                        aggregated_data[client_id][quarter]['at_devices_services'] = "Yes"
+                    else:
+                        aggregated_data[client_id][quarter]['at_devices_services'] = "No"
                 else:
+                    aggregated_data[client_id][quarter] = {}
+                    if int(client['vision_screening']) == 1:
+                        aggregated_data[client_id][quarter]['vision_screening'] = "Yes"
+                    if int(client['independent_living']) == 1:
+                        aggregated_data[client_id][quarter]['independent_living'] = "Yes"
+                    if int(client['treatment']) == 1:
+                        aggregated_data[client_id][quarter]['treatment'] = "Yes"
+                    if int(client['at_devices']) == 1 or int(client['at_services']) == 1:
+                        aggregated_data[client_id][quarter]['at_devices_services'] = "Yes"
+                    if int(client['orientation']) == 1:
+                        aggregated_data[client_id][quarter]['orientation'] = "Yes"
+                    if int(client['communications']) == 1:
+                        aggregated_data[client_id][quarter]['communications'] = "Yes"
+                    if int(client['dls']) == 1:
+                        aggregated_data[client_id][quarter]['dls'] = "Yes"
+                    if int(client['support']) == 1:
+                        aggregated_data[client_id][quarter]['support'] = "Yes"
+                    if int(client['advocacy']) == 1:
+                        aggregated_data[client_id][quarter]['advocacy'] = "Yes"
+                    if int(client['counseling']) == 1:
+                        aggregated_data[client_id][quarter]['counseling'] = "Yes"
+                    if int(client['information']) == 1:
+                        aggregated_data[client_id][quarter]['information'] = "Yes"
+                    if int(client['services']) == 1:
+                        aggregated_data[client_id][quarter]['services'] = "Yes"
                     # aggregated_data[client_id][quarter] = {}
-                    if client['vision_screening'] == 1:
-                        aggregated_data[client_id][quarter]['vision_screening'] += 1
-                    if client['treatment'] == 1:
-                        aggregated_data[client_id][quarter]['treatment'] += 1
-                    if client['at_devices'] == 1:
-                        aggregated_data[client_id][quarter]['at_devices'] += 1
-                    if client['at_services'] == 1:
-                        aggregated_data[client_id][quarter]['at_services'] += 1
-                    if client['orientation'] == 1:
-                        aggregated_data[client_id][quarter]['orientation'] += 1
-                    if client['communications'] == 1:
-                        aggregated_data[client_id][quarter]['communications'] += 1
-                    if client['dls'] == 1:
-                        aggregated_data[client_id][quarter]['dls'] += 1
-                    if client['support'] == 1:
-                        aggregated_data[client_id][quarter]['support'] += 1
-                    if client['advocacy'] == 1:
-                        aggregated_data[client_id][quarter]['advocacy'] += 1
-                    if client['counseling'] == 1:
-                        aggregated_data[client_id][quarter]['counseling'] += 1
-                    if client['information'] == 1:
-                        aggregated_data[client_id][quarter]['information'] += 1
-                    if client['services'] == 1:
-                        aggregated_data[client_id][quarter]['services'] += 1
+                    # if client['vision_screening'] == 1:
+                    #     aggregated_data[client_id][quarter]['vision_screening'] += 1
+                    # if client['treatment'] == 1:
+                    #     aggregated_data[client_id][quarter]['treatment'] += 1
+                    # if client['at_devices'] == 1:
+                    #     aggregated_data[client_id][quarter]['at_devices'] += 1
+                    # if client['at_services'] == 1:
+                    #     aggregated_data[client_id][quarter]['at_services'] += 1
+                    # if client['orientation'] == 1:
+                    #     aggregated_data[client_id][quarter]['orientation'] += 1
+                    # if client['communications'] == 1:
+                    #     aggregated_data[client_id][quarter]['communications'] += 1
+                    # if client['dls'] == 1:
+                    #     aggregated_data[client_id][quarter]['dls'] += 1
+                    # if client['support'] == 1:
+                    #     aggregated_data[client_id][quarter]['support'] += 1
+                    # if client['advocacy'] == 1:
+                    #     aggregated_data[client_id][quarter]['advocacy'] += 1
+                    # if client['counseling'] == 1:
+                    #     aggregated_data[client_id][quarter]['counseling'] += 1
+                    # if client['information'] == 1:
+                    #     aggregated_data[client_id][quarter]['information'] += 1
+                    # if client['services'] == 1:
+                    #     aggregated_data[client_id][quarter]['services'] += 1
 
             for key, value in aggregated_data.items():
+                writer.writerow([value['client_name'], "0", "", "", "", "", "",
+                                 value['Q1']['at_devices_services'], "", "", "", "", "", "", "",
+                                 value['Q1']['independent_living'], value['Q1']['orientation'],
+                                 value['Q1']['communications'], value['Q1']['dls'], value['Q1']['advocacy'],
+                                 value['Q1']['counseling'], value['Q1']['information'], value['Q1']['services'],
+                                 "", "", "", "", "", value['Q1']['support'], "", "", "", "", "", "", "", "", ""])
                 if 'Q1' in value:
-                    writer.writerow([value['client_data']['name'], value['client_data']['fiscal_year'], 'Q1',
-                                     value['Q1']['vision_screening'], value['Q1']['treatment'], value['Q1']['at_devices'],
-                                     value['Q1']['at_services'], value['Q1']['orientation'], value['Q1']['communications'],
-                                     value['Q1']['dls'], value['Q1']['support'], value['Q1']['advocacy'],
+                    writer.writerow([value['client_name'], "0", "", "", "", "", "",
+                                     value['Q1']['at_devices_services'], "", "", "", "", "", "", "",
+                                     value['Q1']['independent_living'], value['Q1']['orientation'],
+                                     value['Q1']['communications'], value['Q1']['dls'], value['Q1']['advocacy'],
                                      value['Q1']['counseling'], value['Q1']['information'], value['Q1']['services'],
-                                     value['client_data']['county'], '-', value['client_data']['age'],
-                                     value['client_data']['gender'], value['client_data']['race'],
-                                     value['client_data']['degree'], value['client_data']['cause'],
-                                     value['client_data']['impairments'], value['client_data']['residence'],
-                                     value['client_data']['referral']])
+                                     "", "", "", "", "", value['Q1']['support'], "", "", "", "", "", "", "", "", ""])
                 if 'Q2' in value:
-                    writer.writerow([value['client_data']['name'], value['client_data']['fiscal_year'], 'Q2',
-                                     value['Q2']['vision_screening'], value['Q2']['treatment'], value['Q2']['at_devices'],
-                                     value['Q2']['at_services'], value['Q2']['orientation'], value['Q2']['communications'],
-                                     value['Q2']['dls'], value['Q2']['support'], value['Q2']['advocacy'],
+                    writer.writerow([value['client_name'], "0", "", "", "", "", "",
+                                     value['Q2']['at_devices_services'], "", "", "", "", "", "", "",
+                                     value['Q2']['independent_living'], value['Q2']['orientation'],
+                                     value['Q2']['communications'], value['Q2']['dls'], value['Q2']['advocacy'],
                                      value['Q2']['counseling'], value['Q2']['information'], value['Q2']['services'],
-                                     value['client_data']['county'], '-', value['client_data']['age'],
-                                     value['client_data']['gender'], value['client_data']['race'],
-                                     value['client_data']['degree'], value['client_data']['cause'],
-                                     value['client_data']['impairments'], value['client_data']['residence'],
-                                     value['client_data']['referral']])
+                                     "", "", "", "", "", value['Q2']['support'], "", "", "", "", "", "", "", "", ""])
                 if 'Q3' in value:
-                    writer.writerow([value['client_data']['name'], value['client_data']['fiscal_year'], 'Q3',
-                                     value['Q3']['vision_screening'], value['Q3']['treatment'], value['Q3']['at_devices'],
-                                     value['Q3']['at_services'], value['Q3']['orientation'], value['Q3']['communications'],
-                                     value['Q3']['dls'], value['Q3']['support'], value['Q3']['advocacy'],
+                    writer.writerow([value['client_name'], "0", "", "", "", "", "",
+                                     value['Q3']['at_devices_services'], "", "", "", "", "", "", "",
+                                     value['Q3']['independent_living'], value['Q3']['orientation'],
+                                     value['Q3']['communications'], value['Q3']['dls'], value['Q3']['advocacy'],
                                      value['Q3']['counseling'], value['Q3']['information'], value['Q3']['services'],
-                                     value['client_data']['county'], '-', value['client_data']['age'],
-                                     value['client_data']['gender'], value['client_data']['race'],
-                                     value['client_data']['degree'], value['client_data']['cause'],
-                                     value['client_data']['impairments'], value['client_data']['residence'],
-                                     value['client_data']['referral']])
+                                     "", "", "", "", "", value['Q3']['support'], "", "", "", "", "", "", "", "", ""])
                 if 'Q4' in value:
-                    writer.writerow([value['client_data']['name'], value['client_data']['fiscal_year'], 'Q4',
-                                     value['Q4']['vision_screening'], value['Q4']['treatment'], value['Q4']['at_devices'],
-                                     value['Q4']['at_services'], value['Q4']['orientation'], value['Q4']['communications'],
-                                     value['Q4']['dls'], value['Q4']['support'], value['Q4']['advocacy'],
+                    writer.writerow([value['client_name'], "0", "", "", "", "", "",
+                                     value['Q4']['at_devices_services'], "", "", "", "", "", "", "",
+                                     value['Q4']['independent_living'], value['Q4']['orientation'],
+                                     value['Q4']['communications'], value['Q4']['dls'], value['Q4']['advocacy'],
                                      value['Q4']['counseling'], value['Q4']['information'], value['Q4']['services'],
-                                     value['client_data']['county'], '-', value['client_data']['age'],
-                                     value['client_data']['gender'], value['client_data']['race'],
-                                     value['client_data']['degree'], value['client_data']['cause'],
-                                     value['client_data']['impairments'], value['client_data']['residence'],
-                                     value['client_data']['referral']])
+                                     "", "", "", "", "", value['Q4']['support'], "", "", "", "", "", "", "", "", ""])
 
             return response
 
-    return render(request, 'lynx/billing_report.html', {'form': form})
+    return render(request, 'lynx/sip_quarterly_report.html', {'form': form})
+
+
+def sip_csf_demographic_report(request):
+    form = SipCSFReportForm()
+    if request.method == 'POST':
+        form = SipCSFReportForm(request.POST)
+        if form.is_valid():
+            data = request.POST.copy()
+            month = data.get('month')
+            year = data.get('year')
+            fiscal_year = getFiscalYear(year)
+
+            with connection.cursor() as cursor:
+                cursor.execute("""SELECT CONCAT(c.first_name, ' ', c.last_name) as name, c.id as id, int.age_group, 
+                int.gender, int.ethnicity, int.degree, int.eye_condition, int.eye_condition_date, int.education, 
+                int.living_arrangement, int.residence_type, addr.county, int.dialysis, int.stroke, int.seizure, 
+                int.heart, int.arthritis, int.high_bp, int.neuropathy, int.pain, int.asthma, int.cancer, 
+                int.musculoskeletal, int.alzheimers, int.allergies, int.mental_health, int.substance_abuse, 
+                int.memory_loss, int.learning_disability, int.geriatric, int.dexterity, int.migraine, int.hearing_loss, 
+                int.referred_by, ls.note_date, int.communication, int.other_ethnicity
+                    FROM lynx_sipnote as ls
+                    left JOIN lynx_contact as c on c.id = ls.contact_id
+                    left JOIN lynx_intake as int on int.contact_id = c.id
+                    inner join lynx_address as addr on c.id= addr.contact_id
+                    where fiscal_year = '%s' and c.sip_client is true
+                    order by c.last_name, c.first_name;""" % (fiscal_year,))
+                client_set = dictfetchall(cursor)
+
+            filename = "SIP Quarterly Demographic Report - " + str(month) + " - " + str(fiscal_year)
+            response = HttpResponse(content_type='text/csv')
+            response['Content-Disposition'] = 'attachment; filename="' + filename + '.csv"'
+            writer = csv.writer(response)
+            writer.writerow(["Program Participant", "Individuals Served", "Age at Application", "Gender", "Race",
+                                  "Ethnicity", "Degree of Visual Impairment", "Major Cause of Visual Impairment",
+                                  "Hearing Impairment", "Mobility Impairment", "Communication Impairment",
+                                  "Cognitive or Intellectual Impairment", "Mental Health Impairment", "Other Impairment",
+                                  "Type of Residence", "Source of Referral County"])
+
+            client_ids = []
+            for client in client_set:
+                client_id = client['id']
+                if client_id not in client_ids:
+                    client_ids.append(client_id)
+
+                    # Translate impairments into the categories asked for
+                    client['hearing_impairment'] = 'No'
+                    client['mobility_impairment'] = 'No'
+                    client['communication_impairment'] = 'No'
+                    client['cognition_impairment'] = 'No'
+                    client['mental_impairment'] = 'No'
+                    client['other_impairment'] = 'No'
+                    if client['hearing_loss']:
+                        client['hearing_impairment'] = 'Yes'
+                    if client['communication']:
+                        client['communication_impairment'] = 'Yes'
+                    if client['dialysis'] or client['migraine'] or client['geriatric'] or client['allergies'] or client['cancer'] or client['asthma'] or client['pain'] or client['high_bp'] or client['heart'] or client['stroke'] or client['seizure']:
+                        client['other_impairment'] = 'Yes'
+                    if client['arthritis'] or client['dexterity'] or client['neuropathy'] or client['musculoskeletal']:
+                        client['mobility_impairment'] = 'Yes'
+                    if client['alzheimers'] or client['memory_loss'] or client['learning_disability']:
+                        client['cognition_impairment'] = 'Yes'
+                    if client['mental_health'] or client['substance_abuse']:
+                        client['mental_impairment'] = 'Yes'
+
+                    # Distill gender options into the three asked for
+                    if client["gender"] != 'Male' and client["gender"] != 'Female':
+                        client["gender"] = "Did Not Self-Identify Gender"
+
+                    # Sort out race/ethnicity
+                    client["hispanic"] = "No"
+                    hispanic = False
+                    if client["ethnicity"] == "Hispanic or Latino" or client["other_ethnicity"] == "Hispanic or Latino":
+                        client["hispanic"] = "Yes"
+                        hispanic = True
+                    if client["other_ethnicity"] and not hispanic:
+                        client["race"] = "2 or More Races"
+                    elif client["ethnicity"] == "Other":
+                        client["race"] = "Did not self identify Race"
+                    else:
+                        client["race"] = client["ethnicity"]
+
+                    # Write demographic data to demo csv
+                    writer.writerow(
+                        [client["name"], "Individuals Served", client['age_group'], client["gender"], client["race"],
+                         client["hispanic"], client['degree'], client['eye_condition'], client['hearing_impairment'],
+                         client['mobility_impairment'], client['communication_impairment'],
+                         client['cognition_impairment'], client['mental_impairment'], client['other_impairment'],
+                         client['residence_type'], client['county']])
+
+            return response
+
+    return render(request, 'lynx/sip_quarterly_report.html', {'form': form})
 
 
 def units_to_hours(units):
@@ -1190,4 +1206,15 @@ def getFiscalYear(year):
     else:
         fiscal_year = year_str + '-' + year_inc
     return fiscal_year
+
+
+def booleanTransform(var):
+    if var == 0:
+        value = "No"
+    elif var == 1:
+        value = "Yes"
+    else:
+        value = None
+
+    return value
 
