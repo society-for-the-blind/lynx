@@ -936,7 +936,6 @@ def sip_csf_services_report(request):
             response = HttpResponse(content_type='text/csv')
             response['Content-Disposition'] = 'attachment; filename="' + filename + '.csv"'
             writer = csv.writer(response)
-            writer.writerow([fiscal_year])
             writer.writerow(["Program Participant", "$ Total expenditures from all sources of program funding", "Vision  Assessment (Screening/Exam/evaluation)",
                 "$ Cost of Vision Assessment", "Surgical or Therapeutic Treatment", "$ Cost of Surgical/ Therapeutic Treatment",
                 "$ Total expenditures from all sources of program funding", "Received AT Devices or Services B2", "$ Total for AT Devices",
