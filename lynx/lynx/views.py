@@ -975,19 +975,19 @@ def sip_csf_services_report(request):
 
                 if quarter not in aggregated_data[client_id]:
                     aggregated_data[client_id][quarter] = {}
-                    aggregated_data[client_id][quarter]['independent_living'] = booleanTransform(int(client['independent_living']))
-                    aggregated_data[client_id][quarter]['vision_screening'] = booleanTransform(int(client['vision_screening']))
-                    aggregated_data[client_id][quarter]['treatment'] = booleanTransform(int(client['treatment']))
-                    aggregated_data[client_id][quarter]['at_devices'] = booleanTransform(int(client['at_devices']))
-                    aggregated_data[client_id][quarter]['at_services'] = booleanTransform(int(client['at_services']))
-                    aggregated_data[client_id][quarter]['orientation'] = booleanTransform(int(client['orientation']))
-                    aggregated_data[client_id][quarter]['communications'] = booleanTransform(int(client['communications']))
-                    aggregated_data[client_id][quarter]['dls'] = booleanTransform(int(client['dls']))
-                    aggregated_data[client_id][quarter]['support'] = booleanTransform(int(client['support']))
-                    aggregated_data[client_id][quarter]['advocacy'] = booleanTransform(int(client['advocacy']))
-                    aggregated_data[client_id][quarter]['counseling'] = booleanTransform(int(client['counseling']))
-                    aggregated_data[client_id][quarter]['information'] = booleanTransform(int(client['information']))
-                    aggregated_data[client_id][quarter]['services'] = booleanTransform(int(client['services']))
+                    aggregated_data[client_id][quarter]['independent_living'] = booleanTransform(client['independent_living'])
+                    aggregated_data[client_id][quarter]['vision_screening'] = booleanTransform(client['vision_screening'])
+                    aggregated_data[client_id][quarter]['treatment'] = booleanTransform(client['treatment'])
+                    aggregated_data[client_id][quarter]['at_devices'] = booleanTransform(client['at_devices'])
+                    aggregated_data[client_id][quarter]['at_services'] = booleanTransform(client['at_services'])
+                    aggregated_data[client_id][quarter]['orientation'] = booleanTransform(client['orientation'])
+                    aggregated_data[client_id][quarter]['communications'] = booleanTransform(client['communications'])
+                    aggregated_data[client_id][quarter]['dls'] = booleanTransform(client['dls'])
+                    aggregated_data[client_id][quarter]['support'] = booleanTransform(client['support'])
+                    aggregated_data[client_id][quarter]['advocacy'] = booleanTransform(client['advocacy'])
+                    aggregated_data[client_id][quarter]['counseling'] = booleanTransform(client['counseling'])
+                    aggregated_data[client_id][quarter]['information'] = booleanTransform(client['information'])
+                    aggregated_data[client_id][quarter]['services'] = booleanTransform(client['services'])
                     if aggregated_data[client_id][quarter]['at_services'] == "Yes" or aggregated_data[client_id][quarter]['at_devices'] == "Yes":
                         aggregated_data[client_id][quarter]['at_devices_services'] = "Yes"
                     else:
@@ -1213,12 +1213,10 @@ def getFiscalYear(year):
 
 
 def booleanTransform(var):
-    if var == 0:
-        value = "No"
-    elif var == 1:
+    if var == 1 or var == '1':
         value = "Yes"
     else:
-        value = None
+        value = "No"
 
     return value
 
