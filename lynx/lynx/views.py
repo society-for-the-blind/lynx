@@ -923,7 +923,8 @@ def sip_csf_services_report(request):
             with connection.cursor() as cursor:
                 cursor.execute("""SELECT CONCAT(c.first_name, ' ', c.last_name) as name, c.id as id, ls.fiscal_year, 
                 ls.vision_screening, ls.treatment, ls.at_devices, ls.at_services, ls.orientation, ls.communications, 
-                ls.dls, ls.support, ls.advocacy, ls.counseling, ls.information, ls.services, addr.county, ls.note_date
+                ls.dls, ls.support, ls.advocacy, ls.counseling, ls.information, ls.services, addr.county, ls.note_date,
+                ls.independent_living
                     FROM lynx_sipnote as ls
                     left JOIN lynx_contact as c on c.id = ls.contact_id
                     inner join lynx_address as addr on c.id= addr.contact_id
