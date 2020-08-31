@@ -901,6 +901,10 @@ def sip_demographic_report(request):
     return render(request, 'lynx/billing_report.html', {'form': form})
 
 
+def sip_quarterly_report(request):
+    form = SipCSFReportForm()
+    return render(request, 'lynx/sip_quarterly_report.html', {'form': form})
+
 def sip_csf_services_report(request):
     q1 = ['October', 'November', 'December', 10, 11, 12, '10', '11', '12']
     q2 = ['January', 'February', 'March', 1, 2, 3, '1', '2', '3']
