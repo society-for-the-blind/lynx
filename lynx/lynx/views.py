@@ -975,7 +975,8 @@ def sip_csf_services_report(request):
 
                 if quarter not in aggregated_data[client_id]:
                     aggregated_data[client_id][quarter] = {}
-                    aggregated_data[client_id][quarter]['independent_living'] = booleanTransform(None)
+                    testVar= booleanTransform(None)
+                    aggregated_data[client_id][quarter]['independent_living'] = booleanTransform(note['independent_living'])
                     aggregated_data[client_id][quarter]['vision_screening'] = booleanTransform(note['vision_screening'])
                     aggregated_data[client_id][quarter]['treatment'] = booleanTransform(note['treatment'])
                     aggregated_data[client_id][quarter]['at_devices'] = booleanTransform(note['at_devices'])
