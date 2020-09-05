@@ -975,7 +975,6 @@ def sip_csf_services_report(request):
 
                 if quarter not in aggregated_data[client_id]:
                     aggregated_data[client_id][quarter] = {}
-                    testVar= booleanTransform(None)
                     aggregated_data[client_id][quarter]['independent_living'] = booleanTransform(note['independent_living'])
                     aggregated_data[client_id][quarter]['vision_screening'] = booleanTransform(note['vision_screening'])
                     aggregated_data[client_id][quarter]['treatment'] = booleanTransform(note['treatment'])
@@ -1020,12 +1019,6 @@ def sip_csf_services_report(request):
                         aggregated_data[client_id][quarter]['services'] = "Yes"
 
             for key, value in aggregated_data.items():
-                writer.writerow([value['client_name'], "0", "", "", "", "", "",
-                                 value['Q1']['at_devices_services'], "", "", "", "", "", "", "",
-                                 value['Q1']['independent_living'], value['Q1']['orientation'],
-                                 value['Q1']['communications'], value['Q1']['dls'], value['Q1']['advocacy'],
-                                 value['Q1']['counseling'], value['Q1']['information'], value['Q1']['services'],
-                                 "", "", "", "", "", value['Q1']['support'], "", "", "", "", "", "", "", "", ""])
                 if 'Q1' in value:
                     writer.writerow([value['client_name'], "0", "", "", "", "", "",
                                      value['Q1']['at_devices_services'], "", "", "", "", "", "", "",
