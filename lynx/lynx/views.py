@@ -1007,29 +1007,29 @@ def sip_csf_services_report(request):
                         aggregated_data[client_id][quarter]['at_devices_services'] = "No"
                 else:
                     aggregated_data[client_id][quarter] = {}
-                    if int(note['vision_screening']) == '1':
+                    if int(note['vision_screening']) == 1:
                         aggregated_data[client_id][quarter]['vision_screening'] = "Yes"
-                    if int(note['independent_living']) == '1':
+                    if int(note['independent_living']) == 1:
                         aggregated_data[client_id][quarter]['independent_living'] = "Yes"
-                    if int(note['treatment']) == '1':
+                    if int(note['treatment']) == 1:
                         aggregated_data[client_id][quarter]['treatment'] = "Yes"
-                    if int(note['at_devices']) == '1' or int(note['at_services']) == 1:
+                    if int(note['at_devices']) == 1 or int(note['at_services']) == 1:
                         aggregated_data[client_id][quarter]['at_devices_services'] = "Yes"
-                    if int(note['orientation']) == '1':
+                    if int(note['orientation']) == 1:
                         aggregated_data[client_id][quarter]['orientation'] = "Yes"
-                    if int(note['communications']) == '1':
+                    if int(note['communications']) == 1:
                         aggregated_data[client_id][quarter]['communications'] = "Yes"
-                    if int(note['dls']) == '1':
+                    if int(note['dls']) == 1:
                         aggregated_data[client_id][quarter]['dls'] = "Yes"
-                    if int(note['support']) == '1':
+                    if int(note['support']) == 1:
                         aggregated_data[client_id][quarter]['support'] = "Yes"
-                    if int(note['advocacy']) == '1':
+                    if int(note['advocacy']) == 1:
                         aggregated_data[client_id][quarter]['advocacy'] = "Yes"
-                    if int(note['counseling']) == '1':
+                    if int(note['counseling']) == 1:
                         aggregated_data[client_id][quarter]['counseling'] = "Yes"
-                    if int(note['information']) == '1':
+                    if int(note['information']) == 1:
                         aggregated_data[client_id][quarter]['information'] = "Yes"
-                    if int(note['services']) == '1':
+                    if int(note['services']) == 1:
                         aggregated_data[client_id][quarter]['services'] = "Yes"
 
             for key, value in aggregated_data.items():
