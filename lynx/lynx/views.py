@@ -907,9 +907,9 @@ def sip_quarterly_report(request):
 
 def sip_csf_services_report(request):
     q1 = ['October', 'November', 'December', 10, 11, 12, '10', '11', '12']
-    q2 = ['January', 'February', 'March', 1, 2, 3, '1', '2', '3']
-    q3 = ['April', 'May', 'June', 4, 5, 6, '4', '5', '6']
-    q4 = ['July', 'August', 'September', 7, 8, 9, '7', '8', '9']
+    q2 = ['January', 'February', 'March', 1, 2, 3, '1', '2', '3', '01', '02', '03']
+    q3 = ['April', 'May', 'June', 4, 5, 6, '4', '5', '6', '04', '05', '06']
+    q4 = ['July', 'August', 'September', 7, 8, 9, '7', '8', '9', '07', '08', '09']
 
     form = SipCSFReportForm()
     if request.method == 'POST':
@@ -930,7 +930,7 @@ def sip_csf_services_report(request):
                     inner join lynx_address as addr on c.id= addr.contact_id
                     where fiscal_year = '%s' and c.sip_client is true
                     order by c.last_name, c.first_name;""" % (fiscal_year,))
-                client_set = dictfetchall(cursor)
+                note_set = dictfetchall(cursor)
 
             filename = "SIP Quarterly Services Report - " + str(month) + " - " + str(fiscal_year)
             response = HttpResponse(content_type='text/csv')
@@ -954,14 +954,14 @@ def sip_csf_services_report(request):
 
             client_ids = []
             aggregated_data = {}
-            for client in client_set:
-                client_id = client['id']
+            for note in note_set:
+                client_id = note['id']
                 if client_id not in client_ids:
                     client_ids.append(client_id)
                     aggregated_data[client_id] = {}
-                    aggregated_data[client_id]['client_name'] = client['name']
+                    aggregated_data[client_id]['client_name'] = note['name']
 
-                note_date = client['note_date']
+                note_date = note['note_date']
                 note_month = note_date.month
                 quarter = ''
                 if note_month in q1:
@@ -975,61 +975,61 @@ def sip_csf_services_report(request):
 
                 if quarter not in aggregated_data[client_id]:
                     aggregated_data[client_id][quarter] = {}
-                    aggregated_data[client_id][quarter]['independent_living'] = booleanTransform(client['independent_living'])
-                    independent_living = client['independent_living']
-                    aggregated_data[client_id][quarter]['vision_screening'] = booleanTransform(client['vision_screening'])
-                    vision_screening = client['vision_screening']
-                    aggregated_data[client_id][quarter]['treatment'] = booleanTransform(client['treatment'])
-                    treatment = client['treatment']
-                    aggregated_data[client_id][quarter]['at_devices'] = booleanTransform(client['at_devices'])
-                    at_devices = client['at_devices']
-                    aggregated_data[client_id][quarter]['at_services'] = booleanTransform(client['at_services'])
-                    at_services = client['at_services']
-                    aggregated_data[client_id][quarter]['orientation'] = booleanTransform(client['orientation'])
-                    orientation = client['orientation']
-                    aggregated_data[client_id][quarter]['communications'] = booleanTransform(client['communications'])
-                    communications = client['communications']
-                    aggregated_data[client_id][quarter]['dls'] = booleanTransform(client['dls'])
-                    dls = client['dls']
-                    aggregated_data[client_id][quarter]['support'] = booleanTransform(client['support'])
-                    support = client['support']
-                    aggregated_data[client_id][quarter]['advocacy'] = booleanTransform(client['advocacy'])
-                    advocacy = client['advocacy']
-                    aggregated_data[client_id][quarter]['counseling'] = booleanTransform(client['counseling'])
-                    counseling = client['counseling']
-                    aggregated_data[client_id][quarter]['information'] = booleanTransform(client['information'])
-                    information = client['information']
-                    aggregated_data[client_id][quarter]['services'] = booleanTransform(client['services'])
-                    services = client['services']
+                    aggregated_data[client_id][quarter]['independent_living'] = booleanTransform(note['independent_living'])
+                    independent_living = note['independent_living']
+                    aggregated_data[client_id][quarter]['vision_screening'] = booleanTransform(note['vision_screening'])
+                    vision_screening = note['vision_screening']
+                    aggregated_data[client_id][quarter]['treatment'] = booleanTransform(note['treatment'])
+                    treatment = note['treatment']
+                    aggregated_data[client_id][quarter]['at_devices'] = booleanTransform(note['at_devices'])
+                    at_devices = note['at_devices']
+                    aggregated_data[client_id][quarter]['at_services'] = booleanTransform(note['at_services'])
+                    at_services = note['at_services']
+                    aggregated_data[client_id][quarter]['orientation'] = booleanTransform(note['orientation'])
+                    orientation = note['orientation']
+                    aggregated_data[client_id][quarter]['communications'] = booleanTransform(note['communications'])
+                    communications = note['communications']
+                    aggregated_data[client_id][quarter]['dls'] = booleanTransform(note['dls'])
+                    dls = note['dls']
+                    aggregated_data[client_id][quarter]['support'] = booleanTransform(note['support'])
+                    support = note['support']
+                    aggregated_data[client_id][quarter]['advocacy'] = booleanTransform(note['advocacy'])
+                    advocacy = booleanTransform(note['advocacy'])
+                    aggregated_data[client_id][quarter]['counseling'] = booleanTransform(note['counseling'])
+                    counseling = booleanTransform(note['counseling'])
+                    aggregated_data[client_id][quarter]['information'] = booleanTransform(note['information'])
+                    information = note['information']
+                    aggregated_data[client_id][quarter]['services'] = booleanTransform(note['services'])
+                    services = note['services']
                     if aggregated_data[client_id][quarter]['at_services'] == "Yes" or aggregated_data[client_id][quarter]['at_devices'] == "Yes":
                         aggregated_data[client_id][quarter]['at_devices_services'] = "Yes"
                     else:
                         aggregated_data[client_id][quarter]['at_devices_services'] = "No"
                 else:
                     aggregated_data[client_id][quarter] = {}
-                    if int(client['vision_screening']) == '1':
+                    if int(note['vision_screening']) == '1':
                         aggregated_data[client_id][quarter]['vision_screening'] = "Yes"
-                    if int(client['independent_living']) == '1':
+                    if int(note['independent_living']) == '1':
                         aggregated_data[client_id][quarter]['independent_living'] = "Yes"
-                    if int(client['treatment']) == '1':
+                    if int(note['treatment']) == '1':
                         aggregated_data[client_id][quarter]['treatment'] = "Yes"
-                    if int(client['at_devices']) == '1' or int(client['at_services']) == 1:
+                    if int(note['at_devices']) == '1' or int(note['at_services']) == 1:
                         aggregated_data[client_id][quarter]['at_devices_services'] = "Yes"
-                    if int(client['orientation']) == '1':
+                    if int(note['orientation']) == '1':
                         aggregated_data[client_id][quarter]['orientation'] = "Yes"
-                    if int(client['communications']) == '1':
+                    if int(note['communications']) == '1':
                         aggregated_data[client_id][quarter]['communications'] = "Yes"
-                    if int(client['dls']) == '1':
+                    if int(note['dls']) == '1':
                         aggregated_data[client_id][quarter]['dls'] = "Yes"
-                    if int(client['support']) == '1':
+                    if int(note['support']) == '1':
                         aggregated_data[client_id][quarter]['support'] = "Yes"
-                    if int(client['advocacy']) == '1':
+                    if int(note['advocacy']) == '1':
                         aggregated_data[client_id][quarter]['advocacy'] = "Yes"
-                    if int(client['counseling']) == '1':
+                    if int(note['counseling']) == '1':
                         aggregated_data[client_id][quarter]['counseling'] = "Yes"
-                    if int(client['information']) == '1':
+                    if int(note['information']) == '1':
                         aggregated_data[client_id][quarter]['information'] = "Yes"
-                    if int(client['services']) == '1':
+                    if int(note['services']) == '1':
                         aggregated_data[client_id][quarter]['services'] = "Yes"
 
             for key, value in aggregated_data.items():
