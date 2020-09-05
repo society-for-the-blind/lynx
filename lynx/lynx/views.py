@@ -1201,7 +1201,7 @@ def getFiscalYear(year):
 
 
 def booleanTransform(var):
-    if var == 1 or var == '1' or var == True:
+    if var == 1 or var == '1' or var:
         value = "Yes"
     else:
         value = "No"
