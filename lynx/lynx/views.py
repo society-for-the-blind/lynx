@@ -976,18 +976,31 @@ def sip_csf_services_report(request):
                 if quarter not in aggregated_data[client_id]:
                     aggregated_data[client_id][quarter] = {}
                     aggregated_data[client_id][quarter]['independent_living'] = booleanTransform(client['independent_living'])
+                    independent_living = client['independent_living']
                     aggregated_data[client_id][quarter]['vision_screening'] = booleanTransform(client['vision_screening'])
+                    vision_screening = client['vision_screening']
                     aggregated_data[client_id][quarter]['treatment'] = booleanTransform(client['treatment'])
+                    treatment = client['treatment']
                     aggregated_data[client_id][quarter]['at_devices'] = booleanTransform(client['at_devices'])
+                    at_devices = client['at_devices']
                     aggregated_data[client_id][quarter]['at_services'] = booleanTransform(client['at_services'])
+                    at_services = client['at_services']
                     aggregated_data[client_id][quarter]['orientation'] = booleanTransform(client['orientation'])
+                    orientation = client['orientation']
                     aggregated_data[client_id][quarter]['communications'] = booleanTransform(client['communications'])
+                    communications = client['communications']
                     aggregated_data[client_id][quarter]['dls'] = booleanTransform(client['dls'])
+                    dls = client['dls']
                     aggregated_data[client_id][quarter]['support'] = booleanTransform(client['support'])
+                    support = client['support']
                     aggregated_data[client_id][quarter]['advocacy'] = booleanTransform(client['advocacy'])
+                    advocacy = client['advocacy']
                     aggregated_data[client_id][quarter]['counseling'] = booleanTransform(client['counseling'])
+                    counseling = client['counseling']
                     aggregated_data[client_id][quarter]['information'] = booleanTransform(client['information'])
+                    information = client['information']
                     aggregated_data[client_id][quarter]['services'] = booleanTransform(client['services'])
+                    services = client['services']
                     if aggregated_data[client_id][quarter]['at_services'] == "Yes" or aggregated_data[client_id][quarter]['at_devices'] == "Yes":
                         aggregated_data[client_id][quarter]['at_devices_services'] = "Yes"
                     else:
@@ -1018,31 +1031,6 @@ def sip_csf_services_report(request):
                         aggregated_data[client_id][quarter]['information'] = "Yes"
                     if int(client['services']) == '1':
                         aggregated_data[client_id][quarter]['services'] = "Yes"
-                    # aggregated_data[client_id][quarter] = {}
-                    # if client['vision_screening'] == 1:
-                    #     aggregated_data[client_id][quarter]['vision_screening'] += 1
-                    # if client['treatment'] == 1:
-                    #     aggregated_data[client_id][quarter]['treatment'] += 1
-                    # if client['at_devices'] == 1:
-                    #     aggregated_data[client_id][quarter]['at_devices'] += 1
-                    # if client['at_services'] == 1:
-                    #     aggregated_data[client_id][quarter]['at_services'] += 1
-                    # if client['orientation'] == 1:
-                    #     aggregated_data[client_id][quarter]['orientation'] += 1
-                    # if client['communications'] == 1:
-                    #     aggregated_data[client_id][quarter]['communications'] += 1
-                    # if client['dls'] == 1:
-                    #     aggregated_data[client_id][quarter]['dls'] += 1
-                    # if client['support'] == 1:
-                    #     aggregated_data[client_id][quarter]['support'] += 1
-                    # if client['advocacy'] == 1:
-                    #     aggregated_data[client_id][quarter]['advocacy'] += 1
-                    # if client['counseling'] == 1:
-                    #     aggregated_data[client_id][quarter]['counseling'] += 1
-                    # if client['information'] == 1:
-                    #     aggregated_data[client_id][quarter]['information'] += 1
-                    # if client['services'] == 1:
-                    #     aggregated_data[client_id][quarter]['services'] += 1
 
             for key, value in aggregated_data.items():
                 writer.writerow([value['client_name'], "0", "", "", "", "", "",
