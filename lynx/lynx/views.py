@@ -994,7 +994,6 @@ def sip_csf_services_report(request):
                     else:
                         aggregated_data[client_id][quarter]['at_devices_services'] = "No"
                 else:
-                    aggregated_data[client_id][quarter] = {}
                     if booleanTransform(note['vision_screening']) == "Yes":
                         aggregated_data[client_id][quarter]['vision_screening'] = "Yes"
                     if booleanTransform(note['independent_living']) == "Yes":
