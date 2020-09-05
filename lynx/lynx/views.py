@@ -975,32 +975,19 @@ def sip_csf_services_report(request):
 
                 if quarter not in aggregated_data[client_id]:
                     aggregated_data[client_id][quarter] = {}
-                    aggregated_data[client_id][quarter]['independent_living'] = booleanTransform(note['independent_living'])
-                    independent_living = note['independent_living']
+                    aggregated_data[client_id][quarter]['independent_living'] = booleanTransform(None)
                     aggregated_data[client_id][quarter]['vision_screening'] = booleanTransform(note['vision_screening'])
-                    vision_screening = note['vision_screening']
                     aggregated_data[client_id][quarter]['treatment'] = booleanTransform(note['treatment'])
-                    treatment = note['treatment']
                     aggregated_data[client_id][quarter]['at_devices'] = booleanTransform(note['at_devices'])
-                    at_devices = note['at_devices']
                     aggregated_data[client_id][quarter]['at_services'] = booleanTransform(note['at_services'])
-                    at_services = note['at_services']
                     aggregated_data[client_id][quarter]['orientation'] = booleanTransform(note['orientation'])
-                    orientation = note['orientation']
                     aggregated_data[client_id][quarter]['communications'] = booleanTransform(note['communications'])
-                    communications = note['communications']
                     aggregated_data[client_id][quarter]['dls'] = booleanTransform(note['dls'])
-                    dls = note['dls']
                     aggregated_data[client_id][quarter]['support'] = booleanTransform(note['support'])
-                    support = note['support']
                     aggregated_data[client_id][quarter]['advocacy'] = booleanTransform(note['advocacy'])
-                    advocacy = booleanTransform(note['advocacy'])
                     aggregated_data[client_id][quarter]['counseling'] = booleanTransform(note['counseling'])
-                    counseling = booleanTransform(note['counseling'])
                     aggregated_data[client_id][quarter]['information'] = booleanTransform(note['information'])
-                    information = note['information']
                     aggregated_data[client_id][quarter]['services'] = booleanTransform(note['services'])
-                    services = note['services']
                     if aggregated_data[client_id][quarter]['at_services'] == "Yes" or aggregated_data[client_id][quarter]['at_devices'] == "Yes":
                         aggregated_data[client_id][quarter]['at_devices_services'] = "Yes"
                     else:
