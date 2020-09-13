@@ -216,7 +216,7 @@ class SipPlanForm(forms.ModelForm):
         self.fields['dls'].label = "Daily Living Skills"
         self.fields['advocacy'].label = "Advocacy training"
         self.fields['information'].label = "I&R (Information & Referral)"
-        self.fields['services'].label = "Other services"
+        self.fields['other_services'].label = "Other services"
         self.fields['counseling'].label = "Adjustment Counseling"
 
 
