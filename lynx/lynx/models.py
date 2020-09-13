@@ -494,7 +494,7 @@ class LessonNote(models.Model):
 
 class SipNote(models.Model):
     contact = models.ForeignKey('Contact', on_delete=models.CASCADE)
-    sip_plan = models.ForeignKey('SipPlan', on_delete=models.CASCADE)
+    sip_plan = models.ForeignKey('SipPlan', on_delete=models.CASCADE, blank=True, null=True)
     note = models.TextField(null=True)
     note_date = models.DateField(blank=True, null=True)
     vision_screening = models.BooleanField(blank=True, default=False)
