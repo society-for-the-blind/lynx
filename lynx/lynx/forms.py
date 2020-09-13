@@ -1,7 +1,7 @@
 from django import forms
 from django.utils.translation import gettext_lazy
 
-from .models import Contact, Address, Intake, Email, Phone, Referral, IntakeNote, EmergencyContact, Authorization, \
+from .models import Contact, Address, Intake, Email, Phone, SipPlan, IntakeNote, EmergencyContact, Authorization, \
     ProgressReport, LessonNote, SipNote, Volunteer
 
 from datetime import datetime
