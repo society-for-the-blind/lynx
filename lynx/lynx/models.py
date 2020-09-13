@@ -494,6 +494,7 @@ class LessonNote(models.Model):
 
 class SipNote(models.Model):
     contact = models.ForeignKey('Contact', on_delete=models.CASCADE)
+    sip_plan = models.ForeignKey('SipPlan', on_delete=models.CASCADE)
     note = models.TextField(null=True)
     note_date = models.DateField(blank=True, null=True)
     vision_screening = models.BooleanField(blank=True, default=False)
@@ -546,3 +547,35 @@ class Volunteer(models.Model):
     created = models.DateTimeField(auto_now_add=True, null=True)
     modified = models.DateTimeField(auto_now=True, null=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET(get_sentinel_user))
+
+
+class SipPlan(models.Model):
+    PLANS = (("Plan not complete", "Plan not complete"),
+             ("Plan complete, feeling more confident in ability to maintain living situation", "Plan complete, feeling more confident in ability to maintain living situation"),
+             ("Plan complete, no difference in ability to maintain living situation", "Plan complete, no difference in ability to maintain living situation"),
+             ("Plan complete, feeling less confident in ability to maintain living situation", "Plan complete, feeling less confident in ability to maintain living situation"))
+    ASSESSMENTS = (("Not assessed", "Not assessed"), ("Assessed, improved independence", "Assessed, improved independence"),
+                   ("Assessed, maintained independence", "Assessed, maintained independence"),
+                   ("Assessed, decreased independence", "Assessed, decreased independence"))
+    contact = models.ForeignKey('Contact', on_delete=models.CASCADE)
+    note = models.TextField(null=True)
+    at_services = models.BooleanField(blank=True, default=False)
+    independent_living = models.BooleanField(blank=True, default=False)
+    orientation = models.BooleanField(blank=True, default=False)
+    communications = models.BooleanField(blank=True, default=False)
+    dls = models.BooleanField(blank=True, default=False)
+    advocacy = models.BooleanField(blank=True, default=False)
+    counseling = models.BooleanField(blank=True, default=False)
+    information = models.BooleanField(blank=True, default=False)
+    other_services = models.BooleanField(blank=True, default=False)
+    plan_name = models.CharField(max_length=50, blank=True, null=True)
+    plan_progress = models.CharField(max_length=150, blank=True, null=True, choices=PLANS)
+    assessment = models.CharField(max_length=150, blank=True, null=True, choices=ASSESSMENTS)
+    plan_start = models.DateField(null=True)
+    plan_end = models.DateField(null=True)
+    created = models.DateTimeField(auto_now_add=True, null=True)
+    modified = models.DateTimeField(auto_now=True, null=True)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET(get_sentinel_user))
+
+    def get_absolute_url(self):
+        return "/lynx/client/%i" % self.contact_id

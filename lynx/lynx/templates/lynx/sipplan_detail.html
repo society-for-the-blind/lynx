@@ -1,0 +1,64 @@
+{% extends 'lynx/base.html' %}
+
+{% block title %}SIP Plan{% endblock %}
+
+{% block content %}
+    <h1>SIP Plan: {{ object.plan_name}}</h1>
+    <h2>SIP Plan Information</h2>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-1"></div>
+            <div class="col-11"><strong>Client Name: </strong>{{ object.contact.first_name}} {{ object.contact.last_name}}</div>
+        </div>
+        <div class="row">
+            <div class="col-1"></div>
+            <div class="col-11"><strong>Plan Range: </strong>{{ object.plan_start}}-{{ object.plan_end}}</div>
+        </div>
+        <div class="row">
+            <div class="col-1"></div>
+            <div class="col-11"><strong>Plan Services: </strong>{% if object.at_services %}Assistive Technology or Services, {% endif %}{% if object.independent_living %}IL/A Services, {% endif %}{% if object.orientation %}O&M Skills, {% endif %}{% if object.communications %}Communication skills, {% endif %}{% if object.dls %}Daily Living Skills, {% endif %}{% if object.advocacy %}Advocacy Training, {% endif %}{% if object.counseling %}Adjustment Counseling, {% endif %}{% if object.information %}I&R (Information & Referral), {% endif %}{% if object.services %}Other Services{% endif %}</div>
+        </div>
+        <div class="row">
+            <div class="col-1"></div>
+            <div class="col-11"><strong>Plan Status: </strong>{{ object.plan_progress}}</div>
+        </div>
+        <div class="row">
+            <div class="col-1"></div>
+            <div class="col-11"><strong>Assessment Status: </strong>{{ object.assessment}}</div>
+        </div>
+        <div class="row">
+            <div class="col-1"></div>
+            <div class="col-11"><strong>Comments: </strong>{{ object.note}}</div>
+        </div>
+    </div>
+<br>
+    <h2>SIP Plan Notes</h2>
+   <div class="container-fluid">
+    {% for sip in sip_list %}
+        <div class="row">
+            <div class="col-1"></div>
+            <div class="col-11">
+                {{ sip.created|date:'F j, Y' }}: {{ sip.note|linebreaks }}
+                Instructor: {{ sip.user.first_name }} {{ sip.user.last_name }}
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-1"></div>
+            <div class="col-11"><strong>Services: </strong>{% if sip.vision_screening %}Vision screening/examination/low vision evaluation, {% endif %}{% if sip.treatment %}Surgical or therapeutic treatment, {% endif %}{% if sip.at_devices %}AT devices and aids, {% endif %}{% if sip.at_services %}AT Services, {% endif %}{% if sip.independent_living %}ILS, {% endif %}{% if sip.orientation %}O & M, {% endif %}{% if sip.communications %}Communication skills, {% endif %}{% if sip.dls %}DLS, {% endif %}{% if sip.support %}Support services, {% endif %}{% if sip.advocacy %}Advocacy, {% endif %}{% if sip.counseling %}Counseling, {% endif %}{% if sip.information %}I & R, {% endif %}{% if sip.services %}Other IL services{% endif %}</div>
+        </div>
+        <div class="row">
+            <div class="col-1"></div>
+            <div class="col-11"><strong>Service Delivery: </strong>{% if sip.retreat %}Retreat, {% endif %}{% if sip.in_home %}In-home Training, {% endif %}{% if sip.seminar %}Training Seminar, {% endif %}{% if sip.modesto %}Modesto training site, {% endif %}{% if sip.group %}Support group(s), {% endif %}{% if sip.community %}Community Integration{% endif %}</div>
+        </div>
+        <div class="row">
+            <div class="col-1"></div>
+            {% if not request.GET.print %}<div class="col-11"><input type="button" class="btn btn-primary" aria-label="Edit Note" onclick="location.href='/lynx/sip-note-edit/{{ sip.id }}';" value="Edit Note  {{ object.note_date|date:'F j' }}" /></div>{% endif %}
+        </div>
+        {% empty %}
+        <div class="row">
+            <div class="col-1"></div>
+            <div class="col-11">Sorry, no SIP Notes have been entered for this client</div>
+        </div>
+    {% endfor %}
+    </div>
+{% endblock %}

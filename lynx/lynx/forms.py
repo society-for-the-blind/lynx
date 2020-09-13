@@ -191,6 +191,35 @@ class SipNoteForm(forms.ModelForm):
         self.fields['class_hours'].label = "Class Length"
 
 
+class SipPlanForm(forms.ModelForm):
+    plan_start = forms.DateField(widget=forms.SelectDateWidget(empty_label="Nothing"))
+    plan_end = forms.DateField(widget=forms.SelectDateWidget(empty_label="Nothing"))
+
+    currentYear = datetime.now().year
+    oldYear = 2010
+    highYear = currentYear + 2
+    x = range(2010, highYear)
+    years = []
+    for n in x:
+        print(n)
+
+    class Meta:
+        model = SipNote
+        exclude = ('created', 'modified', 'user', 'contact')
+
+    def __init__(self, *args, **kwargs):
+        super(SipPlanForm, self).__init__(*args, **kwargs)
+        self.fields['at_services'].label = "Assistive Technology or Services"
+        self.fields['independent_living'].label = "IL/A Services"
+        self.fields['orientation'].label = "O&M Skills"
+        self.fields['communications'].label = "Communication skills"
+        self.fields['dls'].label = "Daily Living Skills"
+        self.fields['advocacy'].label = "Advocacy training"
+        self.fields['information'].label = "I&R (Information & Referral)"
+        self.fields['services'].label = "Other services"
+        self.fields['counseling'].label = "Adjustment Counseling"
+
+
 class BillingReportForm(forms.Form):
     current_year = datetime.now().year
     old_year = current_year - 20

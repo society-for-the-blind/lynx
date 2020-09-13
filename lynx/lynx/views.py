@@ -16,10 +16,10 @@ from openpyxl import Workbook
 import logging
 
 from .models import Contact, Address, Phone, Email, Intake, IntakeNote, EmergencyContact, Authorization, \
-    ProgressReport, LessonNote, SipNote, Volunteer
+    ProgressReport, LessonNote, SipNote, Volunteer, SipPlan
 from .forms import ContactForm, IntakeForm, IntakeNoteForm, EmergencyForm, AddressForm, EmailForm, PhoneForm, \
     AuthorizationForm, ProgressReportForm, LessonNoteForm, SipNoteForm, BillingReportForm, SipDemographicReportForm, \
-    VolunteerForm, SipCSFReportForm
+    VolunteerForm, SipCSFReportForm, SipPlanForm
 
 logger = logging.getLogger(__name__)
 
@@ -95,6 +95,20 @@ def add_sip_note(request, contact_id):
             form.save()
             return HttpResponseRedirect(reverse('lynx:client', args=(contact_id,)))
     return render(request, 'lynx/add_sip_note.html', {'form': form})
+
+
+@login_required
+def add_sip_plan(request, contact_id):
+    form = SipPlanForm()
+    if request.method == 'POST':
+        form = SipPlanForm(request.POST)
+        if form.is_valid():
+            form = form.save(commit=False)
+            form.contact_id = contact_id
+            form.user_id = request.user.id
+            form.save()
+            return HttpResponseRedirect(reverse('lynx:client', args=(contact_id,)))
+    return render(request, 'lynx/add_sip_plan.html', {'form': form})
 
 
 @login_required
@@ -355,6 +369,7 @@ class ContactDetailView(LoginRequiredMixin, DetailView):
         context['authorization_list'] = Authorization.objects.filter(contact_id=self.kwargs['pk']).order_by('-created')
         context['note_list'] = IntakeNote.objects.filter(contact_id=self.kwargs['pk']).order_by('-created')
         context['sip_list'] = SipNote.objects.filter(contact_id=self.kwargs['pk']).order_by('-note_date')
+        context['sip_note_list'] = SipPlan.objects.filter(contact_id=self.kwargs['pk']).order_by('-created')
         context['emergency_list'] = EmergencyContact.objects.filter(contact_id=self.kwargs['pk']).order_by('-created')
         context['form'] = IntakeNoteForm
         return context
@@ -538,6 +553,17 @@ class BillingReviewDetailView(LoginRequiredMixin, DetailView):
         return context
 
 
+class SipPlanDetailView(LoginRequiredMixin, DetailView):
+    model = SipPlan
+
+    def get_context_data(self, **kwargs):
+        # Call the base implementation first to get a context
+        context = super(SipPlanDetailView, self).get_context_data(**kwargs)
+        context['sip_note_list'] = SipNote.objects.filter(sip_plan_id=self.kwargs['pk'])
+
+        return context
+
+
 class VolunteerDetailView(LoginRequiredMixin, DetailView):
     model = Volunteer
 
@@ -635,9 +661,7 @@ class IntakeNoteUpdateView(LoginRequiredMixin, UpdateView):
 
 class EmergencyContactUpdateView(LoginRequiredMixin, UpdateView):
     model = EmergencyContact
-    fields = ['name', 'emergency_address_one', 'emergency_address_two', 'emergency_city', 'emergency_state',
-              'emergency_zip_code',
-              'emergency_country', 'phone_day', 'phone_other', 'emergency_notes', 'emergency_email']
+    fields = ['name',  'emergency_notes']
     template_name_suffix = '_edit'
 
 
@@ -672,7 +696,16 @@ class SipNoteUpdateView(LoginRequiredMixin, UpdateView):
     model = SipNote
     fields = ['note', 'note_date', 'vision_screening', 'treatment', 'at_devices', 'at_services', 'independent_living',
               'orientation', 'communications', 'dls', 'support', 'advocacy', 'counseling', 'information', 'services',
-              'retreat', 'in_home', 'seminar', 'modesto', 'group', 'community', 'class_hours', 'fiscal_year']
+              'retreat', 'in_home', 'seminar', 'modesto', 'group', 'community', 'class_hours', 'fiscal_year',
+              'sip_plan']
+    template_name_suffix = '_edit'
+
+
+class SipPlanUpdateView(LoginRequiredMixin, UpdateView):
+    model = SipPlan
+    fields = ['note', 'at_services', 'independent_living', 'orientation', 'communications', 'dls', 'advocacy',
+              'counseling', 'information', 'other_services', 'plan_name', 'plan_progress', 'assessment', 'plan_start',
+              'plan_end']
     template_name_suffix = '_edit'
 
 
