@@ -192,20 +192,10 @@ class SipNoteForm(forms.ModelForm):
 
 
 class SipPlanForm(forms.ModelForm):
-    plan_start = forms.DateField(widget=forms.SelectDateWidget(empty_label="Nothing"))
-    plan_end = forms.DateField(widget=forms.SelectDateWidget(empty_label="Nothing"))
-
-    currentYear = datetime.now().year
-    oldYear = 2010
-    highYear = currentYear + 2
-    x = range(2010, highYear)
-    years = []
-    for n in x:
-        print(n)
 
     class Meta:
         model = SipPlan
-        exclude = ('created', 'modified', 'user', 'contact', 'plan_start', 'plan_end')
+        exclude = ('created', 'modified', 'user', 'contact')
 
     def __init__(self, *args, **kwargs):
         super(SipPlanForm, self).__init__(*args, **kwargs)
