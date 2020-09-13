@@ -10,10 +10,10 @@
             <div class="col-1"></div>
             <div class="col-11"><strong>Client Name: </strong>{{ object.contact.first_name}} {{ object.contact.last_name}}</div>
         </div>
-        <div class="row">
-            <div class="col-1"></div>
-            <div class="col-11"><strong>Plan Range: </strong>{{ object.plan_start}}-{{ object.plan_end}}</div>
-        </div>
+<!--        <div class="row">-->
+<!--            <div class="col-1"></div>-->
+<!--            <div class="col-11"><strong>Plan Range: </strong>{{ object.plan_start}}-{{ object.plan_end}}</div>-->
+<!--        </div>-->
         <div class="row">
             <div class="col-1"></div>
             <div class="col-11"><strong>Plan Services: </strong>{% if object.at_services %}Assistive Technology or Services, {% endif %}{% if object.independent_living %}IL/A Services, {% endif %}{% if object.orientation %}O&M Skills, {% endif %}{% if object.communications %}Communication skills, {% endif %}{% if object.dls %}Daily Living Skills, {% endif %}{% if object.advocacy %}Advocacy Training, {% endif %}{% if object.counseling %}Adjustment Counseling, {% endif %}{% if object.information %}I&R (Information & Referral), {% endif %}{% if object.services %}Other Services{% endif %}</div>

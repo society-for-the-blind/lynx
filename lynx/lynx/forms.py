@@ -205,7 +205,7 @@ class SipPlanForm(forms.ModelForm):
 
     class Meta:
         model = SipPlan
-        exclude = ('created', 'modified', 'user', 'contact')
+        exclude = ('created', 'modified', 'user', 'contact', 'plan_start', 'plan_end')
 
     def __init__(self, *args, **kwargs):
         super(SipPlanForm, self).__init__(*args, **kwargs)
