@@ -11,8 +11,12 @@
               <div class="col-6">{{ form.plan_name|as_crispy_field }}</div>
             </div>
             <div class="row">
-              <div class="col-6">{{ form.plan_progress|as_crispy_field }}</div>
-              <div class="col-6">{{ form.assessment|as_crispy_field }}</div>
+              <div class="col-6">{{ form.living_plan_progress|as_crispy_field }}</div>
+              <div class="col-6">{{ form.community_plan_progress|as_crispy_field }}</div>
+            </div>
+            <div class="row">
+              <div class="col-6">{{ form.at_outcomes|as_crispy_field }}</div>
+              <div class="col-6">{{ form.ila_outcomes|as_crispy_field }}</div>
             </div>
         <h2>Services (check all that apply):</h2>
             <div class="row">

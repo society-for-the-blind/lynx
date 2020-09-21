@@ -950,16 +950,18 @@ def sip_csf_services_report(request):
             data = request.POST.copy()
             month = data.get('month')
             year = data.get('year')
-            fiscal_year = getFiscalYear(year)
+            fiscal_year = get_fiscal_year(year)
 
             with connection.cursor() as cursor:
                 cursor.execute("""SELECT CONCAT(c.first_name, ' ', c.last_name) as name, c.id as id, ls.fiscal_year, 
                 ls.vision_screening, ls.treatment, ls.at_devices, ls.at_services, ls.orientation, ls.communications, 
                 ls.dls, ls.support, ls.advocacy, ls.counseling, ls.information, ls.services, addr.county, ls.note_date,
-                ls.independent_living
+                ls.independent_living, sp.living_plan_progress, sp.community_plan_progress, sp.ila_outcomes, 
+                sp.at_outcomes
                     FROM lynx_sipnote as ls
                     left JOIN lynx_contact as c on c.id = ls.contact_id
                     inner join lynx_address as addr on c.id= addr.contact_id
+                    left JOIN lynx_sipplan as sp on sp.id = ls.sip_plan_id
                     where fiscal_year = '%s' and c.sip_client is true
                     order by c.last_name, c.first_name;""" % (fiscal_year,))
                 note_set = dictfetchall(cursor)
@@ -971,18 +973,12 @@ def sip_csf_services_report(request):
             writer.writerow(["Program Participant", "$ Total expenditures from all sources of program funding", "Vision  Assessment (Screening/Exam/evaluation)",
                 "$ Cost of Vision Assessment", "Surgical or Therapeutic Treatment", "$ Cost of Surgical/ Therapeutic Treatment",
                 "$ Total expenditures from all sources of program funding", "Received AT Devices or Services B2", "$ Total for AT Devices",
-                "$ Total for AT Services", "Not assessed", "Assessed with improved independence", "Assessed and maintained independence",
-                "Assessed with decreased independence", "$ Total expenditures from all sources of program funding", "Received IL/A Services",
+                "$ Total for AT Services", "AT Goal Outcomes", "$ Total expenditures from all sources of program funding", "Received IL/A Services",
                 "Received O&M", "Received Communication Skills", "Received Daily Living Skills", "Received Advocacy training",
-                "Received Adjustment Counseling", "Received I&R", "Received Other Services", "Not assessed", "Assessed with improved independence",
-                "Assessed and maintained independence", "Assessed with decreased independence", "$ Total expenditures from all sources of program funding",
-                "Received Supportive Service", "# of Cases Assessed", "Plan not complete",
-                "Plan Completed - Reported feeling more confident in ability to maintain living situation",
-                "Plan Completed - Reported no difference in ability to maintain living situation",
-                "Plan Completed - Reported feeling less confident in ability to maintain living situation",
-                "Plan not complete", "Plan Completed - Reported an increased ability to engage in customary activities in the home and community",
-                "Plan Completed - Reported no difference in ability to engage in customary activities in the home and community",
-                "Plan Completed - Reported a decreased ability to engage in customary activities in the home and community"])
+                "Received Adjustment Counseling", "Received I&R", "Received Other Services",
+                "IL/A Service Goal Outcomes", "$ Total expenditures from all sources of program funding",
+                "Received Supportive Service", "# of Cases Assessed", "Living Situation Outcomes",
+                "Home and Community involvement Outcomes"])
 
             client_ids = []
             aggregated_data = {}
@@ -1007,78 +1003,94 @@ def sip_csf_services_report(request):
 
                 if quarter not in aggregated_data[client_id]:
                     aggregated_data[client_id][quarter] = {}
-                    aggregated_data[client_id][quarter]['independent_living'] = booleanTransform(note['independent_living'])
-                    aggregated_data[client_id][quarter]['vision_screening'] = booleanTransform(note['vision_screening'])
-                    aggregated_data[client_id][quarter]['treatment'] = booleanTransform(note['treatment'])
-                    aggregated_data[client_id][quarter]['at_devices'] = booleanTransform(note['at_devices'])
-                    aggregated_data[client_id][quarter]['at_services'] = booleanTransform(note['at_services'])
-                    aggregated_data[client_id][quarter]['orientation'] = booleanTransform(note['orientation'])
-                    aggregated_data[client_id][quarter]['communications'] = booleanTransform(note['communications'])
-                    aggregated_data[client_id][quarter]['dls'] = booleanTransform(note['dls'])
-                    aggregated_data[client_id][quarter]['support'] = booleanTransform(note['support'])
-                    aggregated_data[client_id][quarter]['advocacy'] = booleanTransform(note['advocacy'])
-                    aggregated_data[client_id][quarter]['counseling'] = booleanTransform(note['counseling'])
-                    aggregated_data[client_id][quarter]['information'] = booleanTransform(note['information'])
-                    aggregated_data[client_id][quarter]['services'] = booleanTransform(note['services'])
+                    aggregated_data[client_id][quarter]['independent_living'] = boolean_transform(note['independent_living'])
+                    aggregated_data[client_id][quarter]['vision_screening'] = boolean_transform(note['vision_screening'])
+                    aggregated_data[client_id][quarter]['treatment'] = boolean_transform(note['treatment'])
+                    aggregated_data[client_id][quarter]['at_devices'] = boolean_transform(note['at_devices'])
+                    aggregated_data[client_id][quarter]['at_services'] = boolean_transform(note['at_services'])
+                    aggregated_data[client_id][quarter]['orientation'] = boolean_transform(note['orientation'])
+                    aggregated_data[client_id][quarter]['communications'] = boolean_transform(note['communications'])
+                    aggregated_data[client_id][quarter]['dls'] = boolean_transform(note['dls'])
+                    aggregated_data[client_id][quarter]['support'] = boolean_transform(note['support'])
+                    aggregated_data[client_id][quarter]['advocacy'] = boolean_transform(note['advocacy'])
+                    aggregated_data[client_id][quarter]['counseling'] = boolean_transform(note['counseling'])
+                    aggregated_data[client_id][quarter]['information'] = boolean_transform(note['information'])
+                    aggregated_data[client_id][quarter]['services'] = boolean_transform(note['services'])
+                    aggregated_data[client_id][quarter]['living_plan_progress'] = plan_evaluation(note['living_plan_progress'])
+                    aggregated_data[client_id][quarter]['community_plan_progress'] = plan_evaluation(note['community_plan_progress'])
+                    aggregated_data[client_id][quarter]['at_outcomes'] = assess_evaluation(note['at_outcomes'])
+                    aggregated_data[client_id][quarter]['ila_outcomes'] = assess_evaluation(note['ila_outcomes'])
                     if aggregated_data[client_id][quarter]['at_services'] == "Yes" or aggregated_data[client_id][quarter]['at_devices'] == "Yes":
                         aggregated_data[client_id][quarter]['at_devices_services'] = "Yes"
                     else:
                         aggregated_data[client_id][quarter]['at_devices_services'] = "No"
                 else:
-                    if booleanTransform(note['vision_screening']) == "Yes":
+                    if boolean_transform(note['vision_screening']) == "Yes":
                         aggregated_data[client_id][quarter]['vision_screening'] = "Yes"
-                    if booleanTransform(note['independent_living']) == "Yes":
+                    if boolean_transform(note['independent_living']) == "Yes":
                         aggregated_data[client_id][quarter]['independent_living'] = "Yes"
-                    if booleanTransform(note['treatment']) == "Yes":
+                    if boolean_transform(note['treatment']) == "Yes":
                         aggregated_data[client_id][quarter]['treatment'] = "Yes"
-                    if booleanTransform(note['at_devices']) == "Yes" or booleanTransform(note['at_services']) == "Yes":
+                    if boolean_transform(note['at_devices']) == "Yes" or boolean_transform(note['at_services']) == "Yes":
                         aggregated_data[client_id][quarter]['at_devices_services'] = "Yes"
-                    if booleanTransform(note['orientation']) == "Yes":
+                    if boolean_transform(note['orientation']) == "Yes":
                         aggregated_data[client_id][quarter]['orientation'] = "Yes"
-                    if booleanTransform(note['communications']) == "Yes":
+                    if boolean_transform(note['communications']) == "Yes":
                         aggregated_data[client_id][quarter]['communications'] = "Yes"
-                    if booleanTransform(note['dls']) == "Yes":
+                    if boolean_transform(note['dls']) == "Yes":
                         aggregated_data[client_id][quarter]['dls'] = "Yes"
-                    if booleanTransform(note['support']) == "Yes":
+                    if boolean_transform(note['support']) == "Yes":
                         aggregated_data[client_id][quarter]['support'] = "Yes"
-                    if booleanTransform(note['advocacy']) == "Yes":
+                    if boolean_transform(note['advocacy']) == "Yes":
                         aggregated_data[client_id][quarter]['advocacy'] = "Yes"
-                    if booleanTransform(note['counseling']) == "Yes":
+                    if boolean_transform(note['counseling']) == "Yes":
                         aggregated_data[client_id][quarter]['counseling'] = "Yes"
-                    if booleanTransform(note['information']) == "Yes":
+                    if boolean_transform(note['information']) == "Yes":
                         aggregated_data[client_id][quarter]['information'] = "Yes"
-                    if booleanTransform(note['services']) == "Yes":
+                    if boolean_transform(note['services']) == "Yes":
                         aggregated_data[client_id][quarter]['services'] = "Yes"
+                    if note['living_plan_progress']:
+                        aggregated_data[client_id][quarter]['living_plan_progress'] = plan_evaluation(note['living_plan_progress'])
+                    if note['community_plan_progress']:
+                        aggregated_data[client_id][quarter]['community_plan_progress'] = plan_evaluation(note['community_plan_progress'])
+                    if note['at_outcomes']:
+                        aggregated_data[client_id][quarter]['at_outcomes'] = assess_evaluation(note['at_outcomes'])
+                    if note['ila_outcomes']:
+                        aggregated_data[client_id][quarter]['ila_outcomes'] = assess_evaluation(note['ila_outcomes'])
 
             for key, value in aggregated_data.items():
                 if 'Q1' in value:
                     writer.writerow([value['client_name'], "0", "", "", "", "", "",
-                                     value['Q1']['at_devices_services'], "", "", "", "", "", "", "",
+                                     value['Q1']['at_devices_services'], "", "", value['Q1']['at_outcomes'], "",
                                      value['Q1']['independent_living'], value['Q1']['orientation'],
                                      value['Q1']['communications'], value['Q1']['dls'], value['Q1']['advocacy'],
                                      value['Q1']['counseling'], value['Q1']['information'], value['Q1']['services'],
-                                     "", "", "", "", "", value['Q1']['support'], "", "", "", "", "", "", "", "", ""])
+                                     value['Q1']['ila_outcomes'], "", value['Q1']['support'], "",
+                                     value['Q1']['living_plan_progress'], value['Q1']['community_plan_progress']])
                 if 'Q2' in value:
                     writer.writerow([value['client_name'], "0", "", "", "", "", "",
-                                     value['Q2']['at_devices_services'], "", "", "", "", "", "", "",
+                                     value['Q2']['at_devices_services'], "", "", value['Q2']['at_outcomes'], "",
                                      value['Q2']['independent_living'], value['Q2']['orientation'],
                                      value['Q2']['communications'], value['Q2']['dls'], value['Q2']['advocacy'],
                                      value['Q2']['counseling'], value['Q2']['information'], value['Q2']['services'],
-                                     "", "", "", "", "", value['Q2']['support'], "", "", "", "", "", "", "", "", ""])
+                                     value['Q2']['ila_outcomes'], "", value['Q2']['support'], "",
+                                     value['Q2']['living_plan_progress'], value['Q2']['community_plan_progress']])
                 if 'Q3' in value:
                     writer.writerow([value['client_name'], "0", "", "", "", "", "",
-                                     value['Q3']['at_devices_services'], "", "", "", "", "", "", "",
+                                     value['Q3']['at_devices_services'], "", "", value['Q3']['at_outcomes'], "",
                                      value['Q3']['independent_living'], value['Q3']['orientation'],
                                      value['Q3']['communications'], value['Q3']['dls'], value['Q3']['advocacy'],
                                      value['Q3']['counseling'], value['Q3']['information'], value['Q3']['services'],
-                                     "", "", "", "", "", value['Q3']['support'], "", "", "", "", "", "", "", "", ""])
+                                     value['Q3']['ila_outcomes'], "", value['Q3']['support'], "",
+                                     value['Q3']['living_plan_progress'], value['Q3']['community_plan_progress']])
                 if 'Q4' in value:
                     writer.writerow([value['client_name'], "0", "", "", "", "", "",
-                                     value['Q4']['at_devices_services'], "", "", "", "", "", "", "",
+                                     value['Q4']['at_devices_services'], "", "", value['Q4']['at_outcomes'], "",
                                      value['Q4']['independent_living'], value['Q4']['orientation'],
                                      value['Q4']['communications'], value['Q4']['dls'], value['Q4']['advocacy'],
                                      value['Q4']['counseling'], value['Q4']['information'], value['Q4']['services'],
-                                     "", "", "", "", "", value['Q4']['support'], "", "", "", "", "", "", "", "", ""])
+                                     value['Q4']['ila_outcomes'], "", value['Q4']['support'], "",
+                                     value['Q4']['living_plan_progress'], value['Q4']['community_plan_progress']])
 
             return response
 
@@ -1093,7 +1105,7 @@ def sip_csf_demographic_report(request):
             data = request.POST.copy()
             month = data.get('month')
             year = data.get('year')
-            fiscal_year = getFiscalYear(year)
+            fiscal_year = get_fiscal_year(year)
 
             with connection.cursor() as cursor:
                 cursor.execute("""SELECT CONCAT(c.first_name, ' ', c.last_name) as name, c.id as id, int.age_group, 
@@ -1199,7 +1211,7 @@ def dictfetchall(cursor):
 
 
 # This will not work past 2099 ;)
-def getFiscalYear(year):
+def get_fiscal_year(year):
     year_str = str(year)
     last_digits = year_str[-2:]
     last_digits_int = int(last_digits)
@@ -1212,7 +1224,7 @@ def getFiscalYear(year):
     return fiscal_year
 
 
-def booleanTransform(var):
+def boolean_transform(var):
     if var == 1 or var == '1' or var:
         value = "Yes"
     else:
@@ -1220,3 +1232,57 @@ def booleanTransform(var):
 
     return value
 
+
+def plan_evaluation(progress, previous=None):
+    if progress == "Plan complete, feeling more confident in ability to maintain living situation":
+        status = "Increased"
+        rank = 3
+    elif progress == "Plan complete, no difference in ability to maintain living situation":
+        status = "Maintained"
+        rank = 2
+    elif progress == "Plan complete, feeling less confident in ability to maintain living situation":
+        status = "Decreased"
+        rank = 1
+    else:
+        status = "Not Assessed"
+        rank = 0
+
+    if previous == "Increased":
+        p_rank = 3
+    elif previous == "Maintained":
+        p_rank = 2
+    elif previous == "Decreased":
+        p_rank = 1
+    else:
+        p_rank = 0
+
+    if rank < p_rank:
+        status = previous
+
+    return status
+
+
+def assess_evaluation(progress, previous=None):
+    status = progress
+    if progress == "Assessed, improved independence":
+        rank = 3
+    elif progress == "Assessed, maintained independence":
+        rank = 2
+    elif progress == "Assessed, decreased independence":
+        rank = 1
+    else:
+        rank = 0
+
+    if previous == "Assessed, improved independence":
+        p_rank = 3
+    elif previous == "Assessed, maintained independence":
+        p_rank = 2
+    elif previous == "Assessed, decreased independence":
+        p_rank = 1
+    else:
+        p_rank = 0
+
+    if rank < p_rank:
+        status = previous
+
+    return status

@@ -208,6 +208,10 @@ class SipPlanForm(forms.ModelForm):
         self.fields['information'].label = "I&R (Information & Referral)"
         self.fields['other_services'].label = "Other services"
         self.fields['counseling'].label = "Adjustment Counseling"
+        self.fields['living_plan_progress'].label = "Living Situation Outcomes"
+        self.fields['community_plan_progress'].label = "Home and Community involvement Outcomes"
+        self.fields['at_outcomes'].label = "AT Goal Outcomes"
+        self.fields['ila_outcomes'].label = "IL/A Service Goal Outcomes"
 
 
 class BillingReportForm(forms.Form):
