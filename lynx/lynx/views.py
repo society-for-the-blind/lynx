@@ -1050,13 +1050,13 @@ def sip_csf_services_report(request):
                     if boolean_transform(note['services']) == "Yes":
                         aggregated_data[client_id][quarter]['services'] = "Yes"
                     if note['living_plan_progress']:
-                        aggregated_data[client_id][quarter]['living_plan_progress'] = plan_evaluation(note['living_plan_progress'])
+                        aggregated_data[client_id][quarter]['living_plan_progress'] = plan_evaluation(note['living_plan_progress'], aggregated_data[client_id][quarter]['living_plan_progress'])
                     if note['community_plan_progress']:
-                        aggregated_data[client_id][quarter]['community_plan_progress'] = plan_evaluation(note['community_plan_progress'])
+                        aggregated_data[client_id][quarter]['community_plan_progress'] = plan_evaluation(note['community_plan_progress'], aggregated_data[client_id][quarter]['community_plan_progress'])
                     if note['at_outcomes']:
-                        aggregated_data[client_id][quarter]['at_outcomes'] = assess_evaluation(note['at_outcomes'])
+                        aggregated_data[client_id][quarter]['at_outcomes'] = assess_evaluation(note['at_outcomes'], aggregated_data[client_id][quarter]['at_outcomes'])
                     if note['ila_outcomes']:
-                        aggregated_data[client_id][quarter]['ila_outcomes'] = assess_evaluation(note['ila_outcomes'])
+                        aggregated_data[client_id][quarter]['ila_outcomes'] = assess_evaluation(note['ila_outcomes'], aggregated_data[client_id][quarter]['ila_outcomes'])
 
             for key, value in aggregated_data.items():
                 if 'Q1' in value:
