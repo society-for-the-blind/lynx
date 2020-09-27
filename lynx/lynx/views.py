@@ -355,14 +355,14 @@ def client_advanced_result_view(request):
     if query:
         object_list = Contact.objects.annotate(
             full_name=Concat('first_name', 'last_name')
-        # ).annotate(
+        ).annotate(
         #     phone_number='phone__phone'
-            # phone_number=replace_characters('phone__phone', ["(", ")", "-", "+", " "])
+            phone_number=replace_characters('phone__phone', ["(", ")", "-", "+", " "])
         ).filter(
             Q(full_name__icontains=query) |
             Q(first_name__icontains=query) |
             Q(last_name__icontains=query) |
-            Q(phone__phone__icontains=query)
+            Q(phone_number__icontains=query)
         )
 
         object_list = object_list.order_by('last_name', 'first_name')
