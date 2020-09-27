@@ -9,7 +9,7 @@ from django.views.generic.edit import UpdateView
 from django.urls import reverse_lazy
 from django.db.models import Q, F
 from django.db.models import Value as V
-from django.db.models.functions import Concat
+from django.db.models.functions import Concat, Replace
 from django.db import connection
 
 import csv
@@ -351,13 +351,18 @@ def client_result_view(request):
 @login_required
 def client_advanced_result_view(request):
     query = request.GET.get('q')
-    query = replace_characters(query, ["(", ")", "-", "+", " "])
+    # query = replace_characters(query, ["(", ")", "-", "+", " "])
     if query:
         object_list = Contact.objects.annotate(
-            full_name=Concat('first_name', 'last_name')
+            full_name=Concat('first_name', V(' '), 'last_name')
         ).annotate(
-        #     phone_number='phone__phone'
-            phone_number=replace_characters('phone__phone', ["(", ")", "-", "+", " "])
+            phone_number=Replace('phone__phone', V('('), V(''))
+        ).annotate(
+            phone_number=Replace('phone_number', V(')'), V(''))
+        ).annotate(
+            phone_number=Replace('phone__phone', V('-'), V(''))
+        ).annotate(
+            phone_number=Replace('phone__phone', V(' '), V(''))
         ).filter(
             Q(full_name__icontains=query) |
             Q(first_name__icontains=query) |
