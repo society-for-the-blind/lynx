@@ -47,7 +47,9 @@ urlpatterns = [
     path('authorization-edit/<int:pk>', views.AuthorizationUpdateView.as_view(), name='authorization-edit'),
     path('sip-plan-confirm/<int:pk>/<int:client_id>', views.SipPlanDeleteView.as_view(), name='sip-plan-delete'),
     path('sip-note-confirm/<int:pk>/<int:client_id>', views.SipNoteDeleteView.as_view(), name='sip-note-delete'),
+    path('intake-note-confirm/<int:pk>/<int:client_id>', views.IntakeNoteDeleteView.as_view(), name='intake-note-delete'),
     path('client-search', views.client_result_view, name='client_search'),
+    path('client-advanced-search', views.client_advanced_result_view, name='client_advanced_search'),
     path('report-search', views.progress_result_view, name='report_search'),
     path("", views.index, name='index')
 ]

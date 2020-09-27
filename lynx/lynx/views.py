@@ -349,6 +349,28 @@ def client_result_view(request):
 
 
 @login_required
+def client_advanced_result_view(request):
+    query = request.GET.get('q')
+    query = replace_characters(query, ["(", ")", "-", "+", " "])
+    if query:
+        object_list = Contact.objects.annotate(
+            full_name=Concat('first_name', 'last_name')
+        ).annotate(
+            phone_number=replace_characters('phone__phone', ["(", ")", "-", "+", " "])
+        ).filter(
+            Q(full_name__icontains=query) |
+            Q(first_name__icontains=query) |
+            Q(last_name__icontains=query) |
+            Q(phone_number__icontains=query)
+        )
+
+        object_list = object_list.order_by('last_name', 'first_name')
+    else:
+        object_list = None
+    return render(request, 'lynx/client_search.html', {'object_list': object_list})
+
+
+@login_required
 def progress_result_view(request):
     if request.GET.get('selMonth') and request.GET.get('selYear'):
         object_list = ProgressReport.objects.filter(month=request.GET.get('selMonth')).filter(
@@ -732,6 +754,14 @@ class SipPlanDeleteView(LoginRequiredMixin, DeleteView):
 
 class SipNoteDeleteView(LoginRequiredMixin, DeleteView):
     model = SipNote
+
+    def get_success_url(self):
+        client_id = self.kwargs['client_id']
+        return reverse_lazy('lynx:client', kwargs={'pk': client_id})
+
+
+class IntakeNoteDeleteView(LoginRequiredMixin, DeleteView):
+    model = IntakeNote
 
     def get_success_url(self):
         client_id = self.kwargs['client_id']
@@ -1309,3 +1339,10 @@ def assess_evaluation(progress, previous=None):
         status = previous
 
     return status
+
+
+def replace_characters(a_string, remove_characters):
+    for character in remove_characters:
+        a_string = a_string.replace(character, "")
+
+    return a_string
