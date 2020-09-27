@@ -367,7 +367,7 @@ def client_advanced_result_view(request):
         object_list = object_list.order_by('last_name', 'first_name')
     else:
         object_list = None
-    return render(request, 'lynx/client_search.html', {'object_list': object_list})
+    return render(request, 'lynx/client_advanced_search.html', {'object_list': object_list})
 
 
 @login_required
