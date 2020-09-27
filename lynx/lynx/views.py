@@ -725,8 +725,13 @@ class AuthorizationUpdateView(LoginRequiredMixin, UpdateView):
 class SipPlanDeleteView(LoginRequiredMixin, DeleteView):
     model = SipPlan
 
-    def form_valid(self, form):
-        form.instance.author = self.request.user
+    def get_success_url(self):
+        # Assuming there is a ForeignKey from Comment to Post in your model
+    #     plan_id = self.kwargs['pk']
+    #     return reverse_lazy('single_post', kwargs={'id': plan_id})
+    #
+    # def form_valid(self, form):
+    #     form.instance.author = self.request.user
         # if form is valid get url of previous page from hidden input field
         # and assign to success url
         next_url = self.request.POST.get('next', '/')
