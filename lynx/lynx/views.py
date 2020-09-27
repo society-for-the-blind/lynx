@@ -728,7 +728,7 @@ class SipPlanDeleteView(LoginRequiredMixin, DeleteView):
     def get_success_url(self):
         # Assuming there is a ForeignKey from Comment to Post in your model
         client_id = self.kwargs['client_id']
-        return reverse_lazy('lynx:client', kwargs={'id': client_id})
+        return reverse_lazy('lynx:client', kwargs={'pk': client_id})
 
 
 def billing_report(request):
