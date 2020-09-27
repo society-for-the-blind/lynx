@@ -200,7 +200,7 @@
     {% for sip in sip_plan_list %}
         <div class="row">
             <div class="col-1"></div>
-            <div class="col-11"><strong>Plan Name: </strong>{% if sip.at_services %}<a href='/lynx/sip-plan/{{ sip.id }}'>{{ sip.plan_name }}</a>{% else %}<a href='/lynx/sip-plan/{{ sip.id }}'>Unnamed Plan</a>{% endif %}</div>
+            <div class="col-11"><strong>Plan Name: </strong>{% if sip.plan_name %}<a href='/lynx/sip-plan/{{ sip.id }}'>{{ sip.plan_name }}</a>{% else %}<a href='/lynx/sip-plan/{{ sip.id }}'>Unnamed Plan</a>{% endif %}</div>
         </div>
         <div class="row">
             <div class="col-1"></div>
@@ -213,6 +213,9 @@
         <div class="row">
             <div class="col-1"></div>
             <div class="col-11"><strong>Assessment Status: </strong>{{ sip.assessment}}</div>
+        </div>
+        <div class="row">
+            <a href='/lynx/sip-plan-edit/{{ sip.id }}'>Edit SIP Plan {{sip.plan_name}}</a>
         </div>
         <br>
         {% empty %}

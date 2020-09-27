@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect, reverse
 from django.http import HttpResponse, HttpResponseRedirect
 from django.template import loader
 from django.views import generic
-from django.views.generic import DetailView, ListView, FormView
+from django.views.generic import DetailView, ListView, FormView, DeleteView
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic.edit import UpdateView
@@ -342,10 +342,6 @@ def client_result_view(request):
             Q(last_name__icontains=query)
         )
 
-        #
-        # object_list = Contact.objects.filter(
-        #     Q(first_name__icontains=query) | Q(last_name__icontains=query)
-        # )
         object_list = object_list.order_by('last_name', 'first_name')
     else:
         object_list = None
@@ -724,6 +720,17 @@ class AuthorizationUpdateView(LoginRequiredMixin, UpdateView):
     fields = ['intake_service_area', 'authorization_number', 'authorization_type', 'start_date', 'end_date',
               'total_time', 'billing_rate', 'outside_agency', 'student_plan', 'notes']
     template_name_suffix = '_edit'
+
+
+class SipPlanDeleteView(LoginRequiredMixin, DeleteView):
+    model = SipPlan
+
+    def form_valid(self, form):
+        form.instance.author = self.request.user
+        # if form is valid get url of previous page from hidden input field
+        # and assign to success url
+        next_url = self.request.POST.get('next', '/')
+        return HttpResponseRedirect(next_url)
 
 
 def billing_report(request):
