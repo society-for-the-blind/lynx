@@ -362,7 +362,7 @@ def client_advanced_result_view(request):
             Q(full_name__icontains=query) |
             Q(first_name__icontains=query) |
             Q(last_name__icontains=query) |
-            Q(contact__phone__icontains=query)
+            Q(phone_phone__icontains=query)
         )
 
         object_list = object_list.order_by('last_name', 'first_name')
