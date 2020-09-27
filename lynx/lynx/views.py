@@ -1342,7 +1342,8 @@ def assess_evaluation(progress, previous=None):
 
 
 def replace_characters(a_string, remove_characters):
-    for character in remove_characters:
-        a_string = a_string.replace(character, "")
+    if a_string:
+        for character in remove_characters:
+            a_string = a_string.replace(character, "")
 
     return a_string
