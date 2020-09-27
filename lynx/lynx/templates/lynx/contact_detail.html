@@ -233,8 +233,8 @@
         <div class="container-fluid">
             <div class="row">
                 <div class="col-12">
-                    {{ sip.created|date:'F j, Y' }}: {{ sip.note|linebreaks }}
-                    Instructor: {{ sip.user.first_name }} {{ sip.user.last_name }}
+                    {{ sip.note_date|date:'F j, Y' }}: {{ sip.note|linebreaks }}
+                    <strong>Instructor: </strong>{{ sip.user.first_name }} {{ sip.user.last_name }}
                 </div>
             </div>
             <div class="row">
