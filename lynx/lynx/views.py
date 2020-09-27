@@ -727,8 +727,8 @@ class SipPlanDeleteView(LoginRequiredMixin, DeleteView):
 
     def get_success_url(self):
         # Assuming there is a ForeignKey from Comment to Post in your model
-        plan_id = self.kwargs['sip_plan_id']
-        return reverse_lazy('lynx:client', kwargs={'id': plan_id})
+        contact_id = self.kwargs['contact_id']
+        return reverse_lazy('lynx:client', kwargs={'id': contact_id})
     #
     # def form_valid(self, form):
     #     form.instance.author = self.request.user
