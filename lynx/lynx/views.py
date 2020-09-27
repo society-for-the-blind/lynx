@@ -727,15 +727,8 @@ class SipPlanDeleteView(LoginRequiredMixin, DeleteView):
 
     def get_success_url(self):
         # Assuming there is a ForeignKey from Comment to Post in your model
-        contact_id = self.kwargs['contact_id']
-        return reverse_lazy('lynx:client', kwargs={'id': contact_id})
-    #
-    # def form_valid(self, form):
-    #     form.instance.author = self.request.user
-        # if form is valid get url of previous page from hidden input field
-        # and assign to success url
-        # next_url = self.request.POST.get('next', '/')
-        # return HttpResponseRedirect(next_url)
+        client_id = self.kwargs['client_id']
+        return reverse_lazy('lynx:client', kwargs={'id': client_id})
 
 
 def billing_report(request):
