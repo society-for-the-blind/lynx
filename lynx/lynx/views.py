@@ -7,7 +7,9 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic.edit import UpdateView
 from django.urls import reverse_lazy
-from django.db.models import Q
+from django.db.models import Q, F
+from django.db.models import Value as V
+from django.db.models.functions import Concat
 from django.db import connection
 
 import csv
@@ -332,9 +334,18 @@ def add_lesson_note(request, authorization_id):
 def client_result_view(request):
     query = request.GET.get('q')
     if query:
-        object_list = Contact.objects.filter(
-            Q(first_name__icontains=query) | Q(last_name__icontains=query)
+        object_list = Contact.objects.annotate(
+            full_name=Concat('first_name', V(' '), 'last_name')
+        ).filter(
+            Q(full_name__icontains=query) |
+            Q(first_name__icontains=query) |
+            Q(last_name__icontains=query)
         )
+
+        #
+        # object_list = Contact.objects.filter(
+        #     Q(first_name__icontains=query) | Q(last_name__icontains=query)
+        # )
         object_list = object_list.order_by('last_name', 'first_name')
     else:
         object_list = None
