@@ -215,7 +215,7 @@
             <div class="col-11"><strong>Assessment Status: </strong>{{ sip.assessment}}</div>
         </div>
         <div class="row">
-            <a href='/lynx/sip-plan-edit/{{ sip.id }}'>Edit SIP Plan {{sip.plan_name}}</a>
+            <a href='/lynx/sip-plan-edit/{{ sip.id }}'>Edit SIP Plan {{sip.plan_name}}</a> | <a href='/lynx/sip-plan-confirm/{{ sip.id }}'>Delete SIP Plan</a>
         </div>
         <br>
         {% empty %}
