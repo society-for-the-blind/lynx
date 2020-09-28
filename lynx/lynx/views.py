@@ -364,9 +364,11 @@ def client_advanced_result_view(request):
         ).annotate(
             phone_number=Replace('phone_number', V(' '), V(''))
         ).annotate(
-            zip_code='address__zip_code'
+            zip_code=F('address__zip_code')
+            # zip_code='address__zip_code'
         ).annotate(
-            county='address__county'
+            county=F('address__county')
+            # county='address__county'
         ).filter(
             Q(full_name__icontains=query) |
             Q(first_name__icontains=query) |
