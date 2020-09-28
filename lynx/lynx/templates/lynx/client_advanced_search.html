@@ -1,5 +1,4 @@
 {% extends 'lynx/base.html' %}
-{% load render_paginator %}
 
 {% block title %}Advanced Client Search{% endblock %}
 
@@ -32,54 +31,22 @@
             </tr>
         {% endfor %}
     </table>
+
 <div class="pagination">
-    <div class="btn-group" role="group">
-      {% if has_previous %}
-         <a class="btn btn-secondary" href="{{ request.path }}?page={{ previous }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}"><i class="fas fa-angle-left"></i></a>
-      {% else %}
-         <button type="button" class="btn btn-secondary" disabled="disabled" aria-label="Previous Page"><i class="fas fa-angle-left"></i></button>
-      {% endif %}
+    <span class="step-links">
+        {% if page_obj.has_previous %}
+            <a href="?page=1{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">&laquo; first</a>
+            <a href="?page={{ page_obj.previous_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">previous</a>
+        {% endif %}
 
-      {% if show_first %}
-         <a class="btn btn-secondary" href="{{ request.path }}?page=1{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">1</a>
-         <button type="button" class="btn btn-secondary" disabled="disabled">...</button>
-      {% endif %}
+        <span class="current">
+            Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+        </span>
 
-      {% for linkpage in page_numbers %}
-        {% ifequal linkpage page %}
-           <button type="button" class="btn btn-secondary active" aria-label="Page {{linkpage}}">{{ page }}</button>
-        {% else %}
-           <a class="btn btn-secondary" href="{{ request.path }}?page={{ linkpage }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">{{ linkpage }}</a>
-        {% endifequal %}
-      {% endfor %}
-
-      {% if show_last %}
-         <button type="button" class="btn btn-secondary" disabled="disabled" aria-label="Last Page">...</button>
-         <a class="btn btn-secondary" href="{{ request.path }}?page=last{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">{{ pages }}</a>
-      {% endif %}
-
-      {% if has_next %}
-         <a class="btn btn-secondary" href="{{ request.path }}?page={{ next }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}"><i class="fas fa-angle-right"></i></a>
-      {% else %}
-         <button type="button" class="btn btn-secondary" disabled="disabled" aria-label="Next Page"><i class="fas fa-angle-right"></i></button>
-      {% endif %}
-    </div>
+        {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number}}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">next</a>
+            <a href="?page={{ page_obj.paginator.num_pages}}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">last &raquo;</a>
+        {% endif %}
+    </span>
 </div>
-<!--<div class="pagination">-->
-<!--    <span class="step-links">-->
-<!--        {% if page_obj.has_previous %}-->
-<!--            <a href="?page=1{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">&laquo; first</a>-->
-<!--            <a href="?page={{ page_obj.previous_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">previous</a>-->
-<!--        {% endif %}-->
-
-<!--        <span class="current">-->
-<!--            Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.-->
-<!--        </span>-->
-
-<!--        {% if page_obj.has_next %}-->
-<!--            <a href="?page={{ page_obj.next_page_number}}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">next</a>-->
-<!--            <a href="?page={{ page_obj.paginator.num_pages}}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">last &raquo;</a>-->
-<!--        {% endif %}-->
-<!--    </span>-->
-<!--</div>-->
 {% endblock %}
