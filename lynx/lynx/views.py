@@ -378,7 +378,7 @@ def client_advanced_result_view(request):
             Q(zip_code__icontains=query) |
             Q(county__icontains=query) |
             Q(phone_number__icontains=query)
-        ).distinct()
+        ).distinct('id')
 
         object_list = object_list.order_by('last_name', 'first_name')
         paginator = Paginator(object_list, 20)
