@@ -352,7 +352,6 @@ def client_result_view(request):
 @login_required
 def client_advanced_result_view(request):
     query = request.GET.get('q')
-    # query = replace_characters(query, ["(", ")", "-", "+", " "])
     if query:
         object_list = Contact.objects.annotate(
             full_name=Concat('first_name', V(' '), 'last_name')
