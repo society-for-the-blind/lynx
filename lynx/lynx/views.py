@@ -11,10 +11,11 @@ from django.db.models import Q, F
 from django.db.models import Value as V
 from django.db.models.functions import Concat, Replace
 from django.db import connection
+from django.core.paginator import Paginator
 
 import csv
 from datetime import datetime
-from openpyxl import Workbook
+# from openpyxl import Workbook
 import logging
 
 from .models import Contact, Address, Phone, Email, Intake, IntakeNote, EmergencyContact, Authorization, \
@@ -373,6 +374,7 @@ def client_advanced_result_view(request):
         )
 
         object_list = object_list.order_by('last_name', 'first_name')
+        object_list = Paginator(object_list, 20)
     else:
         object_list = None
     return render(request, 'lynx/client_advanced_search.html', {'object_list': object_list})
