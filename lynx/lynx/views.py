@@ -787,6 +787,14 @@ class IntakeNoteDeleteView(LoginRequiredMixin, DeleteView):
         return reverse_lazy('lynx:client', kwargs={'pk': client_id})
 
 
+class ProgressReportDeleteView(LoginRequiredMixin, DeleteView):
+    model = ProgressReport
+
+    def get_success_url(self):
+        auth_id = self.kwargs['auth_id']
+        return reverse_lazy('lynx:authorization_detail', kwargs={'pk': auth_id})
+
+
 def billing_report(request):
     form = BillingReportForm()
     if request.method == 'POST':
