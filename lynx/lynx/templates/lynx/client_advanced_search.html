@@ -10,9 +10,25 @@
         <input name="q" type="text" placeholder="Search...">
         <input type="submit" value="Search All Clients" />
     </form>
-    <ul>
+    <hr>
+    <table>
+        <tr>
+            <th>Client Name</th>
+            <th>Last Name</th>
+            <th>First Name</th>
+            <th>Phone Number</th>
+            <th>Zip Code</th>
+            <th>County</th>
+        </tr>
         {% for client in object_list %}
-            <li><a href="client/{{ client.id }}">{{ client.last_name }}, {{ client.first_name }} {% if client.middle_name %}{{ client.middle_name }} {% endif %} {{ client.created|date:"Y-n-j" }}</a></li>
+            <tr>
+                <td><a href="client/{{ client.id }}">{{ client.last_name }}, {{ client.first_name }} {% if client.middle_name %}{{ client.middle_name }} {% endif %} {{ client.created|date:"Y-n-j" }}</a></td>
+                <td>{{ client.last_name }}</td>
+                <td>{{ client.first_name }}/td>
+                <td>{{ client.phone_number }}</td>
+                <td>{{ client.zip }}</td>
+                <td>{{ client.county }}</td>
+            </tr>
         {% endfor %}
-    </ul>
+    </table>
 {% endblock %}
