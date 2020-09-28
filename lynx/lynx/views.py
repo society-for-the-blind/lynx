@@ -363,12 +363,16 @@ def client_advanced_result_view(request):
             phone_number=Replace('phone_number', V('-'), V(''))
         ).annotate(
             phone_number=Replace('phone_number', V(' '), V(''))
+        ).annotate(
+            zip_code='address__zip_code'
+        ).annotate(
+            county='address__county'
         ).filter(
             Q(full_name__icontains=query) |
             Q(first_name__icontains=query) |
             Q(last_name__icontains=query) |
-            Q(address__zip_code__icontains=query) |
-            Q(address__county__icontains=query) |
+            Q(zip_code__icontains=query) |
+            Q(county__icontains=query) |
             Q(phone_number__icontains=query)
         )
 
