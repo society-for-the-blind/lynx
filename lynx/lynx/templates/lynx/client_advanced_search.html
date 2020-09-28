@@ -26,12 +26,12 @@
                 <td>{{ client.first_name }}</td>
                 <td>{{ client.last_name }}</td>
                 <td>{{ client.phone_number }}</td>
-                <td>{{ client.address.zip_code }}</td>
+                <td>{{ client.address_set.zip_code }}</td>
 <!--                <td>{{ client.zip_code }}</td>-->
 <!--                <td>{{ client.county }}</td>-->
 <!--                <td>{{ client.contact.address.county }}</td>-->
 <!--                <td>{{ client.contact.county }}</td>-->
-                <td>{{ client.address.county }}</td>
+                <td>{{ client.address_set.county }}</td>
             </tr>
         {% endfor %}
     </table>
