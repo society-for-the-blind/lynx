@@ -373,6 +373,7 @@ def client_advanced_result_view(request):
         )
 
         object_list = object_list.order_by('last_name', 'first_name')
+        object_list.sort()
     else:
         object_list = None
     return render(request, 'lynx/client_advanced_search.html', {'object_list': object_list})
