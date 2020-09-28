@@ -353,32 +353,32 @@ def client_result_view(request):
 def client_advanced_result_view(request):
     query = request.GET.get('q')
     # query = replace_characters(query, ["(", ")", "-", "+", " "])
-    if query:
-        object_list = Contact.objects.annotate(
-            full_name=Concat('first_name', V(' '), 'last_name')
-        ).annotate(
-            phone_number=Replace('phone__phone', V('('), V(''))
-        ).annotate(
-            phone_number=Replace('phone_number', V(')'), V(''))
-        ).annotate(
-            phone_number=Replace('phone_number', V('-'), V(''))
-        ).annotate(
-            phone_number=Replace('phone_number', V(' '), V(''))
-        ).filter(
-            Q(full_name__icontains=query) |
-            Q(first_name__icontains=query) |
-            Q(last_name__icontains=query) |
-            Q(address__zip_code__icontains=query) |
-            Q(address__county__icontains=query) |
-            Q(phone_number__icontains=query)
-        )
+    # if query:
+    object_list = Contact.objects.annotate(
+        full_name=Concat('first_name', V(' '), 'last_name')
+    ).annotate(
+        phone_number=Replace('phone__phone', V('('), V(''))
+    ).annotate(
+        phone_number=Replace('phone_number', V(')'), V(''))
+    ).annotate(
+        phone_number=Replace('phone_number', V('-'), V(''))
+    ).annotate(
+        phone_number=Replace('phone_number', V(' '), V(''))
+    ).filter(
+        Q(full_name__icontains=query) |
+        Q(first_name__icontains=query) |
+        Q(last_name__icontains=query) |
+        Q(address__zip_code__icontains=query) |
+        Q(address__county__icontains=query) |
+        Q(phone_number__icontains=query)
+    )
 
-        object_list = object_list.order_by('last_name', 'first_name')
-        paginator = Paginator(object_list, 20)
-        page_number = request.GET.get('page')
-        page_obj = paginator.get_page(page_number)
-    else:
-        page_obj = None
+    object_list = object_list.order_by('last_name', 'first_name')
+    paginator = Paginator(object_list, 20)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    # else:
+    #     page_obj = None
     return render(request, 'lynx/client_advanced_search.html', {'page_obj': page_obj})
 
 
