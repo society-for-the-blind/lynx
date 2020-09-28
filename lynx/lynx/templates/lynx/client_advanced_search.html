@@ -14,8 +14,8 @@
     <table class="table">
         <tr>
             <th scope="col">Client Name</th>
-            <th scope="col">Last Name</th>
             <th scope="col">First Name</th>
+            <th scope="col">Last Name</th>
             <th scope="col">Phone Number</th>
             <th scope="col">Zip Code</th>
             <th scope="col">County</th>
@@ -23,11 +23,11 @@
         {% for client in object_list %}
             <tr>
                 <td><a href="client/{{ client.id }}">{{ client.last_name }}, {{ client.first_name }} {% if client.middle_name %}{{ client.middle_name }} {% endif %} {{ client.created|date:"Y-n-j" }}</a></td>
+                <td>{{ client.first_name }}</td>
                 <td>{{ client.last_name }}</td>
-                <td>{{ client.first_name }}/td>
                 <td>{{ client.phone_number }}</td>
-                <td>{{ client.zip }}</td>
-                <td>{{ client.county }}</td>
+                <td>{{ client.address.zip }}</td>
+                <td>{{ client.address.county }}</td>
             </tr>
         {% endfor %}
     </table>
