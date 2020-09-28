@@ -374,10 +374,12 @@ def client_advanced_result_view(request):
         )
 
         object_list = object_list.order_by('last_name', 'first_name')
-        object_list = Paginator(object_list, 20)
+        paginator = Paginator(object_list, 20)
+        page_number = request.GET.get('page')
+        page_obj = paginator.get_page(page_number)
     else:
-        object_list = None
-    return render(request, 'lynx/client_advanced_search.html', {'object_list': object_list})
+        page_obj = None
+    return render(request, 'lynx/client_advanced_search.html', {'object_list': page_obj})
 
 
 @login_required
