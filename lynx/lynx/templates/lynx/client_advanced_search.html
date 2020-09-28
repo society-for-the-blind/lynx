@@ -11,14 +11,14 @@
         <input type="submit" value="Search All Clients" />
     </form>
     <hr>
-    <table>
+    <table class="table">
         <tr>
-            <th>Client Name</th>
-            <th>Last Name</th>
-            <th>First Name</th>
-            <th>Phone Number</th>
-            <th>Zip Code</th>
-            <th>County</th>
+            <th scope="col">Client Name</th>
+            <th scope="col">Last Name</th>
+            <th scope="col">First Name</th>
+            <th scope="col">Phone Number</th>
+            <th scope="col">Zip Code</th>
+            <th scope="col">County</th>
         </tr>
         {% for client in object_list %}
             <tr>
