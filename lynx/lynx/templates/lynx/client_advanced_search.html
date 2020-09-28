@@ -20,7 +20,7 @@
             <th scope="col">Zip Code</th>
             <th scope="col">County</th>
         </tr>
-        {% for client in object_list %}
+        {% for client in page_obj %}
             <tr>
                 <td><a href="client/{{ client.id }}">{{ client.last_name }}, {{ client.first_name }} {% if client.middle_name %}{{ client.middle_name }} {% endif %} {{ client.created|date:"Y-n-j" }}</a></td>
                 <td>{{ client.first_name }}</td>
