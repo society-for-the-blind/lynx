@@ -1278,6 +1278,11 @@ def sip_csf_demographic_report(request):
                     else:
                         client['served'] = "Unknown"
 
+                    # Mark some referral sources as other
+                    if client['referred_by']:
+                        if client['referred_by'] == "DOR" or client['referred_by'] == "Alta" or client['referred_by'] == "Physician":
+                            client['referred_by'] = 'Other'
+
                     # Write demographic data to demo csv
                     writer.writerow(
                         [client["name"], client['served'], client['age_group'], client["gender"], client["race"],

@@ -259,8 +259,11 @@ class Intake(models.Model):
               ("Severe Visual Impairment", "Severe Visual Impairment"), ("Light Perception Only", "Light Perception Only"),
               ("Low Vision", "Low Vision"))
 
-    REFERER = (("DOR", "DOR"), ("Alta", "Alta"), ("VA", "VA"), ("Physician", "Physician"),
-              ("Family/friend", "Family/friend"), ("Other", "Other"))
+    REFERER = (("DOR", "DOR"), ("Alta", "Alta"), ("Veterans Administration", "Veterans Administration"), ("Physician", "Physician"),
+               ("Family or Friend", "Family or Friend"), ("Senior Program", "Senior Program"),
+               ("Assisted Living Facility", "Assisted Living Facility"), ("Nursing Home", "Nursing Home"),
+               ("Independent Living Center", "Independent Living Center"), ("Self-Referral", "Self-Referral"),
+               ("Other", "Other"))
 
     contact = models.ForeignKey('Contact', on_delete=models.CASCADE)
     intake_date = models.DateField(default=date.today)
