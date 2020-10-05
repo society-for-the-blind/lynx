@@ -1211,7 +1211,7 @@ def sip_csf_demographic_report(request):
                                   "Ethnicity", "Degree of Visual Impairment", "Major Cause of Visual Impairment",
                                   "Hearing Impairment", "Mobility Impairment", "Communication Impairment",
                                   "Cognitive or Intellectual Impairment", "Mental Health Impairment", "Other Impairment",
-                                  "Type of Residence", "Source of Referral County"])
+                                  "Type of Residence", "Source of Referral", "County"])
 
             client_ids = []
             for client in client_set:
@@ -1256,13 +1256,35 @@ def sip_csf_demographic_report(request):
                     else:
                         client["race"] = client["ethnicity"]
 
+                    # Find if case was before this fiscal year
+                    if client["note_date"]:
+                        # grab the date for the first note
+                        year = int(year)
+                        month = int(month)
+                        with connection.cursor() as cursor:
+                            cursor.execute("""SELECT id, note_date FROM lynx_sipnote where id = '%s' order by id ASC LIMIT 1;""" % (client_id,))
+                            note_set = dictfetchall(cursor)
+                        note_year = int(note_set[0]["note_date"][0:3])
+                        note_month = int(note_set[0]["note_date"][5:6])
+                        if note_year > year:
+                            client['served'] = "Case open between Oct. 1 - Sept. 30"
+                        elif note_year == year:
+                            if note_month >= 10:
+                                client['served'] = "Case open between Oct. 1 - Sept. 30"
+                            else:
+                                client['served'] = "Case open prior to Oct. 1"
+                        else:
+                            client['served'] = "Case open prior to Oct. 1"
+                    else:
+                        client['served'] = "Unknown"
+
                     # Write demographic data to demo csv
                     writer.writerow(
-                        [client["name"], "Individuals Served", client['age_group'], client["gender"], client["race"],
+                        [client["name"], client['served'], client['age_group'], client["gender"], client["race"],
                          client["hispanic"], client['degree'], client['eye_condition'], client['hearing_impairment'],
                          client['mobility_impairment'], client['communication_impairment'],
                          client['cognition_impairment'], client['mental_impairment'], client['other_impairment'],
-                         client['residence_type'], client['county']])
+                         client['residence_type'], client['referred_by'], client['county'], client['id']])
 
             return response
 
