@@ -1037,7 +1037,7 @@ def sip_csf_services_report(request):
                 ls.vision_screening, ls.treatment, ls.at_devices, ls.at_services, ls.orientation, ls.communications, 
                 ls.dls, ls.support, ls.advocacy, ls.counseling, ls.information, ls.services, addr.county, ls.note_date,
                 ls.independent_living, sp.living_plan_progress, sp.community_plan_progress, sp.ila_outcomes, 
-                sp.at_outcomes
+                sp.at_outcomes, ls.class_hours
                     FROM lynx_sipnote as ls
                     left JOIN lynx_contact as c on c.id = ls.contact_id
                     inner join lynx_address as addr on c.id= addr.contact_id
@@ -1289,7 +1289,7 @@ def sip_csf_demographic_report(request):
                          client["hispanic"], client['degree'], client['eye_condition'], client['hearing_impairment'],
                          client['mobility_impairment'], client['communication_impairment'],
                          client['cognition_impairment'], client['mental_impairment'], client['other_impairment'],
-                         client['residence_type'], client['referred_by'], client['county'], client['id']])
+                         client['residence_type'], client['referred_by'], client['county']])
 
             return response
 
