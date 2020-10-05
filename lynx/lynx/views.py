@@ -1264,8 +1264,8 @@ def sip_csf_demographic_report(request):
                         with connection.cursor() as cursor:
                             cursor.execute("""SELECT id, note_date FROM lynx_sipnote where contact_id = '%s' order by id ASC LIMIT 1;""" % (client_id,))
                             note_set = dictfetchall(cursor)
-                        note_year = int(note_set[0]["note_date"][0:3])
-                        note_month = int(note_set[0]["note_date"][5:6])
+                        note_year = int(note_set[0]["note_date"].year)
+                        note_month = int(note_set[0]["note_date"].month)
                         if note_year > year:
                             client['served'] = "Case open between Oct. 1 - Sept. 30"
                         elif note_year == year:
