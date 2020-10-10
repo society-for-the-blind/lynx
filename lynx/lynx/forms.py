@@ -167,7 +167,7 @@ class SipNoteForm(forms.ModelForm):
 
     class Meta:
         model = SipNote
-        exclude = ('created', 'modified', 'user', 'contact')
+        exclude = ('created', 'modified', 'user', 'contact', 'modesto')
 
     def __init__(self, *args, **kwargs):
         super(SipNoteForm, self).__init__(*args, **kwargs)
@@ -185,7 +185,7 @@ class SipNoteForm(forms.ModelForm):
         self.fields['services'].label = "Other IL services"
         self.fields['in_home'].label = "In-home training"
         self.fields['seminar'].label = "Training Seminar"
-        self.fields['modesto'].label = "Modesto training site"
+        # self.fields['modesto'].label = "Modesto training site"
         self.fields['group'].label = "Support group(s)"
         self.fields['community'].label = "Community Integration"
         self.fields['class_hours'].label = "Class Length"
