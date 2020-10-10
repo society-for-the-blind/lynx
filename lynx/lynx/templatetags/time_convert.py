@@ -2,7 +2,7 @@ from django import template
 
 register = template.Library()
 
-SIP_UNITS = (('.25', "15 Minutes"), ('.5', "30 Minutes"), ('.75', "45 Minutes"), ('1', "1 Hour"), ('1.25', "1 Hour 15 Minutes"),
+SIP_UNITS = (('0.25', "15 Minutes"), ('0.5', "30 Minutes"), ('0.75', "45 Minutes"), ('1', "1 Hour"), ('1.25', "1 Hour 15 Minutes"),
          ('1.5', "1 Hour 30 Minutes"), ('1.75', "1 Hour 45 Minutes"), ('2', "2 Hours"), ('2.25', "2 Hours 15 Minutes"),
          ('2.5', "2 Hours 30 Minutes"), ('2.75', "2 Hours 45 Minutes"), ('3', "3 Hours"), ('3.25', "3 Hours 15 Minutes"),
          ('3.5', "3 Hours 30 Minutes"), ('3.75', "3 Hours 45 Minutes"), ('4', "4 Hours"), ('4.25', "4 Hours 15 Minutes"),
