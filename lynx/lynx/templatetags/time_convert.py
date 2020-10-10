@@ -14,6 +14,7 @@ SIP_UNITS = (('.25', "15 Minutes"), ('.5', "30 Minutes"), ('.75', "45 Minutes"),
 @register.filter
 def convert_fractions(value):
     if value:
+        value = str(value)
         time_hours = SIP_UNITS[value]
         return time_hours
     else:
