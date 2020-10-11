@@ -908,6 +908,7 @@ def sip_demographic_report(request):
             year = data.get('year')
 
             fiscal_months = ['10', '11', '12', '1', '2', '3', '4', '5', '6', '7', '8', '9']
+            fiscal_year = get_fiscal_year(year)
 
             first = True
             month_string = ''
@@ -935,8 +936,8 @@ def sip_demographic_report(request):
                     FROM lynx_sipnote ls
                     left JOIN lynx_contact as c  on c.id = ls.contact_id
                     left JOIN lynx_intake as int  on int.contact_id = c.id
-                    where extract(month FROM ls.note_date) = '%s' and extract(year FROM ls.note_date) = '%s' and c.sip_client is true %s
-                    order by c.last_name, c.first_name;""" % (month, year, month_string))
+                    where extract(month FROM ls.note_date) = '%s' and fiscal_year = '%s' and c.sip_client is true %s
+                    order by c.last_name, c.first_name;""" % (month, fiscal_year, month_string))
                 client_set = dictfetchall(cursor)
                 # TODO make sure this works with year
 
@@ -1032,6 +1033,25 @@ def sip_csf_services_report(request):
             year = data.get('year')
             fiscal_year = get_fiscal_year(year)
 
+            fiscal_months = ['10', '11', '12', '1', '2', '3', '4', '5', '6', '7', '8', '9']
+
+            first = True
+            month_string = ''
+            for month_no in fiscal_months:
+                if month_no == month:
+                    break
+                else:
+                    if first:
+                        month_string = """SELECT client.id FROM lynx_sipnote AS sip 
+                        LEFT JOIN lynx_contact AS client ON client.id = sip.contact_id 
+                        WHERE extract(month FROM sip.note_date) = """ + month_no
+                        first = False
+                    else:
+                        month_string = month_string + ' or extract(month FROM sip.note_date) = ' + month_no
+
+            if len(month_string) > 0:
+                month_string = " and c.id not in (" + month_string + ')'
+
             with connection.cursor() as cursor:
                 cursor.execute("""SELECT CONCAT(c.first_name, ' ', c.last_name) as name, c.id as id, ls.fiscal_year, 
                 ls.vision_screening, ls.treatment, ls.at_devices, ls.at_services, ls.orientation, ls.communications, 
@@ -1042,8 +1062,8 @@ def sip_csf_services_report(request):
                     left JOIN lynx_contact as c on c.id = ls.contact_id
                     inner join lynx_address as addr on c.id= addr.contact_id
                     left JOIN lynx_sipplan as sp on sp.id = ls.sip_plan_id
-                    where fiscal_year = '%s' and c.sip_client is true
-                    order by c.last_name, c.first_name;""" % (fiscal_year,))
+                    where extract(month FROM ls.note_date) = '%d' and fiscal_year = '%s' and c.sip_client is true %s
+                    order by c.last_name, c.first_name;""" % (month, fiscal_year, month_string))
                 note_set = dictfetchall(cursor)
 
             filename = "SIP Quarterly Services Report - " + str(month) + " - " + str(fiscal_year)
@@ -1329,6 +1349,24 @@ def get_fiscal_year(year):
     else:
         fiscal_year = year_str + '-' + year_inc
     return fiscal_year
+
+
+def get_quarter(month):
+    if month:
+        month = int(month)
+        if month == 10 or month == 11 or month == 12:
+            q = 1
+        elif month == 1 or month == 2 or month == 3:
+            q = 2
+        elif month == 4 or month == 5 or month == 6:
+            q = 3
+        elif month == 7 or month == 8 or month == 9:
+            q = 4
+        else:
+            return 0
+        return q
+    else:
+        return 0
 
 
 def boolean_transform(var):
