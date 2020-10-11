@@ -1074,7 +1074,6 @@ def sip_csf_services_report(request):
                     aggregated_data[client_id] = {}
                     aggregated_data[client_id]['client_name'] = note['name']
 
-                quarter = ''
                 if int(quarter) == 1:
                     quarter = 'Q1'
                 elif int(quarter) == 2:
@@ -1083,6 +1082,8 @@ def sip_csf_services_report(request):
                     quarter = 'Q3'
                 elif int(quarter) == 4:
                     quarter = 'Q4'
+                else:
+                    quarter = ''
 
                 if quarter not in aggregated_data[client_id]:
                     aggregated_data[client_id][quarter] = {}
