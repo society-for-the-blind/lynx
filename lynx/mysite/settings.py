@@ -51,7 +51,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-
+    # 'debug_toolbar.middleware.DebugToolbarMiddleware'
 ]
 
 ROOT_URLCONF = 'mysite.urls'
@@ -175,16 +175,16 @@ USE_TZ = True
 
 
 if DEBUG:
-    # MIDDLEWARE += (
-    #     'debug_toolbar.middleware.DebugToolbarMiddleware',
-    # )
+    MIDDLEWARE += (
+        'debug_toolbar.middleware.DebugToolbarMiddleware',
+    )
     INSTALLED_APPS += (
         'debug_toolbar',
     )
     INTERNAL_IPS = ('127.0.0.1', '0.0.0.0')
-    # DEBUG_TOOLBAR_CONFIG = {
-    #     'INTERCEPT_REDIRECTS': False,
-    # }
+    DEBUG_TOOLBAR_CONFIG = {
+        'INTERCEPT_REDIRECTS': False,
+    }
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
