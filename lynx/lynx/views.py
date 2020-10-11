@@ -1051,8 +1051,7 @@ def sip_csf_services_report(request):
                     and quarter = %d 
                     and c.sip_client is true 
                     and c.id not in (SELECT contact_id FROM lynx_sipnote AS sip WHERE quarter < %d and fiscal_year = '%s')
-                    order by c.last_name, c.first_name;""" % (fiscal_year, quarter, quarter, fiscal_year)
-                breaking = """this is breaking %d""" % ('var',)
+                    order by c.last_name, c.first_name;""" % (fiscal_year, int(quarter), int(quarter), fiscal_year)
                 cursor.execute(query)
                 note_set = dictfetchall(cursor)
 
