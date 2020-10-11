@@ -12,7 +12,8 @@
 {% if not request.GET.print %}
 <h1>Progress Report for the month of {{ object.month|month_name }} {{ object.year }}</h1>
 <input type="button" onclick="location.href='/lynx/authorization/{{ object.authorization_id }}';" value="Return to Authorization" /> <input type="button" onclick="location.href='/lynx/client/{{ object.authorization.contact.id}}';" value="Return to Client" />
-{% if not request.GET.print %}<a href='/lynx/progress-report-edit/{{ object.id }}'>Edit</a> | <a href='/lynx/progress-report-confirm/{{ object.id }}/{{ object.authorization_id }}'>Delete</a>{% endif %}
+<br>
+<a href='/lynx/progress-report-edit/{{ object.id }}'>Edit</a> | <a href='/lynx/progress-report-confirm/{{ object.id }}/{{ object.authorization_id }}'>Delete</a>{% endif %}
 {% endif %}
 
 <h2>Client Information</h2>

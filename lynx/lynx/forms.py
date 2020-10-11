@@ -138,11 +138,12 @@ class ProgressReportForm(forms.ModelForm):
         super(ProgressReportForm, self).__init__(*args, **kwargs)
         self.fields['instructor'].label = "Instructor(s)"
         self.fields['accomplishments'].label = "Client Accomplishments"
-        self.fields['client_behavior'].label = "Client Attendance and Behavior"
+        self.fields['client_behavior'].label = "The client's attendance, attitude, and motivation during current month"
         self.fields['short_term_goals'].label = "Remaining Short Term Objectives"
         self.fields['short_term_goals_time'].label = "Estimated number of Hours needed for completion of short term objectives"
         self.fields['long_term_goals'].label = "Remaining Long Term Objectives"
         self.fields['long_term_goals_time'].label = "Estimated number of Hours needed for completion of long term objectives"
+        self.fields['notes'].label = "Additional comments"
 
 
 class LessonNoteForm(forms.ModelForm):

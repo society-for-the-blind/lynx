@@ -733,8 +733,9 @@ class ProgressReportUpdateView(LoginRequiredMixin, UpdateView):
     def get_form(self, form_class=None):
         form = super().get_form(form_class=form_class)
         form.fields["instructor"].label = "Instructor(s)"
+        form.fields["notes"].label = "Additional Comments"
         form.fields["accomplishments"].label = "Client Accomplishments"
-        form.fields["client_behavior"].label = "Client Attendance and Behavior"
+        form.fields["client_behavior"].label = "The client's attendance, attitude, and motivation during current month"
         form.fields["short_term_goals"].label = "Remaining Short Term Objectives"
         form.fields[
             "short_term_goals_time"].label = "Estimated number of Hours needed for completion of short term objectives"
