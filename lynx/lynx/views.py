@@ -1056,7 +1056,7 @@ def sip_csf_services_report(request):
                 cursor.execute(query)
                 note_set = dictfetchall(cursor)
 
-            filename = "SIP Quarterly Services Report - " + str(month) + " - " + str(fiscal_year)
+            filename = "SIP Quarterly Services Report - Q" + str(quarter) + " - " + str(fiscal_year)
             response = HttpResponse(content_type='text/csv')
             response['Content-Disposition'] = 'attachment; filename="' + filename + '.csv"'
             writer = csv.writer(response)
