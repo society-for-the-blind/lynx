@@ -1037,25 +1037,6 @@ def sip_csf_services_report(request):
             year = data.get('year')
             fiscal_year = get_fiscal_year(year)
 
-            fiscal_months = ['10', '11', '12', '1', '2', '3', '4', '5', '6', '7', '8', '9']
-
-            first = True
-            month_string = ''
-            for month_no in fiscal_months:
-                if month_no == month:
-                    break
-                else:
-                    if first:
-                        month_string = """SELECT client.id FROM lynx_sipnote AS sip 
-                        LEFT JOIN lynx_contact AS client ON client.id = sip.contact_id 
-                        WHERE extract(month FROM sip.note_date) = """ + month_no
-                        first = False
-                    else:
-                        month_string = month_string + ' or extract(month FROM sip.note_date) = ' + month_no
-
-            if len(month_string) > 0:
-                month_string = " and c.id not in (" + month_string + ')'
-
             with connection.cursor() as cursor:
                 query = """SELECT CONCAT(c.first_name, ' ', c.last_name) as name, c.id as id, ls.fiscal_year, 
                 ls.vision_screening, ls.treatment, ls.at_devices, ls.at_services, ls.orientation, ls.communications, 
@@ -1066,8 +1047,11 @@ def sip_csf_services_report(request):
                     left JOIN lynx_contact as c on c.id = ls.contact_id
                     inner join lynx_address as addr on c.id= addr.contact_id
                     left JOIN lynx_sipplan as sp on sp.id = ls.sip_plan_id
-                    where extract(month FROM ls.note_date) = '%s' and fiscal_year = '%s' and c.sip_client is true %s
-                    order by c.last_name, c.first_name;""" % (month, fiscal_year, month_string)
+                    where  fiscal_year = '%s' 
+                    and quarter = %d 
+                    and c.sip_client is true 
+                    and c.id not in (SELECT contact_id FROM lynx_sipnote AS sip WHERE quarter < %d and fiscal_year = '%s')
+                    order by c.last_name, c.first_name;""" % (fiscal_year, quarter, quarter, fiscal_year)
                 breaking = """this is breaking %d""" % ('var',)
                 cursor.execute(query)
                 note_set = dictfetchall(cursor)
