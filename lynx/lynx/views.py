@@ -1022,12 +1022,8 @@ def sip_quarterly_report(request):
     form = SipCSFReportForm()
     return render(request, 'lynx/sip_quarterly_report.html', {'form': form})
 
-def sip_csf_services_report(request):
-    q1 = ['October', 'November', 'December', 10, 11, 12, '10', '11', '12']
-    q2 = ['January', 'February', 'March', 1, 2, 3, '1', '2', '3', '01', '02', '03']
-    q3 = ['April', 'May', 'June', 4, 5, 6, '4', '5', '6', '04', '05', '06']
-    q4 = ['July', 'August', 'September', 7, 8, 9, '7', '8', '9', '07', '08', '09']
 
+def sip_csf_services_report(request):
     form = SipCSFReportForm()
     if request.method == 'POST':
         form = SipCSFReportForm(request.POST)
@@ -1078,16 +1074,14 @@ def sip_csf_services_report(request):
                     aggregated_data[client_id] = {}
                     aggregated_data[client_id]['client_name'] = note['name']
 
-                note_date = note['note_date']
-                note_month = note_date.month
                 quarter = ''
-                if note_month in q1:
+                if int(quarter) == 1:
                     quarter = 'Q1'
-                elif note_month in q2:
+                elif int(quarter) == 2:
                     quarter = 'Q2'
-                elif note_month in q3:
+                elif int(quarter) == 3:
                     quarter = 'Q3'
-                elif note_month in q4:
+                elif int(quarter) == 4:
                     quarter = 'Q4'
 
                 if quarter not in aggregated_data[client_id]:
@@ -1192,7 +1186,7 @@ def sip_csf_demographic_report(request):
         form = SipCSFReportForm(request.POST)
         if form.is_valid():
             data = request.POST.copy()
-            month = data.get('month')
+            quarter = data.get('quarter')
             year = data.get('year')
             fiscal_year = get_fiscal_year(year)
 
@@ -1208,11 +1202,15 @@ def sip_csf_demographic_report(request):
                     left JOIN lynx_contact as c on c.id = ls.contact_id
                     left JOIN lynx_intake as int on int.contact_id = c.id
                     inner join lynx_address as addr on c.id= addr.contact_id
-                    where fiscal_year = '%s' and c.sip_client is true
-                    order by c.last_name, c.first_name;""" % (fiscal_year,))
+                    where  fiscal_year = '%s' 
+                    and quarter = %d 
+                    and c.sip_client is true 
+                    and c.id not in (SELECT contact_id FROM lynx_sipnote AS sip WHERE quarter < %d and fiscal_year = '%s')
+                    order by c.last_name, c.first_name;""" % (fiscal_year, int(quarter), int(quarter), fiscal_year))
+
                 client_set = dictfetchall(cursor)
 
-            filename = "SIP Quarterly Demographic Report - " + str(month) + " - " + str(fiscal_year)
+            filename = "SIP Quarterly Demographic Report - Q" + str(quarter) + " - " + str(fiscal_year)
             response = HttpResponse(content_type='text/csv')
             response['Content-Disposition'] = 'attachment; filename="' + filename + '.csv"'
             writer = csv.writer(response)
@@ -1269,7 +1267,7 @@ def sip_csf_demographic_report(request):
                     if client["note_date"]:
                         # grab the date for the first note
                         year = int(year)
-                        month = int(month)
+                        quarter = int(quarter)
                         with connection.cursor() as cursor:
                             cursor.execute("""SELECT id, note_date FROM lynx_sipnote where contact_id = '%s' order by id ASC LIMIT 1;""" % (client_id,))
                             note_set = dictfetchall(cursor)
