@@ -95,6 +95,10 @@ def add_sip_note(request, contact_id):
         if form.is_valid():
             form = form.save(commit=False)
             form.contact_id = contact_id
+            note_date = form.note_date
+            note_month = note_date.month
+            quarter = get_quarter(note_month)
+            form.quarter = quarter
             form.user_id = request.user.id
             form.save()
             return HttpResponseRedirect(reverse('lynx:client', args=(contact_id,)))
@@ -1029,7 +1033,7 @@ def sip_csf_services_report(request):
         form = SipCSFReportForm(request.POST)
         if form.is_valid():
             data = request.POST.copy()
-            month = data.get('month')
+            quarter = data.get('quarter')
             year = data.get('year')
             fiscal_year = get_fiscal_year(year)
 

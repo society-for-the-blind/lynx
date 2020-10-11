@@ -520,6 +520,7 @@ class SipNote(models.Model):
     group = models.BooleanField(blank=True, default=False)
     community = models.BooleanField(blank=True, default=False)
     fiscal_year = models.CharField(max_length=15, blank=True, null=True)
+    quarter = models.CharField(max_length=15, blank=True, null=True)
     class_hours = models.FloatField(blank=True, null=True, choices=SIP_UNITS)
     created = models.DateTimeField(auto_now_add=True, null=True)
     modified = models.DateTimeField(auto_now=True, null=True)
