@@ -11,6 +11,8 @@ sudo pip3 install django-debug-toolbar
 sudo pip3 install django-tables2
 sudo pip3 instal openpyxl
 sudo pip3 install django-mathfilters
+sudo pip3 install django-audit-log
+sudo pip3 install django-reversion
 
 sudo apt-get install postgresql postgresql-contrib
 sudo update-rc.d postgresql enable
