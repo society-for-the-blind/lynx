@@ -407,6 +407,7 @@ class EmergencyContact(models.Model):
 
 class Authorization(models.Model):
     contact = models.ForeignKey('Contact', on_delete=models.CASCADE)
+    outside_agency = models.ForeignKey('Contact', on_delete=models.CASCADE, blank=True, null=True)
     intake_service_area = models.ForeignKey('IntakeServiceArea', on_delete=models.CASCADE)
     authorization_number = models.CharField(max_length=150, blank=True, null=True)
     authorization_type = models.CharField(max_length=25, choices=(("Hours", "Hours"), ("Classes", "Classes")), blank=True, null=True)
@@ -414,7 +415,7 @@ class Authorization(models.Model):
     end_date = models.DateField(blank=True, null=True, default=date.today)
     total_time = models.CharField(max_length=150, blank=True, null=True)
     billing_rate = models.CharField(max_length=150, blank=True, null=True)
-    outside_agency = models.ForeignKey('OutsideAgency', on_delete=models.CASCADE)
+    # outside_agency = models.ForeignKey('OutsideAgency', on_delete=models.CASCADE)
     student_plan = models.CharField(max_length=25, choices=(("Yes", "Yes"), ("No", "No")), blank=True, null=True)
     notes = models.TextField(blank=True, null=True)
     created = models.DateTimeField(auto_now_add=True, null=True)
