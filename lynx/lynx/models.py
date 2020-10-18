@@ -407,7 +407,7 @@ class EmergencyContact(models.Model):
 
 class Authorization(models.Model):
     contact = models.ForeignKey('Contact', on_delete=models.CASCADE)
-    outside_agency = models.ForeignKey('Contact', on_delete=models.CASCADE, blank=True, null=True)
+    outside_agency = models.ForeignKey('Contact', on_delete=models.CASCADE, blank=True, null=True, related_name='outside_agent')
     intake_service_area = models.ForeignKey('IntakeServiceArea', on_delete=models.CASCADE)
     authorization_number = models.CharField(max_length=150, blank=True, null=True)
     authorization_type = models.CharField(max_length=25, choices=(("Hours", "Hours"), ("Classes", "Classes")), blank=True, null=True)
