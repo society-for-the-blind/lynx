@@ -383,6 +383,7 @@ class Referral(models.Model):
 class IntakeNote(models.Model):
     contact = models.ForeignKey('Contact', on_delete=models.CASCADE)
     note = models.TextField(null=True)
+    note_type = models.CharField(max_length=250, null=True)
     created = models.DateTimeField(auto_now_add=True, null=True)
     modified = models.DateTimeField(auto_now=True, null=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET(get_sentinel_user))
