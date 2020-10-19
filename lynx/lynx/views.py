@@ -396,11 +396,12 @@ def client_advanced_result_view(request):
 @login_required
 def progress_result_view(request):
     if request.GET.get('selMonth') and request.GET.get('selYear'):
-        object_list = ProgressReport.objects.filter(month=request.GET.get('selMonth')).filter(
-            year=request.GET.get('selYear'))
         MONTHS = {"January": 1, "February": 2, "March": 3, "April": 4, "May": 5, "June": 6, "July": 7,
                   "August": 8, "September": 9, "October": 10, "November": 11, "December": 12}
         given_month = MONTHS[request.GET.get('selMonth')]
+        object_list = ProgressReport.objects.filter(month=given_month).filter(
+            year=request.GET.get('selYear'))
+
     else:
         object_list = None
         given_month = None
