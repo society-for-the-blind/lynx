@@ -194,13 +194,13 @@ class Phone (models.Model):
     def __str__(self):
         return self.phone
 
-# Employee information. Contact information in Contact table, addresses in Address table.
-class Employee(models.Model):
-    contact = models.ForeignKey('Contact', on_delete=models.CASCADE)
-    employee_type = models.CharField(max_length=150)
-    created = models.DateTimeField(auto_now_add=True)
-    modified = models.DateTimeField(auto_now=True)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET(get_sentinel_user))
+# # Employee information. Contact information in Contact table, addresses in Address table.
+# class Employee(models.Model):
+#     contact = models.ForeignKey('Contact', on_delete=models.CASCADE)
+#     employee_type = models.CharField(max_length=150)
+#     created = models.DateTimeField(auto_now_add=True)
+#     modified = models.DateTimeField(auto_now=True)
+#     user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET(get_sentinel_user))
 
 
 # Addresses for Contacts.
@@ -217,7 +217,7 @@ class Address(models.Model):
     region = models.CharField(max_length=150, blank=True, null=True)
     cross_streets = models.CharField(max_length=150, blank=True, null=True)
     bad_address = models.BooleanField(blank=True, default=False)
-    billing = models.BooleanField(blank=True, default=False)  # Only applies to employees
+    # billing = models.BooleanField(blank=True, default=False)  # Only applies to employees
     preferred_medium = models.CharField(max_length=150, blank=True, choices=MAILINGS, null=True)
     address_notes = models.TextField(blank=True, null=True)
     created = models.DateTimeField(auto_now_add=True)
@@ -231,12 +231,12 @@ class Address(models.Model):
         return "/lynx/client/%i" % self.contact_id
 
 
-class Billing(models.Model):
-    employee = models.ForeignKey('Employee', on_delete=models.CASCADE)
-    invoice_date = models.DateField()
-    created = models.DateTimeField(auto_now_add=True)
-    modified = models.DateTimeField(auto_now=True)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET(get_sentinel_user))
+# class Billing(models.Model):
+#     employee = models.ForeignKey('Employee', on_delete=models.CASCADE)
+#     invoice_date = models.DateField()
+#     created = models.DateTimeField(auto_now_add=True)
+#     modified = models.DateTimeField(auto_now=True)
+#     user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET(get_sentinel_user))
 
 
 # Intake questionnaire
@@ -370,15 +370,15 @@ class Intake(models.Model):
         return '%s Intake' % (self.contact_id,)
 
 
-class Referral(models.Model):
-    intake = models.ForeignKey('Intake', on_delete=models.CASCADE)
-    source = models.CharField(max_length=250, null=True)
-    name = models.CharField(max_length=250, null=True)
-    referral_date = models.DateField(null=True, default=date.today)
-    created = models.DateTimeField(null=True)
-    modified = models.DateTimeField(auto_now=True, null=True)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET(get_sentinel_user))
-
+# class Referral(models.Model):
+#     intake = models.ForeignKey('Intake', on_delete=models.CASCADE)
+#     source = models.CharField(max_length=250, null=True)
+#     name = models.CharField(max_length=250, null=True)
+#     referral_date = models.DateField(null=True, default=date.today)
+#     created = models.DateTimeField(null=True)
+#     modified = models.DateTimeField(auto_now=True, null=True)
+#     user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET(get_sentinel_user))
+#
 
 class IntakeNote(models.Model):
     contact = models.ForeignKey('Contact', on_delete=models.CASCADE)
@@ -452,16 +452,16 @@ class IntakeServiceArea(models.Model):
         return self.agency
 
 
-class BillingName(models.Model):
-    agency = models.CharField(max_length=150, blank=True, null=True)
-    cost = models.CharField(max_length=50, blank=True, null=True)
-    active = models.BooleanField(blank=True, default=False)
-    created = models.DateTimeField(auto_now_add=True, null=True)
-    modified = models.DateTimeField(auto_now=True, null=True)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET(get_sentinel_user))
-
-    def __str__(self):
-        return '%s ($%s)' % (self.agency, self.cost)
+# class BillingName(models.Model):
+#     agency = models.CharField(max_length=150, blank=True, null=True)
+#     cost = models.CharField(max_length=50, blank=True, null=True)
+#     active = models.BooleanField(blank=True, default=False)
+#     created = models.DateTimeField(auto_now_add=True, null=True)
+#     modified = models.DateTimeField(auto_now=True, null=True)
+#     user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET(get_sentinel_user))
+#
+#     def __str__(self):
+#         return '%s ($%s)' % (self.agency, self.cost)
 
 
 class ProgressReport(models.Model):
