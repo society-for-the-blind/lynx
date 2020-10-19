@@ -75,7 +75,7 @@ class AddressForm(forms.ModelForm):
     class Meta:
 
         model = Address
-        exclude = ('created', 'modified', 'user', 'billing', 'contact')
+        exclude = ('created', 'modified', 'user', 'contact')
 
     def __init__(self, *args, **kwargs):
         super(AddressForm, self).__init__(*args, **kwargs)
