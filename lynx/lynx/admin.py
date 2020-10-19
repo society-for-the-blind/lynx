@@ -3,15 +3,15 @@ from django.contrib import admin
 # Register your models here.
 
 
-from .models import Contact, Employee, Billing, Intake, Address, Authorization, BillingName, Email, EmergencyContact, \
-    IntakeNote, IntakeServiceArea, OutsideAgency, Phone, Referral, ProgressReport, LessonNote
+from .models import Contact, Intake, Address, Authorization, Email, EmergencyContact, SipPlan, SipNote, \
+    IntakeNote, IntakeServiceArea, OutsideAgency, Phone, ProgressReport, LessonNote
 
 admin.site.register(Contact)
-admin.site.register(Employee)
 admin.site.register(Intake)
 admin.site.register(Address)
 admin.site.register(Authorization)
-admin.site.register(BillingName)
+admin.site.register(SipPlan)
+admin.site.register(SipNote)
 admin.site.register(Email)
 admin.site.register(EmergencyContact)
 admin.site.register(IntakeNote)
