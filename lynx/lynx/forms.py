@@ -192,6 +192,7 @@ class SipNoteForm(forms.ModelForm):
         self.fields['group'].label = "Support group(s)"
         self.fields['community'].label = "Community Integration"
         self.fields['class_hours'].label = "Class Length"
+        self.fields['instructor'].label = "Instructor"
 
 
 class SipPlanForm(forms.ModelForm):

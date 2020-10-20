@@ -524,6 +524,7 @@ class SipNote(models.Model):
     fiscal_year = models.CharField(max_length=15, blank=True, null=True)
     quarter = models.IntegerField(blank=True, null=True)
     class_hours = models.FloatField(blank=True, null=True, choices=SIP_UNITS)
+    instructor = models.CharField(max_length=50, blank=True, null=True)
     created = models.DateTimeField(auto_now_add=True, null=True)
     modified = models.DateTimeField(auto_now=True, null=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET(get_sentinel_user))
