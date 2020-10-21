@@ -382,7 +382,7 @@ def client_advanced_result_view(request):
             Q(phone_number__icontains=query)
         ).distinct('id')
 
-        object_list = object_list.order_by('last_name', 'first_name')
+        object_list = object_list.order_by('last_name', 'first_name', 'id')
         paginator = Paginator(object_list, 20)
         page_number = request.GET.get('page')
         page_obj = paginator.get_page(page_number)
