@@ -117,7 +117,7 @@
         {% if intake.living_arrangement %}<p class="tab"><strong>Living Arrangements:</strong> {{ intake.living_arrangement }}</p>{% endif %}
         {% if intake.residence_type %}<p class="tab"><strong>Residence Types:</strong> {{ intake.residence_type }}</p>{% endif %}
         {% if intake.veteran %}<p class="tab"><strong>Veteran:</strong> {{ intake.veteran }}</p>{% endif %}
-        {% if intake.hired %}<p class="tab"><strong>Hired:</strong>{{ intake.hired}}</p>{% endif %}
+        {% if intake.hired %}<p class="tab"><strong>Hired:</strong> {{ intake.hired}}</p>{% endif %}
         {% if intake.employer %}<p class="tab"><strong>Employer:</strong> {{ intake.employer }}</p>{% endif %}
         {% if intake.hire_date %}<p class="tab"><strong>Hire Date: </strong> {{ intake.hire_date|date:'F j, Y' }}</p>{% endif %}
         {% if intake.position %}<p class="tab"><strong>Position: </strong> {{ intake.position }}</p>{% endif %}
@@ -270,14 +270,16 @@
 <br>
 <h2>Notes</h2>
 {% for note in note_list %}
-    <p class="tab">{{ note.created|date:'F j, Y' }}: {{ note.note|linebreaks }}<br>
-        -{{ note.user.first_name }} {{ note.user.last_name }}
-        {% if not request.GET.print %}<a href='/lynx/intake-note-edit/{{ note.id }}'>Edit</a> | <a href='/lynx/intake-note-confirm/{{ note.id }}/{{ object.id }}'>Delete</a>{% endif %}
-    <hr>
+    {% if note.type = 'intake' %}
+        <p class="tab">{{ note.created|date:'F j, Y' }}: {{ note.note|linebreaks }}<br>
+            -{{ note.user.first_name }} {{ note.user.last_name }}
+            {% if not request.GET.print %}<a href='/lynx/intake-note-edit/{{ note.id }}'>Edit</a> | <a href='/lynx/intake-note-confirm/{{ note.id }}/{{ object.id }}'>Delete</a>{% endif %}
+        <hr>
+    {% endif %}
 {% endfor %}
 {% if object.contact_notes %}
     <p class="tab">{{ object.note_date|date:'F j, Y' }}: {{ object.contact_notes|linebreaks }}<br>
-        Note By: {{ user.first_name }} {{ user.last_name }} {% if not request.GET.print %}<input type="button" class="btn btn-primary" aria-label="Edit Note" onclick="location.href='/lynx/intake-note-edit/{{ note.id }}';" value="Edit Note" /></p>{% endif %}
+        Note By: {{ user.first_name }} {{ user.last_name }} <a href='/lynx/intake-note-edit/{{ note.id }}'>Edit</a>
 {% endif %}
 <br>
 {% if not request.GET.print %}
