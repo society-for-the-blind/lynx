@@ -7,7 +7,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic.edit import UpdateView
 from django.urls import reverse_lazy
-from django.db.models import Q, F
+from django.db.models import Q, F, Subquery
 from django.db.models import Value as V
 from django.db.models.functions import Concat, Replace
 from django.db import connection
@@ -359,30 +359,59 @@ def client_result_view(request):
 def client_advanced_result_view(request):
     query = request.GET.get('q')
     if query:
-        object_list = Contact.objects.annotate(
-            full_name=Concat('first_name', V(' '), 'last_name')
-        ).annotate(
-            phone_number=Replace('phone__phone', V('('), V(''))
-        ).annotate(
-            phone_number=Replace('phone_number', V(')'), V(''))
-        ).annotate(
-            phone_number=Replace('phone_number', V('-'), V(''))
-        ).annotate(
-            phone_number=Replace('phone_number', V(' '), V(''))
-        ).annotate(
-            zip_code=F('address__zip_code')
-        ).annotate(
-            county=F('address__county')
-        ).filter(
-            Q(full_name__icontains=query) |
-            Q(first_name__icontains=query) |
-            Q(last_name__icontains=query) |
-            Q(zip_code__icontains=query) |
-            Q(county__icontains=query) |
-            Q(phone_number__icontains=query)
-        ).distinct('id')
 
-        object_list = object_list.order_by('last_name', 'first_name', 'id')
+        object_list = Contact.objects.filter(
+            pk__in=Subquery(
+                Contact.objects.annotate(
+                    full_name=Concat('first_name', V(' '), 'last_name')
+                ).annotate(
+                    phone_number=Replace('phone__phone', V('('), V(''))
+                ).annotate(
+                    phone_number=Replace('phone_number', V(')'), V(''))
+                ).annotate(
+                    phone_number=Replace('phone_number', V('-'), V(''))
+                ).annotate(
+                    phone_number=Replace('phone_number', V(' '), V(''))
+                ).annotate(
+                    zip_code=F('address__zip_code')
+                ).annotate(
+                    county=F('address__county')
+                ).filter(
+                    Q(full_name__icontains=query) |
+                    Q(first_name__icontains=query) |
+                    Q(last_name__icontains=query) |
+                    Q(zip_code__icontains=query) |
+                    Q(county__icontains=query) |
+                    Q(phone_number__icontains=query)
+                ).distinct('id')
+            )
+        ).order_by('last_name', 'first_name')
+
+
+        # object_list = Contact.objects.annotate(
+        #     full_name=Concat('first_name', V(' '), 'last_name')
+        # ).annotate(
+        #     phone_number=Replace('phone__phone', V('('), V(''))
+        # ).annotate(
+        #     phone_number=Replace('phone_number', V(')'), V(''))
+        # ).annotate(
+        #     phone_number=Replace('phone_number', V('-'), V(''))
+        # ).annotate(
+        #     phone_number=Replace('phone_number', V(' '), V(''))
+        # ).annotate(
+        #     zip_code=F('address__zip_code')
+        # ).annotate(
+        #     county=F('address__county')
+        # ).filter(
+        #     Q(full_name__icontains=query) |
+        #     Q(first_name__icontains=query) |
+        #     Q(last_name__icontains=query) |
+        #     Q(zip_code__icontains=query) |
+        #     Q(county__icontains=query) |
+        #     Q(phone_number__icontains=query)
+        # ).distinct('id')
+
+        # object_list = object_list.order_by('last_name', 'first_name', 'id')
         paginator = Paginator(object_list, 20)
         page_number = request.GET.get('page')
         page_obj = paginator.get_page(page_number)
