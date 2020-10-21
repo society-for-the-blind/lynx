@@ -371,10 +371,8 @@ def client_advanced_result_view(request):
             phone_number=Replace('phone_number', V(' '), V(''))
         ).annotate(
             zip_code=F('address__zip_code')
-            # zip_code='address__zip_code'
         ).annotate(
             county=F('address__county')
-            # county='address__county'
         ).filter(
             Q(full_name__icontains=query) |
             Q(first_name__icontains=query) |
@@ -382,7 +380,7 @@ def client_advanced_result_view(request):
             Q(zip_code__icontains=query) |
             Q(county__icontains=query) |
             Q(phone_number__icontains=query)
-        )
+        ).distinct('id')
 
         object_list = object_list.order_by('last_name', 'first_name')
         paginator = Paginator(object_list, 20)
