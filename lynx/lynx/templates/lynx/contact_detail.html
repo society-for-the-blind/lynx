@@ -291,7 +291,7 @@
 {% endif %}
 
 {% if not request.GET.print %}
-<form action="/lynx/client/{{ object.id }}/" method="GET">
+<form action="/lynx/client/{{ object.id }}" method="GET">
   <input type="hidden" name="print" value="true" />
   <input type="submit" value="Print View" class="btn btn-primary" />
 </form>
