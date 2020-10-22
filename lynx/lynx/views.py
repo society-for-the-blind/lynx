@@ -461,7 +461,10 @@ class AuthorizationDetailView(LoginRequiredMixin, DetailView):
             if note['billed_units']:
                 units = float(note['billed_units'])
                 total_units += units
-            note['hours'] = float(note['billed_units']) / 4
+            if note['billed_units']:
+                note['hours'] = float(note['billed_units']) / 4
+            else:
+                note['hours'] = 0
         total_hours = units_to_hours(total_units)
         if authorization[0]['billing_rate'] is None:
             context['total_billed'] = 'Need to enter billing rate'
@@ -795,6 +798,14 @@ class IntakeNoteDeleteView(LoginRequiredMixin, DeleteView):
 
 class ProgressReportDeleteView(LoginRequiredMixin, DeleteView):
     model = ProgressReport
+
+    def get_success_url(self):
+        auth_id = self.kwargs['auth_id']
+        return reverse_lazy('lynx:authorization_detail', kwargs={'pk': auth_id})
+
+
+class LessonNoteDeleteView(LoginRequiredMixin, DeleteView):
+    model = LessonNote
 
     def get_success_url(self):
         auth_id = self.kwargs['auth_id']
