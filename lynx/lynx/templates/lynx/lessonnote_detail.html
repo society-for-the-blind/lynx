@@ -9,9 +9,9 @@
 <!--<p class="tab"><strong>Instructional Units:</strong> {{ object.instructional_units }}</p>-->
 <p class="tab"><strong>Billed Units:</strong> {{ object.billed_units }}</p>
 <!--{% if auth_type == 'group' %}<p class="tab"><strong>Number of Students in Class:</strong> {{ object.students_no }}</p>{% endif %}-->
-<p class="tab"><strong>Successes and accomplishments:</strong> {{ object.successes }}</p>
-<p class="tab"><strong>Obstacles and barriers to current learning:</strong> {{ object.obstacles }}</p>
-<p class="tab"><strong>Recommendations to improve learning:</strong> {{ object.recommendations }}</p>
-<p class="tab"><strong>Other:</strong> {{ object.note }}</p>
+<p class="tab"><strong>Successes and accomplishments:</strong> {{ object.successes|linebreaksbr }}</p>
+<p class="tab"><strong>Obstacles and barriers to current learning:</strong> {{ object.obstacles|linebreaksbr }}</p>
+<p class="tab"><strong>Recommendations to improve learning:</strong> {{ object.recommendations|linebreaksbr }}</p>
+<p class="tab"><strong>Other:</strong> {{ object.note|linebreaksbr }}</p>
 
 {% endblock %}
