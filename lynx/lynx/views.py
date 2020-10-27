@@ -808,7 +808,7 @@ class LessonNoteDeleteView(LoginRequiredMixin, DeleteView):
     model = LessonNote
 
     def get_success_url(self):
-        auth_id = self.kwargs['auth_id']
+        auth_id = self.authorization_id
         return reverse_lazy('lynx:authorization_detail', kwargs={'pk': auth_id})
 
 
