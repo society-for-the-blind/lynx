@@ -480,6 +480,9 @@ class ProgressReport(models.Model):
     modified = models.DateTimeField(auto_now=True, null=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET(get_sentinel_user))
 
+    def get_absolute_url(self):
+        return "/lynx/authorization/%i" % self.authorization
+
 
 class LessonNote(models.Model):
     authorization = models.ForeignKey('Authorization', on_delete=models.CASCADE, related_name='lesson')
@@ -495,6 +498,9 @@ class LessonNote(models.Model):
     created = models.DateTimeField(auto_now_add=True, null=True)
     modified = models.DateTimeField(auto_now=True, null=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET(get_sentinel_user))
+
+    def get_absolute_url(self):
+        return "/lynx/authorization/%i" % self.authorization
 
 
 class SipNote(models.Model):

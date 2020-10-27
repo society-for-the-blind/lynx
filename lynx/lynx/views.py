@@ -275,7 +275,7 @@ def add_progress_report(request, authorization_id):
             form.authorization_id = authorization_id
             form.user_id = request.user.id
             form.save()
-            return HttpResponseRedirect(reverse('lynx:authorization', args=(authorization_id,)))
+            return HttpResponseRedirect(reverse('lynx:authorization_detail', args=(authorization_id,)))
     return render(request, 'lynx/add_progress_report.html', {'form': form})
 
 
@@ -333,7 +333,7 @@ def add_lesson_note(request, authorization_id):
             form.authorization_id = authorization_id
             form.user_id = request.user.id
             form.save()
-            return HttpResponseRedirect(reverse('lynx:authorization', args=(authorization_id,)))
+            return HttpResponseRedirect(reverse('lynx:authorization_detail', args=(authorization_id,)))
     return render(request, 'lynx/add_lesson_note.html', {'form': form, 'client': client, 'auth_type': auth_type})
 
 
