@@ -481,7 +481,7 @@ class ProgressReport(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET(get_sentinel_user))
 
     def get_absolute_url(self):
-        return "/lynx/authorization/%i" % self.authorization
+        return "/lynx/authorization/%i" % self.authorization_id
 
 
 class LessonNote(models.Model):
@@ -500,7 +500,7 @@ class LessonNote(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET(get_sentinel_user))
 
     def get_absolute_url(self):
-        return "/lynx/authorization/%i" % self.authorization
+        return "/lynx/authorization/%i" % self.authorization_id
 
 
 class SipNote(models.Model):
