@@ -11,9 +11,7 @@
 
 {% if not request.GET.print %}
 <h1>Progress Report for the month of {{ object.month|month_name }} {{ object.year }}</h1>
-<input type="button" onclick="location.href='/lynx/authorization/{{ object.authorization_id }}';" value="Return to Authorization" /> <input type="button" onclick="location.href='/lynx/client/{{ object.authorization.contact.id}}';" value="Return to Client" />
-<br>
-<h2><a href='/lynx/progress-report-edit/{{ object.id }}'>Edit</a> {% if user.is_superuser %}| <a href='/lynx/progress-report-confirm/{{ object.id }}/{{ object.authorization_id }}'>Delete</a> {% endif %}</h2>
+<input type="button" class="btn btn-primary" onclick="location.href='/lynx/authorization/{{ object.authorization_id }}';" value="Return to Authorization" /> <input type="button" class="btn btn-primary" onclick="location.href='/lynx/client/{{ object.authorization.contact.id}}';" value="Return to Client" /> <input type="button" class="btn btn-success" onclick="location.href='/lynx/progress-report-edit/{{ object.id }}';" value="Edit" /> {% if user.is_superuser %}<input type="button" class="btn btn-danger" onclick="location.href='/lynx/progress-report-confirm/{{ object.id }}/{{ object.authorization_id }}';" value="Delete" />{% endif %}
 {% endif %}
 
 <h2>Client Information</h2>
