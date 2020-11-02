@@ -12,7 +12,7 @@
     </form>
     <ul>
         {% for client in object_list %}
-            <li><a href="client/{{ client.id }}">{{ client.last_name }}, {{ client.first_name }} {% if client.middle_name %}{{ client.middle_name }} {% endif %} {{ client.created|date:"Y-n-j" }}</a></li>
+            <li><a href="client/{{ client.id }}">{{ client.last_name }}, {{ client.first_name }} {% if client.middle_name %}{{ client.middle_name }} {% endif %} {{ client.intake_date }}</a></li>
         {% endfor %}
     </ul>
 {% endblock %}

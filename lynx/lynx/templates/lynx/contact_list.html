@@ -26,7 +26,7 @@
     <select id="contactSelect" >
         <option value="">---------</option>
         {% for client in clients %}
-            <option value = "{{ client.id }}">{{ client.last_name }}, {{ client.first_name }} {% if client.middle_name %}{{ client.middle_name }} {% endif %} {{ client.created|date:"n-j-Y" }}</option>
+            <option value = "{{ client.id }}">{{ client.last_name }}, {{ client.first_name }} {% if client.middle_name %}{{ client.middle_name }} {% endif %} {{ client.intake_date }}</option>
         {% endfor %}
     </select>
     <br>
