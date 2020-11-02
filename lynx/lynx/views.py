@@ -97,8 +97,15 @@ def add_sip_note(request, contact_id):
             form.contact_id = contact_id
             note_date = form.note_date
             note_month = note_date.month
+            note_year = note_date.year
             quarter = get_quarter(note_month)
+            if quarter == 1:
+                fiscal_year = get_fiscal_year(note_year)
+            else:
+                f_year = note_year - 1
+                fiscal_year = get_fiscal_year(f_year)
             form.quarter = quarter
+            form.fiscal_year = fiscal_year
             form.user_id = request.user.id
             form.save()
             return HttpResponseRedirect(reverse('lynx:client', args=(contact_id,)))

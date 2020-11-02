@@ -81,6 +81,7 @@ class AddressForm(forms.ModelForm):
         super(AddressForm, self).__init__(*args, **kwargs)
         self.fields['suite'].label = "Apt/Suite"
 
+
 class EmergencyForm(forms.ModelForm):
 
     class Meta:
