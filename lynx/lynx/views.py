@@ -4,7 +4,7 @@ from django.template import loader
 from django.views import generic
 from django.views.generic import DetailView, ListView, FormView, DeleteView
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.views.generic.edit import UpdateView
 from django.urls import reverse_lazy
 from django.db.models import Q, F, Subquery
@@ -796,8 +796,11 @@ class IntakeNoteDeleteView(LoginRequiredMixin, DeleteView):
         return reverse_lazy('lynx:client', kwargs={'pk': client_id})
 
 
-class ProgressReportDeleteView(LoginRequiredMixin, DeleteView):
+class ProgressReportDeleteView(UserPassesTestMixin, DeleteView):
     model = ProgressReport
+
+    def test_func(self):
+        return self.request.user.is_superuser
 
     def get_success_url(self):
         auth_id = self.kwargs['auth_id']
