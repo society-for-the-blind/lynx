@@ -1,0 +1,10 @@
+{% extends 'lynx/base.html' %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<form method="post">{% csrf_token %}
+    <p>Are you sure you want to delete authorization {{ object.authorization_number }}?</p>
+    <input type="hidden" name="next" value="{{ request.path }}">
+    <input type="submit" value="Confirm">
+</form>
+{% endblock %}

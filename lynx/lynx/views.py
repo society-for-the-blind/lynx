@@ -807,6 +807,17 @@ class ProgressReportDeleteView(UserPassesTestMixin, DeleteView):
         return reverse_lazy('lynx:authorization_detail', kwargs={'pk': auth_id})
 
 
+class AuthorizationDeleteView(UserPassesTestMixin, DeleteView):
+    model = Authorization
+
+    def test_func(self):
+        return self.request.user.is_superuser
+
+    def get_success_url(self):
+        client_id = self.kwargs['client_id']
+        return reverse_lazy('lynx:contact_detail', kwargs={'pk': client_id})
+
+
 class LessonNoteDeleteView(LoginRequiredMixin, DeleteView):
     model = LessonNote
 
