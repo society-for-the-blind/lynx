@@ -25,11 +25,11 @@ class ContactForm(forms.ModelForm):
 
 
 class IntakeForm(forms.ModelForm):
-    currentYear = datetime.now().year
-    oldYear = currentYear - 125
-    highYear = currentYear + 2
-    if oldYear < 1900:
-        oldYear = 1900
+    # currentYear = datetime.now().year
+    # oldYear = currentYear - 125
+    # highYear = currentYear + 2
+    # if oldYear < 1900:
+    #     oldYear = 1900
 
     # intake_date = forms.DateField(widget=forms.SelectDateWidget(empty_label="Nothing", years=range(1990, highYear)))
     # eye_condition_date = forms.DateField(widget=forms.SelectDateWidget(empty_label="Nothing", years=range(1920, highYear)))
@@ -42,6 +42,9 @@ class IntakeForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(IntakeForm, self).__init__(*args, **kwargs)
+        self.fields['intake_date'].label = "Intake Date (YYYY-MM-DD)"
+        self.fields['eye_condition_date'].label = "Eye Condition Onset Date (YYYY-MM-DD)"
+        self.fields['birth_date'].label = "Birthdate (YYYY-MM-DD)"
         self.fields['other_languages'].label = "Other Language(s)"
         self.fields['other_ethnicity'].label = "Ethnicity (if other)"
         self.fields['crime'].label = "Have you been convicted of a crime?"
@@ -58,7 +61,7 @@ class IntakeForm(forms.ModelForm):
         self.fields['high_bp_notes'].label = "Hypertension Notes"
         self.fields['geriatric'].label = "Other Major Geriatric Concerns"
         self.fields['degree'].label = "Degree of Vision Loss"
-        self.fields['secondary_eye_condition'].label = "Notes"
+        self.fields['secondary_eye_condition'].label = "Secondary Eye Condition"
         self.fields['heart'].label = "Cardiovascular Disease"
         self.fields['heart_notes'].label = "Cardiovascular Disease Notes"
         self.fields['dexterity'].label = "Use of Hands, Arms, and Fingers"
@@ -115,8 +118,8 @@ class IntakeNoteForm(forms.ModelForm):
 
 
 class AuthorizationForm(forms.ModelForm):
-    start_date = forms.DateField(widget=forms.SelectDateWidget(empty_label="Nothing"))
-    end_date = forms.DateField(widget=forms.SelectDateWidget(empty_label="Nothing"))
+    # start_date = forms.DateField(widget=forms.SelectDateWidget(empty_label="Nothing"))
+    # end_date = forms.DateField(widget=forms.SelectDateWidget(empty_label="Nothing"))
 
     class Meta:
 
@@ -126,6 +129,8 @@ class AuthorizationForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(AuthorizationForm, self).__init__(*args, **kwargs)
         self.fields['outside_agency'].label = "Payment Source"
+        self.fields['start_date'].label = "Start Date (YYYY-MM-DD)"
+        self.fields['end_date'].label = "End Date (YYYY-MM-DD)"
 
 
 class ProgressReportForm(forms.ModelForm):
@@ -148,12 +153,16 @@ class ProgressReportForm(forms.ModelForm):
 
 
 class LessonNoteForm(forms.ModelForm):
-    date = forms.DateField(widget=forms.SelectDateWidget(empty_label="Nothing"))
+    # date = forms.DateField(widget=forms.SelectDateWidget(empty_label="Nothing"))
 
     class Meta:
 
         model = LessonNote
         exclude = ('created', 'modified', 'user', 'authorization')
+
+    def __init__(self, *args, **kwargs):
+        super(LessonNoteForm, self).__init__(*args, **kwargs)
+        self.fields['date'].label = "Lesson Note Date (YYYY-MM-DD)"
 
 
 class SipNoteForm(forms.ModelForm):
