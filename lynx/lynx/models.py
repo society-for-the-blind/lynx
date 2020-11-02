@@ -535,6 +535,7 @@ class SipNote(models.Model):
     modified = models.DateTimeField(auto_now=True, null=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET(get_sentinel_user))
 
+
     def get_absolute_url(self):
         return "/lynx/client/%i" % self.contact_id
 
@@ -591,6 +592,9 @@ class SipPlan(models.Model):
     created = models.DateTimeField(auto_now_add=True, null=True)
     modified = models.DateTimeField(auto_now=True, null=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET(get_sentinel_user))
+
+    def __str__(self):
+        return self.plan_name
 
     def get_absolute_url(self):
         return "/lynx/client/%i" % self.contact_id
