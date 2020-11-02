@@ -731,7 +731,7 @@ class LessonNoteUpdateView(LoginRequiredMixin, UpdateView):
 class ProgressReportUpdateView(LoginRequiredMixin, UpdateView):
     model = ProgressReport
     fields = ['month', 'instructor', 'accomplishments', 'short_term_goals', 'short_term_goals_time',
-              'long_term_goals', 'long_term_goals_time', 'client_behavior']
+              'long_term_goals', 'long_term_goals_time', 'client_behavior', 'notes']
     template_name_suffix = '_edit'
 
     def get_form(self, form_class=None):

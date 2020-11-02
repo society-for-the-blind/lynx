@@ -103,7 +103,7 @@ SIP_UNITS = ((.25, "15 Minutes"), (.5, "30 Minutes"), (.75, "45 Minutes"), (1, "
 SALUTATIONS = (("Mr.", "Mr."), ("Mrs.", "Mrs."), ("Miss", "Miss"), ("Ms.", "Ms."), ("Dr.", "Dr."), ("Prof.", "Prof."),
                ("Rev.", "Rev."))
 
-AGES = (("Less than 54", "Less than 54"), ("55-64", "55-54"), ("65-74", "65-74"), ("75-84", "75-84"),
+AGES = (("Less than 54", "Less than 54"), ("55-64", "55-64"), ("65-74", "65-74"), ("75-84", "75-84"),
         ("84+", "84+"))
 
 TASKS = (('Visually', 'Visually'), ('Non-Visually', 'Non-Visually'), ('Both Visually and Non-Visually', 'Both Visually and Non-Visually'))
