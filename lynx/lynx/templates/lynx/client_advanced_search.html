@@ -5,8 +5,9 @@
 {% block content %}
     <h1>Advanced Client Search Results</h1>
 {% if not request.GET.print %}
-    <p>Search by client name, phone number, zip code, or county.</p>
+    <p>Search by client name, phone number, zip code, county, email address, or intake date.</p>
     <p>Notes: Do not use any special characters or spaces to search for a phone number (ex. use 8675309 not 867-5309, (111) 867-5309, or 867 5309)</p>
+    <p>Notes: Format any dates as yyyy-mm-dd, so March 15, 2020 would be 2020-03-15</p>
     <form action="{% url 'lynx:client_advanced_search' %}" method="get">
         <input name="q" type="text" placeholder="Search...">
         <input type="submit" value="Search All Clients" />
