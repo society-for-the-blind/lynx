@@ -51,6 +51,7 @@ urlpatterns = [
     path('progress-report-confirm/<int:pk>/<int:auth_id>', views.ProgressReportDeleteView.as_view(), name='pr-delete'),
     path('authorization-confirm/<int:pk>/<int:client_id>', views.AuthorizationDeleteView.as_view(), name='auth-delete'),
     path('lesson-note-confirm/<int:pk>/<int:auth_id>', views.LessonNoteDeleteView.as_view(), name='ln-delete'),
+    path('contact-confirm/<int:pk>', views.ContactDeleteView.as_view(), name='contact-delete'),
     path('client-search', views.client_result_view, name='client_search'),
     path('client-advanced-search', views.client_advanced_result_view, name='client_advanced_search'),
     path('report-search', views.progress_result_view, name='report_search'),

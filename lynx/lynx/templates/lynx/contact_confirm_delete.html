@@ -1,0 +1,10 @@
+{% extends 'lynx/base.html' %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<form method="post">{% csrf_token %}
+    <p>Are you sure you want to delete the client {{ object.first_name }} {{ object.last_name }}? This will be permanent. If the client is simple no longer using services at SFTB, mark them inactive instead. </p>
+    <input type="hidden" name="next" value="{{ request.path }}">
+    <input type="submit" value="Confirm">
+</form>
+{% endblock %}

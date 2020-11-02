@@ -10,7 +10,7 @@
   <button class="btn btn-success" formaction="/lynx/client/{{ object.contact_id }}">Return to {{ object.contact.first_name }} {{ object.contact.last_name }}'s Information </button>
   {% if user.is_superuser %}
     <button class="btn btn-primary" formaction="/lynx/authorization-edit/{{ object.id }}"> Edit Authorization </button>
-    <button class="btn btn-warning" formaction="/lynx/authorization-confirm/{{ object.id }}/{{ object.contact_id }}"> Delete Authorization </button>
+    <button class="btn btn-danger" formaction="/lynx/authorization-confirm/{{ object.id }}/{{ object.contact_id }}"> Delete Authorization </button>
   {% endif %}
 </form>
 <hr>
