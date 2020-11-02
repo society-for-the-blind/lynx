@@ -376,7 +376,7 @@ def client_advanced_result_view(request):
         ).annotate(
             intake_date=F('intake__intake_date')
         ).annotate(
-            email=F('email__email')
+            email_address=F('email__email')
         ).filter(
             Q(full_name__icontains=query) |
             Q(first_name__icontains=query) |
@@ -385,7 +385,7 @@ def client_advanced_result_view(request):
             Q(county__icontains=query) |
             Q(phone_number__icontains=query) |
             Q(intake_date__icontains=query) |
-            Q(email__icontains=query)
+            Q(email_address__icontains=query)
         )
 
         object_list = object_list.order_by('last_name', 'first_name', 'id')
