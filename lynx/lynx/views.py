@@ -975,7 +975,7 @@ def sip_demographic_report(request):
                     if first:
                         month_string = """SELECT client.id FROM lynx_sipnote AS sip 
                         LEFT JOIN lynx_contact AS client ON client.id = sip.contact_id 
-                        WHERE extract(month FROM sip.note_date) = """ + month_no
+                        WHERE fiscal_year  = '%s' extract(month FROM sip.note_date) = %s""" % (fiscal_year, month_no)
                         first = False
                     else:
                         month_string = month_string + ' or extract(month FROM sip.note_date) = ' + month_no
@@ -995,7 +995,6 @@ def sip_demographic_report(request):
                     where extract(month FROM ls.note_date) = %s and extract(year FROM ls.note_date) = '%s' and c.sip_client is true %s
                     order by c.last_name, c.first_name;""" % (month, year, month_string))
                 client_set = dictfetchall(cursor)
-                # TODO make sure this works with year
 
             filename = "Core Lynx Excel Billing - " + month + " - " + year
             response = HttpResponse(content_type='text/csv')
