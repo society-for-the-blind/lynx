@@ -597,7 +597,7 @@ class BillingReviewDetailView(LoginRequiredMixin, DetailView):
         report = ProgressReport.objects.filter(
             authorization_id=auth_id).values()  # TODO: filter by month and year, wait until live data in
         notes = LessonNote.objects.filter(authorization_id=auth_id).filter(date__month=month).order_by(
-            '-created').values()  # TODO: filter by year, wait until live data in
+            'created').values()  # TODO: filter by year, wait until live data in
         authorization = Authorization.objects.filter(id=auth_id).values()
         context['note_list'] = notes
 
