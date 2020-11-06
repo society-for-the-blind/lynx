@@ -427,6 +427,7 @@ class Authorization(models.Model):
 
 
 class OutsideAgency(models.Model):
+    contact = models.ForeignKey('Contact', on_delete=models.CASCADE)
     agency = models.CharField(max_length=150, blank=True, null=True)
     contact_name = models.CharField(max_length=150, blank=True, null=True)
     active = models.BooleanField(blank=True, default=False)
