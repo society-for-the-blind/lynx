@@ -872,12 +872,12 @@ def billing_report(request):
             total_hours = 0
             for report in auth_set:
                 authorization_number = report['authorization_number']
-                if report['billing_rate']:
+                if report['billing_rate'] is None:
                     report['billing_rate'] = 0
                 billing_rate = float(report['billing_rate'])
                 if authorization_number in reports.keys():
                     if report['authorization_type'] == 'Hours':
-                        if report['billed_units'] and reports[authorization_number]['billed_time']:
+                        if report['billed_units'] and report['billed_units'] is not None and reports[authorization_number]['billed_time']:
                             reports[authorization_number]['billed_time'] = (float(report['billed_units']) / 4) + float(
                                 reports[authorization_number]['billed_time'])
                             loop_amount = billing_rate * (float(report['billed_units']) / 4)
@@ -918,6 +918,7 @@ def billing_report(request):
                             billed_time = 1
                         else:
                             amount = 0
+                            billed_time = 0
                     else:
                         amount = 0
 
