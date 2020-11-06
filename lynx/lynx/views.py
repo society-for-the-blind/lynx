@@ -903,6 +903,8 @@ def billing_report(request):
                     outside_agency = report['outside_agency']
                     client = report['name']
                     billed_units = report['billed_units']
+                    if not billed_units:
+                        billed_units = 0
                     rate = str(billing_rate)
 
                     if report['authorization_type'] == 'Hours':
@@ -998,7 +1000,7 @@ def sip_demographic_report(request):
 
             writer = csv.writer(response)
             writer.writerow(
-                ['Client Name', 'Age', 'Gender', 'Race/Ethnicity', 'Visual Impairment at Time of Intake',
+                ['Client Name', 'Age Group', 'Gender', 'Race/Ethnicity', 'Visual Impairment at Time of Intake',
                  'Major Cause of Visual Impairment',
                  'Non-Visual Impairment', 'On-Set of Significant Vision Loss', 'Highest Level of Education Completed',
                  'Type of Living Arrangement', 'Setting of Residence', 'Source of Referral'])
