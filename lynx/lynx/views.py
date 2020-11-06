@@ -19,7 +19,7 @@ from datetime import datetime
 import logging
 
 from .models import Contact, Address, Phone, Email, Intake, IntakeNote, EmergencyContact, Authorization, \
-    ProgressReport, LessonNote, SipNote, Volunteer, SipPlan
+    ProgressReport, LessonNote, SipNote, Volunteer, SipPlan, OutsideAgency
 from .forms import ContactForm, IntakeForm, IntakeNoteForm, EmergencyForm, AddressForm, EmailForm, PhoneForm, \
     AuthorizationForm, ProgressReportForm, LessonNoteForm, SipNoteForm, BillingReportForm, SipDemographicReportForm, \
     VolunteerForm, SipCSFReportForm, SipPlanForm
@@ -594,12 +594,16 @@ class BillingReviewDetailView(LoginRequiredMixin, DetailView):
         context['year'] = year
 
         auth_id = self.kwargs['pk']
-        report = ProgressReport.objects.filter(
-            authorization_id=auth_id).values()  # TODO: filter by month and year, wait until live data in
-        notes = LessonNote.objects.filter(authorization_id=auth_id).filter(date__month=month).order_by(
-            'date').values()  # TODO: filter by year, wait until live data in
+        # report = ProgressReport.objects.filter(authorization_id=auth_id).values()
+        notes = LessonNote.objects.filter(authorization_id=auth_id).filter(date__month=month).filter(date__year=year).order_by(
+            'date').values()
         authorization = Authorization.objects.filter(id=auth_id).values()
+
         context['note_list'] = notes
+
+        outside = OutsideAgency.objects.filter(id=authorization['outside_agency_id']).values()
+        address = Address.objects.filter(contact_id=outside['contact_id']).values()
+        context['address'] = address
 
         total_units = 0
         total_notes = 0
