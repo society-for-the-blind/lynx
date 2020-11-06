@@ -903,7 +903,7 @@ def billing_report(request):
                     outside_agency = report['outside_agency']
                     client = report['name']
                     billed_units = report['billed_units']
-                    if not billed_units:
+                    if billed_units is None:
                         billed_units = 0
                     rate = str(billing_rate)
 
