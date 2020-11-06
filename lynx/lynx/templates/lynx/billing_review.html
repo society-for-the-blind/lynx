@@ -62,12 +62,12 @@
   <div class="row">
     <div class="col-1"></div>
     <div class="col-11"><strong>Billing Address:</strong>
-        {{ object.outside_agency.contact }}
-        {% for address in object.outside_agency.contact.address_set.all %}
-            {{ address.address_one }}
+        {{ object.outside_agency.contact_name }}
+<!--        {% for address in object.outside_agency.contact.address_set.all %}-->
+            {{ object.outside_agency.contact.address.address_one|first }}
             {{ address.address_two }} {{ address.suite }}
             {{ address.city }}, {{ address.state }} {{ address.zip_code }}
-        {% endfor %}
+<!--        {% endfor %}-->
     </div>
   </div>
   <div class="row">
