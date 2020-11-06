@@ -64,7 +64,7 @@
     <div class="col-11"><strong>Billing Address:</strong>
         {{ object.outside_agency }}
 <!--        {% for address in object.outside_agency.contact.address_set.all %}-->
-            {{ object.outside_agency.contact.address.address_one }}
+            {{ address.address_one }}
             {{ address.address_two }} {{ address.suite }}
             {{ address.city }}, {{ address.state }} {{ address.zip_code }}
 <!--        {% endfor %}-->
