@@ -61,8 +61,12 @@
   </div>
   <div class="row">
     <div class="col-1"></div>
-    <div class="col-11"><strong>Billing Address:</strong> </div>
-<!--      TODO: add -->
+    <div class="col-11"><strong>Billing Address:</strong>
+        {{ object.outside_agency.contact }}
+        {{ object.outside_agency.contact.address.address_one }}
+        {{ object.outside_agency.contact.address.address_two }} {{ object.outside_agency.contact.address.suite }}
+        {{ object.outside_agency.contact.address.city }}, {{ object.outside_agency.contact.address.state }} {{ object.outside_agency.contact.address.zip_code }}
+    </div>
   </div>
   <div class="row">
     <div class="col-1"></div>
