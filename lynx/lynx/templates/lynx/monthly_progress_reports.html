@@ -46,8 +46,8 @@
     </form>
     <ul>
         {% for report in object_list %}
-            <li><a href="progress-report/{{ report.id }}/?print=true">{{ report.authorization.contact.first_name }} {{ report.authorization.contact.last_name }} Progress Report</a></li>
-            <li><a href="billing-review/{{ report.authorization_id }}/?selMonth={{givenMonth}}&selYear={{givenYear}}&print=true">{{ report.authorization.contact.first_name }} {{ report.authorization.contact.last_name }} Invoice</a></li>
+            <li><a href="progress-report/{{ report.id }}/?print=true">{{ report.authorization.contact.last_name }}, {{ report.authorization.contact.first_name }} Progress Report - {{ report.authorization.intake_service_area.agency }} </a></li>
+            <li><a href="billing-review/{{ report.authorization_id }}/?selMonth={{givenMonth}}&selYear={{givenYear}}&print=true">{{ report.authorization.contact.last_name }}, {{ report.authorization.contact.first_name }} Invoice - {{ report.authorization.intake_service_area.agency }}</a></li>
         {% endfor %}
     </ul>
 {% endblock %}
