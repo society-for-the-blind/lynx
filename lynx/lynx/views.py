@@ -872,6 +872,8 @@ def billing_report(request):
             total_hours = 0
             for report in auth_set:
                 authorization_number = report['authorization_number']
+                if report['billing_rate']:
+                    report['billing_rate'] = 0
                 billing_rate = float(report['billing_rate'])
                 if authorization_number in reports.keys():
                     if report['authorization_type'] == 'Hours':
