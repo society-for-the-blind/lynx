@@ -44,10 +44,14 @@
         </select>
         <input type="submit" value="Search All Clients" />
     </form>
-    <ul>
-        {% for report in object_list %}
-            <li><a href="progress-report/{{ report.id }}/?print=true">{{ report.authorization.contact.last_name }}, {{ report.authorization.contact.first_name }} Progress Report - {{ report.authorization.intake_service_area.agency }} </a></li>
-            <li><a href="billing-review/{{ report.authorization_id }}/?selMonth={{givenMonth}}&selYear={{givenYear}}&print=true">{{ report.authorization.contact.last_name }}, {{ report.authorization.contact.first_name }} Invoice - {{ report.authorization.intake_service_area.agency }}</a></li>
-        {% endfor %}
-    </ul>
+    {% if request.GET.selMonth %}
+        <hr>
+        <h2>Reports and Invoices for {{request.GET.selMonth}} {{request.GET.selYear}}</h2>
+        <ul>
+            {% for report in object_list %}
+                <li><a href="progress-report/{{ report.id }}/?print=true">{{ report.authorization.contact.last_name }}, {{ report.authorization.contact.first_name }} Progress Report - {{ report.authorization.intake_service_area.agency }} </a></li>
+                <li><a href="billing-review/{{ report.authorization_id }}/?selMonth={{givenMonth}}&selYear={{givenYear}}&print=true">{{ report.authorization.contact.last_name }}, {{ report.authorization.contact.first_name }} Invoice - {{ report.authorization.intake_service_area.agency }}</a></li>
+            {% endfor %}
+        </ul>
+    {% endif %}
 {% endblock %}
