@@ -1067,7 +1067,7 @@ def sip_demographic_report(request):
 
             return response
 
-    return render(request, 'lynx/billing_report.html', {'form': form})
+    return render(request, 'lynx/sip_demographic_report.html', {'form': form})
 
 
 def sip_quarterly_report(request):
