@@ -428,7 +428,7 @@ class Authorization(models.Model):
 
 class OutsideAgency(models.Model):
     agency = models.CharField(max_length=150, blank=True, null=True)
-    contact = models.CharField(max_length=150, blank=True, null=True)
+    contact_name = models.CharField(max_length=150, blank=True, null=True)
     active = models.BooleanField(blank=True, default=False)
     created = models.DateTimeField(auto_now_add=True, null=True)
     modified = models.DateTimeField(auto_now=True, null=True)
@@ -438,7 +438,7 @@ class OutsideAgency(models.Model):
         verbose_name_plural = 'Outside Agencies'
 
     def __str__(self):
-        return '%s - %s' % (self.contact, self.agency)
+        return '%s - %s' % (self.contact_name, self.agency)
 
 
 class IntakeServiceArea(models.Model):
