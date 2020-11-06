@@ -411,7 +411,7 @@ def progress_result_view(request):
                   "August": 8, "September": 9, "October": 10, "November": 11, "December": 12}
         given_month = MONTHS[request.GET.get('selMonth')]
         object_list = ProgressReport.objects.filter(month=given_month).filter(
-            year=request.GET.get('selYear')).order_by('authorization__contact__last_name', 'authorization__intake_service_area_id')
+            year=request.GET.get('selYear')).order_by('authorization__contact__last_name', 'authorization__intake_service_area__agency')
 
     else:
         object_list = None
