@@ -603,7 +603,8 @@ class BillingReviewDetailView(LoginRequiredMixin, DetailView):
         agency_id = authorization[0]['outside_agency_id']
 
         outside = OutsideAgency.objects.filter(id=agency_id).values()
-        address = Address.objects.filter(contact_id=outside['contact_id']).values()[0:]
+        contact_id = outside[0]['contact_id']
+        address = Address.objects.filter(contact_id=contact_id).values()[0:]
         context['address'] = address
 
         total_units = 0
