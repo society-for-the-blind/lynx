@@ -171,13 +171,17 @@ def add_emergency(request, contact_id):
             form.save()
             emergency_contact_id = form.pk
             if phone_form.data['phone']:
-                phone_form = phone_form.save(commit=False)
-                phone_form.emergency_contact_id = emergency_contact_id
-                phone_form.save()
+                if phone_form.phone is not None:
+                    phone_form = phone_form.save(commit=False)
+                    phone_form.active = True
+                    phone_form.emergency_contact_id = emergency_contact_id
+                    phone_form.save()
             if email_form.data['email']:
-                email_form = email_form.save(commit=False)
-                email_form.emergency_contact_id = emergency_contact_id
-                email_form.save()
+                if email_form.email is not None:
+                    email_form = email_form.save(commit=False)
+                    email_form.active = True
+                    email_form.emergency_contact_id = emergency_contact_id
+                    email_form.save()
 
             return HttpResponseRedirect(reverse('lynx:add_intake', args=(contact_id,)))
             # return HttpResponseRedirect(reverse('lynx:client', args=(contact_id,)))
