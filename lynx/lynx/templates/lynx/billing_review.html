@@ -57,7 +57,7 @@
 <div class="container-fluid">
   <div class="row">
     <div class="col-1"></div>
-    <div class="col-11"><strong>Payment Source:</strong> {{ object.outside_agency.name }} - {{ object.outside_agency.contact }}</div>
+    <div class="col-11"><strong>Payment Source:</strong> {{ object.outside_agency.agency }} - {{ object.outside_agency.contact_name }}</div>
   </div>
   <div class="row">
     <div class="col-1"></div>
@@ -72,9 +72,12 @@
   </div>
   <div class="row">
     <div class="col-1"></div>
-    <div class="col-11"><strong>Phone Number:</strong> </div>
+    <div class="col-11"><strong>Phone Number:</strong>
+        {% for num in phone %}
+            {{ num.phone }}<br>
+        {% endfor %}
+    </div>
   </div>
-<!--TODO: add-->
 </div>
 
 <h2>Invoice Information</h2>
