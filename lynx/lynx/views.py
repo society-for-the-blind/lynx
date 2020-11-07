@@ -600,8 +600,8 @@ class BillingReviewDetailView(LoginRequiredMixin, DetailView):
         authorization = Authorization.objects.filter(id=auth_id).values()
 
         context['note_list'] = notes
-        agency_id = authorization[0]['outside_agency_id']
 
+        agency_id = authorization[0]['outside_agency_id']
         outside = OutsideAgency.objects.filter(id=agency_id).values()
         contact_id = outside[0]['contact_id']
         address = Address.objects.filter(contact_id=contact_id).values()[:1]
