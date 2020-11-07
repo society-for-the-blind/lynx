@@ -66,6 +66,7 @@ def add_contact(request):
                 phone_form.active = True
                 phone_form.save()
             if hasattr(email_form, 'email'):
+                x = float (email_form.email)
                 email_form.contact_id = contact_id
                 email_form.active = True
                 email_form.save()
