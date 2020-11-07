@@ -63,9 +63,11 @@ def add_contact(request):
                 address_form.save()
             if hasattr(phone_form, 'phone'):
                 phone_form.contact_id = contact_id
+                phone_form.active = True
                 phone_form.save()
             if hasattr(email_form, 'email'):
                 email_form.contact_id = contact_id
+                email_form.active = True
                 email_form.save()
             return HttpResponseRedirect(reverse('lynx:add_emergency', args=(contact_id,)))
             # return HttpResponseRedirect(reverse('lynx:add_intake', args=(contact_id,)))
