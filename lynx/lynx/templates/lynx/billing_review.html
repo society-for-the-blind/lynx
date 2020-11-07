@@ -117,7 +117,7 @@
         </tr>
         {% for note in note_list %}
             <tr>
-                <td>{{ note.date|date:'F j, Y' }}</td>
+                <td><a href='/lynx/lesson-note/{{ note.id }}/'>{{ note.date|date:'F j, Y' }}</a></td>
                 <td>{{ object.authorization_type }}</td>
                 <td>{% if object.authorization_type == 'Hours' %} {{ note.billed_units|div:4 }} {% elif note.billed_units %} 1 {% endif %}</td>
                 <td>${{ object.billing_rate }}</td>
