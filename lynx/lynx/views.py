@@ -603,6 +603,7 @@ class BillingReviewDetailView(LoginRequiredMixin, DetailView):
 
         agency_id = authorization[0]['outside_agency_id']
         outside = OutsideAgency.objects.filter(id=agency_id).values()
+        context['payment'] = outside[0]['contact_name'] + ' - ' + outside[0]['agency']
         contact_id = outside[0]['contact_id']
         address = Address.objects.filter(contact_id=contact_id).values()[:1]
         context['address'] = address
