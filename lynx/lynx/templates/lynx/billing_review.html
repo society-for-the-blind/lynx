@@ -10,6 +10,8 @@
         for (var i = 1999; i <= year; i++) {
             $('#selYear').append("<option value="+ i +">"+ i +"</option>");
         }
+        document.getElementById("selYear").selectedIndex = year;
+
         var dt = new Date();
         document.getElementById("today").innerHTML = dt.toLocaleString();
     });
@@ -79,7 +81,7 @@
     </div>
   </div>
 </div>
-
+<br><br>
 <h2>Invoice Information</h2>
 <div class="container-fluid">
   <div class="row">
