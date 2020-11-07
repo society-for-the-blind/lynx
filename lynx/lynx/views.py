@@ -606,7 +606,7 @@ class BillingReviewDetailView(LoginRequiredMixin, DetailView):
         contact_id = outside[0]['contact_id']
         address = Address.objects.filter(contact_id=contact_id).values()[:1]
         context['address'] = address
-        x = address['suite']
+        # x = address['suite']
 
         total_units = 0
         total_notes = 0
