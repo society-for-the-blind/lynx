@@ -10,8 +10,6 @@
         for (var i = year; i >= 1999; i--) {
             $('#selYear').append("<option value="+ i +">"+ i +"</option>");
         }
-        // var last_index = $('#selYear').items.count - 1;
-        // document.getElementById("selYear").selectedIndex = last_index;
 
         var dt = new Date();
         document.getElementById("today").innerHTML = dt.toLocaleString();

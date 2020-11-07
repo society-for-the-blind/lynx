@@ -997,7 +997,8 @@ def sip_demographic_report(request):
                     int.degree, int.eye_condition, int.eye_condition_date, int.education, int.living_arrangement, int.residence_type,
                     int.dialysis, int.stroke, int.seizure, int.heart, int.arthritis, int.high_bp, int.neuropathy, int.pain, int.asthma,
                     int.cancer, int.musculoskeletal, int.alzheimers, int.allergies, int.mental_health, int.substance_abuse, int.memory_loss,
-                    int.learning_disability, int.geriatric, int.dexterity, int.migraine, int.referred_by, int.hearing_loss
+                    int.learning_disability, int.geriatric, int.dexterity, int.migraine, int.referred_by, int.hearing_loss,
+                    c.first_name, c.last_name, int.birth_date
                     FROM lynx_sipnote ls
                     left JOIN lynx_contact as c  on c.id = ls.contact_id
                     left JOIN lynx_intake as int  on int.contact_id = c.id
@@ -1011,8 +1012,8 @@ def sip_demographic_report(request):
 
             writer = csv.writer(response)
             writer.writerow(
-                ['Client Name', 'Age Group', 'Gender', 'Race/Ethnicity', 'Visual Impairment at Time of Intake',
-                 'Major Cause of Visual Impairment',
+                ['Client Name', 'First Name', 'Last Name', 'Age Group', 'Gender', 'Birth Date', 'Race/Ethnicity',
+                 'Visual Impairment at Time of Intake', 'Major Cause of Visual Impairment',
                  'Non-Visual Impairment', 'On-Set of Significant Vision Loss', 'Highest Level of Education Completed',
                  'Type of Living Arrangement', 'Setting of Residence', 'Source of Referral'])
 
@@ -1069,9 +1070,10 @@ def sip_demographic_report(request):
                     impairments = impairments[:-2]
 
                 writer.writerow(
-                    [client['name'], client['age_group'], client['gender'], client['ethnicity'], client['degree'],
-                     client['eye_condition'], impairments, client['eye_condition_date'], client['education'],
-                     client['living_arrangement'], client['residence_type'], client['referred_by']])
+                    [client['name'], client['first_name'], client['last_name'], client['age_group'], client['gender'],
+                     client['birthdate'], client['ethnicity'], client['degree'], client['eye_condition'], impairments,
+                     client['eye_condition_date'], client['education'], client['living_arrangement'],
+                     client['residence_type'], client['referred_by']])
 
             return response
 
