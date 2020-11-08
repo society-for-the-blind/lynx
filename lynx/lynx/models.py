@@ -605,7 +605,7 @@ class ContactInfoView(pg.View):
         FROM lynx_contact AS c
         LEFT JOIN lynx_intake AS i ON c.id = i.contact_id
         LEFT JOIN (SELECT county, zip_code, contact_id FROM lynx_address WHERE id IN (SELECT max(id) FROM lynx_address GROUP BY contact_id)) AS a ON a.contact_id = c.id
-        LEFT JOIN (SELECT phone, contact_id FROM lynx_phone WHERE id IN (SELECT max(id) FROM lynx_phone GROUP BY contact_id)) AS p ON p.contact_id = c.id
+        LEFT JOIN (SELECT REPLACE (REPLACE (REPLACE (REPLACE (phone, ' ', ''), '-', ''), ')', ''), '(', '') as phone, contact_id FROM lynx_phone WHERE id IN (SELECT max(id) FROM lynx_phone GROUP BY contact_id)) AS p ON p.contact_id = c.id
         LEFT JOIN (SELECT email, contact_id FROM lynx_email WHERE id IN (SELECT max(id) FROM lynx_email GROUP BY contact_id)) AS e ON e.contact_id = c.id"""
 
     class Meta:
