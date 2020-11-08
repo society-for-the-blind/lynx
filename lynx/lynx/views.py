@@ -1507,7 +1507,7 @@ def replace_characters(a_string, remove_characters):
 
 @login_required
 def contact_list(request):
-    f = ContactFilter(request.GET, queryset=ContactInfoView.objects.all())
+    f = ContactFilter(request.GET, queryset=ContactInfoView.objects.all().order_by())
     # if f:
     #     object_list = f.order_by('last_name', 'first_name', 'id')
     #     paginator = Paginator(object_list, 20)
