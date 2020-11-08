@@ -601,12 +601,17 @@ class SipPlan(models.Model):
 
 
 class ContactInfoView(pg.View):
-    sql = """SELECT c.id, concat(last_name, ', ', first_name) AS full_name, first_name, last_name, a.county, a.zip_code, p.phone, e.email, i.intake_date, i.age_group
+    sql = """SELECT c.id, concat(last_name, ', ', first_name) AS full_name, first_name, last_name, a.county, a.zip_code, 
+         REPLACE (REPLACE(REPLACE(REPLACE(p.phone_number, ' ', ''), '-', ''), ')', ''), '(', '') as phone, e.email, 
+         i.intake_date, i.age_group
         FROM lynx_contact AS c
         LEFT JOIN lynx_intake AS i ON c.id = i.contact_id
-        LEFT JOIN (SELECT county, zip_code, contact_id FROM lynx_address WHERE id IN (SELECT max(id) FROM lynx_address GROUP BY contact_id)) AS a ON a.contact_id = c.id
-        LEFT JOIN (SELECT REPLACE (REPLACE (REPLACE (REPLACE (phone, ' ', ''), '-', ''), ')', ''), '(', '') as phone, contact_id FROM lynx_phone WHERE id IN (SELECT max(id) FROM lynx_phone GROUP BY contact_id)) AS p ON p.contact_id = c.id
-        LEFT JOIN (SELECT email, contact_id FROM lynx_email WHERE id IN (SELECT max(id) FROM lynx_email GROUP BY contact_id)) AS e ON e.contact_id = c.id"""
+        LEFT JOIN (SELECT county, zip_code, contact_id FROM lynx_address WHERE id IN (SELECT max(id) 
+            FROM lynx_address GROUP BY contact_id)) AS a ON a.contact_id = c.id
+        LEFT JOIN (SELECT phone AS phone_number, contact_id FROM lynx_phone WHERE id IN (SELECT max(id) 
+            FROM lynx_phone GROUP BY contact_id)) AS p ON p.contact_id = c.id
+        LEFT JOIN (SELECT email, contact_id FROM lynx_email WHERE id IN (SELECT max(id) 
+            FROM lynx_email GROUP BY contact_id)) AS e ON e.contact_id = c.id"""
 
     id = models.IntegerField(primary_key=True)
     full_name = models.CharField(max_length=255, null=True)
