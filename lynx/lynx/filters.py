@@ -20,11 +20,11 @@ class ContactFilter(django_filters.FilterSet):
 
     class Meta:
         model = Contact
-        fields = ['last_name',
-                  'first_name',
-                  'intake__intake_date',
-                  'intake__age_group',
-                  'email__email',
-                  'address__zip_code',
-                  'address__county'
-                  ]
+        # fields = {'last_name': ['icontains'],
+        #           'first_name': ['icontains'],
+        #           'intake__intake_date': ['gt', 'lt'],
+        #           'intake__age_group': ['exact'],
+        #           'email__email': ['icontains'],
+        #           'address__zip_code': ['icontains'],
+        #           'address__county': ['icontains'],
+        #           }
