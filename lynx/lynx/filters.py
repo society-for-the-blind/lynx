@@ -11,7 +11,7 @@ class ContactFilter(django_filters.FilterSet):
                   'first_name': ['icontains'],
                   'intake_date': ['gt', 'lt'],
                   'age_group': ['exact'],
-                  'mail': ['icontains'],
+                  'email': ['icontains'],
                   'zip_code': ['icontains'],
                   'county': ['icontains'],
                   'phone': ['icontains'],
