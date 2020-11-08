@@ -1509,4 +1509,4 @@ def replace_characters(a_string, remove_characters):
 def contact_list(request):
     contacts = Contact.objects.all()
     filter = ContactFilter(request.GET, queryset = contacts)
-    return render(request, 'myapp/my_template.html', {'filter': filter})
+    return render(request, 'lynx/contact_search.html', {'filter': filter})
