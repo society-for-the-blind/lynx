@@ -10,14 +10,13 @@ class ContactFilter(django_filters.FilterSet):
             ('last_name', 'last_name'),
             ('first_name', 'first_name'),
         )
-
     )
 
     class Meta:
         model = ContactInfoView
         fields = {'last_name': ['icontains'],
                   'first_name': ['icontains'],
-                  'intake_date': ['gt', 'lt'],
+                  'intake_date': ['gt', 'lt', 'exact'],
                   'age_group': ['exact'],
                   'email': ['icontains'],
                   'zip_code': ['icontains'],

@@ -601,7 +601,7 @@ class SipPlan(models.Model):
 
 
 class ContactInfoView(pg.View):
-    sql = """SELECT c.id, concat(last_name, ' ', first_name) AS full_name, first_name, last_name, a.county, a.zip_code, p.phone, e.email, i.intake_date, i.age_group
+    sql = """SELECT c.id, concat(last_name, ', ', first_name) AS full_name, first_name, last_name, a.county, a.zip_code, p.phone, e.email, i.intake_date, i.age_group
         FROM lynx_contact AS c
         LEFT JOIN lynx_intake AS i ON c.id = i.contact_id
         LEFT JOIN (SELECT county, zip_code, contact_id FROM lynx_address WHERE id IN (SELECT max(id) FROM lynx_address GROUP BY contact_id)) AS a ON a.contact_id = c.id

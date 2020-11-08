@@ -18,7 +18,7 @@
             <th scope="col">County</th>
             <th scope="col">Email</th>
         </tr>
-        {% for client in filter.qs %}
+        {% for client in filter.form.ordering %}
             <tr>
                 <td><a href="client/{{ client.id }}">{{ client.full_name }}</a></td>
                 <td>{{ client.intake_date }}</td>
