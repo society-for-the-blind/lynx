@@ -608,7 +608,18 @@ class ContactInfoView(pg.View):
         LEFT JOIN (SELECT REPLACE (REPLACE (REPLACE (REPLACE (phone, ' ', ''), '-', ''), ')', ''), '(', '') as phone, contact_id FROM lynx_phone WHERE id IN (SELECT max(id) FROM lynx_phone GROUP BY contact_id)) AS p ON p.contact_id = c.id
         LEFT JOIN (SELECT email, contact_id FROM lynx_email WHERE id IN (SELECT max(id) FROM lynx_email GROUP BY contact_id)) AS e ON e.contact_id = c.id"""
 
+    id = models.IntegerField()
+    full_name = models.CharField(max_length=255, null=True)
+    first_name = models.CharField(max_length=255, null=True)
+    last_name = models.CharField(max_length=255, null=True)
+    county = models.CharField(max_length=255, null=True)
+    zip_code = models.CharField(max_length=255, null=True)
+    phone = models.CharField(max_length=255, null=True)
+    email = models.CharField(max_length=255, null=True)
+    intake_date = models.DateField(blank=True, null=True)
+    age_group = models.CharField(max_length=255, null=True)
+
     class Meta:
-      app_label = 'lynx'
-      db_table = 'lynx_contactinfoview'
-      managed = False
+        app_label = 'lynx'
+        db_table = 'lynx_contactinfoview'
+        managed = False
