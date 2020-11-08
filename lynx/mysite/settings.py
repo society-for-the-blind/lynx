@@ -40,9 +40,10 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'crispy_forms',
     'mathfilters',
-    'openpyxl',
+    # 'openpyxl',
     'reversion',
     'django_filters',
+    'django_pgviews',
 ]
 
 MIDDLEWARE = [

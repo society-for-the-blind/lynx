@@ -4,6 +4,7 @@ from django.conf import settings
 from django.urls import reverse
 from django.utils.timezone import now
 
+from django_pgviews import view as pg
 from datetime import datetime, date
 
 
@@ -597,3 +598,17 @@ class SipPlan(models.Model):
 
     def get_absolute_url(self):
         return "/lynx/client/%i" % self.contact_id
+
+
+class ContactInfoView(pg.View):
+    sql = """SELECT c.id, concat(last_name, ' ', first_name) AS full_name, first_name, last_name, a.county, a.zip_code, p.phone, e.email, i.intake_date, i.age_group
+        FROM lynx_contact AS c
+        LEFT JOIN lynx_intake AS i ON c.id = i.contact_id
+        LEFT JOIN (SELECT county, zip_code, contact_id FROM lynx_address WHERE id IN (SELECT max(id) FROM lynx_address GROUP BY contact_id)) AS a ON a.contact_id = c.id
+        LEFT JOIN (SELECT phone, contact_id FROM lynx_phone WHERE id IN (SELECT max(id) FROM lynx_phone GROUP BY contact_id)) AS p ON p.contact_id = c.id
+        LEFT JOIN (SELECT email, contact_id FROM lynx_email WHERE id IN (SELECT max(id) FROM lynx_email GROUP BY contact_id)) AS e ON e.contact_id = c.id"""
+
+    class Meta:
+      app_label = 'lynx'
+      db_table = 'lynx_contactinfoview'
+      managed = False
