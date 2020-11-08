@@ -19,7 +19,7 @@ from datetime import datetime
 import logging
 
 from .models import Contact, Address, Phone, Email, Intake, IntakeNote, EmergencyContact, Authorization, \
-    ProgressReport, LessonNote, SipNote, Volunteer, SipPlan, OutsideAgency
+    ProgressReport, LessonNote, SipNote, Volunteer, SipPlan, OutsideAgency, ContactInfoView
 from .forms import ContactForm, IntakeForm, IntakeNoteForm, EmergencyForm, AddressForm, EmailForm, PhoneForm, \
     AuthorizationForm, ProgressReportForm, LessonNoteForm, SipNoteForm, BillingReportForm, SipDemographicReportForm, \
     VolunteerForm, SipCSFReportForm, SipPlanForm
@@ -1507,5 +1507,5 @@ def replace_characters(a_string, remove_characters):
 
 @login_required
 def contact_list(request):
-    f = ContactFilter(request.GET, queryset=Contact.objects.all())
+    f = ContactFilter(request.GET, queryset=ContactInfoView.objects.all())
     return render(request, 'lynx/contact_search.html', {'filter': f})
