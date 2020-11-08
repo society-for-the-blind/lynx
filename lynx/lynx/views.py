@@ -1508,11 +1508,11 @@ def replace_characters(a_string, remove_characters):
 @login_required
 def contact_list(request):
     f = ContactFilter(request.GET, queryset=ContactInfoView.objects.all())
-    if f:
-        object_list = f.order_by('last_name', 'first_name', 'id')
-        paginator = Paginator(object_list, 20)
-        page_number = request.GET.get('page')
-        page_obj = paginator.get_page(page_number)
-    else:
-        page_obj = None
-    return render(request, 'lynx/contact_search.html', {'filter': page_obj})
+    # if f:
+    #     object_list = f.order_by('last_name', 'first_name', 'id')
+    #     paginator = Paginator(object_list, 20)
+    #     page_number = request.GET.get('page')
+    #     page_obj = paginator.get_page(page_number)
+    # else:
+    #     page_obj = None
+    return render(request, 'lynx/contact_search.html', {'filter': f})
