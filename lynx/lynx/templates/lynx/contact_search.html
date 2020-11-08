@@ -6,7 +6,30 @@
         {{ filter.form|crispy }}
         <input type="submit" />
     </form>
-    {% for obj in filter.qs %}
-        {{ obj.first_name }}<br />
+
+    <table class="table">
+        <tr>
+            <th scope="col">Client Name</th>
+            <th scope="col">Intake Date</th>
+            <th scope="col">First Name</th>
+            <th scope="col">Last Name</th>
+            <th scope="col">Phone Number</th>
+            <th scope="col">Zip Code</th>
+            <th scope="col">County</th>
+            <th scope="col">Email</th>
+        </tr>
+        {% for client in filter.qs %}
+            <tr>
+                <td><a href="client/{{ client.id }}">{{ client.full_name }}</a></td>
+                <td>{{ client.intake_date }}</td>
+                <td>{{ client.first_name }}</td>
+                <td>{{ client.last_name }}</td>
+                <td>{{ client.phone_number }}</td>
+                <td>{{ client.zip_code }}</td>
+                <td>{{ client.county }}</td>
+                <td>{{ client.email_address }}</td>
+            </tr>
+        {% endfor %}
+    </table>
     {% endfor %}
 {% endblock %}
