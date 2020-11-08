@@ -3,7 +3,7 @@
 
 {% block content %}
     <form method="get">
-        {{ filter.form.crispy }}
+        {{ filter.form }}
         <input type="submit" />
     </form>
     {% for obj in filter.qs %}
