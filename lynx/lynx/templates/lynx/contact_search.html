@@ -1,0 +1,12 @@
+{% extends "lynx/base.html" %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+    <form method="get">
+        {{ filter.form.form }}
+        <input type="submit" />
+    </form>
+    {% for obj in filter.qs %}
+        {{ obj.first_name }}<br />
+    {% endfor %}
+{% endblock %}

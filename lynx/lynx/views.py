@@ -23,6 +23,7 @@ from .models import Contact, Address, Phone, Email, Intake, IntakeNote, Emergenc
 from .forms import ContactForm, IntakeForm, IntakeNoteForm, EmergencyForm, AddressForm, EmailForm, PhoneForm, \
     AuthorizationForm, ProgressReportForm, LessonNoteForm, SipNoteForm, BillingReportForm, SipDemographicReportForm, \
     VolunteerForm, SipCSFReportForm, SipPlanForm
+from .filters import ContactFilter
 
 logger = logging.getLogger(__name__)
 
@@ -864,6 +865,7 @@ class LessonNoteDeleteView(LoginRequiredMixin, DeleteView):
         return reverse_lazy('lynx:authorization_detail', kwargs={'pk': auth_id})
 
 
+@login_required
 def billing_report(request):
     form = BillingReportForm()
     if request.method == 'POST':
@@ -972,6 +974,7 @@ def billing_report(request):
     return render(request, 'lynx/billing_report.html', {'form': form})
 
 
+@login_required
 def sip_demographic_report(request):
     form = SipDemographicReportForm()
     if request.method == 'POST':
@@ -1089,11 +1092,12 @@ def sip_demographic_report(request):
     return render(request, 'lynx/sip_demographic_report.html', {'form': form})
 
 
+@login_required
 def sip_quarterly_report(request):
     form = SipCSFReportForm()
     return render(request, 'lynx/sip_quarterly_report.html', {'form': form})
 
-
+@login_required
 def sip_csf_services_report(request):
     form = SipCSFReportForm()
     if request.method == 'POST':
@@ -1252,6 +1256,7 @@ def sip_csf_services_report(request):
     return render(request, 'lynx/sip_quarterly_report.html', {'form': form})
 
 
+@login_required
 def sip_csf_demographic_report(request):
     form = SipCSFReportForm()
     if request.method == 'POST':
@@ -1498,3 +1503,10 @@ def replace_characters(a_string, remove_characters):
             a_string = a_string.replace(character, "")
 
     return a_string
+
+
+@login_required
+def contact_list(request):
+    contacts = Contact.objects.all()
+    filter = ContactFilter(request.GET, queryset = contacts)
+    return render(request, 'myapp/my_template.html', {'filter': filter})

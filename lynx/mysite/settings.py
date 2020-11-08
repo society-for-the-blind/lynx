@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'mathfilters',
     'openpyxl',
     'reversion',
+    'django_filters',
 ]
 
 MIDDLEWARE = [
