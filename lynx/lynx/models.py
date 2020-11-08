@@ -601,19 +601,16 @@ class SipPlan(models.Model):
 
 
 class ContactInfoView(pg.View):
-    sql = """SELECT c.id, concat(last_name, ', ', first_name) AS full_name, first_name, last_name, a.county, a.zip_code, 
-         REPLACE (REPLACE(REPLACE(REPLACE(p.phone_number, ' ', ''), '-', ''), ')', ''), '(', '') as phone, e.email, 
-         i.intake_date, i.age_group
+    sql = """SELECT c.id, concat(last_name, ', ', first_name) AS full_name, first_name, last_name, a.county, a.zip_code,
+         REPLACE (REPLACE(REPLACE(REPLACE(p.phone, ' ', ''), '-', ''), ')', ''), '(', '') as phone, e.email,
+         i.intake_date, i.age_group, a.address_one, a.address_two, a.suite, a.city, a.state, a.bad_address, 
+         c.do_not_contact, c.deceased, c.remove_mailing, a.region
         FROM lynx_contact AS c
         LEFT JOIN lynx_intake AS i ON c.id = i.contact_id
-        LEFT JOIN (SELECT county, zip_code, contact_id FROM lynx_address WHERE id IN (SELECT max(id) 
-            FROM lynx_address GROUP BY contact_id)) AS a ON a.contact_id = c.id
-        LEFT JOIN (SELECT phone AS phone_number, contact_id FROM lynx_phone WHERE id IN (SELECT max(id) 
-            FROM lynx_phone GROUP BY contact_id)) AS p ON p.contact_id = c.id
-        LEFT JOIN (SELECT email, contact_id FROM lynx_email WHERE id IN (SELECT max(id) 
-            FROM lynx_email GROUP BY contact_id)) AS e ON e.contact_id = c.id"""
+        LEFT JOIN lynx_address AS a ON a.contact_id = c.id
+        LEFT JOIN lynx_phone  AS p ON p.contact_id = c.id
+        LEFT JOIN lynx_email AS e ON e.contact_id = c.id"""
 
-    id = models.IntegerField(primary_key=True)
     full_name = models.CharField(max_length=255, null=True)
     first_name = models.CharField(max_length=255, null=True)
     last_name = models.CharField(max_length=255, null=True)
@@ -623,6 +620,16 @@ class ContactInfoView(pg.View):
     email = models.CharField(max_length=255, null=True)
     intake_date = models.DateField(blank=True, null=True)
     age_group = models.CharField(max_length=255, null=True)
+    address_one = models.CharField(max_length=255, null=True)
+    address_two = models.CharField(max_length=255, null=True)
+    suite = models.CharField(max_length=255, null=True)
+    city = models.CharField(max_length=255, null=True)
+    state = models.CharField(max_length=255, null=True)
+    bad_address = models.BooleanField(blank=True, default=False)
+    do_not_contact = models.BooleanField(blank=True, default=False)
+    deceased = models.BooleanField(blank=True, default=False)
+    remove_mailing = models.BooleanField(blank=True, default=False)
+    region = models.CharField(max_length=255, null=True)
 
     class Meta:
         app_label = 'lynx'
