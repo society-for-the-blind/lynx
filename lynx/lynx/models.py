@@ -608,7 +608,7 @@ class ContactInfoView(pg.View):
         LEFT JOIN (SELECT REPLACE (REPLACE (REPLACE (REPLACE (phone, ' ', ''), '-', ''), ')', ''), '(', '') as phone, contact_id FROM lynx_phone WHERE id IN (SELECT max(id) FROM lynx_phone GROUP BY contact_id)) AS p ON p.contact_id = c.id
         LEFT JOIN (SELECT email, contact_id FROM lynx_email WHERE id IN (SELECT max(id) FROM lynx_email GROUP BY contact_id)) AS e ON e.contact_id = c.id"""
 
-    id = models.IntegerField()
+    id = models.IntegerField(primary_key=True)
     full_name = models.CharField(max_length=255, null=True)
     first_name = models.CharField(max_length=255, null=True)
     last_name = models.CharField(max_length=255, null=True)
