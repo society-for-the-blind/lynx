@@ -4,6 +4,14 @@ from .models import Contact, ContactInfoView
 
 
 class ContactFilter(django_filters.FilterSet):
+    o = django_filters.OrderingFilter(
+        # tuple-mapping retains order
+        fields=(
+            ('last_name', 'last_name'),
+            ('first_name', 'first_name'),
+        )
+
+    )
 
     class Meta:
         model = ContactInfoView
