@@ -1508,5 +1508,5 @@ def replace_characters(a_string, remove_characters):
 @login_required
 def contact_list(request):
     contacts = Contact.objects.all()
-    filter = ContactFilter(request.GET, queryset = contacts)
+    filter = ContactFilter(request.GET, queryset=contacts)
     return render(request, 'lynx/contact_search.html', {'filter': filter})

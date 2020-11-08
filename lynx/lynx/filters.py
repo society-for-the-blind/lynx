@@ -13,5 +13,4 @@ class ContactFilter(django_filters.FilterSet):
                   'email__email': ['icontains'],
                   'address__zip_code': ['icontains'],
                   'address__county': ['icontains'],
-
                   }
