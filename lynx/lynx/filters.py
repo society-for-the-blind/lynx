@@ -11,7 +11,7 @@ class ContactFilter(django_filters.FilterSet):
                   'intake__intake_date': ['gt', 'lt'],
                   'intake__age_group': ['exact'],
                   'email__email': ['icontains'],
-                  'address_sip_code': ['icontains'],
+                  'address__zip_code': ['icontains'],
                   'address__county': ['icontains'],
 
                   }
