@@ -4,7 +4,7 @@
 
 {% block content %}
     <h1>Client Search Results</h1>
-    <input type="button" onclick="location.href='/lynx/search';" value="Advanced Search" />
+    <input type="button" onclick="location.href='/lynx/search?excel=false';" value="Advanced Search" />
 
     <form action="{% url 'lynx:client_search' %}" method="get">
         <input name="q" type="text" placeholder="Search...">
