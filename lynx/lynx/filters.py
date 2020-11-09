@@ -3,7 +3,6 @@ import django_filters
 from .models import ContactInfoView
 
 class ContactFilter(django_filters.FilterSet):
-    strict = False
     class Meta:
         model = ContactInfoView
         fields = {'last_name': ['icontains'],
@@ -15,3 +14,8 @@ class ContactFilter(django_filters.FilterSet):
                   'county': ['icontains'],
                   'phone': ['icontains'],
                   }
+
+    def __init__(self, *args, **kwargs):
+        super(ContactFilter, self).__init__(*args, **kwargs)
+        if self.data == {}:
+            self.queryset = self.queryset.none()
