@@ -1517,24 +1517,32 @@ def contact_list(request):
 
             writer = csv.writer(response)
             writer.writerow(
-                ["Full Name", "First Name", "Last Name", "Intake Date", "Age Group", "County", "Email", "Phone"
+                ["Full Name", "First Name", "Last Name", "Intake Date", "Age Group", "County", "Email", "Phone",
                  "Address 1", "Address 2", "Suite", "City", "State", "Zip Code", "Region", "Bad Address",
                  "Do Not Contact", "Deceased", "Remove Mailing"])
             for client in f.qs:
                 if client.bad_address:
                     client.bad_address = "Bad Address"
+                else:
+                    client.bad_address = ""
                 if client.do_not_contact:
                     client.do_not_contact = "Do Not Contact"
+                else:
+                    client.do_not_contact = ""
                 if client.deceased:
                     client.deceased = "Deceased"
+                else:
+                    client.deceased = ""
                 if client.remove_mailing:
                     client.remove_mailing = "Remove from Mailing List"
+                else:
+                    client.remove_mailing = ""
                 writer.writerow(
                     [client.full_name, client.first_name, client.last_name, client.intake_date,
                      client.age_group, client.county, client.email, client.full_phone,
                      client.address_one, client.address_two, client.suite, client.city, client.state,
-                     client.zip_code, client.bad_address, client.do_not_contact,
-                     client.deceased, client.remove_mailing, client.region])
+                     client.zip_code, client.region, client.bad_address, client.do_not_contact,
+                     client.deceased, client.remove_mailing])
             return response
 
     else:
