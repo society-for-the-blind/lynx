@@ -3,7 +3,7 @@ import django_filters
 from .models import ContactInfoView
 
 class ContactFilter(django_filters.FilterSet):
-
+    strict = False
     class Meta:
         model = ContactInfoView
         fields = {'last_name': ['icontains'],
