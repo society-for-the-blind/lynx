@@ -1510,7 +1510,7 @@ def contact_list(request):
     if request.method == 'GET':
         excel = request.GET.get('excel', False)
         f = ContactFilter(request.GET, queryset=ContactInfoView.objects.all().order_by('full_name'))
-        if excel:
+        if excel == 'true':
             filename = "Lynx Search Results"
             response = HttpResponse(content_type='text/csv')
             response['Content-Disposition'] = 'attachment; filename="' + filename + '.csv"'
