@@ -1509,6 +1509,7 @@ def replace_characters(a_string, remove_characters):
 def contact_list(request):
     if request.method == 'GET':
         excel = request.GET.get('excel', False)
+        strict = False
         f = ContactFilter(request.GET, queryset=ContactInfoView.objects.all().order_by('full_name'))
         if excel == 'true':
             filename = "Lynx Search Results"
