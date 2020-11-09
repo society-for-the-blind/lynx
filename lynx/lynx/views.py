@@ -1523,18 +1523,18 @@ def contact_list(request):
             for client in f.qs:
                 if client.bad_address:
                     client.bad_address = "Bad Address"
-                if client["do_not_contact"]:
-                    client["do_not_contact"] = "Do Not Contact"
-                if client["deceased"]:
-                    client["deceased"] = "Deceased"
-                if client["remove_mailing"]:
-                    client["remove_mailing"] = "Remove from Mailing List"
+                if client.do_not_contact:
+                    client.do_not_contact = "Do Not Contact"
+                if client.deceased:
+                    client.deceased = "Deceased"
+                if client.remove_mailing:
+                    client.remove_mailing = "Remove from Mailing List"
                 writer.writerow(
-                    [client["full_name"], client["first_name"], client["last_name"], client["intake_date"],
-                     client["age_group"], client["county"], client["email"], client["full_phone"],
-                     client["address_one"], client["address_two"], client["suite"], client["city"], client["state"],
-                     client["zip_code"], client["bad_address"], client["do_not_contact"],
-                     client["deceased"], client["remove_mailing"], client["region"]])
+                    [client.full_name, client.first_name, client.last_name, client.intake_date,
+                     client.age_group, client.county, client.email, client.full_phone,
+                     client.address_one, client.address_two, client.suite, client.city, client.state,
+                     client.zip_code, client.bad_address, client.do_not_contact,
+                     client.deceased, client.remove_mailing, client.region])
             return response
 
     else:
