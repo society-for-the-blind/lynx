@@ -622,16 +622,15 @@ class BillingReviewDetailView(LoginRequiredMixin, DetailView):
 
         total_units = 0
         total_notes = 0
-        # context['instructors'] = report[0]['instructor']
+
         total_billed = 0
-        total_cost = 0
         for note in notes:
             if note['billed_units'] and note['billed_units'] is not None:
                 units = float(note['billed_units'])
-                total_billed += float(note['billed_units'])
+                total_billed += units
                 total_units += units
                 total_notes += 1
-                total_cost += note['billed_units']*authorization[0]['billing_rate']
+                context['instructors'] = note[0]['user']['first_name'] + ' ' + note[0]['user']['last_name']
         context['total_billed'] = total_billed
 
         if authorization[0]['authorization_type'] == 'Classes':
