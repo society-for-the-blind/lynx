@@ -631,7 +631,7 @@ class BillingReviewDetailView(LoginRequiredMixin, DetailView):
                 total_billed += float(note['billed_units'])
                 total_units += units
                 total_notes += 1
-                total_cost += float(note['billed_units'])*authorization[0]['billing_rate']
+                total_cost += note['billed_units']*authorization[0]['billing_rate']
         context['total_billed'] = total_billed
 
         if authorization[0]['authorization_type'] == 'Classes':
