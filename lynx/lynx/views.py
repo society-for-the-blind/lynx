@@ -630,7 +630,7 @@ class BillingReviewDetailView(LoginRequiredMixin, DetailView):
                 total_billed += units
                 total_units += units
                 total_notes += 1
-                context['instructors'] = note['user']['first_name'] + ' ' + note['user']['last_name']
+                context['instructors'] = note['user_id']['first_name'] + ' ' + note['user_id']['last_name']
         context['total_billed'] = total_billed
 
         if authorization[0]['authorization_type'] == 'Classes':
