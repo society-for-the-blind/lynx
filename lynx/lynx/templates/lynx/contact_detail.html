@@ -233,6 +233,8 @@
     <br>
     <h2>SIP Notes</h2>
     <div class="container-fluid">
+    {% if not request.GET.print %}<input type="button" class="btn btn-success" aria-label="Add New SIP Note" onclick="location.href='/lynx/add-sip-note/{{ object.id }}/';" value="Add New SIP Note" />{% endif %}
+
     {% for sip in sip_list %}
         <div class="container-fluid">
             <div class="row">
