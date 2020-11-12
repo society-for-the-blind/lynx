@@ -30,8 +30,8 @@
             $(document).ready(function() {
                 var to_print = getQueryVariable("print");
                 if (to_print) {
-                    $('div').css('all', 'initial');
-                    $('head').append('<link rel="stylesheet" type="text/css" href="{% static 'lynx/css/print.css' %}">');
+                    // $('div').css('all', 'initial');
+                    $('div').css('font-size', '16px', 'important');
                 }
             })
         </script>
