@@ -13,11 +13,11 @@ h3 {
 }
 
 div {
-    font-size: 22px
+    font-size: 200px
 }
 
 @media print {
 div {
-    font-size: 22px
+    font-size: 200px
 }
 }
