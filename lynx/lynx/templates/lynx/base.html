@@ -29,7 +29,7 @@
 
             var to_print = getQueryVariable("print");
             if (to_print){
-                $( "div"  ).css( "font-size", "14" );
+                $( "div"  ).css( "font-size", "20" );
             }
         </script>
 
@@ -63,9 +63,8 @@
     {% else %}
     <div class="container-fluid">
         <div class="row">
-            <div class="col-3"><img src="{% static 'lynx/images/logo.jpg' %}" alt="sftb logo" style="width:80px;"></div>
-
-            <div class="col-9 align-self-center">{% block header %}{% endblock %}</div>
+            <div class="col-3"><img src="{% static 'lynx/images/logo.jpg' %}" alt="sftb logo" style="width:100px;"></div>
+            <div class="col-9">{% block header %}{% endblock %}</div>
         </div>
     </div>
     {% endif %}
