@@ -30,7 +30,8 @@
             $(document).ready(function() {
                 var to_print = getQueryVariable("print");
                 if (to_print) {
-                    $('div').css('font-size', '16px')
+                    $('div').css('all', 'initial');
+                    $('div').css('font-size', '16px');
                 }
             })
         </script>
