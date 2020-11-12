@@ -8,7 +8,11 @@
         {% load static %}
 
         <link rel="stylesheet" type="text/css" href="{% static 'lynx/css/bootstrap.min.css' %}">
-        <link rel="stylesheet" type="text/css" href="{% static 'lynx/css/style.css' %}">
+        {% if not request.GET.print %}
+            <link rel="stylesheet" type="text/css" href="{% static 'lynx/css/style.css' %}">
+        {% else %}
+            <link rel="stylesheet" type="text/css" href="{% static 'lynx/css/print.css' %}">
+        {% endif %}
         <link rel="shortcut icon" type="image/ico" href="{% static 'lynx/images/favicon.ico' %}"/>
         <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css" integrity="sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ" crossorigin="anonymous">
 
@@ -30,12 +34,6 @@
             $(document).ready(function() {
                 var to_print = getQueryVariable("print");
                 if (to_print) {
-                    // $('div').css('all', 'initial');
-                    // .main { margin-left : 160px}
-                    $('main').css('margin-left', '', 'important');
-                    $('#sidenav').css('width', '', 'important');
-                    $('#sidebar').css('width', '', 'important');
-                    // $('main').css('padding', '', 'important');
                     $('div').css('font-size', '20px', 'important');
                 }
             })
