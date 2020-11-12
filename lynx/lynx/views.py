@@ -879,7 +879,8 @@ def billing_report(request):
             year = data.get('year')
 
             with connection.cursor() as cursor:
-                cursor.execute("""SELECT CONCAT(c.first_name, ' ', c.last_name) as name, sa.agency as service_area, auth.authorization_type, auth.authorization_number,
+                cursor.execute("""SELECT CONCAT(c.first_name, ' ', c.last_name) as name, sa.agency as service_area, 
+                                    auth.authorization_type, auth.authorization_number, auth.id as authorization_id,
                                     ln.billed_units, auth.billing_rate, CONCAT(oa.contact_name, ' - ', oa.agency) as outside_agency
                                     FROM lynx_authorization as auth
                                     LEFT JOIN lynx_contact as c on c.id = auth.contact_id
@@ -894,7 +895,7 @@ def billing_report(request):
             total_amount = 0
             total_hours = 0
             for report in auth_set:
-                authorization_number = report['authorization_number']
+                authorization_number = report['authorization_id']
                 if report['billing_rate'] is None:
                     report['billing_rate'] = 0
                 billing_rate = float(report['billing_rate'])
@@ -932,6 +933,7 @@ def billing_report(request):
                         billed_units = 0
                     rate = str(billing_rate)
 
+                    billed_time = 0
                     if report['authorization_type'] == 'Hours':
                         billed_time = float(billed_units) / 4
                         amount = billing_rate * float(billed_time)
@@ -946,7 +948,7 @@ def billing_report(request):
                         amount = 0
 
                     total_amount += amount
-                    auth = {'service_area': service_area, 'authorization_number': authorization_number,
+                    auth = {'service_area': service_area, 'authorization_number': report['authorization_number'],
                             'authorization_type': authorization_type, 'outside_agency': outside_agency, 'rate': rate,
                             'client': client, 'billed_time': billed_time, 'amount': amount}
                     reports[authorization_number] = auth
