@@ -15,3 +15,9 @@ h3 {
 div {
     font-size: 22px
 }
+
+@media print {
+div {
+    font-size: 22px
+}
+}
