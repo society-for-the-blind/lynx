@@ -32,7 +32,9 @@
             if (to_print){
                 // $("div").css( "font-size", "20" );
                 console.log('success');
-                $( "div" ).css( "fontSize", "25px" );
+                var divs = document.getElementsByClassName("div")[0];
+                divs.style.fontSize = "25px";
+                // $( "div" ).css( "fontSize", "25px" );
             }
         </script>
 
