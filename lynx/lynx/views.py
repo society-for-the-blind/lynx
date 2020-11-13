@@ -609,6 +609,7 @@ class BillingReviewDetailView(LoginRequiredMixin, DetailView):
         # report = ProgressReport.objects.filter(authorization_id=auth_id).values()
         notes = LessonNote.objects.filter(authorization_id=auth_id).filter(date__month=month).filter(date__year=year).order_by(
             'date').values()
+        reports = ProgressReport.objects.filter(authorization_id=auth_id).values()
         authorization = Authorization.objects.filter(id=auth_id).values()
 
         context['note_list'] = notes
@@ -631,8 +632,9 @@ class BillingReviewDetailView(LoginRequiredMixin, DetailView):
                 units = float(note['billed_units'])
                 total_units += units
                 total_notes += 1
-            if 'instructor' in note:
-                instructors.append(note['instructor'])
+        for report in reports:
+            if 'instructor' in report:
+                instructors.append(report['instructor'])
         if len(instructors) > 0:
             context['instructors'] = ", ".join(instructors)
 
