@@ -552,17 +552,13 @@ class ProgressReportDetailView(LoginRequiredMixin, DetailView):
         all_units = 0
         class_count = 0
         month_count = 0
-        instructors = []
 
         for note in all_notes:
             if note['billed_units']:
                 units = float(note['billed_units'])
                 all_units += units
                 class_count += 1
-            if 'instructor' in note:
-                instructors.append(note['instructor'])
-        if len(instructors) > 0:
-            context['instructors'] = ", ".join(instructors)
+
         for note in notes:
             if note['billed_units']:
                 units = float(note['billed_units'])
