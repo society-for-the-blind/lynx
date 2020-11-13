@@ -539,11 +539,12 @@ class ProgressReportDetailView(LoginRequiredMixin, DetailView):
         report = ProgressReport.objects.filter(id=self.kwargs['pk']).values()
         auth_id = report[0]['authorization_id']
         month_number = report[0]['month']
+        year = report[0]['year']
         if len(month_number) > 2:
             month = report[0]['month']
             month_number = MONTHS[month]
         notes = LessonNote.objects.filter(authorization_id=auth_id).filter(
-            date__month=month_number).values()  # TODO: filter by year, wait until live data in
+            date__month=month_number).filter(date__year=year).values()
         all_notes = LessonNote.objects.filter(authorization_id=auth_id).values()
         authorization = Authorization.objects.filter(id=auth_id).values()
 
@@ -551,12 +552,17 @@ class ProgressReportDetailView(LoginRequiredMixin, DetailView):
         all_units = 0
         class_count = 0
         month_count = 0
+        instructors = []
 
         for note in all_notes:
             if note['billed_units']:
                 units = float(note['billed_units'])
                 all_units += units
                 class_count += 1
+            if note['instructor'] not in instructors:
+                instructors.append(note['instructor'])
+        if len(instructors) > 0:
+            context['instructors'] = ", ".join(instructors)
         for note in notes:
             if note['billed_units']:
                 units = float(note['billed_units'])
@@ -622,15 +628,17 @@ class BillingReviewDetailView(LoginRequiredMixin, DetailView):
 
         total_units = 0
         total_notes = 0
+        instructors = []
 
         for note in notes:
             if note['billed_units'] and note['billed_units'] is not None:
                 units = float(note['billed_units'])
                 total_units += units
                 total_notes += 1
-                # context['instructors'] = note['user_id']['first_name'] + ' ' + note['user_id']['last_name']
-        #         TODO: the instructor isn't showing up
-
+            if note['instructor'] not in instructors:
+                instructors.append(note['instructor'])
+        if len(instructors) > 0:
+            context['instructors'] = ", ".join(instructors)
 
         if authorization[0]['authorization_type'] == 'Classes':
             context['month_used'] = total_notes  # used this month
