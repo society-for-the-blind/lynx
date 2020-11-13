@@ -2,6 +2,7 @@
 
 h1 {
     color: #006ca3;
+    font-size: 40px
 }
 
 h2 {
@@ -13,11 +14,11 @@ h3 {
 }
 
 div {
-    font-size: 22px
+    font-size: 30px
 }
 
 @media print {
-div {
-    font-size: 22px
-}
+    div {
+        font-size: 30px
+    }
 }
