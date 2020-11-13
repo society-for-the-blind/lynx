@@ -559,7 +559,7 @@ class ProgressReportDetailView(LoginRequiredMixin, DetailView):
                 units = float(note['billed_units'])
                 all_units += units
                 class_count += 1
-            if note['instructor'] not in instructors and note['instructor'] is not None:
+            if 'instructor' in note:
                 instructors.append(note['instructor'])
         if len(instructors) > 0:
             context['instructors'] = ", ".join(instructors)
@@ -635,7 +635,7 @@ class BillingReviewDetailView(LoginRequiredMixin, DetailView):
                 units = float(note['billed_units'])
                 total_units += units
                 total_notes += 1
-            if note['instructor'] not in instructors and note['instructor'] is not None:
+            if 'instructor' in note:
                 instructors.append(note['instructor'])
         if len(instructors) > 0:
             context['instructors'] = ", ".join(instructors)
