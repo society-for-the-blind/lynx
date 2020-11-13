@@ -559,7 +559,7 @@ class ProgressReportDetailView(LoginRequiredMixin, DetailView):
                 units = float(note['billed_units'])
                 all_units += units
                 class_count += 1
-            if note['instructor'] not in instructors:
+            if note['instructor'] not in instructors and note['instructor'] is not None:
                 instructors.append(note['instructor'])
         if len(instructors) > 0:
             context['instructors'] = ", ".join(instructors)
