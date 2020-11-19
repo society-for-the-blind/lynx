@@ -89,8 +89,8 @@ DATABASES = {
         'NAME': 'lynx',
         'USER': 'postgres',
         'PASSWORD': 'An55wsg',
-        'HOST': 'localhost',
-        'PORT': '5432',
+        # 'HOST': 'localhost',
+        # 'PORT': '5432',
     }
 }
 
