@@ -208,6 +208,77 @@ class SipNoteForm(forms.ModelForm):
         self.fields['sip_plan'].label = "SIP Plan"
 
 
+class BulkSipNoteForm(forms.ModelForm):
+    note_date = forms.DateField(widget=forms.SelectDateWidget(empty_label="Nothing"))
+    # client_list = Contact.objects.filter(active=1).filter(sip_client=1).order_by('last_name')
+    # clients = forms.ModelMultipleChoiceField(queryset=client_list, required=False)
+
+    currentYear = datetime.now().year
+    oldYear = 2000
+    highYear = currentYear + 2
+    x = range(2000, highYear)
+    years = []
+    for n in x:
+        print(n)
+
+    class Meta:
+        model = SipNote
+        exclude = ('created', 'modified', 'user', 'contact', 'modesto')
+
+    def __init__(self, *args, **kwargs):
+        super(SipNoteForm, self).__init__(*args, **kwargs)
+        # self.fields['sip_plan'].queryset = SipPlan.objects.filter(contact_id=kwargs.get("contact_id"))
+
+        self.fields['vision_screening'].label = "Vision screening/examination/low vision evaluation"
+        self.fields['treatment'].label = "Surgical or therapeutic treatment"
+        self.fields['at_devices'].label = "Provision of assistive technology devices and aids (non prescription optics)"
+        self.fields['at_services'].label = "Provision of assistive technology services"
+        self.fields['independent_living'].label = "Independent living and adjustment skills training"
+        self.fields['orientation'].label = "Orientation and Mobility training"
+        self.fields['communications'].label = "Communication skills"
+        self.fields['dls'].label = "Daily Living Skills"
+        self.fields['support'].label = "Support services"
+        self.fields['advocacy'].label = "Advocacy training and support networks"
+        self.fields['information'].label = "Information, referral, and community integration"
+        self.fields['services'].label = "Other IL services"
+        self.fields['in_home'].label = "In-home training"
+        self.fields['seminar'].label = "Training Seminar"
+        # self.fields['modesto'].label = "Modesto training site"
+        self.fields['group'].label = "Support group(s)"
+        self.fields['community'].label = "Community Integration"
+        self.fields['class_hours'].label = "Class Length"
+        self.fields['instructor'].label = "Instructor"
+        self.fields['sip_plan'].label = "SIP Plan"
+
+        contacts = Contact.objects.filter(
+            sip_client=True
+        )
+        for i in range(len(contacts) + 1):
+            field_name = 'contact_%s' % (i,)
+            self.fields[field_name] = forms.CharField(required=False)
+            try:
+                self.initial[field_name] = contacts[i].id
+            except IndexError:
+                self.initial[field_name] = ""
+        # create an extra blank field
+        field_name = 'contact_%s' % (i + 1,)
+        self.fields[field_name] = forms.CharField(required=False)
+
+    def clean(self):
+        contacts = set()
+        i = 0
+        field_name = 'contact_%s' % (i,)
+        while self.cleaned_data.get(field_name):
+            contact = self.cleaned_data[field_name]
+            if contact in contacts:
+                self.add_error(field_name, 'Duplicate')
+            else:
+                contacts.add(contact)
+            i += 1
+            field_name = 'contact_%s' % (i,)
+        self.cleaned_data["contacts"] = contacts
+
+
 class SipPlanForm(forms.ModelForm):
 
     class Meta:
