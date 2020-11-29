@@ -1,392 +1,420 @@
 {% extends 'lynx/base.html' %}
 {% load crispy_forms_tags %}
+
+{% block style %}
 	<style>
-		body {
-			font-family: sans-serif;
-			font-size: 14px;
-			color: #6c6c6c;
-			background-color: #eee;
-		}
+        * {
+            box-sizing: border-box;
+        }
 
-		p {margin: 2em 0;}
+        .multi-select, .multi-select-plugin {
+            display: inline-block;
+            position: relative;
 
-		:focus {
-			border-color: #78aeda;
-			box-shadow: 0 0 2px 3px #78aeda, 0 0 2px #78aeda inset;
-			border-radius: 2px;
-		}
+            > span {
+                border: none;
+                background: none;
+                position: relative;
+                padding: .25em .5em;
+                padding-right: 1.5em;
+                display: block;
+                border: solid 1px #000;
+                cursor: default;
 
-		.combobox {
-			width: 280px;
-			display: inline-block;
-			position: relative;
-		}
+                > .chevron {
+                    display: inline-block;
+                    transform: rotate(-90deg) scale(1, 2) translate(-50%, 0);
+                    font-weight: bold;
+                    font-size: .75em;
+                    position: absolute;
+                    top: .2em;
+                    right: .75em;
+                }
+            }
 
-		#textbox {
-			font-size: 1em;
-			color: #767676;
-			background-color: #fff;
-			font-weight: bold;
-			width: 220px;
-			outline: none;
-			padding: 15px 40px 15px 20px;
-			margin: 0;
-			border: 1px solid #999;
-			border-radius: 5px;
-			overflow: hidden;
-			white-space: nowrap;
-			text-overflow: ellipsis;
-		}
-		#textbox.selections {color: #069;}
-		.combobox button.toggle:focus {
-			outline: none;
-			box-shadow: none;
-		}
-		.combobox button.toggle {
-			background-color: #fff;
-			padding: 0;
-			border-top: 8px solid #6c6c6c;
-			border-right: 8px solid transparent;
-			border-bottom: none;
-			border-left: 8px solid transparent;
-			position: absolute;
-			right: 10px;
-			top: 21px;
-			width: 16px;
-		}
+            > ul {
+                position: absolute;
+                list-style: none;
+                padding: 0;
+                margin: 0;
+                left: 0;
+                top: 100%;
+                min-width: 100%;
+                z-index: 1000;
+                background: #fff;
+                border: 1px solid rgba(0,0,0,.15);
+                box-shadow: 0 6px 12px rgba(0,0,0,.175);
+                display: none;
+                max-height: 320px;
+                overflow-x: hidden;
+                overflow-y: auto;
 
-		.combobox button.clear {
-			display: none;
-			position: absolute;
-			top: 13px;
-			right: 4px;
-			width: 31px;
-			height: 26px;
-			background-color: #fff;
-			border: none;
-		}
+                > li {
+                    white-space: nowrap;
 
-		.combobox button.clear::before {
-			content: '×';
-			position: absolute;
-			top: 2px;
-			left: 6px;
-			z-index: 1;
-			background-color: #6c6c6c;
-			border-radius: 100%;
-			font-size: 19px;
-			color: #fff;
-			line-height: 1;
-			width: 21px;
-			height: 21px;
-		}
+                    &.selected {
+                        > label {
+                            background-color: LightBlue;
+                        }
+                    }
 
-		.combobox button.clear:focus::before,
-		.combobox button.clear:hover::before {background-color: #069;}
+                    &.focused {
+                        > label {
+                            background-color: DodgerBlue;
+                        }
+                    }
 
-		.combobox ul {
-			display: none;
-			list-style: none;
-			background-color: #fff;
-			font-size: 1em;
-			width: 100%;
-			margin: 0;
-			padding: 10px 0;
-			border: 1px solid #999;
-			border-radius: 5px;
-		}
+                    > label {
+                        padding: .25em .5em;
+                        display: block;
 
-		.combobox li {
-			font-weight: bold;
-			padding: 15px 0 15px 50px;
-			position: relative;
-		}
+                        &:focus, &:hover {
+                            background-color: DodgerBlue;
+                        }
+                    }
+                }
+            }
 
-		.combobox .activedescendant {
-			background-color: #ddd;
-			color: #069;
-		}
+            &.in {
+                > ul {
+                    display: block;
+                }
+            }
 
-		.combobox li[aria-selected="true"] {color: #000;}
-
-		.combobox li[aria-selected="true"].activedescendant {color: #069;}
-
-		.combobox li span.check::before {
-			position: absolute;
-			content: ' ';
-			line-height: 1;
-			text-align: center;
-			left: 20px;
-			top: 14px;
-			border-radius: 3px;
-			width: 15px;
-			margin-right: 10px;
-			border: 1px solid #7B8E9B;
-			background: #f9f9f9;
-		}
-
-		.combobox li[aria-selected="true"] span.check::before {content: "✓";}
-
+            &-backdrop {
+                position: fixed;
+                top: 0;
+                right: 0;
+                bottom: 0;
+                left: 0;
+                z-index: 900;
+            }
+        }
 	</style>
+{% endblock %}
 
 {% block javascript %}
-<script>
-    $(document).ready(function() {
-        var thisYear = new Date().getFullYear();
-        $("#id_note_date_year").val(thisYear);
+    <script>
+        $(document).ready(function() {
+            var thisYear = new Date().getFullYear();
+            $("#id_note_date_year").val(thisYear);
 
-        //THis javascript function uses an array of 0-11
-        var thisMonth = new Date().getMonth() + 1;
-        $("#id_note_date_month").val(thisMonth);
+            //THis javascript function uses an array of 0-11
+            var thisMonth = new Date().getMonth() + 1;
+            $("#id_note_date_month").val(thisMonth);
 
-        var thisDay = new Date().getDate();
-        $("#id_note_date_day").val(thisDay);
-    });
-</script>
+            var thisDay = new Date().getDate();
+            $("#id_note_date_day").val(thisDay);
+        });
+    </script>
 	<script>
-		$(function () {
+         (function($){
+            'use strict';
 
-			var $cbox = $('[role="combobox"]');
-			var $input = $('[role="textbox"]', $cbox);
-			var $togglebutt = $('button.toggle');
-			var $clearbutt = $('button.clear');
-			var $lbox = $('[role="listbox"]');
+            const DataStatePropertyName = 'multiselect';
+            const EventNamespace = '.multiselect';
+            const PluginName = 'MultiSelect';
 
-			function isOpen() {
-				if ($cbox.attr('aria-expanded') == 'true') { return true; } else { return false; }
-			}
-			function openLB() {
-				$cbox.attr('aria-expanded', 'true');
-				$lbox.show();
-			}
-			function closeLB() {
-				$cbox.attr('aria-expanded', 'false');
-				$lbox.hide();
-				clearActiveDescendant();
-			}
-			function toggleLB() {
-				if (isOpen()) {
-					closeLB();
-					$cbox.focus();
-				} else {
-					openLB();
-				}
-			}
-			function getActiveDescendant() {
-				if ($lbox.attr('aria-activedescendant')) {
-					return $('#' + $lbox.attr('aria-activedescendant'));
-				}
-			}
-			function setActiveDescendant($option) {
-				if (getActiveDescendant()) {
-					getActiveDescendant().removeClass('activedescendant');
-				}
-				$lbox.attr('aria-activedescendant', $option.attr('id'));
-				$('#' + $lbox.attr('aria-activedescendant')).attr('class', 'activedescendant');
-			}
-			function clearActiveDescendant() {
-				if (getActiveDescendant()) {
-					getActiveDescendant().removeClass('activedescendant');
-				}
-				$lbox.attr('aria-activedescendant', '');
-			}
-			function getSelectedOptionsStr() {
-				var options_str = '';
-				var $selectedOptions = $('li[aria-selected="true"]', $lbox);
-				if ($selectedOptions.length > 0) {
-					$selectedOptions.each(function() {
-						options_str += $(this).text() + ', ';
-					});
-					options_str = options_str.slice(0, -2);
-					$cbox.addClass('selections');
-					$togglebutt.hide();
-					$clearbutt.show();
-				} else {
-					options_str = $cbox.attr('aria-label');
-					$cbox.removeClass('selections');
-					$clearbutt.hide();
-					$togglebutt.show();
-				}
-				return options_str;
-			}
-			function clearSelectedOptions() {
-				$input.text($cbox.attr('aria-label'));
-				$('li[aria-selected="true"]', $lbox).attr('aria-selected', 'false');
-				$cbox.removeClass('selections');
-				$clearbutt.hide();
-				$togglebutt.show();
-				if (isOpen()) {closeLB();}
-				$cbox.focus();
-			}
+            var old = $.fn[PluginName];
+            $.fn[PluginName] = plugin;
+            $.fn[PluginName].Constructor = MultiSelect;
+            $.fn[PluginName].noConflict = function () {
+                $.fn[PluginName] = old;
+                return this;
+            };
 
-			function toggleSelection($option) {
-				if ($option.attr('aria-selected') == 'false') {
-					$option.attr('aria-selected', 'true');
-				} else {
-					$option.attr('aria-selected', 'false');
-				}
-				$input.text(getSelectedOptionsStr());
-			}
-			function getDefaultOption() {
-				if ($('li[aria-selected="true"]', $lbox).length > 0) {
-					return $('li[aria-selected="true"]', $lbox).eq(0);
-				} else {
-					return $('li:first-child', $lbox);
-				}
-			}
-			function getNextOption() {
-				if (getActiveDescendant()) {
-					var ad_index = getActiveDescendant().index();
-					if (ad_index == $('li', $lbox).length - 1) {
-						return $('li:first-child', $lbox);
-					} else {
-						return $('li', $lbox).eq(ad_index + 1);
-					}
-				} else {
-					return getDefaultOption();
-				}
-			}
-			function getPreviousOption() {
-				if (getActiveDescendant()) {
-					var ad_index = getActiveDescendant().index();
-					if (ad_index === 0) {
-						return $('li:last-child', $lbox);
-					} else {
-						return $('li', $lbox).eq(ad_index - 1);
-					}
-				} else {
-					return getDefaultOption();
-				}
-			}
+            // Defaults
+            $.fn[PluginName].defaults = {
 
-			//Events
-			$cbox.on('click', function (e) {
-				toggleLB();
-				e.stopPropagation();
-			});
-			$togglebutt.on('click', function (e) {
-				toggleLB();
-				$cbox.focus();
-				e.stopPropagation();
-			});
-			$clearbutt.on('click', function(e) {
-				clearSelectedOptions();
-				e.stopPropagation();
-			});
+            };
 
-			var altPressed = false;
-			$cbox.on('keydown', function (e) {
-				switch (e.which) {
-					case 18:
-						altPressed = true;
-						break;
-					case 9:
-						if (isOpen()) {
-							closeLB();
-						}
-						break;
-					case 13:
-					case 32:
-						toggleLB();
-						if (isOpen()) {
-							$lbox.focus();
-							setActiveDescendant(getDefaultOption());
-						}
-						e.preventDefault();
-						break;
-					case 38:
-						if (altPressed == true) {
-							closeLB();
-						} else if (!isOpen()) {
-							openLB();
-							$lbox.focus();
-							setActiveDescendant(getDefaultOption());
-							e.preventDefault();
-						}
-						break;
-					case 40:
-						if (!isOpen()) {
-							openLB();
-						}
-						$lbox.focus();
-						setActiveDescendant(getDefaultOption());
-						e.preventDefault();
-						break;
-					default:
-						return true;
-				}
-			});
-			$cbox.on('keyup', function (e) {
-				if (e.which == 18) {
-					altPressed = false;
-				}
-			});
-			$('li', $lbox).on('click', function(e) {
-				toggleSelection($(this));
-				setActiveDescendant($(this));
-				e.stopPropagation();
-			});
-			$lbox.on('keydown', function (e) {
-				switch (e.which) {
-					case 18:
-						altPressed = true;
-						break;
-					case 9:
-						if (isOpen()) {
-							closeLB();
-						}
-						break;
-					case 27:
-						if (isOpen()) {
-							closeLB();
-							$cbox.focus();
-						}
-						break;
-					case 13:
-						toggleSelection(getActiveDescendant());
-						closeLB();
-						$cbox.focus();
-						break;
-					case 32:
-						toggleSelection(getActiveDescendant());
-						e.preventDefault();
-						break;
-					case 38:
-						if (altPressed == true) {
-							closeLB();
-							$cbox.focus();
-						} else {
-							setActiveDescendant(getPreviousOption());
-							e.preventDefault();
-						}
-						break;
-					case 40:
-						setActiveDescendant(getNextOption());
-						e.preventDefault();
-						break;
-					default:
-						return true;
-				}
-			});
-			$lbox.on('keyup', function (e) {
-				if (e.which == 18) {
-					altPressed = false;
-				}
-			});
-			$('html').on('click', function() {
-				if (isOpen()) {
-					closeLB();
-				}
-			});
-			$('html').on('keydown', function (e) {
-				if (e.which == 27 && isOpen()) {
-					closeLB();
-				}
-			});
+            // Static members
+            $.fn[PluginName].EventNamespace = function () {
+                return EventNamespace.replace(/^\./ig, '');
+            };
+            $.fn[PluginName].GetNamespacedEvents = function (eventsArray) {
+                return getNamespacedEvents(eventsArray);
+            };
 
-			//Init
-			$input.text($cbox.attr('aria-label'));
-		});
+            function getNamespacedEvents(eventsArray) {
+                var event;
+                var namespacedEvents = "";
+                while (event = eventsArray.shift()) {
+                    namespacedEvents += event + EventNamespace + " ";
+                }
+                return namespacedEvents.replace(/\s+$/g, '');
+            }
+
+            function plugin(option) {
+                this.each(function () {
+                    var $target = $(this);
+                    var multiSelect = $target.data(DataStatePropertyName);
+                    var options = (typeof option === typeof {} && option) || {};
+
+                    if (!multiSelect) {
+                        $target.data(DataStatePropertyName, multiSelect = new MultiSelect(this, options));
+                    }
+
+                    if (typeof option === typeof "") {
+                        if (!(option in multiSelect)) {
+                            throw "MultiSelect does not contain a method named '" + option + "'";
+                        }
+                        return multiSelect[option]();
+                    }
+                });
+            }
+
+            function MultiSelect(element, options) {
+                this.$element = $(element);
+                this.options = $.extend({}, $.fn[PluginName].defaults, options);
+                this.destroyFns = [];
+
+                this.$toggle = this.$element.children('.toggle');
+                this.$toggle.attr('id', this.$element.attr('id') + 'multi-select-label');
+                this.$backdrop = null;
+                this.$allToggle = null;
+
+                init.apply(this);
+            }
+
+            MultiSelect.prototype.open = open;
+            MultiSelect.prototype.close = close;
+
+            function init() {
+                this.$element
+                .addClass('multi-select')
+                .attr('tabindex', 0);
+
+                initAria.apply(this);
+                initEvents.apply(this);
+                updateLabel.apply(this);
+                injectToggleAll.apply(this);
+
+                this.destroyFns.push(function() {
+                    return '|'
+                });
+            }
+
+            function injectToggleAll() {
+                if(this.$allToggle && !this.$allToggle.parent()) {
+                    this.$allToggle = null;
+                }
+
+                this.$allToggle = $("<li><label><input type='checkbox'/>(all)</label><li>");
+
+                this.$element
+                .children('ul:first')
+                .prepend(this.$allToggle);
+            }
+
+            function initAria() {
+                this.$element
+                .attr('role', 'combobox')
+                .attr('aria-multiselect', true)
+                .attr('aria-expanded', false)
+                .attr('aria-haspopup', false)
+                .attr('aria-labeledby', this.$element.attr("aria-labeledby") + " " + this.$toggle.attr('id'));
+
+                this.$toggle
+                .attr('aria-label', '');
+            }
+
+            function initEvents() {
+                var that = this;
+                this.$element
+                .on(getNamespacedEvents(['click']), function($event) {
+                    if($event.target !== that.$toggle[0] && !that.$toggle.has($event.target).length) {
+                        return;
+                    }
+
+                    if($(this).hasClass('in')) {
+                        that.close();
+                    } else {
+                        that.open();
+                    }
+                })
+                .on(getNamespacedEvents(['keydown']), function($event) {
+                    var next = false;
+                    switch($event.keyCode) {
+                        case 13:
+                            if($(this).hasClass('in')) {
+                                that.close();
+                            } else {
+                                that.open();
+                            }
+                            break;
+                        case 9:
+                            if($event.target !== that.$element[0]	) {
+                                $event.preventDefault();
+                            }
+                        case 27:
+                            that.close();
+                            break;
+                        case 40:
+                            next = true;
+                        case 38:
+                            var $items = $(this)
+                            .children("ul:first")
+                            .find(":input, button, a");
+
+                            var foundAt = $.inArray(document.activeElement, $items);
+                            if(next && ++foundAt === $items.length) {
+                                foundAt = 0;
+                            } else if(!next && --foundAt < 0) {
+                                foundAt = $items.length - 1;
+                            }
+
+                            $($items[foundAt])
+                            .trigger('focus');
+                    }
+                })
+                .on(getNamespacedEvents(['focus']), 'a, button, :input', function() {
+                    $(this)
+                    .parents('li:last')
+                    .addClass('focused');
+                })
+                .on(getNamespacedEvents(['blur']), 'a, button, :input', function() {
+                    $(this)
+                    .parents('li:last')
+                    .removeClass('focused');
+                })
+                .on(getNamespacedEvents(['change']), ':checkbox', function() {
+                    if(that.$allToggle && $(this).is(that.$allToggle.find(':checkbox'))) {
+                        var allChecked = that.$allToggle
+                        .find(':checkbox')
+                        .prop("checked");
+
+                        that.$element
+                        .find(':checkbox')
+                        .not(that.$allToggle.find(":checkbox"))
+                        .each(function(){
+                            $(this).prop("checked", allChecked);
+                            $(this)
+                            .parents('li:last')
+                            .toggleClass('selected', $(this).prop('checked'));
+                        });
+
+                        updateLabel.apply(that);
+                        return;
+                    }
+
+                    $(this)
+                    .parents('li:last')
+                    .toggleClass('selected', $(this).prop('checked'));
+
+                    var checkboxes = that.$element
+                    .find(":checkbox")
+                    .not(that.$allToggle.find(":checkbox"))
+                    .filter(":checked");
+
+                    that.$allToggle.find(":checkbox").prop("checked", checkboxes.length === checkboxes.end().length);
+
+                    updateLabel.apply(that);
+                })
+                .on(getNamespacedEvents(['mouseover']), 'ul', function() {
+                    $(this)
+                    .children(".focused")
+                    .removeClass("focused");
+                });
+            }
+
+            function updateLabel() {
+                var pluralize = function(wordSingular, count) {
+                    if(count !== 1) {
+                        switch(true) {
+                            case /y$/.test(wordSingular):
+                                wordSingular = wordSingular.replace(/y$/, "ies");
+                            default:
+                                wordSingular = wordSingular + "s";
+                        }
+                    }
+                    return wordSingular;
+                }
+
+                var $checkboxes = this.$element
+                .find('ul :checkbox');
+
+                var allCount = $checkboxes.length;
+                var checkedCount = $checkboxes.filter(":checked").length
+                var label = checkedCount + " " + pluralize("item", checkedCount) + " selected";
+
+                this.$toggle
+                .children("label")
+                .text(checkedCount ? (checkedCount === allCount ? '(all)' : label) : 'Select a value');
+
+                this.$element
+                .children('ul')
+                .attr("aria-label", label + " of " + allCount + " " + pluralize("item", allCount));
+            }
+
+            function ensureFocus() {
+                this.$element
+                .children("ul:first")
+                .find(":input, button, a")
+                .first()
+                .trigger('focus')
+                .end()
+                .end()
+                .find(":checked")
+                .first()
+                .trigger('focus');
+            }
+
+            function addBackdrop() {
+                if(this.$backdrop) {
+                    return;
+                }
+
+                var that = this;
+                this.$backdrop = $("<div class='multi-select-backdrop'/>");
+                this.$element.append(this.$backdrop);
+
+                this.$backdrop
+                .on('click', function() {
+                    $(this)
+                    .off('click')
+                    .remove();
+
+                    that.$backdrop = null;
+                    that.close();
+                });
+            }
+
+            function open() {
+                if(this.$element.hasClass('in')) {
+                    return;
+                }
+
+                this.$element
+                .addClass('in');
+
+                this.$element
+                .attr('aria-expanded', true)
+                .attr('aria-haspopup', true);
+
+                addBackdrop.apply(this);
+                //ensureFocus.apply(this);
+            }
+
+            function close() {
+                this.$element
+                .removeClass('in')
+                .trigger('focus');
+
+                this.$element
+                .attr('aria-expanded', false)
+                .attr('aria-haspopup', false);
+
+                if(this.$backdrop) {
+                    this.$backdrop.trigger('click');
+                }
+            }
+        })(jQuery);
+
+        $(document).ready(function(){
+            $('#multi-select-plugin')
+            .MultiSelect();
+        });
 	</script>
 {% endblock %}
 
@@ -474,3 +502,47 @@
     <input type="submit" value="Submit">
 </form>
 {% endblock %}
+
+<h2>Multi-select Plugin</h2>
+<label id="multi-select-plugin-label" style="display:block;">Multi Select Plugin Dropdown</label>
+<div id="multi-select-plugin" aria-labeledby="multi-select-plugin-label">
+	<span class="toggle">
+		<label>Select a value</label>
+		<span class="chevron">&lt;</span>
+	</span>
+	<ul>
+		<li>
+			<label>
+				<input type="checkbox" name="selected" value="0"/>
+				Item 1
+			</label>
+		</li>
+		<li>
+			<label>
+				<input type="checkbox" name="selected" value="1"/>
+				Item 2
+			</label>
+		</li>
+		<li>
+			<label>
+				<input type="checkbox" name="selected" value="2"/>
+				Item 3
+			</label>
+		</li>
+		<li>
+			<label>
+				<input type="checkbox" name="selected" value="3"/>
+				Item 4
+			</label>
+		</li>
+	</ul>
+</div>
+
+<h2>HTML Select</h2>
+<select>
+	<option>Option 1</option>
+	<option>Option 2</option>
+	<option>Option 3</option>
+	<option>Option 4</option>
+	<option>Option 5</option>
+</select>
