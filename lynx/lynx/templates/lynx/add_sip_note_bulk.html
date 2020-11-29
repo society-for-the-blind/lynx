@@ -1,5 +1,133 @@
 {% extends 'lynx/base.html' %}
 {% load crispy_forms_tags %}
+	<style>
+		body {
+			font-family: sans-serif;
+			font-size: 14px;
+			color: #6c6c6c;
+			background-color: #eee;
+		}
+
+		p {margin: 2em 0;}
+
+		:focus {
+			border-color: #78aeda;
+			box-shadow: 0 0 2px 3px #78aeda, 0 0 2px #78aeda inset;
+			border-radius: 2px;
+		}
+
+		.combobox {
+			width: 280px;
+			display: inline-block;
+			position: relative;
+		}
+
+		#textbox {
+			font-size: 1em;
+			color: #767676;
+			background-color: #fff;
+			font-weight: bold;
+			width: 220px;
+			outline: none;
+			padding: 15px 40px 15px 20px;
+			margin: 0;
+			border: 1px solid #999;
+			border-radius: 5px;
+			overflow: hidden;
+			white-space: nowrap;
+			text-overflow: ellipsis;
+		}
+		#textbox.selections {color: #069;}
+		.combobox button.toggle:focus {
+			outline: none;
+			box-shadow: none;
+		}
+		.combobox button.toggle {
+			background-color: #fff;
+			padding: 0;
+			border-top: 8px solid #6c6c6c;
+			border-right: 8px solid transparent;
+			border-bottom: none;
+			border-left: 8px solid transparent;
+			position: absolute;
+			right: 10px;
+			top: 21px;
+			width: 16px;
+		}
+
+		.combobox button.clear {
+			display: none;
+			position: absolute;
+			top: 13px;
+			right: 4px;
+			width: 31px;
+			height: 26px;
+			background-color: #fff;
+			border: none;
+		}
+
+		.combobox button.clear::before {
+			content: '×';
+			position: absolute;
+			top: 2px;
+			left: 6px;
+			z-index: 1;
+			background-color: #6c6c6c;
+			border-radius: 100%;
+			font-size: 19px;
+			color: #fff;
+			line-height: 1;
+			width: 21px;
+			height: 21px;
+		}
+
+		.combobox button.clear:focus::before,
+		.combobox button.clear:hover::before {background-color: #069;}
+
+		.combobox ul {
+			display: none;
+			list-style: none;
+			background-color: #fff;
+			font-size: 1em;
+			width: 100%;
+			margin: 0;
+			padding: 10px 0;
+			border: 1px solid #999;
+			border-radius: 5px;
+		}
+
+		.combobox li {
+			font-weight: bold;
+			padding: 15px 0 15px 50px;
+			position: relative;
+		}
+
+		.combobox .activedescendant {
+			background-color: #ddd;
+			color: #069;
+		}
+
+		.combobox li[aria-selected="true"] {color: #000;}
+
+		.combobox li[aria-selected="true"].activedescendant {color: #069;}
+
+		.combobox li span.check::before {
+			position: absolute;
+			content: ' ';
+			line-height: 1;
+			text-align: center;
+			left: 20px;
+			top: 14px;
+			border-radius: 3px;
+			width: 15px;
+			margin-right: 10px;
+			border: 1px solid #7B8E9B;
+			background: #f9f9f9;
+		}
+
+		.combobox li[aria-selected="true"] span.check::before {content: "✓";}
+
+	</style>
 
 {% block javascript %}
 <script>
