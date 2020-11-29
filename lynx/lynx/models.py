@@ -1,4 +1,5 @@
 from django.db import models
+from django import forms
 from django.contrib.auth import get_user_model
 from django.conf import settings
 from django.urls import reverse
@@ -537,9 +538,38 @@ class SipNote(models.Model):
     modified = models.DateTimeField(auto_now=True, null=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET(get_sentinel_user))
 
-
     def get_absolute_url(self):
         return "/lynx/client/%i" % self.contact_id
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        contacts = Contact.objects.filter(
+            sip_client=True
+        )
+        for i in range(len(contacts) + 1):
+            field_name = 'contact_%s' % (i,)
+            self.fields[field_name] = forms.CharField(required=False)
+            try:
+                self.initial[field_name] = contacts[i].id
+            except IndexError:
+                self.initial[field_name] = ""
+        # create an extra blank field
+        field_name = 'contact_%s' % (i + 1,)
+        self.fields[field_name] = forms.CharField(required=False)
+
+    def clean(self):
+        contacts = set()
+        i = 0
+        field_name = 'contact_%s' % (i,)
+        while self.cleaned_data.get(field_name):
+            contact = self.cleaned_data[field_name]
+            if contact in contacts:
+                self.add_error(field_name, 'Duplicate')
+            else:
+                contacts.add(contact)
+            i += 1
+            field_name = 'contact_%s' % (i,)
+        self.cleaned_data["contacts"] = contacts
 
 
 class Volunteer(models.Model):
