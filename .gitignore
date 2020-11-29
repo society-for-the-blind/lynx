@@ -4,3 +4,4 @@ lynx/mysite/__pycache__/
 lynx/lynx/__pycache__/
 lynx/lynx/migrations/__pycache__/
 *.pyc
+lynx/mysite/settings.py
