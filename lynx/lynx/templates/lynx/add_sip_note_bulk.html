@@ -24,10 +24,21 @@
     <div class="container-fluid">
         <h2>Select Clients</h2>
             <div class="row">
-              <div class="col-12">{{ form.clients }}</div>
-            </div>
-            <div class="row">
-              <div class="col-12">{{ form.clients }}</div>
+              <div class="col-12">
+<!--              <div class="col-12">{{ form.clients }}</div>-->
+                <div class="combobox no-edit">
+                    <div role="combobox" aria-label="Select Clients" aria-owns="clients" aria-expanded="false" tabindex="0">
+                        <div id="textbox" role="textbox" aria-readonly="true" aria-multiline="false" aria-autocomplete="none" aria-controls="vegetables"></div>
+                    </div>
+                    <button class="toggle" aria-hidden="true" aria-label="Toggle list" tabindex="-1"></button>
+                    <button class="clear" aria-label="Clear selected options"></button>
+                    <ul role="listbox" id="clients" class="listbox" aria-multiselectable="true" tabindex="-1">
+                        {% for client in client_list %}
+                            <li id="{{ client.id }}" role="option" aria-selected="false"><span class="check" aria-hidden="true"></span>{{ client.last_name }}, {{ client.first_name }}</li>
+                        {% endfor %}
+                    </ul>
+            	</div>
+              </div>
             </div>
         <h2>Notes</h2>
             <div class="row">
