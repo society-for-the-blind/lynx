@@ -88,7 +88,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'lynx',
         'USER': 'postgres',
-        'PASSWORD': 'An55wsg',
+        'PASSWORD': 'An55wsg', # this has been updated, this is the previous password. This file is gitignore now so that the pw is not on gitlab
         'HOST': 'localhost',
         'PORT': 5432,
     }
