@@ -250,6 +250,31 @@
 
                             $($items[foundAt])
                             .trigger('focus');
+                        // default:  // Search item starts with
+                        //   // Cancel current timer
+                        //   clearTimeout(timer);
+                        //
+                        //   // Create search string
+                        //   var searchString += e.key;
+                        //   var self = this;
+                        //
+                        //   // Set a timer to search item after 500ms
+                        //   timer = setTimeout(function(){
+                        //       // Search item
+                        //       var xpath = "li/span[starts-with(translate(text(), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), '" + searchString + "')]";
+                        //       var matchingElement = document.evaluate(xpath, self, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+                        //
+                        //       // Reset search string
+                        //       searchString = "";
+                        //
+                        //       // If an item is found…
+                        //       if (matchingElement) {
+                        //           currentItem.attr("aria-selected", "false");
+                        //           $(matchingElement).parent().attr("aria-selected", "true").focus().addClass("active");
+                        //       }
+                        //   }, 500);
+                        //
+                        //   e.preventDefault();
                     }
                 })
                 .on(getNamespacedEvents(['focus']), 'a, button, :input', function() {
@@ -411,9 +436,7 @@
             <div class="row">
               <div class="col-12">
 <!--              <div class="col-12">{{ form.clients }}</div>-->
-
-                  <label id="multi-select-plugin-label" style="display:block;">Multi Select Plugin Dropdown</label>
-                    <div id="multi-select-plugin" aria-labeledby="multi-select-plugin-label">
+                   <div id="multi-select-plugin" aria-label="Select Clients" role="listbox">
                         <span class="toggle">
                             <label>Select a value</label>
                             <span class="chevron">&lt;</span>
