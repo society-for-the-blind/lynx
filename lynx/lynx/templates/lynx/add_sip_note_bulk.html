@@ -15,6 +15,251 @@
         $("#id_note_date_day").val(thisDay);
     });
 </script>
+	<script>
+		$(function () {
+
+			var $cbox = $('[role="combobox"]');
+			var $input = $('[role="textbox"]', $cbox);
+			var $togglebutt = $('button.toggle');
+			var $clearbutt = $('button.clear');
+			var $lbox = $('[role="listbox"]');
+
+			function isOpen() {
+				if ($cbox.attr('aria-expanded') == 'true') { return true; } else { return false; }
+			}
+			function openLB() {
+				$cbox.attr('aria-expanded', 'true');
+				$lbox.show();
+			}
+			function closeLB() {
+				$cbox.attr('aria-expanded', 'false');
+				$lbox.hide();
+				clearActiveDescendant();
+			}
+			function toggleLB() {
+				if (isOpen()) {
+					closeLB();
+					$cbox.focus();
+				} else {
+					openLB();
+				}
+			}
+			function getActiveDescendant() {
+				if ($lbox.attr('aria-activedescendant')) {
+					return $('#' + $lbox.attr('aria-activedescendant'));
+				}
+			}
+			function setActiveDescendant($option) {
+				if (getActiveDescendant()) {
+					getActiveDescendant().removeClass('activedescendant');
+				}
+				$lbox.attr('aria-activedescendant', $option.attr('id'));
+				$('#' + $lbox.attr('aria-activedescendant')).attr('class', 'activedescendant');
+			}
+			function clearActiveDescendant() {
+				if (getActiveDescendant()) {
+					getActiveDescendant().removeClass('activedescendant');
+				}
+				$lbox.attr('aria-activedescendant', '');
+			}
+			function getSelectedOptionsStr() {
+				var options_str = '';
+				var $selectedOptions = $('li[aria-selected="true"]', $lbox);
+				if ($selectedOptions.length > 0) {
+					$selectedOptions.each(function() {
+						options_str += $(this).text() + ', ';
+					});
+					options_str = options_str.slice(0, -2);
+					$cbox.addClass('selections');
+					$togglebutt.hide();
+					$clearbutt.show();
+				} else {
+					options_str = $cbox.attr('aria-label');
+					$cbox.removeClass('selections');
+					$clearbutt.hide();
+					$togglebutt.show();
+				}
+				return options_str;
+			}
+			function clearSelectedOptions() {
+				$input.text($cbox.attr('aria-label'));
+				$('li[aria-selected="true"]', $lbox).attr('aria-selected', 'false');
+				$cbox.removeClass('selections');
+				$clearbutt.hide();
+				$togglebutt.show();
+				if (isOpen()) {closeLB();}
+				$cbox.focus();
+			}
+
+			function toggleSelection($option) {
+				if ($option.attr('aria-selected') == 'false') {
+					$option.attr('aria-selected', 'true');
+				} else {
+					$option.attr('aria-selected', 'false');
+				}
+				$input.text(getSelectedOptionsStr());
+			}
+			function getDefaultOption() {
+				if ($('li[aria-selected="true"]', $lbox).length > 0) {
+					return $('li[aria-selected="true"]', $lbox).eq(0);
+				} else {
+					return $('li:first-child', $lbox);
+				}
+			}
+			function getNextOption() {
+				if (getActiveDescendant()) {
+					var ad_index = getActiveDescendant().index();
+					if (ad_index == $('li', $lbox).length - 1) {
+						return $('li:first-child', $lbox);
+					} else {
+						return $('li', $lbox).eq(ad_index + 1);
+					}
+				} else {
+					return getDefaultOption();
+				}
+			}
+			function getPreviousOption() {
+				if (getActiveDescendant()) {
+					var ad_index = getActiveDescendant().index();
+					if (ad_index === 0) {
+						return $('li:last-child', $lbox);
+					} else {
+						return $('li', $lbox).eq(ad_index - 1);
+					}
+				} else {
+					return getDefaultOption();
+				}
+			}
+
+			//Events
+			$cbox.on('click', function (e) {
+				toggleLB();
+				e.stopPropagation();
+			});
+			$togglebutt.on('click', function (e) {
+				toggleLB();
+				$cbox.focus();
+				e.stopPropagation();
+			});
+			$clearbutt.on('click', function(e) {
+				clearSelectedOptions();
+				e.stopPropagation();
+			});
+
+			var altPressed = false;
+			$cbox.on('keydown', function (e) {
+				switch (e.which) {
+					case 18:
+						altPressed = true;
+						break;
+					case 9:
+						if (isOpen()) {
+							closeLB();
+						}
+						break;
+					case 13:
+					case 32:
+						toggleLB();
+						if (isOpen()) {
+							$lbox.focus();
+							setActiveDescendant(getDefaultOption());
+						}
+						e.preventDefault();
+						break;
+					case 38:
+						if (altPressed == true) {
+							closeLB();
+						} else if (!isOpen()) {
+							openLB();
+							$lbox.focus();
+							setActiveDescendant(getDefaultOption());
+							e.preventDefault();
+						}
+						break;
+					case 40:
+						if (!isOpen()) {
+							openLB();
+						}
+						$lbox.focus();
+						setActiveDescendant(getDefaultOption());
+						e.preventDefault();
+						break;
+					default:
+						return true;
+				}
+			});
+			$cbox.on('keyup', function (e) {
+				if (e.which == 18) {
+					altPressed = false;
+				}
+			});
+			$('li', $lbox).on('click', function(e) {
+				toggleSelection($(this));
+				setActiveDescendant($(this));
+				e.stopPropagation();
+			});
+			$lbox.on('keydown', function (e) {
+				switch (e.which) {
+					case 18:
+						altPressed = true;
+						break;
+					case 9:
+						if (isOpen()) {
+							closeLB();
+						}
+						break;
+					case 27:
+						if (isOpen()) {
+							closeLB();
+							$cbox.focus();
+						}
+						break;
+					case 13:
+						toggleSelection(getActiveDescendant());
+						closeLB();
+						$cbox.focus();
+						break;
+					case 32:
+						toggleSelection(getActiveDescendant());
+						e.preventDefault();
+						break;
+					case 38:
+						if (altPressed == true) {
+							closeLB();
+							$cbox.focus();
+						} else {
+							setActiveDescendant(getPreviousOption());
+							e.preventDefault();
+						}
+						break;
+					case 40:
+						setActiveDescendant(getNextOption());
+						e.preventDefault();
+						break;
+					default:
+						return true;
+				}
+			});
+			$lbox.on('keyup', function (e) {
+				if (e.which == 18) {
+					altPressed = false;
+				}
+			});
+			$('html').on('click', function() {
+				if (isOpen()) {
+					closeLB();
+				}
+			});
+			$('html').on('keydown', function (e) {
+				if (e.which == 27 && isOpen()) {
+					closeLB();
+				}
+			});
+
+			//Init
+			$input.text($cbox.attr('aria-label'));
+		});
+	</script>
 {% endblock %}
 
 {% block content %}
