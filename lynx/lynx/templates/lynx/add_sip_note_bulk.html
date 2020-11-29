@@ -427,18 +427,19 @@
             <div class="row">
               <div class="col-12">
 <!--              <div class="col-12">{{ form.clients }}</div>-->
-                <div class="combobox no-edit">
-                    <div role="combobox" aria-label="Select Clients" aria-owns="clients" aria-expanded="false" tabindex="0">
-                        <div id="textbox" role="textbox" aria-readonly="true" aria-multiline="false" aria-autocomplete="none" aria-controls="clients"></div>
+
+                  <label id="multi-select-plugin-label" style="display:block;">Multi Select Plugin Dropdown</label>
+                    <div id="multi-select-plugin" aria-labeledby="multi-select-plugin-label">
+                        <span class="toggle">
+                            <label>Select a value</label>
+                            <span class="chevron">&lt;</span>
+                        </span>
+                        <ul>
+                            {% for client in client_list %}
+                                <li><label><input type="checkbox" name="selected" value="{{ client.id }}"/>{{ client.last_name }}, {{ client.first_name }}</label></li>
+                            {% endfor %}
+                        </ul>
                     </div>
-                    <button class="toggle" aria-hidden="true" aria-label="Toggle list" tabindex="-1"></button>
-                    <button class="clear" aria-label="Clear selected options"></button>
-                    <ul role="listbox" id="clients" class="listbox" aria-multiselectable="true" tabindex="-1">
-                        {% for client in client_list %}
-                            <li id="{{ client.id }}" role="option" aria-selected="false"><span class="check" aria-hidden="true"></span>{{ client.last_name }}, {{ client.first_name }}</li>
-                        {% endfor %}
-                    </ul>
-            	</div>
               </div>
             </div>
         <h2>Notes</h2>
@@ -503,46 +504,4 @@
 </form>
 {% endblock %}
 
-<h2>Multi-select Plugin</h2>
-<label id="multi-select-plugin-label" style="display:block;">Multi Select Plugin Dropdown</label>
-<div id="multi-select-plugin" aria-labeledby="multi-select-plugin-label">
-	<span class="toggle">
-		<label>Select a value</label>
-		<span class="chevron">&lt;</span>
-	</span>
-	<ul>
-		<li>
-			<label>
-				<input type="checkbox" name="selected" value="0"/>
-				Item 1
-			</label>
-		</li>
-		<li>
-			<label>
-				<input type="checkbox" name="selected" value="1"/>
-				Item 2
-			</label>
-		</li>
-		<li>
-			<label>
-				<input type="checkbox" name="selected" value="2"/>
-				Item 3
-			</label>
-		</li>
-		<li>
-			<label>
-				<input type="checkbox" name="selected" value="3"/>
-				Item 4
-			</label>
-		</li>
-	</ul>
-</div>
 
-<h2>HTML Select</h2>
-<select>
-	<option>Option 1</option>
-	<option>Option 2</option>
-	<option>Option 3</option>
-	<option>Option 4</option>
-	<option>Option 5</option>
-</select>
