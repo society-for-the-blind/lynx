@@ -257,7 +257,7 @@
                           clearTimeout(timer);
 
                           // Create search string
-                          searchString += e.key;
+                          searchString += $event.key;
                           var self = this;
 
                           // Set a timer to search item after 500ms
@@ -276,7 +276,7 @@
                               }
                           }, 500);
 
-                          e.preventDefault();
+                          $event.preventDefault();
                     }
                 })
                 .on(getNamespacedEvents(['focus']), 'a, button, :input', function() {
