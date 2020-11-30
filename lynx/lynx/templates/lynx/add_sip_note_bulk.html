@@ -250,31 +250,31 @@
 
                             $($items[foundAt])
                             .trigger('focus');
-                        // default:  // Search item starts with
-                        //   // Cancel current timer
-                        //   clearTimeout(timer);
-                        //
-                        //   // Create search string
-                        //   var searchString += e.key;
-                        //   var self = this;
-                        //
-                        //   // Set a timer to search item after 500ms
-                        //   timer = setTimeout(function(){
-                        //       // Search item
-                        //       var xpath = "li/span[starts-with(translate(text(), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), '" + searchString + "')]";
-                        //       var matchingElement = document.evaluate(xpath, self, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
-                        //
-                        //       // Reset search string
-                        //       searchString = "";
-                        //
-                        //       // If an item is found…
-                        //       if (matchingElement) {
-                        //           currentItem.attr("aria-selected", "false");
-                        //           $(matchingElement).parent().attr("aria-selected", "true").focus().addClass("active");
-                        //       }
-                        //   }, 500);
-                        //
-                        //   e.preventDefault();
+                        default:  // Search item starts with
+                          // Cancel current timer
+                          clearTimeout(timer);
+
+                          // Create search string
+                          searchString += e.key;
+                          var self = this;
+
+                          // Set a timer to search item after 500ms
+                          timer = setTimeout(function(){
+                              // Search item
+                              var xpath = "li/span[starts-with(translate(text(), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), '" + searchString + "')]";
+                              var matchingElement = document.evaluate(xpath, self, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+
+                              // Reset search string
+                              searchString = "";
+
+                              // If an item is found…
+                              if (matchingElement) {
+                                  currentItem.attr("aria-selected", "false");
+                                  $(matchingElement).parent().attr("aria-selected", "true").focus().addClass("active");
+                              }
+                          }, 500);
+
+                          e.preventDefault();
                     }
                 })
                 .on(getNamespacedEvents(['focus']), 'a, button, :input', function() {
@@ -434,9 +434,9 @@
     <div class="container-fluid">
         <h2>Select Clients</h2>
             <div class="row">
-              <div class="col-12">
-<!--              <div class="col-12">{{ form.clients }}</div>-->
-                   <div id="multi-select-plugin" aria-label="Select Clients" role="listbox">
+                <div class="col-12">
+                <!--              <div class="col-12">{{ form.clients }}</div>-->
+                   <div id="multi-select-plugin" aria-label="Select Clients" role="listbox" aria-multiselectable="true">
                         <span class="toggle">
                             <label>Select a value</label>
                             <span class="chevron">&lt;</span>
@@ -447,7 +447,7 @@
                             {% endfor %}
                         </ul>
                     </div>
-              </div>
+                </div>
             </div>
         <h2>Notes</h2>
             <div class="row">
