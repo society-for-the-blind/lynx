@@ -437,22 +437,17 @@
         <h2>Select Clients</h2>
             <div class="row">
                 <div class="col-12">
-                <span role="combobox" aria-labelledby="langChild" tabindex="0" id="langBtnId" class="button">
-                            <span id="langChild">Select Clients</span>
-                            <sup></sup>
+                <!--              <div class="col-12">{{ form.clients }}</div>-->
+                   <div id="multi-select-plugin" aria-label="Select Clients" role="listbox" aria-multiselectable="true">
+                        <span class="toggle">
+                            <label>Select a value</label>
+                            <span class="chevron">&lt;</span>
                         </span>
-                        <div id="insertionPoint">
-                            <!--
-		                            Selected values will be dynamically inserted here.
-		                            -->
-                        </div>
-                        <p><button id="clearAll">Clear All</button></p>
-                        <p><button>Test saved value</button></p>
-                        <select multiple="multiple" name="language" id="languagesId" style="display: none;">
+                        <ul>
                             {% for client in client_list %}
-                                <option value="{{ client.id }}"/>{{ client.last_name }}, {{ client.first_name }}</option>
+                                <li><label><input type="checkbox" name="selected" value="{{ client.id }}"/>{{ client.last_name }}, {{ client.first_name }}</label></li>
                             {% endfor %}
-                        </select>
+                        </ul>
                     </div>
                 </div>
             </div>
