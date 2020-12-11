@@ -1008,7 +1008,7 @@ def sip_demographic_report(request):
                     if first:
                         month_string = """SELECT client.id FROM lynx_sipnote AS sip 
                         LEFT JOIN lynx_contact AS client ON client.id = sip.contact_id 
-                        WHERE fiscal_year  = '%s' extract(month FROM sip.note_date) = %s""" % (fiscal_year, month_no)
+                        WHERE fiscal_year  = '%s' and extract(month FROM sip.note_date) = %s""" % (fiscal_year, month_no)
                         first = False
                     else:
                         month_string = month_string + ' or extract(month FROM sip.note_date) = ' + month_no
