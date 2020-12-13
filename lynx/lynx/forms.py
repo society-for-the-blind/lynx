@@ -169,7 +169,7 @@ class LessonNoteForm(forms.ModelForm):
         data = self.cleaned_data['billed_units']
 
         from .views import units_to_hours
-        authorization_id = self.cleaned_data['authorization_id']
+        authorization_id = self.cleaned_data['authorization']
         note_list = LessonNote.objects.filter(authorization_id=authorization_id)
         authorization = Authorization.objects.get(id=authorization_id)
 
