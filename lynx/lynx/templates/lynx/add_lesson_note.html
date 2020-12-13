@@ -15,7 +15,7 @@
     <p><label for="id_recommendations">Recommendations to improve learning</label> {{ form.recommendations }}</p>
     <p><label for="id_note">Other</label> {{ form.note }}</p>
 <!--    <p hidden><label for="id_authorization">Other</label> {{ form.authorization_id }}</p>-->
-    <input type="hidden" name="authorization_id" value="{{authorization_id}}">
+    <input type="hidden" name="authorization" value="{{authorization_id}}">
     {{ form.errors }}
     <input type="submit" value="Submit">
 </form>
