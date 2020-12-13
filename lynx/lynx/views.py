@@ -344,7 +344,7 @@ def add_lesson_note(request, authorization_id):
     else:
         auth_type = 'group'
     if request.method == 'POST':
-        init_form = LessonNoteForm(request.POST)
+        init_form =  request.POST.copy()
         init_form.update({'authorization_id': authorization_id})
         form = LessonNoteForm(init_form)
         # form.authorization_id = authorization_id
