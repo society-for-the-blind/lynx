@@ -169,15 +169,13 @@ class LessonNoteForm(forms.ModelForm):
         data = self.cleaned_data['billed_units']
 
         from .views import units_to_hours
-        authorization_id = int(self.cleaned_data['authorization'])
-        note_list = LessonNote.objects.filter(authorization_id=authorization_id)
-        # authorization_list = Authorization.objects.filter(id=authorization_id)
-        # for authorization in authorization_list:
-        #     total_time = authorization['total_time']
+        authorization = self.cleaned_data['authorization']
+        note_list = LessonNote.objects.filter(authorization_id=authorization.authorization_id)
+        authorization = Authorization.objects.get(id=authorization.authorization_id)
 
         total_units = 0
+        total_time = authorization['total_time']
         for note in note_list:
-            total_time = note.authorization.total_time
             if note['billed_units']:
                 units = float(note['billed_units'])
                 total_units += units

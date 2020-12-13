@@ -338,6 +338,7 @@ def add_volunteer(request):
 def add_lesson_note(request, authorization_id):
     form = LessonNoteForm()
     authorization = Authorization.objects.get(id=authorization_id)
+
     client = Contact.objects.get(id=authorization.contact_id)
     if authorization.authorization_type == 'Hours':
         auth_type = 'individual'
