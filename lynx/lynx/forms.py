@@ -184,7 +184,7 @@ class LessonNoteForm(forms.ModelForm):
         #     if note['billed_units']:
         #         units = float(note['billed_units'])
         #         total_units += units
-        note_hours = units_to_hours(data.billed_units)
+        note_hours = units_to_hours(billed_units)
         # total_hours = units_to_hours(total_units) + note_hours
         total_hours = total_used + note_hours
         if total_hours >= total_time:
