@@ -156,6 +156,8 @@ class ProgressReportForm(forms.ModelForm):
 
 class LessonNoteForm(forms.ModelForm):
     # date = forms.DateField(widget=forms.SelectDateWidget(empty_label="Nothing"))
+    total_time = forms.CharField()
+    total_used = forms.CharField()
 
     class Meta:
         model = LessonNote
