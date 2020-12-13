@@ -338,6 +338,15 @@ def add_volunteer(request):
 def add_lesson_note(request, authorization_id):
     form = LessonNoteForm()
     authorization = Authorization.objects.get(id=authorization_id)
+    note_list = LessonNote.objects.filter(authorization_id=authorization_id)
+
+    total_time = authorization['total_time']
+    total_units = 0
+    for note in note_list:
+        if note['billed_units']:
+            units = float(note['billed_units'])
+            total_units += units
+    total_hours = units_to_hours(total_units)
 
     client = Contact.objects.get(id=authorization.contact_id)
     if authorization.authorization_type == 'Hours':
@@ -357,7 +366,8 @@ def add_lesson_note(request, authorization_id):
             form.save()
             return HttpResponseRedirect(reverse('lynx:authorization_detail', args=(authorization_id,)))
     return render(request, 'lynx/add_lesson_note.html', {'form': form, 'client': client, 'auth_type': auth_type,
-                                                         'authorization_id': authorization_id})
+                                                         'authorization_id': authorization_id, 'total_time': total_time,
+                                                         'total_hours': total_hours})
 
 
 @login_required
