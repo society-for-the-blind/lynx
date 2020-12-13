@@ -8,6 +8,8 @@ from django.utils.timezone import now
 from django_pgviews import view as pg
 from datetime import datetime, date
 
+from .validators import validate_hours
+
 
 STATES = (("Alabama", "Alabama"), ("Alaska", "Alaska"), ("Arizona", "Arizona"), ("Arkansas", "Arkansas"),
           ("California", "California"), ("Colorado", "Colorado"), ("Connecticut", "Connecticut"),
@@ -492,7 +494,7 @@ class LessonNote(models.Model):
     date = models.DateField(default=date.today, null=True)
     attendance = models.CharField(max_length=150, blank=True, choices=(('Present', 'Present'), ('Absent', 'Absent'), ('Other', 'Other')), null=True, default='Present')
     instructional_units = models.CharField(max_length=15, blank=True, null=True)
-    billed_units = models.CharField(max_length=50, blank=True, choices=UNITS, null=True)
+    billed_units = models.CharField(max_length=50, blank=True, choices=UNITS, null=True, validator=[validate_hours(authorization)])
     students_no = models.CharField(max_length=15, blank=True, null=True)
     successes = models.TextField(null=True, blank=True)
     obstacles = models.TextField(null=True, blank=True)
