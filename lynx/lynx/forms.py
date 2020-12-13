@@ -155,7 +155,6 @@ class ProgressReportForm(forms.ModelForm):
 
 
 class LessonNoteForm(forms.ModelForm):
-    # date = forms.DateField(widget=forms.SelectDateWidget(empty_label="Nothing"))
     total_time = forms.CharField(required=False)
     total_used = forms.CharField(required=False)
 
@@ -170,28 +169,17 @@ class LessonNoteForm(forms.ModelForm):
     def clean_billed_units(self):
         data = self.cleaned_data.get('billed_units')
 
-
         from .views import units_to_hours
-        # auth = self.cleaned_data['authorization']
         total_time = self.cleaned_data.get('total_time')
         total_used = self.cleaned_data.get('total_hours')
         if total_used is None:
             total_used = 0
         if total_time is None:
             total_time = 0
-        # note_list = LessonNote.objects.filter(authorization_id=auth.id)
-        # authorization = Authorization.objects.get(id=auth.id)
-        #
-        # total_units = 0
-        # total_time = authorization['total_time']
-        # for note in note_list:
-        #     if note['billed_units']:
-        #         units = float(note['billed_units'])
-        #         total_units += units
+
         note_hours = units_to_hours(int(data))
-        # total_hours = units_to_hours(total_units) + note_hours
         total_hours = total_used + note_hours
-        if total_hours >= total_time:
+        if total_hours > total_time:
             raise ValidationError(
                 _('Not enough time on the authorization'),
             )
