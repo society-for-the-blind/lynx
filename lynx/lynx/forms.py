@@ -158,7 +158,6 @@ class LessonNoteForm(forms.ModelForm):
     # date = forms.DateField(widget=forms.SelectDateWidget(empty_label="Nothing"))
 
     class Meta:
-
         model = LessonNote
         exclude = ('created', 'modified', 'user', 'authorization')
 

@@ -345,6 +345,7 @@ def add_lesson_note(request, authorization_id):
         auth_type = 'group'
     if request.method == 'POST':
         form = LessonNoteForm(request.POST)
+        form.authorization_id = authorization_id
         if form.is_valid():
             form = form.save(commit=False)
             form.authorization_id = authorization_id
