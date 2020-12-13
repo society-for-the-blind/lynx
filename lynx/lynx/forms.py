@@ -159,7 +159,7 @@ class LessonNoteForm(forms.ModelForm):
 
     class Meta:
         model = LessonNote
-        exclude = ('created', 'modified', 'user', 'authorization')
+        exclude = ('created', 'modified', 'user')
 
     def __init__(self, *args, **kwargs):
         super(LessonNoteForm, self).__init__(*args, **kwargs)
