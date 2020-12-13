@@ -169,9 +169,9 @@ class LessonNoteForm(forms.ModelForm):
         data = self.cleaned_data['billed_units']
 
         from .views import units_to_hours
-        authorization = self.cleaned_data['authorization']
-        note_list = LessonNote.objects.filter(authorization_id=authorization.id)
-        authorization = Authorization.objects.get(id=authorization.id)
+        auth = self.cleaned_data['authorization']
+        note_list = LessonNote.objects.filter(authorization_id=auth.id)
+        authorization = Authorization.objects.get(id=auth.id)
 
         total_units = 0
         total_time = authorization['total_time']
