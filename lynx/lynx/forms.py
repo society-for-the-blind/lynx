@@ -168,12 +168,13 @@ class LessonNoteForm(forms.ModelForm):
         self.fields['date'].label = "Lesson Note Date (YYYY-MM-DD)"
 
     def clean_billed_units(self):
-        data = self.cleaned_data['billed_units']
+        data = self.cleaned_data.get('billed_units')
+
 
         from .views import units_to_hours
         # auth = self.cleaned_data['authorization']
-        total_time = self.cleaned_data['total_time']
-        total_used = self.cleaned_data['total_hours']
+        total_time = self.cleaned_data.get('total_time')
+        total_used = self.cleaned_data.get('total_hours')
         # note_list = LessonNote.objects.filter(authorization_id=auth.id)
         # authorization = Authorization.objects.get(id=auth.id)
         #
