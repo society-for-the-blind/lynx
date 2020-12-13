@@ -175,6 +175,10 @@ class LessonNoteForm(forms.ModelForm):
         # auth = self.cleaned_data['authorization']
         total_time = self.cleaned_data.get('total_time')
         total_used = self.cleaned_data.get('total_hours')
+        if total_used is None:
+            total_used = 0
+        if total_time is None:
+            total_time = 0
         # note_list = LessonNote.objects.filter(authorization_id=auth.id)
         # authorization = Authorization.objects.get(id=auth.id)
         #
