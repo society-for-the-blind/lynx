@@ -156,8 +156,8 @@ class ProgressReportForm(forms.ModelForm):
 
 class LessonNoteForm(forms.ModelForm):
     # date = forms.DateField(widget=forms.SelectDateWidget(empty_label="Nothing"))
-    total_time = forms.CharField()
-    total_used = forms.CharField()
+    total_time = forms.CharField(blank=True, null=True)
+    total_used = forms.CharField(blank=True, null=True)
 
     class Meta:
         model = LessonNote
@@ -192,10 +192,8 @@ class LessonNoteForm(forms.ModelForm):
         # total_hours = units_to_hours(total_units) + note_hours
         total_hours = total_used + note_hours
         if total_hours >= total_time:
-            hours_left = total_hours - note_hours
             raise ValidationError(
-                _('Only %(hours_left) left on the authorization'),
-                params={'hours_left': hours_left},
+                _('Not enough time on the authorization'),
             )
         return data
 
