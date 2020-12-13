@@ -1,5 +1,7 @@
 from django import forms
 from django.utils.translation import gettext_lazy
+from django.core.exceptions import ValidationError
+from django.utils.translation import gettext_lazy as _
 
 from .models import Contact, Address, Intake, Email, Phone, SipPlan, IntakeNote, EmergencyContact, Authorization, \
     ProgressReport, LessonNote, SipNote, Volunteer
@@ -163,6 +165,29 @@ class LessonNoteForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(LessonNoteForm, self).__init__(*args, **kwargs)
         self.fields['date'].label = "Lesson Note Date (YYYY-MM-DD)"
+
+    def clean_billed_units(self):
+        data = self.cleaned_data['lesson_notes']
+
+        from .views import units_to_hours
+        authorization_id = data.authorization
+        note_list = LessonNote.objects.filter(authorization_id=authorization_id)
+        authorization = Authorization.objects.get(id=authorization_id)
+
+        total_units = 0
+        for note in note_list:
+            if note['billed_units']:
+                units = float(note['billed_units'])
+                total_units += units
+        note_hours = units_to_hours(data.billed_units)
+        total_hours = units_to_hours(total_units) + note_hours
+        if total_hours >= authorization['total_time']:
+            hours_left = total_hours - note_hours
+            raise ValidationError(
+                _('Only %(hours_left) left on the authorization'),
+                params={'hours_left': hours_left},
+            )
+        return data
 
 
 class SipNoteForm(forms.ModelForm):

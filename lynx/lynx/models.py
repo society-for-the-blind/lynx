@@ -8,9 +8,6 @@ from django.utils.timezone import now
 from django_pgviews import view as pg
 from datetime import datetime, date
 
-from django.core.exceptions import ValidationError
-from django.utils.translation import gettext_lazy as _
-
 
 STATES = (("Alabama", "Alabama"), ("Alaska", "Alaska"), ("Arizona", "Arizona"), ("Arkansas", "Arkansas"),
           ("California", "California"), ("Colorado", "Colorado"), ("Connecticut", "Connecticut"),
@@ -125,27 +122,6 @@ CONDITIONS = (('Cataracts', 'Cataracts'), ('Cone Rod Dystrophy', 'Cone Rod Dystr
 
 def get_sentinel_user():
     return get_user_model().objects.get_or_create(username='deleted')[0]
-
-
-
-def validate_hours(value, authorization_id):
-    from .views import units_to_hours
-    note_list = LessonNote.objects.filter(authorization_id=authorization_id)
-    authorization = Authorization.objects.get(id=authorization_id)
-
-    total_units = 0
-    for note in note_list:
-        if note['billed_units']:
-            units = float(note['billed_units'])
-            total_units += units
-    note_hours = units_to_hours(value)
-    total_hours = units_to_hours(total_units) + note_hours
-    if total_hours >= authorization['total_time']:
-        hours_left = total_hours - note_hours
-        raise ValidationError(
-            _('Only %(hours_left) left on the authorization'),
-            params={'hours_left': hours_left},
-        )
 
 
 # Contact information. For Clients, Employees and Volunteers.
@@ -516,7 +492,7 @@ class LessonNote(models.Model):
     date = models.DateField(default=date.today, null=True)
     attendance = models.CharField(max_length=150, blank=True, choices=(('Present', 'Present'), ('Absent', 'Absent'), ('Other', 'Other')), null=True, default='Present')
     instructional_units = models.CharField(max_length=15, blank=True, null=True)
-    billed_units = models.CharField(max_length=50, blank=True, choices=UNITS, null=True, validator=[validate_hours(authorization)])
+    billed_units = models.CharField(max_length=50, blank=True, choices=UNITS, null=True)
     students_no = models.CharField(max_length=15, blank=True, null=True)
     successes = models.TextField(null=True, blank=True)
     obstacles = models.TextField(null=True, blank=True)
