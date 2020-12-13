@@ -343,8 +343,8 @@ def add_lesson_note(request, authorization_id):
     total_time = authorization.total_time
     total_units = 0
     for note in note_list:
-        if note['billed_units']:
-            units = float(note['billed_units'])
+        if note.billed_units:
+            units = float(note.billed_units)
             total_units += units
     total_hours = units_to_hours(total_units)
 
