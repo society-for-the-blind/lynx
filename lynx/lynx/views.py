@@ -340,7 +340,7 @@ def add_lesson_note(request, authorization_id):
     authorization = Authorization.objects.get(id=authorization_id)
     note_list = LessonNote.objects.filter(authorization_id=authorization_id)
 
-    total_time = authorization['total_time']
+    total_time = authorization.total_time
     total_units = 0
     for note in note_list:
         if note['billed_units']:
