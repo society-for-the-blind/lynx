@@ -1,10 +1,10 @@
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 
-from .views import units_to_hours
-from .models import LessonNote, Authorization
 
 def validate_hours(value, authorization_id):
+    from .views import units_to_hours
+    from .models import LessonNote, Authorization
     note_list = LessonNote.objects.filter(authorization_id=authorization_id)
     authorization = Authorization.objects.get(id=authorization_id)
 
