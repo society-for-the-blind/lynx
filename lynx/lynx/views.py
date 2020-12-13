@@ -345,14 +345,15 @@ def add_lesson_note(request, authorization_id):
         auth_type = 'group'
     if request.method == 'POST':
         form = LessonNoteForm(request.POST)
-        form.authorization_id = authorization_id
+        # form.authorization_id = authorization_id
         if form.is_valid():
             form = form.save(commit=False)
             form.authorization_id = authorization_id
             form.user_id = request.user.id
             form.save()
             return HttpResponseRedirect(reverse('lynx:authorization_detail', args=(authorization_id,)))
-    return render(request, 'lynx/add_lesson_note.html', {'form': form, 'client': client, 'auth_type': auth_type})
+    return render(request, 'lynx/add_lesson_note.html', {'form': form, 'client': client, 'auth_type': auth_type,
+                                                         'authorization_id': authorization_id})
 
 
 @login_required
