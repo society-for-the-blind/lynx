@@ -171,7 +171,9 @@ class LessonNoteForm(forms.ModelForm):
         from .views import units_to_hours
         authorization_id = self.cleaned_data['authorization']
         note_list = LessonNote.objects.filter(authorization_id=authorization_id)
-        authorization = Authorization.objects.get(id=authorization_id)
+        authorization_list = Authorization.objects.filter(id=authorization_id)
+        for authorization in authorization_list:
+            total_time = authorization['total_time']
 
         total_units = 0
         for note in note_list:
@@ -180,7 +182,7 @@ class LessonNoteForm(forms.ModelForm):
                 total_units += units
         note_hours = units_to_hours(data.billed_units)
         total_hours = units_to_hours(total_units) + note_hours
-        if total_hours >= authorization['total_time']:
+        if total_hours >= total_time:
             hours_left = total_hours - note_hours
             raise ValidationError(
                 _('Only %(hours_left) left on the authorization'),
