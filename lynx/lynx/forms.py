@@ -168,6 +168,7 @@ class LessonNoteForm(forms.ModelForm):
 
     def clean_billed_units(self):
         data = self.cleaned_data.get('billed_units')
+        note = self.cleaned_data.get('note')
 
         from .views import units_to_hours
         total_time = self.cleaned_data.get('total_time')
