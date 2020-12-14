@@ -168,7 +168,6 @@ class LessonNoteForm(forms.ModelForm):
 
     def clean(self):
         data = self.cleaned_data.get('billed_units')
-        note = self.cleaned_data['note']
 
         from .views import units_to_hours
         total_time = self.cleaned_data.get('total_time')
@@ -177,8 +176,7 @@ class LessonNoteForm(forms.ModelForm):
             total_used = 0
 
         note_hours = units_to_hours(int(data))
-        total_hours = total_used + note_hours
-        total_used = total
+        total_hours = float(total_used) + note_hours
 
         if total_hours > total_time:
             raise ValidationError(
