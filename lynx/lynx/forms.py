@@ -245,10 +245,15 @@ class SipNoteForm(forms.ModelForm):
 
 
 class SipPlanForm(forms.ModelForm):
+    types = (("Retreat", "Retreat"), ("In-home", "In-home"), ("Support Group", "Support Group"),
+              ("Training Seminar", "Training Seminar"), ("Workshop", "Workshop"))
+    instructor = forms.CharField(required=False)
+    plan_type = forms.ChoiceField(choices=types)
+    start_date = forms.DateField(widget=forms.SelectDateWidget(empty_label="Nothing"))
 
     class Meta:
         model = SipPlan
-        exclude = ('created', 'modified', 'user', 'contact')
+        exclude = ('created', 'modified', 'user', 'contact', 'plan_name')
 
     def __init__(self, *args, **kwargs):
         super(SipPlanForm, self).__init__(*args, **kwargs)
@@ -308,24 +313,24 @@ class SipDemographicReportForm(forms.Form):
 
 
 class SipCSFReportForm(forms.Form):
+    current_year = datetime.now().year
+    old_year = current_year - 20
+    high_year = current_year + 2
+
+    years = []
+    for x in range(old_year, high_year):
+        year_str = str(x)
+        year_pair = (year_str, year_str)
+        years.append(year_pair)
+
+    quarter = forms.ChoiceField(choices=quarters)
+    year = forms.ChoiceField(choices=years)
+
+    def __init__(self, *args, **kwargs):
+        super(SipCSFReportForm, self).__init__(*args, **kwargs)
         current_year = datetime.now().year
-        old_year = current_year - 20
-        high_year = current_year + 2
-
-        years = []
-        for x in range(old_year, high_year):
-            year_str = str(x)
-            year_pair = (year_str, year_str)
-            years.append(year_pair)
-
-        quarter = forms.ChoiceField(choices=quarters)
-        year = forms.ChoiceField(choices=years)
-
-        def __init__(self, *args, **kwargs):
-            super(SipCSFReportForm, self).__init__(*args, **kwargs)
-            current_year = datetime.now().year
-            self.initial['year'] = str(current_year)
-            self.fields['year'].label = "Year (Start of Fiscal Year)"
+        self.initial['year'] = str(current_year)
+        self.fields['year'].label = "Year (Start of Fiscal Year)"
 
 
 class VolunteerForm(forms.ModelForm):
