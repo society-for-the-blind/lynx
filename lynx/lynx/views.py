@@ -124,7 +124,9 @@ def add_sip_plan(request, contact_id):
         form = SipPlanForm(request.POST)
         if form.is_valid():
             form = form.save(commit=False)
-            form.plan_name = request.POST.get('start_date') + ' - ' + request.POST.get('plan_type') + ' - ' + request.POST.get('instructor')
+            form.plan_name = request.POST.get('start_date_month') + ' - ' + request.POST.get('start_date_day') + ' - ' \
+                             + request.POST.get('start_date_year') + ' - ' + request.POST.get('plan_type') + ' - ' \
+                             + request.POST.get('instructor')
             form.contact_id = contact_id
             form.user_id = request.user.id
             form.save()
