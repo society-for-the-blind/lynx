@@ -178,7 +178,7 @@ class LessonNoteForm(forms.ModelForm):
         note_hours = units_to_hours(int(data))
         total_hours = float(total_used) + note_hours
 
-        if total_hours > total_time:
+        if total_hours > float(total_time):
             raise ValidationError(
                 _('Not enough time on the authorization'),
             )
