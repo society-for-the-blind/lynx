@@ -174,13 +174,10 @@ class LessonNoteForm(forms.ModelForm):
         total_used = self.cleaned_data.get('total_hours')
         if total_used is None:
             total_used = 0
-        if total_time is None:
-            total_time = 0
 
         note_hours = units_to_hours(int(data))
         total_hours = total_used + note_hours
         total_used = total
-
 
         if total_hours > total_time:
             raise ValidationError(
