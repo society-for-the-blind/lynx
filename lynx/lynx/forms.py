@@ -174,24 +174,24 @@ class LessonNoteForm(forms.ModelForm):
     #     data = self.cleaned_data.get('atotal_used')
     #     return data
 
-    def clean(self):
-        data = self.cleaned_data.get('billed_units')
-
-        from .views import units_to_hours
-        total_time = self.cleaned_data.get('total_time')
-        total_used = self.cleaned_data.get('total_used')
-        if total_used is None or len(total_used) == 0:
-            total_used = 0
-
-        note_hours = units_to_hours(int(data))
-        total_hours = float(total_used) + note_hours
-        total = tot
-
-        if total_hours > float(total_time):
-            raise ValidationError(
-                _('Not enough time on the authorization'),
-            )
-        return data
+    # def clean(self):
+    #     data = self.cleaned_data.get('billed_units')
+    #
+    #     from .views import units_to_hours
+    #     total_time = self.cleaned_data.get('total_time')
+    #     total_used = self.cleaned_data.get('total_used')
+    #     if total_used is None or len(total_used) == 0:
+    #         total_used = 0
+    #
+    #     note_hours = units_to_hours(int(data))
+    #     total_hours = float(total_used) + note_hours
+    #     total = tot
+    #
+    #     if total_hours > float(total_time):
+    #         raise ValidationError(
+    #             _('Not enough time on the authorization'),
+    #         )
+    #     return data
 
 
 class SipNoteForm(forms.ModelForm):
