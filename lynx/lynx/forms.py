@@ -172,7 +172,7 @@ class LessonNoteForm(forms.ModelForm):
         from .views import units_to_hours
         total_time = self.cleaned_data.get('total_time')
         total_used = self.cleaned_data.get('total_used')
-        if total_used is None:
+        if total_used is None or len(total_used) == 0:
             total_used = 0
 
         note_hours = units_to_hours(int(data))
