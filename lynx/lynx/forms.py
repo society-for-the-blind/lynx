@@ -166,13 +166,20 @@ class LessonNoteForm(forms.ModelForm):
         super(LessonNoteForm, self).__init__(*args, **kwargs)
         self.fields['date'].label = "Lesson Note Date (YYYY-MM-DD)"
 
-    def clean(self):
-        cleaned_data = super().clean()
-        data = cleaned_data.get('billed_units')
+    def clean_total_time(self):
+        data = self.cleaned_data.get('total_time')
+        return data
+
+    def clean_total_used(self):
+        data = self.cleaned_data.get('total_used')
+        return data
+
+    def clean_billed_units(self):
+        data = self.cleaned_data.get('billed_units')
 
         from .views import units_to_hours
-        total_time = cleaned_data.get('total_time')
-        total_used = cleaned_data.get('total_used')
+        total_time = self.cleaned_data.get('total_time')
+        total_used = self.cleaned_data.get('total_used')
         if total_used is None or len(total_used) == 0:
             total_used = 0
 
