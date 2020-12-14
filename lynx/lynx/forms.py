@@ -155,8 +155,8 @@ class ProgressReportForm(forms.ModelForm):
 
 
 class LessonNoteForm(forms.ModelForm):
-    total_time = forms.CharField(required=False)
-    total_used = forms.CharField(required=False)
+    atotal_time = forms.CharField(required=False)
+    atotal_used = forms.CharField(required=False)
 
     class Meta:
         model = LessonNote
@@ -166,12 +166,12 @@ class LessonNoteForm(forms.ModelForm):
         super(LessonNoteForm, self).__init__(*args, **kwargs)
         self.fields['date'].label = "Lesson Note Date (YYYY-MM-DD)"
 
-    def clean_total_time(self):
-        data = self.cleaned_data.get('total_time')
+    def clean_atotal_time(self):
+        data = self.cleaned_data.get('atotal_time')
         return data
 
-    def clean_total_used(self):
-        data = self.cleaned_data.get('total_used')
+    def clean_atotal_used(self):
+        data = self.cleaned_data.get('atotal_used')
         return data
 
     def clean_billed_units(self):
