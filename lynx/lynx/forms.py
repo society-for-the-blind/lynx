@@ -166,7 +166,7 @@ class LessonNoteForm(forms.ModelForm):
         super(LessonNoteForm, self).__init__(*args, **kwargs)
         self.fields['date'].label = "Lesson Note Date (YYYY-MM-DD)"
 
-    def clean_billed_units(self):
+    def clean(self):
         data = self.cleaned_data.get('billed_units')
         note = self.cleaned_data['note']
 
