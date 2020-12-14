@@ -175,13 +175,13 @@ def add_emergency(request, contact_id):
             form.save()
             emergency_contact_id = form.pk
             if phone_form.data['phone']:
-                if phone_form.phone is not None:
+                if phone_form.data['phone'] is not None:
                     phone_form = phone_form.save(commit=False)
                     phone_form.active = True
                     phone_form.emergency_contact_id = emergency_contact_id
                     phone_form.save()
             if email_form.data['email']:
-                if email_form.email is not None:
+                if email_form.data['email'] is not None:
                     email_form = email_form.save(commit=False)
                     email_form.active = True
                     email_form.emergency_contact_id = emergency_contact_id
