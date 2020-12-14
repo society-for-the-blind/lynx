@@ -346,7 +346,7 @@ def add_lesson_note(request, authorization_id):
         if note.billed_units:
             units = float(note.billed_units)
             total_units += units
-    total_hours = units_to_hours(total_units)
+    total_used = units_to_hours(total_units)
 
     client = Contact.objects.get(id=authorization.contact_id)
     if authorization.authorization_type == 'Hours':
@@ -367,7 +367,7 @@ def add_lesson_note(request, authorization_id):
             return HttpResponseRedirect(reverse('lynx:authorization_detail', args=(authorization_id,)))
     return render(request, 'lynx/add_lesson_note.html', {'form': form, 'client': client, 'auth_type': auth_type,
                                                          'authorization_id': authorization_id, 'total_time': total_time,
-                                                         'total_hours': total_hours})
+                                                         'total_used': total_used})
 
 
 @login_required
