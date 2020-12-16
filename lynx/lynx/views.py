@@ -822,21 +822,22 @@ class SipPlanUpdateView(LoginRequiredMixin, UpdateView):
               'community_plan_progress', 'ila_outcomes']
     template_name_suffix = '_edit'
 
-    # def get_form(self, form_class=None):
-    #     form = super().get_form(form_class=form_class)
-    #     form.fields['at_services'].label = "Assistive Technology or Services"
-    #     form.fields['independent_living'].label = "IL/A Services"
-    #     form.fields['orientation'].label = "O&M Skills"
-    #     form.fields['communications'].label = "Communication skills"
-    #     form.fields['dls'].label = "Daily Living Skills"
-    #     form.fields['advocacy'].label = "Advocacy training"
-    #     form.fields['information'].label = "I&R (Information & Referral)"
-    #     form.fields['other_services'].label = "Other services"
-    #     form.fields['counseling'].label = "Adjustment Counseling"
-    #     form.fields['living_plan_progress'].label = "Living Situation Outcomes"
-    #     form.fields['community_plan_progress'].label = "Home and Community involvement Outcomes"
-    #     form.fields['at_outcomes'].label = "AT Goal Outcomes"
-    #     form.fields['ila_outcomes'].label = "IL/A Service Goal Outcomes"
+    def get_form(self, form_class=None):
+        form = super().get_form(form_class=form_class)
+        form.fields['at_services'].label = "Assistive Technology or Services"
+        form.fields['independent_living'].label = "IL/A Services"
+        form.fields['orientation'].label = "O&M Skills"
+        form.fields['communications'].label = "Communication skills"
+        form.fields['dls'].label = "Daily Living Skills"
+        form.fields['advocacy'].label = "Advocacy training"
+        form.fields['information'].label = "I&R (Information & Referral)"
+        form.fields['counseling'].label = "Adjustment Counseling"
+        form.fields['living_plan_progress'].label = "Living Situation Outcomes"
+        form.fields['community_plan_progress'].label = "Home and Community involvement Outcomes"
+        form.fields['at_outcomes'].label = "AT Goal Outcomes"
+        form.fields['ila_outcomes'].label = "IL/A Service Goal Outcomes"
+        return form
+
 
 
 class AuthorizationUpdateView(LoginRequiredMixin, UpdateView):
