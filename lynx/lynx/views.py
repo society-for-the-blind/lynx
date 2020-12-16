@@ -965,7 +965,7 @@ def billing_report(request):
                         elif report['billed_units']:
                             reports[authorization_number]['billed_time'] = 1
                             reports[authorization_number]['amount'] = loop_amount = billing_rate
-                    total_amount += loop_amount
+                    # total_amount += loop_amount
                 else:
                     service_area = report['service_area']
                     authorization_type = report['authorization_type']
@@ -990,7 +990,7 @@ def billing_report(request):
                     else:
                         amount = 0
 
-                    total_amount += amount
+                    # total_amount += amount
                     auth = {'service_area': service_area, 'authorization_number': report['authorization_number'],
                             'authorization_type': authorization_type, 'outside_agency': outside_agency, 'rate': rate,
                             'client': client, 'billed_time': billed_time, 'amount': amount}
@@ -1010,6 +1010,8 @@ def billing_report(request):
                 if value['billed_time']:
                     in_hours = float(value['billed_time'])
                     total_hours += int(value['billed_time'])
+                if value['amount']:
+                    total_amount += value['amount']
 
                 writer.writerow([value['client'], value['service_area'], value['authorization_number'],
                                  value['authorization_type'], in_hours, value['rate'], value['amount'],
