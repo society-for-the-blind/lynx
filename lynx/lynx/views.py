@@ -818,7 +818,8 @@ class SipNoteUpdateView(LoginRequiredMixin, UpdateView):
 class SipPlanUpdateView(LoginRequiredMixin, UpdateView):
     model = SipPlan
     fields = ['note', 'at_services', 'independent_living', 'orientation', 'communications', 'dls', 'advocacy',
-              'counseling', 'information', 'other_services', 'plan_name', 'plan_progress', 'assessment']
+              'counseling', 'information', 'other_services', 'plan_name', 'living_plan_progress', 'community_plan_progress',
+              'at_outcomes', 'ila_outcomes']
     template_name_suffix = '_edit'
 
 
