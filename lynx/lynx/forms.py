@@ -199,6 +199,8 @@ class SipNoteForm(forms.ModelForm):
     client_list = Contact.objects.filter(sip_client=1).order_by('last_name')
     # client_list = Contact.objects.filter(active=1).filter(sip_client=1).order_by('last_name')
     clients = forms.ModelMultipleChoiceField(queryset=client_list, required=False)
+    plans = SipPlan.objects.filter(contact_id=contact_id).order_by('-created')
+
 
     currentYear = datetime.now().year
     oldYear = 2000
@@ -214,7 +216,10 @@ class SipNoteForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(SipNoteForm, self).__init__(*args, **kwargs)
-        # self.fields['sip_plan'].queryset = SipPlan.objects.filter(contact_id=kwargs.get("contact_id"))
+        self.fields['sip_plan'].queryset = SipPlan.objects.filter(contact_id=kwargs.get("contact_id"))
+        # if 'description' in kwargs:
+        #     description = kwargs.pop('description')
+        #     self.fields['description'].initial = description
 
         self.fields['vision_screening'].label = "Vision screening/examination/low vision evaluation"
         self.fields['treatment'].label = "Surgical or therapeutic treatment"
