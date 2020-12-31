@@ -89,7 +89,7 @@ def add_intake(request, contact_id):
             form.active = 1
             form.save()
             return HttpResponseRedirect(reverse('lynx:client', args=(contact_id,)))
-    return render(request, 'lynx/add_intake.html', {'form': form, 'contact_id': contact_id})
+    return render(request, 'lynx/add_intake.html', {'form': form})
 
 
 @login_required
@@ -114,7 +114,7 @@ def add_sip_note(request, contact_id):
             form.user_id = request.user.id
             form.save()
             return HttpResponseRedirect(reverse('lynx:client', args=(contact_id,)))
-    return render(request, 'lynx/add_sip_note.html', {'form': form})
+    return render(request, 'lynx/add_sip_note.html', {'form': form, 'contact_id': contact_id})
 
 
 @login_required
