@@ -94,7 +94,7 @@ def add_intake(request, contact_id):
 
 @login_required
 def add_sip_note(request, contact_id):
-    form = SipNoteForm()
+    form = SipNoteForm(contact_id=contact_id)
     if request.method == 'POST':
         form = SipNoteForm(request.POST, contact_id=contact_id)
         if form.is_valid():
