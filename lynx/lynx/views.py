@@ -89,7 +89,7 @@ def add_intake(request, contact_id):
             form.active = 1
             form.save()
             return HttpResponseRedirect(reverse('lynx:client', args=(contact_id,)))
-    return render(request, 'lynx/add_intake.html', {'form': form})
+    return render(request, 'lynx/add_intake.html', {'form': form, 'contact_id': contact_id})
 
 
 @login_required
