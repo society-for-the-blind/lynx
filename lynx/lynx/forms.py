@@ -199,8 +199,6 @@ class SipNoteForm(forms.ModelForm):
     client_list = Contact.objects.filter(sip_client=1).order_by('last_name')
     # client_list = Contact.objects.filter(active=1).filter(sip_client=1).order_by('last_name')
     clients = forms.ModelMultipleChoiceField(queryset=client_list, required=False)
-    plans = SipPlan.objects.filter(contact_id=contact_id).order_by('-created')
-
 
     currentYear = datetime.now().year
     oldYear = 2000
