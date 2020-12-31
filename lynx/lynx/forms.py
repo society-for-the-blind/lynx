@@ -214,7 +214,8 @@ class SipNoteForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(SipNoteForm, self).__init__(*args, **kwargs)
-        self.fields['sip_plan'].queryset = SipPlan.objects.filter(contact_id=kwargs.get("contact_id"))
+        self.fields['sip_plan'].queryset = SipPlan.objects.filter(contact_id=kwargs.get("nothing"))
+
         # if 'description' in kwargs:
         #     description = kwargs.pop('description')
         #     self.fields['description'].initial = description
