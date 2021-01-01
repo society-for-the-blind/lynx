@@ -213,8 +213,9 @@ class SipNoteForm(forms.ModelForm):
         exclude = ('created', 'modified', 'user', 'contact', 'modesto')
 
     def __init__(self, *args, **kwargs):
+        contact_id = kwargs.pop('contact_id')
         super(SipNoteForm, self).__init__(*args, **kwargs)
-        self.fields['sip_plan'].queryset = SipPlan.objects.filter(contact_id=kwargs.get("contact_id"))
+        self.fields['sip_plan'].queryset = SipPlan.objects.filter(contact_id=contact_id)
 
         self.fields['vision_screening'].label = "Vision screening/examination/low vision evaluation"
         self.fields['treatment'].label = "Surgical or therapeutic treatment"
