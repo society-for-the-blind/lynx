@@ -96,7 +96,9 @@ def add_intake(request, contact_id):
 def add_sip_note(request, contact_id):
     form = SipNoteForm(request, contact_id=contact_id)
     if request.method == 'POST':
-        form = SipNoteForm(request.POST, contact_id=contact_id)
+        # form = SipNoteForm(request.POST, contact_id=contact_id)
+        contact_id = {'contact_id': contact_id}
+        form = SipNoteForm(**contact_id)
         if form.is_valid():
             form = form.save(commit=False)
             form.contact_id = contact_id

@@ -216,10 +216,6 @@ class SipNoteForm(forms.ModelForm):
         super(SipNoteForm, self).__init__(*args, **kwargs)
         self.fields['sip_plan'].queryset = SipPlan.objects.filter(contact_id=kwargs.get("contact_id"))
 
-        # if 'description' in kwargs:
-        #     description = kwargs.pop('description')
-        #     self.fields['description'].initial = description
-
         self.fields['vision_screening'].label = "Vision screening/examination/low vision evaluation"
         self.fields['treatment'].label = "Surgical or therapeutic treatment"
         self.fields['at_devices'].label = "Provision of assistive technology devices and aids (non prescription optics)"
