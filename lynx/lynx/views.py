@@ -650,7 +650,6 @@ class BillingReviewDetailView(LoginRequiredMixin, DetailView):
         total_units = 0
         total_notes = 0
         instructors = []
-        d = f
 
         for note in notes:
             if note['billed_units'] and note['billed_units'] is not None:

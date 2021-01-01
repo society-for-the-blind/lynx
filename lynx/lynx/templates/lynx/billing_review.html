@@ -139,7 +139,9 @@
     </table>
 {% if not request.GET.print %}
     {% if month_report %}
-        <input type="button" class="btn btn-info" onclick="location.href='/lynx/progress-report/{{ month_report.id }}';" value="View Progress Report" /> <input type="button" class="btn btn-primary" onclick="location.href='/lynx/progress-report-edit/{{ month_report.id }}';" value="Edit Progress Report" />
+        {% for report in month_report %}
+            <input type="button" class="btn btn-info" onclick="location.href='/lynx/progress-report/{{ report.id }}';" value="View Progress Report" /> <input type="button" class="btn btn-primary" onclick="location.href='/lynx/progress-report-edit/{{ report.id }}';" value="Edit Progress Report" />
+        {% endfor %}
     {% else %}
         <input type="button" class="btn btn-success" onclick="location.href='/lynx/add-progress-report/{{ object.id }}/';" value="Add New Progress Report" />
     {% endif %}
