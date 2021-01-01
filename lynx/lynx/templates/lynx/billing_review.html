@@ -124,6 +124,7 @@
             <th>Billed Time</th>
             <th>Rate</th>
             <th>Service Area</th>
+            <th></th>
         </tr>
         {% for note in note_list %}
             <tr>
@@ -132,9 +133,13 @@
                 <td>{% if object.authorization_type == 'Hours' %} {{ note.billed_units|div:4 }} {% elif note.billed_units %} 1 {% endif %}</td>
                 <td>${{ object.billing_rate }}</td>
                 <td>{{ object.intake_service_area }}</td>
+                <td><a href='/lynx/lesson-note-edit/{{ note.id }}'>Edit</a> - <a href='/lynx/lesson-note-confirm/{{ note.id }}/{{ note.authorization_id }}'>Delete</a></td>
             </tr>
         {% endfor %}
     </table>
+<input type="button" onclick="location.href='/lynx/progress-report/{{ month_report.id }}';" value="View Progress Report" /> <input type="button" onclick="location.href='/lynx/progress-report-edit/{{ month_report.id }}';" value="Edit Progress Report" />
+<br><input type="button" onclick="location.href='/lynx/add-progress-report/{{ month_report.id }}/';" value="Add New Progress Report" />
+
 
 {% if not request.GET.print %}
 <form action="/lynx/billing-review/{{ object.id }}/" method="GET">

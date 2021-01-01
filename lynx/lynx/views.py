@@ -632,6 +632,8 @@ class BillingReviewDetailView(LoginRequiredMixin, DetailView):
         notes = LessonNote.objects.filter(authorization_id=auth_id).filter(date__month=month).filter(date__year=year).order_by(
             'date').values()
         reports = ProgressReport.objects.filter(authorization_id=auth_id).values()
+        month_report = ProgressReport.objects.filter(authorization_id=auth_id).filter(month=month).filter(year=year).values()[:1]
+        context['month_report'] = month_report
         authorization = Authorization.objects.filter(id=auth_id).values()
 
         context['note_list'] = notes
