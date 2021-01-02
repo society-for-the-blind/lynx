@@ -146,7 +146,7 @@
         <input type="button" class="btn btn-success" onclick="location.href='/lynx/add-progress-report/{{ object.id }}/';" value="Add New Progress Report" />
     {% endif %}
 {% endif %}
-
+<br><br>
 {% if not request.GET.print %}
 <form action="/lynx/billing-review/{{ object.id }}/" method="GET">
   <input type="hidden" name="print" value="true" />
