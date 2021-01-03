@@ -17,6 +17,7 @@
 
         function showPlan(selectObject, objectNum, planId) {
             var value = selectObject.value;
+            console.log(value);
 
             $.ajax({                       // initialize an AJAX request
                 url: "/lynx/get-sip-plans/",                    // set the url of the request
@@ -41,6 +42,7 @@
                 <div class="col-12">
                     <label for="client_0">Select a Client</label>
                     <select name="client_0" id="client_0" onchange="showPlan(this, 0, 'plan_0')">
+                        <option value="">----------</option>
                         {% for client in client_list %}
                             <option value="{{ client.id }}">{{ client.last_name }}, {{ client.first_name }}</option>
                         {% endfor %}
