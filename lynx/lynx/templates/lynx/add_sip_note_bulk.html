@@ -25,7 +25,6 @@
                   'client_id': value
                 },
                 success: function (data) {   // `data` is the return of the `get_sip_plans` view function
-                    console.log(data);
                   $("#"+planId).html(data);  // replace the contents of the plan input with the data that came from the server
                 }
             });
