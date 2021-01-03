@@ -146,15 +146,21 @@ def add_sip_note_bulk(request):
         form = SipNoteForm(request.POST)
         if form.is_valid():
             form = form.save(commit=False)
-            clean = form.cleaned_data
-            form.contact_id = client.id
+            form.contact_id = form.client_0
+            form.sip_plan_id = form.plan_0
             form.user_id = request.user.id
             form.save()
             for i in range:
                 form.pk = None
-                form.contact_id = client.id
-                form.user_id = request.user.id
-                form.save()
+                client_str = "client_" + str(i)
+                plan_str = "plan_" + str(i)
+                if len(form.client_str) > 0:
+                    form.contact_id = form.client_str
+                    form.sip_plan_id = form.plan_str
+                    form.user_id = request.user.id
+                    form.save()
+                else:
+                    continue
         return HttpResponseRedirect(reverse('lynx:contact_list'))
     return render(request, 'lynx/add_sip_note_bulk.html', {'form': form, 'client_list': client_list, 'range': range})
 
