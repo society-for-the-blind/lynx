@@ -146,6 +146,7 @@ def add_sip_note_bulk(request):
         form = SipNoteForm(request.POST)
         if form.is_valid():
             form = form.save(commit=False)
+            clean = form.cleaned_data
             form.contact_id = client.id
             form.user_id = request.user.id
             form.save()
