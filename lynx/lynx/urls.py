@@ -19,6 +19,7 @@ urlpatterns = [
     path('add-sip-note/<int:contact_id>/', views.add_sip_note, name='add_sip_note'),
     path('add-sip-plan/<int:contact_id>/', views.add_sip_plan, name='add_sip_plan'),
     path('add-sip-note-bulk/', views.add_sip_note_bulk, name='add_sip_note_bulk'),
+    path('get-sip-plans/', views.get_sip_plans, name='get_sip_plans'),
     path('add-progress-report/<int:authorization_id>/', views.add_progress_report, name='add_progress_report'),
     path('add-volunteer/', views.add_volunteer, name='add_volunteer'),
     path('billing-report/', views.billing_report, name='billing_report'),

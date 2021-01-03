@@ -162,6 +162,12 @@ def add_sip_note_bulk(request):
     return render(request, 'lynx/add_sip_note_bulk.html', {'form': form, 'client_list': client_list})
 
 
+def get_sip_plans(request):
+    contact_id = request.GET.get('contact_id')
+    plans = SipPlan.objects.filter(contact_id=contact_id)
+    return render(request, 'lynx/sip_plan_list_options.html', {'plans': plans})
+
+
 @login_required
 def add_emergency(request, contact_id):
     form = EmergencyForm()
