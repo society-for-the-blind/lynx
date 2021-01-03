@@ -15,9 +15,8 @@
             $("#id_note_date_day").val(thisDay);
         });
 
-        function showPlan(selectObject, planId) {
+        function showPlan(selectObject, planIdNo) {
             var value = selectObject.value;
-            console.log(value);
 
             $.ajax({                       // initialize an AJAX request
                 url: "/lynx/get-sip-plans/",                    // set the url of the request
@@ -25,9 +24,7 @@
                   'client_id': value
                 },
                 success: function (data) {   // `data` is the return of the `get_sip_plans` view function
-                    console.log(data);
-                  $("#"+planId).html(data);  // replace the contents of the plan input with the data that came from the server
-                    // document.getElementById(planId).innerHTML = data;
+                  $("#plan_id_"+planIdNo).html(data);  // replace the contents of the plan input with the data that came from the server
                 }
             });
         }
@@ -49,12 +46,29 @@
                             <option value="{{ client.id }}">{{ client.last_name }}, {{ client.first_name }}</option>
                         {% endfor %}
                     </select>
-                    <label for="plan_0_id">Select a Plan</label>
-                    <select name="plan_0" id="plan_0_id">
+                    <label for="plan_id_0">Select a Plan</label>
+                    <select name="plan_0" id="plan_id_0">
                         <option value="">---------</option>
                     </select>
                 </div>
             </div>
+            {%for i in range %}
+                <div class="row" >
+                    <div class="col-12">
+                        <label for="client_{{i}}">Select a Client</label>
+                        <select id="client_{{i}}" onchange="showPlan(this, {{i}} )">
+                            <option value="">----------</option>
+                            {% for client in client_list %}
+                                <option value="{{ client.id }}">{{ client.last_name }}, {{ client.first_name }}</option>
+                            {% endfor %}
+                        </select>
+                        <label for="plan_id_{{i}}">Select a Plan</label>
+                        <select name="plan_{{i}}" id="plan_id_{{i}}">
+                            <option value="">---------</option>
+                        </select>
+                    </div>
+                </div>
+            {% endfor %}
         <h2>Notes</h2>
             <div class="row">
               <div class="col-12">{{ form.note|as_crispy_field }}</div>

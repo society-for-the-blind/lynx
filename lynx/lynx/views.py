@@ -141,6 +141,7 @@ def add_sip_plan(request, contact_id):
 def add_sip_note_bulk(request):
     form = SipNoteForm()
     client_list = Contact.objects.filter(sip_client=1).order_by('last_name')
+    range = [1,2,3,4,5,6,7,8,9]
     if request.method == 'POST':
         form = SipNoteForm(request.POST)
         if form.is_valid():
@@ -159,7 +160,7 @@ def add_sip_note_bulk(request):
                     form.user_id = request.user.id
                     form.save()
         return HttpResponseRedirect(reverse('lynx:contact_list'))
-    return render(request, 'lynx/add_sip_note_bulk.html', {'form': form, 'client_list': client_list})
+    return render(request, 'lynx/add_sip_note_bulk.html', {'form': form, 'client_list': client_list, 'range': range})
 
 
 def get_sip_plans(request):
