@@ -146,17 +146,17 @@ def add_sip_note_bulk(request):
         form = SipNoteForm(request.POST)
         if form.is_valid():
             form = form.save(commit=False)
-            form.contact_id = request.POST.client_0
-            form.sip_plan_id = request.POST.plan_0
+            form.contact_id = request.POST.get('client_0')
+            form.sip_plan_id = request.POST.get('plan_0')
             form.user_id = request.user.id
             form.save()
             for i in range:
                 form.pk = None
                 client_str = "client_" + str(i)
                 plan_str = "plan_" + str(i)
-                if len(request.POST.client_str) > 0:
-                    form.contact_id = request.POST.client_str
-                    form.sip_plan_id = request.POST.plan_str
+                if len(request.POST.get(client_str)) > 0:
+                    form.contact_id = request.POST.get(client_str)
+                    form.sip_plan_id = request.POST.get(plan_str)
                     form.user_id = request.user.id
                     form.save()
                 else:
