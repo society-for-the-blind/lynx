@@ -25,6 +25,7 @@
                   'client_id': value
                 },
                 success: function (data) {   // `data` is the return of the `get_sip_plans` view function
+                    console.log(data);
                   $("#"+planId).html(data);  // replace the contents of the plan input with the data that came from the server
                 }
             });
@@ -41,7 +42,7 @@
             <div class="row">
                 <div class="col-12">
                     <label for="client_0">Select a Client</label>
-                    <select name="client_0" id="client_0" onchange="showPlan(this, 'plan_0')">
+                    <select name="client_0" id="client_0" onchange="showPlan(this, 'plan_div_0')">
                         <option value="">----------</option>
                         {% for client in client_list %}
                             <option value="{{ client.id }}">{{ client.last_name }}, {{ client.first_name }}</option>
@@ -49,6 +50,7 @@
                     </select>
                     <label for="plan_0">Select a Plan</label>
                     <select name="plan_0" id="plan_0">
+                        <div id="plan_div_0"></div>
                     </select>
                 </div>
             </div>
