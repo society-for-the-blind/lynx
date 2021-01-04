@@ -21,7 +21,7 @@ from .models import Contact, Address, Phone, Email, Intake, IntakeNote, Emergenc
     ProgressReport, LessonNote, SipNote, Volunteer, SipPlan, OutsideAgency, ContactInfoView
 from .forms import ContactForm, IntakeForm, IntakeNoteForm, EmergencyForm, AddressForm, EmailForm, PhoneForm, \
     AuthorizationForm, ProgressReportForm, LessonNoteForm, SipNoteForm, BillingReportForm, SipDemographicReportForm, \
-    VolunteerForm, SipCSFReportForm, SipPlanForm
+    VolunteerForm, SipCSFReportForm, SipPlanForm, SipNoteBulkForm
 from .filters import ContactFilter
 
 logger = logging.getLogger(__name__)
@@ -139,11 +139,11 @@ def add_sip_plan(request, contact_id):
 
 @login_required
 def add_sip_note_bulk(request):
-    form = SipNoteForm()
+    form = SipNoteBulkForm()
     client_list = Contact.objects.filter(sip_client=1).order_by('last_name')
     range = [1, 2, 3, 4, 5, 6, 7, 8, 9]
     if request.method == 'POST':
-        form = SipNoteForm(request.POST)
+        form = SipNoteBulkForm(request.POST)
         if form.is_valid():
             form = form.save(commit=False)
             form.contact_id = request.POST.get('client_0')

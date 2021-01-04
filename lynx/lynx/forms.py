@@ -237,7 +237,7 @@ class SipNoteForm(forms.ModelForm):
         self.fields['sip_plan'].label = "SIP Plan"
 
 
-class SipNoteForm(forms.ModelForm):
+class SipNoteBulkForm(forms.ModelForm):
     note_date = forms.DateField(widget=forms.SelectDateWidget(empty_label="Nothing"))
     client_list = Contact.objects.filter(sip_client=1).order_by('last_name')
     clients = forms.ModelMultipleChoiceField(queryset=client_list, required=False)
@@ -255,7 +255,7 @@ class SipNoteForm(forms.ModelForm):
         exclude = ('created', 'modified', 'user', 'contact', 'modesto')
 
     def __init__(self, *args, **kwargs):
-        super(SipNoteForm, self).__init__(*args, **kwargs)
+        super(SipNoteBulkForm, self).__init__(*args, **kwargs)
         self.fields['vision_screening'].label = "Vision screening/examination/low vision evaluation"
         self.fields['treatment'].label = "Surgical or therapeutic treatment"
         self.fields['at_devices'].label = "Provision of assistive technology devices and aids (non prescription optics)"
