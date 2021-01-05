@@ -295,7 +295,7 @@ class SipPlanForm(forms.ModelForm):
               ("Training Seminar", "Training Seminar"), ("Workshop", "Workshop"))
     instructor = forms.CharField(required=False)
     plan_type = forms.ChoiceField(choices=types)
-    start_date = forms.DateField(widget=forms.SelectDateWidget(empty_label="Nothing", years=range(oldYear, highYear)))
+    start_date = forms.DateField(widget=forms.SelectDateWidget(empty_label="Nothing"))
 
     class Meta:
         model = SipPlan
