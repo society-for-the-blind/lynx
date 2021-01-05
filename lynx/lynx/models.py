@@ -584,7 +584,7 @@ class SipPlan(models.Model):
     counseling = models.BooleanField(blank=True, default=False)
     information = models.BooleanField(blank=True, default=False)
     other_services = models.BooleanField(blank=True, default=False)
-    plan_name = models.CharField(max_length=50)
+    plan_name = models.CharField(max_length=100, null=True)
     living_plan_progress = models.CharField(max_length=150, choices=PLANS, blank=True, null=True, default="Plan not complete")
     community_plan_progress = models.CharField(max_length=150, choices=PLANS, blank=True, null=True, default="Plan not complete")
     at_outcomes = models.CharField(max_length=150, choices=ASSESSMENTS, blank=True, null=True, default="Not assessed")
