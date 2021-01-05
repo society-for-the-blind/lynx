@@ -61,6 +61,8 @@
               <div class="col-12">{{ form.note|as_crispy_field }}</div>
             </div>
 
+        <input hidden type="text" name="plan_name" value="" class="textinput textInput form-control" id="id_plan_name">
+
         {{ form.errors }}
     </div>
     <input type="submit" value="Submit">
