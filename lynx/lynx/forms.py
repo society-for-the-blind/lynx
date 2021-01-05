@@ -289,7 +289,7 @@ class SipNoteBulkForm(forms.ModelForm):
 class SipPlanForm(forms.ModelForm):
     currentYear = datetime.now().year
     oldYear = 2015
-    highYear = currentYear + 2
+    highYear = currentYear + 1
 
     types = (("Retreat", "Retreat"), ("In-home", "In-home"), ("Support Group", "Support Group"),
               ("Training Seminar", "Training Seminar"), ("Workshop", "Workshop"))
