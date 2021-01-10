@@ -828,6 +828,11 @@ class SipNoteUpdateView(LoginRequiredMixin, UpdateView):
               'retreat', 'in_home', 'seminar', 'modesto', 'group', 'community', 'class_hours', 'sip_plan', 'instructor']
     template_name_suffix = '_edit'
 
+    def get_form(self, form_class=None):
+        form = super().get_form(form_class=form_class)
+        # form.fields['sip_plan'].choices = "Assistive Technology or Services"
+        form.fields['sip_plan'].queryset = SipPlan.objects.filter(contact_id=form.contact_id)
+
 
 class SipPlanUpdateView(LoginRequiredMixin, UpdateView):
     model = SipPlan
@@ -851,7 +856,6 @@ class SipPlanUpdateView(LoginRequiredMixin, UpdateView):
         form.fields['at_outcomes'].label = "AT Goal Outcomes"
         form.fields['ila_outcomes'].label = "IL/A Service Goal Outcomes"
         return form
-
 
 
 class AuthorizationUpdateView(LoginRequiredMixin, UpdateView):
