@@ -828,10 +828,11 @@ class SipNoteUpdateView(LoginRequiredMixin, UpdateView):
               'retreat', 'in_home', 'seminar', 'modesto', 'group', 'community', 'class_hours', 'sip_plan', 'instructor']
     template_name_suffix = '_edit'
 
-    def get_form(self, form_class=None):
-        form = super().get_form(form_class=form_class)
-        # form.fields['sip_plan'].choices = "Assistive Technology or Services"
-        form.fields['sip_plan'].queryset = SipPlan.objects.filter(contact_id=form.contact_id)
+    def get_form_kwargs(self):
+        # Sending user information to Form
+        kwargs = super(SipNoteUpdateView, self).get_form_kwargs()
+        kwargs['contact_id'] = self.request.contact_id
+        return kwargs
 
 
 class SipPlanUpdateView(LoginRequiredMixin, UpdateView):
