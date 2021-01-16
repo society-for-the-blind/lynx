@@ -825,14 +825,9 @@ class SipNoteUpdateView(LoginRequiredMixin, UpdateView):
     model = SipNote
     fields = ['note', 'note_date', 'vision_screening', 'treatment', 'at_devices', 'at_services', 'independent_living',
               'orientation', 'communications', 'dls', 'support', 'advocacy', 'counseling', 'information', 'services',
-              'retreat', 'in_home', 'seminar', 'modesto', 'group', 'community', 'class_hours', 'sip_plan', 'instructor']
+              'retreat', 'in_home', 'seminar', 'modesto', 'group', 'community', 'class_hours', 'sip_plan', 'instructor',
+              'contact_id']
     template_name_suffix = '_edit'
-
-    def get_form_kwargs(self):
-        # Sending user information to Form
-        kwargs = super(SipNoteUpdateView, self).get_form_kwargs()
-        kwargs['contact_id'] = self.request.contact_id
-        return kwargs
 
 
 class SipPlanUpdateView(LoginRequiredMixin, UpdateView):

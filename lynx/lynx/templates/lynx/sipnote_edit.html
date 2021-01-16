@@ -2,10 +2,94 @@
 
 {% block title %}Edit SIP Note{% endblock %}
 
+{% block javascript %}
+    <script>
+
+      $(document).ready(function(){
+            var value = document.getElementById('contact_id');
+
+            $.ajax({                       // initialize an AJAX request
+                url: "/lynx/get-sip-plans/",                    // set the url of the request
+                data: {
+                  'client_id': value
+                },
+                success: function (data) {   // `data` is the return of the `get_sip_plans` view function
+                  $("#id_sip_plan").html(data);  // replace the contents of the plan input with the data that came from the server
+                }
+            });
+        });
+    </script>
+{% endblock %}
+
 {% block content %}
-  <form method="post" >
-    {% csrf_token %}
-    {{ form.as_p }}
+<input type="hidden" id="contact_id"  value="{{kwargs.contact_id}}">
+<form method="post"> {% csrf_token %}
+    <div class="container-fluid">
+        <h2>Notes</h2>
+            <div hidden class="row">
+              <div class="col-12">{{ form.contact_id }}</div>
+            </div>
+            <div class="row">
+              <div class="col-12">{{ form.note|as_crispy_field }}</div>
+            </div>
+            <div class="row">
+              <div class="col-12">{{ form.note_date|as_crispy_field }}</div>
+            </div>
+            <div class="row">
+              <div class="col-12">{{ form.class_hours|as_crispy_field }}</div>
+            </div>
+            <div class="row">
+              <div class="col-12">{{ form.instructor|as_crispy_field }}</div>
+            </div>
+            <div class="row">
+              <div class="col-12">{{ form.sip_plan|as_crispy_field }}</div>
+            </div>
+            <label for="id_sip_plan">Select a Plan</label>
+            <select name="sip_plan" id="id_sip_plan">
+                <option value="">---------</option>
+            </select>
+        <h2>Services (check all that apply):</h2>
+            <div class="row">
+              <div class="col-6">{{ form.vision_screening|as_crispy_field }}</div>
+              <div class="col-6">{{ form.treatment|as_crispy_field }}</div>
+            </div>
+            <div class="row">
+              <div class="col-6">{{ form.at_devices|as_crispy_field }}</div>
+              <div class="col-6">{{ form.at_services|as_crispy_field }}</div>
+            </div>
+            <div class="row">
+              <div class="col-6">{{ form.independent_living|as_crispy_field }}</div>
+              <div class="col-6">{{ form.orientation|as_crispy_field }}</div>
+            </div>
+            <div class="row">
+              <div class="col-6">{{ form.communications|as_crispy_field }}</div>
+              <div class="col-6">{{ form.dls|as_crispy_field }}</div>
+            </div>
+            <div class="row">
+              <div class="col-6">{{ form.support|as_crispy_field }}</div>
+              <div class="col-6">{{ form.advocacy|as_crispy_field }}</div>
+            </div>
+            <div class="row">
+              <div class="col-6">{{ form.counseling|as_crispy_field }}</div>
+              <div class="col-6">{{ form.information|as_crispy_field }}</div>
+            </div>
+            <div class="row">
+              <div class="col-6">{{ form.services|as_crispy_field }}</div>
+            </div>
+        <h2>Method of delivering service (check all that apply):</h2>
+            <div class="row">
+              <div class="col-6">{{ form.retreat|as_crispy_field }}</div>
+              <div class="col-6">{{ form.in_home|as_crispy_field }}</div>
+            </div>
+            <div class="row">
+              <div class="col-6">{{ form.seminar|as_crispy_field }}</div>
+              <div class="col-6">{{ form.group|as_crispy_field }}</div>
+            </div>
+            <div class="row">
+              <div class="col-6">{{ form.community|as_crispy_field }}</div>
+            </div>
+        {{ form.errors }}
+    </div>
     <input type="submit" value="Update">
-  </form>
+</form>
 {% endblock %}
