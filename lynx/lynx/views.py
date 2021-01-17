@@ -825,8 +825,7 @@ class SipNoteUpdateView(LoginRequiredMixin, UpdateView):
     model = SipNote
     fields = ['note', 'note_date', 'vision_screening', 'treatment', 'at_devices', 'at_services', 'independent_living',
               'orientation', 'communications', 'dls', 'support', 'advocacy', 'counseling', 'information', 'services',
-              'retreat', 'in_home', 'seminar', 'modesto', 'group', 'community', 'class_hours', 'sip_plan', 'instructor',
-              'contact_id']
+              'retreat', 'in_home', 'seminar', 'modesto', 'group', 'community', 'class_hours', 'sip_plan', 'instructor']
     template_name_suffix = '_edit'
 
 
