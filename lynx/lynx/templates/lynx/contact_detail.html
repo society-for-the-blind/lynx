@@ -255,7 +255,7 @@
                 <div class="col-12"><strong>Service Delivery: </strong>{% if sip.retreat %}Retreat, {% endif %}{% if sip.in_home %}In-home Training, {% endif %}{% if sip.seminar %}Training Seminar, {% endif %}{% if sip.modesto %}Modesto training site, {% endif %}{% if sip.group %}Support group(s), {% endif %}{% if sip.community %}Community Integration{% endif %}</div>
             </div>
             <div class="row">
-                <div class="col-12"><a href='/lynx/sip-note-edit/{{ sip.id }}'>Edit</a> | <a href='/lynx/sip-note-confirm/{{ sip.id }}/{{ object.id }}'>Delete</a></div>
+                <div class="col-12"><a href='/lynx/sip-note-edit/{{ sip.id }}?contact_id={{ object.id }}'>Edit</a> | <a href='/lynx/sip-note-confirm/{{ sip.id }}/{{ object.id }}'>Delete</a></div>
             </div>
         </div>
         <hr>
