@@ -497,7 +497,7 @@ class AuthorizationDetailView(LoginRequiredMixin, DetailView):
         # Call the base implementation first to get a context
         context = super(AuthorizationDetailView, self).get_context_data(**kwargs)
         context['report_list'] = ProgressReport.objects.filter(authorization_id=self.kwargs['pk'])
-        context['note_list'] = LessonNote.objects.filter(authorization_id=self.kwargs['pk']).order_by('-created')
+        context['note_list'] = LessonNote.objects.filter(authorization_id=self.kwargs['pk']).order_by('-date')
         notes = LessonNote.objects.filter(authorization_id=self.kwargs['pk']).values()
         authorization = Authorization.objects.filter(id=self.kwargs['pk']).values()
         total_units = 0
