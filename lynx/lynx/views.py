@@ -1022,7 +1022,7 @@ def billing_report(request):
                 in_hours = '0'
                 if value['billed_time']:
                     in_hours = float(value['billed_time'])
-                    total_hours += int(value['billed_time'])
+                    total_hours += in_hours
                 if value['amount']:
                     total_amount += value['amount']
 
