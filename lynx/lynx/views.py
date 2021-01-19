@@ -1294,7 +1294,7 @@ def sip_csf_services_report(request):
                                      value['3']['counseling'], value['3']['information'], value['3']['services'],
                                      value['3']['ila_outcomes'], "", value['3']['support'], "",
                                      value['3']['living_plan_progress'], value['3']['community_plan_progress']])
-                if 'Q4' in value:
+                if '4' in value:
                     writer.writerow([value['client_name'], "0", "", "", "", "", "",
                                      value['4']['at_devices_services'], "", "", value['4']['at_outcomes'], "",
                                      value['4']['independent_living'], value['4']['orientation'],
