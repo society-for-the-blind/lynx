@@ -1279,7 +1279,6 @@ def sip_csf_services_report(request):
                         aggregated_data[client_id][quarter]['at_outcomes'] = assess_evaluation(note['at_outcomes'], aggregated_data[client_id][quarter]['at_outcomes'])
                     if note['ila_outcomes']:
                         aggregated_data[client_id][quarter]['ila_outcomes'] = assess_evaluation(note['ila_outcomes'], aggregated_data[client_id][quarter]['ila_outcomes'])
-                quarter = ten
 
             for key, value in aggregated_data.items():
                 if 'Q1' in value:
@@ -1314,6 +1313,7 @@ def sip_csf_services_report(request):
                                      value['Q4']['counseling'], value['Q4']['information'], value['Q4']['services'],
                                      value['Q4']['ila_outcomes'], "", value['Q4']['support'], "",
                                      value['Q4']['living_plan_progress'], value['Q4']['community_plan_progress']])
+                quarter = ten
 
             return response
 
