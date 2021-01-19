@@ -1280,28 +1280,28 @@ def sip_csf_services_report(request):
                                      value['1']['living_plan_progress'], value['1']['community_plan_progress']])
                 if '2' in value:
                     writer.writerow([value['client_name'], "0", "", "", "", "", "",
-                                     value['Q2']['at_devices_services'], "", "", value['Q2']['at_outcomes'], "",
-                                     value['Q2']['independent_living'], value['Q2']['orientation'],
-                                     value['Q2']['communications'], value['Q2']['dls'], value['Q2']['advocacy'],
-                                     value['Q2']['counseling'], value['Q2']['information'], value['Q2']['services'],
-                                     value['Q2']['ila_outcomes'], "", value['Q2']['support'], "",
-                                     value['Q2']['living_plan_progress'], value['Q2']['community_plan_progress']])
+                                     value['2']['at_devices_services'], "", "", value['2']['at_outcomes'], "",
+                                     value['2']['independent_living'], value['2']['orientation'],
+                                     value['2']['communications'], value['2']['dls'], value['2']['advocacy'],
+                                     value['2']['counseling'], value['2']['information'], value['2']['services'],
+                                     value['2']['ila_outcomes'], "", value['2']['support'], "",
+                                     value['2']['living_plan_progress'], value['2']['community_plan_progress']])
                 if '3' in value:
                     writer.writerow([value['client_name'], "0", "", "", "", "", "",
-                                     value['Q3']['at_devices_services'], "", "", value['Q3']['at_outcomes'], "",
-                                     value['Q3']['independent_living'], value['Q3']['orientation'],
-                                     value['Q3']['communications'], value['Q3']['dls'], value['Q3']['advocacy'],
-                                     value['Q3']['counseling'], value['Q3']['information'], value['Q3']['services'],
-                                     value['Q3']['ila_outcomes'], "", value['Q3']['support'], "",
-                                     value['Q3']['living_plan_progress'], value['Q3']['community_plan_progress']])
+                                     value['3']['at_devices_services'], "", "", value['3']['at_outcomes'], "",
+                                     value['3']['independent_living'], value['3']['orientation'],
+                                     value['3']['communications'], value['3']['dls'], value['3']['advocacy'],
+                                     value['3']['counseling'], value['3']['information'], value['3']['services'],
+                                     value['3']['ila_outcomes'], "", value['3']['support'], "",
+                                     value['3']['living_plan_progress'], value['3']['community_plan_progress']])
                 if 'Q4' in value:
                     writer.writerow([value['client_name'], "0", "", "", "", "", "",
-                                     value['Q4']['at_devices_services'], "", "", value['Q4']['at_outcomes'], "",
-                                     value['Q4']['independent_living'], value['Q4']['orientation'],
-                                     value['Q4']['communications'], value['Q4']['dls'], value['Q4']['advocacy'],
-                                     value['Q4']['counseling'], value['Q4']['information'], value['Q4']['services'],
-                                     value['Q4']['ila_outcomes'], "", value['Q4']['support'], "",
-                                     value['Q4']['living_plan_progress'], value['Q4']['community_plan_progress']])
+                                     value['4']['at_devices_services'], "", "", value['4']['at_outcomes'], "",
+                                     value['4']['independent_living'], value['4']['orientation'],
+                                     value['4']['communications'], value['4']['dls'], value['4']['advocacy'],
+                                     value['4']['counseling'], value['4']['information'], value['4']['services'],
+                                     value['4']['ila_outcomes'], "", value['4']['support'], "",
+                                     value['4']['living_plan_progress'], value['4']['community_plan_progress']])
 
             return response
 
