@@ -1270,7 +1270,7 @@ def sip_csf_services_report(request):
                         aggregated_data[client_id][quarter]['ila_outcomes'] = assess_evaluation(note['ila_outcomes'], aggregated_data[client_id][quarter]['ila_outcomes'])
 
             for key, value in aggregated_data.items():
-                if 'Q1' in value:
+                if '1' in value:
                     writer.writerow([value['client_name'], "0", "", "", "", "", "",
                                      value['1']['at_devices_services'], "", "", value['1']['at_outcomes'], "",
                                      value['1']['independent_living'], value['1']['orientation'],
@@ -1278,7 +1278,7 @@ def sip_csf_services_report(request):
                                      value['1']['counseling'], value['1']['information'], value['1']['services'],
                                      value['1']['ila_outcomes'], "", value['1']['support'], "",
                                      value['1']['living_plan_progress'], value['1']['community_plan_progress']])
-                if 'Q2' in value:
+                if '2' in value:
                     writer.writerow([value['client_name'], "0", "", "", "", "", "",
                                      value['Q2']['at_devices_services'], "", "", value['Q2']['at_outcomes'], "",
                                      value['Q2']['independent_living'], value['Q2']['orientation'],
@@ -1286,7 +1286,7 @@ def sip_csf_services_report(request):
                                      value['Q2']['counseling'], value['Q2']['information'], value['Q2']['services'],
                                      value['Q2']['ila_outcomes'], "", value['Q2']['support'], "",
                                      value['Q2']['living_plan_progress'], value['Q2']['community_plan_progress']])
-                if 'Q3' in value:
+                if '3' in value:
                     writer.writerow([value['client_name'], "0", "", "", "", "", "",
                                      value['Q3']['at_devices_services'], "", "", value['Q3']['at_outcomes'], "",
                                      value['Q3']['independent_living'], value['Q3']['orientation'],
