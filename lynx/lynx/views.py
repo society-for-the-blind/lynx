@@ -1170,6 +1170,7 @@ def sip_csf_services_report(request):
             quarter = data.get('quarter')
             year = data.get('year')
             fiscal_year = get_fiscal_year(year)
+            quarter_no = quarter[1]
 
             with connection.cursor() as cursor:
                 query = """SELECT CONCAT(c.first_name, ' ', c.last_name) as name, c.id as id, ls.fiscal_year, 
@@ -1185,7 +1186,7 @@ def sip_csf_services_report(request):
                     and quarter = %d 
                     and c.sip_client is true 
                     and c.id not in (SELECT contact_id FROM lynx_sipnote AS sip WHERE quarter < %d and fiscal_year = '%s')
-                    order by c.last_name, c.first_name;""" % (fiscal_year, int(quarter), int(quarter), fiscal_year)
+                    order by c.last_name, c.first_name;""" % (fiscal_year, int(quarter_no), int(quarter_no), fiscal_year)
                 cursor.execute(query)
                 note_set = dictfetchall(cursor)
 
@@ -1212,16 +1213,6 @@ def sip_csf_services_report(request):
                     aggregated_data[client_id] = {}
                     aggregated_data[client_id]['client_name'] = note['name']
 
-                if int(quarter) == 1:
-                    quarter = 'Q1'
-                elif int(quarter) == 2:
-                    quarter = 'Q2'
-                elif int(quarter) == 3:
-                    quarter = 'Q3'
-                elif int(quarter) == 4:
-                    quarter = 'Q4'
-                else:
-                    quarter = ''
 
                 if quarter not in aggregated_data[client_id]:
                     aggregated_data[client_id][quarter] = {}
