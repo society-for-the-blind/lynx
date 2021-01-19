@@ -1272,12 +1272,12 @@ def sip_csf_services_report(request):
             for key, value in aggregated_data.items():
                 if 'Q1' in value:
                     writer.writerow([value['client_name'], "0", "", "", "", "", "",
-                                     value['Q1']['at_devices_services'], "", "", value['Q1']['at_outcomes'], "",
-                                     value['Q1']['independent_living'], value['Q1']['orientation'],
-                                     value['Q1']['communications'], value['Q1']['dls'], value['Q1']['advocacy'],
-                                     value['Q1']['counseling'], value['Q1']['information'], value['Q1']['services'],
-                                     value['Q1']['ila_outcomes'], "", value['Q1']['support'], "",
-                                     value['Q1']['living_plan_progress'], value['Q1']['community_plan_progress']])
+                                     value['1']['at_devices_services'], "", "", value['1']['at_outcomes'], "",
+                                     value['1']['independent_living'], value['1']['orientation'],
+                                     value['1']['communications'], value['1']['dls'], value['1']['advocacy'],
+                                     value['1']['counseling'], value['1']['information'], value['1']['services'],
+                                     value['1']['ila_outcomes'], "", value['1']['support'], "",
+                                     value['1']['living_plan_progress'], value['1']['community_plan_progress']])
                 if 'Q2' in value:
                     writer.writerow([value['client_name'], "0", "", "", "", "", "",
                                      value['Q2']['at_devices_services'], "", "", value['Q2']['at_outcomes'], "",
@@ -1302,7 +1302,6 @@ def sip_csf_services_report(request):
                                      value['Q4']['counseling'], value['Q4']['information'], value['Q4']['services'],
                                      value['Q4']['ila_outcomes'], "", value['Q4']['support'], "",
                                      value['Q4']['living_plan_progress'], value['Q4']['community_plan_progress']])
-                quarter = ten
 
             return response
 
