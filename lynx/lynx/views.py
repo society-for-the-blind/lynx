@@ -1212,16 +1212,16 @@ def sip_csf_services_report(request):
                     aggregated_data[client_id] = {}
                     aggregated_data[client_id]['client_name'] = note['name']
 
-                # if int(quarter) == 1:
-                #     full_quarter = 'Q1'
-                # elif int(quarter) == 2:
-                #     full_quarter = 'Q2'
-                # elif int(quarter) == 3:
-                #     full_quarter = 'Q3'
-                # elif int(quarter) == 4:
-                #     quarter = 'Q4'
-                # else:
-                #     quarter = ''
+                if int(quarter) == 1:
+                    quarter = 'Q1'
+                elif int(quarter) == 2:
+                    quarter = 'Q2'
+                elif int(quarter) == 3:
+                    quarter = 'Q3'
+                elif int(quarter) == 4:
+                    quarter = 'Q4'
+                else:
+                    quarter = ''
 
                 if quarter not in aggregated_data[client_id]:
                     aggregated_data[client_id][quarter] = {}
@@ -1411,8 +1411,8 @@ def sip_csf_demographic_report(request):
                         with connection.cursor() as cursor:
                             cursor.execute("""SELECT id, note_date FROM lynx_sipnote where contact_id = '%s' order by id ASC LIMIT 1;""" % (client_id,))
                             note_set = dictfetchall(cursor)
-                        note_year = int(note_set[0]["note_date"].year)
-                        note_month = int(note_set[0]["note_date"].month)
+                        note_year = int(note_set[0]["date"].year)
+                        note_month = int(note_set[0]["date"].month)
                         if note_year > year:
                             client['served'] = "Case open between Oct. 1 - Sept. 30"
                         elif note_year == year:
