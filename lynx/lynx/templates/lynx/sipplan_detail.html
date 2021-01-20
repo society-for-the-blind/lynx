@@ -43,6 +43,11 @@
     <h2>SIP Plan Notes</h2>
    <div class="container-fluid">
     {% for sip in sip_note_list %}
+       <div class="row">
+            <div class="col-1"></div>
+            <div class="col-12"><a href='/lynx/sip-note-edit/{{ sip.id }}?contact_id={{ sip.contact_id }}&plan_id={{ sip.sip_plan_id }}'>Edit {{ sip.note_date|date:'F j, Y' }}</a></div>
+
+        </div>
         <div class="row">
             <div class="col-1"></div>
             <div class="col-11">
@@ -60,9 +65,8 @@
         </div>
         <div class="row">
             <div class="col-1"></div>
-                            <div class="col-12"><a href='/lynx/sip-note-edit/{{ sip.id }}?contact_id={{ sip.contact_id }}&plan_id={{ sip.sip_plan_id }}'>Edit {{ sip.note_date|date:'F j, Y' }}</a></div>
+            <div class="col-12"><a href='/lynx/sip-note-edit/{{ sip.id }}?contact_id={{ sip.contact_id }}&plan_id={{ sip.sip_plan_id }}'>Edit {{ sip.note_date|date:'F j, Y' }}</a></div>
 
-<!--            {% if not request.GET.print %}<div class="col-11"><input type="button" class="btn btn-primary" aria-label="Edit Note" onclick="location.href='/lynx/sip-note-edit/{{ sip.id }}';" value="Edit Note  {{ object.note_date|date:'F j' }}" /></div>{% endif %}-->
         </div>
         {% empty %}
         <div class="row">
