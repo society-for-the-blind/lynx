@@ -238,10 +238,13 @@
     {% if not request.GET.print %}<input type="button" class="btn btn-success" aria-label="Add New SIP Note" onclick="location.href='/lynx/add-sip-note/{{ object.id }}/';" value="Add New SIP Note" />{% endif %}
 
     {% for sip in sip_list %}
+        <div class="row">
+            <div class="col-12"><a href='/lynx/sip-note-edit/{{ sip.id }}?contact_id={{ object.id }}&plan_id={{ sip.sip_plan_id }}'>Edit {{ sip.note_date|date:'F j, Y' }}</a> | <a href='/lynx/sip-note-confirm/{{ sip.id }}/{{ object.id }}'>Delete {{ sip.note_date|date:'F j, Y' }}</a></div>
+        </div>
         <div class="container-fluid">
             <div class="row">
                 <div class="col-12">
-                    <h3>{{ sip.note_date|date:'F j, Y' }}:</h3> {{ sip.note|linebreaks }}
+                    <h3>{{ sip.note_date|date:'F j, Y' }}</h3> {{ sip.note|linebreaks }}
                     <strong>Instructor: </strong>{{ sip.instructor }}
                 </div>
             </div>
@@ -254,9 +257,7 @@
             <div class="row">
                 <div class="col-12"><strong>Service Delivery: </strong>{% if sip.retreat %}Retreat, {% endif %}{% if sip.in_home %}In-home Training, {% endif %}{% if sip.seminar %}Training Seminar, {% endif %}{% if sip.modesto %}Modesto training site, {% endif %}{% if sip.group %}Support group(s), {% endif %}{% if sip.community %}Community Integration{% endif %}</div>
             </div>
-            <div class="row">
-                <div class="col-12"><a href='/lynx/sip-note-edit/{{ sip.id }}?contact_id={{ object.id }}&plan_id={{ sip.sip_plan_id }}'>Edit {{ sip.note_date|date:'F j, Y' }}</a> | <a href='/lynx/sip-note-confirm/{{ sip.id }}/{{ object.id }}'>Delete {{ sip.note_date|date:'F j, Y' }}</a></div>
-            </div>
+
         </div>
         <hr>
         {% empty %}
