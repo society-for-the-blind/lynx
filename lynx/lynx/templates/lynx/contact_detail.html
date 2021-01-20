@@ -239,7 +239,7 @@
 
     {% for sip in sip_list %}
         <div class="row">
-            <div class="col-12"><a href='/lynx/sip-note-edit/{{ sip.id }}?contact_id={{ object.id }}&plan_id={{ sip.sip_plan_id }}'>Edit {{ sip.note_date|date:'F j, Y' }}</a> | <a href='/lynx/sip-note-confirm/{{ sip.id }}/{{ object.id }}'>Delete {{ sip.note_date|date:'F j, Y' }}</a></div>
+            <div class="col-12"><a href='/lynx/sip-note-edit/{{ sip.id }}?contact_id={{ object.id }}&plan_id={{ sip.sip_plan_id }}'>Edit {{ sip.note_date|date:'F j, Y' }}</a></div>
         </div>
         <div class="container-fluid">
             <div class="row">
@@ -257,7 +257,9 @@
             <div class="row">
                 <div class="col-12"><strong>Service Delivery: </strong>{% if sip.retreat %}Retreat, {% endif %}{% if sip.in_home %}In-home Training, {% endif %}{% if sip.seminar %}Training Seminar, {% endif %}{% if sip.modesto %}Modesto training site, {% endif %}{% if sip.group %}Support group(s), {% endif %}{% if sip.community %}Community Integration{% endif %}</div>
             </div>
-
+            <div class="row">
+                <div class="col-12"><a href='/lynx/sip-note-confirm/{{ sip.id }}/{{ object.id }}'>Delete {{ sip.note_date|date:'F j, Y' }}</a></div>
+            </div>
         </div>
         <hr>
         {% empty %}
