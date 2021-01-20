@@ -14,6 +14,7 @@
             };
 
             var value = getQueryString('contact_id');
+            var plan = getQueryString('plan_id');
 
             $.ajax({                       // initialize an AJAX request
                 url: "/lynx/get-sip-plans/",                    // set the url of the request
@@ -24,6 +25,7 @@
                   $("#id_sip_plan").html(data);  // replace the contents of the plan input with the data that came from the server
                 }
             });
+            $("#id_sip_plan").val("plan");
             });
     </script>
 {% endblock %}

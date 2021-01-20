@@ -687,7 +687,7 @@ class SipPlanDetailView(LoginRequiredMixin, DetailView):
     def get_context_data(self, **kwargs):
         # Call the base implementation first to get a context
         context = super(SipPlanDetailView, self).get_context_data(**kwargs)
-        context['sip_note_list'] = SipNote.objects.filter(sip_plan_id=self.kwargs['pk'])
+        context['sip_note_list'] = SipNote.objects.filter(sip_plan_id=self.kwargs['pk']).order_by('-note_date')
 
         return context
 
