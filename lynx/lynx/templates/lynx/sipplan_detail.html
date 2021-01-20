@@ -46,7 +46,7 @@
         <div class="row">
             <div class="col-1"></div>
             <div class="col-11">
-                {{ sip.note_date|date:'F j, Y' }}: {{ sip.note|linebreaks }}
+                <h3>{{ sip.note_date|date:'F j, Y' }}:</h3> {{ sip.note|linebreaks }}
                 Instructor: {{ sip.instructor }}
             </div>
         </div>
