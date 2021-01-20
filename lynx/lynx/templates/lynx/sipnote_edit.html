@@ -23,9 +23,9 @@
                 },
                 success: function (data) {   // `data` is the return of the `get_sip_plans` view function
                   $("#id_sip_plan").html(data);  // replace the contents of the plan input with the data that came from the server
+                  $("#id_sip_plan").val(plan);
                 }
             });
-            $("#id_sip_plan").val("plan");
             });
     </script>
 {% endblock %}
