@@ -9,10 +9,11 @@ sudo pip3 install psycopg2-binary
 sudo pip3 install --upgrade django-crispy-forms
 sudo pip3 install django-debug-toolbar
 sudo pip3 install django-tables2
-sudo pip3 instal openpyxl
+sudo pip3 install openpyxl
 sudo pip3 install django-mathfilters
 sudo pip3 install django-audit-log
 sudo pip3 install django-reversion
+sudo pip3 install django-simple-history
 
 sudo apt-get install postgresql postgresql-contrib
 sudo update-rc.d postgresql enable

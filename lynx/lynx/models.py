@@ -7,6 +7,7 @@ from django.utils.timezone import now
 
 from django_pgviews import view as pg
 from datetime import datetime, date
+from simple_history.models import HistoricalRecords
 
 
 STATES = (("Alabama", "Alabama"), ("Alaska", "Alaska"), ("Arizona", "Arizona"), ("Arkansas", "Arkansas"),
@@ -147,6 +148,7 @@ class Contact(models.Model):
     created = models.DateTimeField(auto_now_add=True, null=True)
     modified = models.DateTimeField(auto_now=True, null=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET(get_sentinel_user))
+    history = HistoricalRecords()
 
     def __str__(self):
         return '%s, %s' % (self.last_name, self.first_name)
@@ -169,6 +171,7 @@ class Email (models.Model):
     created = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='contact_emails', null=True, blank=True, on_delete=models.SET(get_sentinel_user))
+    history = HistoricalRecords()
 
     def get_absolute_url(self):
         return "/lynx/client/%i" % self.contact_id
@@ -189,6 +192,7 @@ class Phone (models.Model):
     created = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET(get_sentinel_user))
+    history = HistoricalRecords()
 
     def get_absolute_url(self):
         return "/lynx/client/%i" % self.contact_id
@@ -225,6 +229,7 @@ class Address(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET(get_sentinel_user))
+    history = HistoricalRecords()
 
     class Meta:
         verbose_name_plural = 'Addresses'
@@ -364,6 +369,7 @@ class Intake(models.Model):
     created = models.DateTimeField(auto_now_add=True, null=True)
     modified = models.DateTimeField(auto_now=True, null=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET(get_sentinel_user))
+    history = HistoricalRecords()
 
     def get_absolute_url(self):
         return "/lynx/client/%i" % self.contact_id
@@ -389,6 +395,7 @@ class IntakeNote(models.Model):
     created = models.DateTimeField(auto_now_add=True, null=True)
     modified = models.DateTimeField(auto_now=True, null=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET(get_sentinel_user))
+    history = HistoricalRecords()
 
     def get_absolute_url(self):
         return "/lynx/client/%i" % self.contact_id
@@ -402,6 +409,7 @@ class EmergencyContact(models.Model):
     created = models.DateTimeField(auto_now_add=True, null=True)
     modified = models.DateTimeField(auto_now=True, null=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET(get_sentinel_user))
+    history = HistoricalRecords()
 
     def get_absolute_url(self):
         return "/lynx/client/%i" % self.contact_id
@@ -423,6 +431,7 @@ class Authorization(models.Model):
     created = models.DateTimeField(auto_now_add=True, null=True)
     modified = models.DateTimeField(auto_now=True, null=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET(get_sentinel_user))
+    history = HistoricalRecords()
 
     def get_absolute_url(self):
         return "/lynx/authorization/%i" % self.id
@@ -436,6 +445,7 @@ class OutsideAgency(models.Model):
     created = models.DateTimeField(auto_now_add=True, null=True)
     modified = models.DateTimeField(auto_now=True, null=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET(get_sentinel_user))
+    history = HistoricalRecords()
 
     class Meta:
         verbose_name_plural = 'Outside Agencies'
@@ -450,6 +460,7 @@ class IntakeServiceArea(models.Model):
     created = models.DateTimeField(auto_now_add=True, null=True)
     modified = models.DateTimeField(auto_now=True, null=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET(get_sentinel_user))
+    history = HistoricalRecords()
 
     def __str__(self):
         return self.agency
@@ -482,6 +493,7 @@ class ProgressReport(models.Model):
     created = models.DateTimeField(auto_now_add=True, null=True)
     modified = models.DateTimeField(auto_now=True, null=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET(get_sentinel_user))
+    history = HistoricalRecords()
 
     def get_absolute_url(self):
         return "/lynx/authorization/%i" % self.authorization_id
@@ -501,6 +513,7 @@ class LessonNote(models.Model):
     created = models.DateTimeField(auto_now_add=True, null=True)
     modified = models.DateTimeField(auto_now=True, null=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET(get_sentinel_user))
+    history = HistoricalRecords()
 
     def get_absolute_url(self):
         return "/lynx/authorization/%i" % self.authorization_id
@@ -537,6 +550,7 @@ class SipNote(models.Model):
     created = models.DateTimeField(auto_now_add=True, null=True)
     modified = models.DateTimeField(auto_now=True, null=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET(get_sentinel_user))
+    history = HistoricalRecords()
 
     def get_absolute_url(self):
         return "/lynx/client/%i" % self.contact_id
@@ -563,6 +577,7 @@ class Volunteer(models.Model):
     created = models.DateTimeField(auto_now_add=True, null=True)
     modified = models.DateTimeField(auto_now=True, null=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET(get_sentinel_user))
+    history = HistoricalRecords()
 
 
 class SipPlan(models.Model):
@@ -592,6 +607,7 @@ class SipPlan(models.Model):
     created = models.DateTimeField(auto_now_add=True, null=True)
     modified = models.DateTimeField(auto_now=True, null=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET(get_sentinel_user))
+    history = HistoricalRecords()
 
     def __str__(self):
         return self.plan_name
@@ -631,6 +647,7 @@ class ContactInfoView(pg.View):
     remove_mailing = models.BooleanField(blank=True, default=False)
     region = models.CharField(max_length=255, null=True)
     full_phone = models.CharField(max_length=255, null=True)
+    history = HistoricalRecords()
 
     class Meta:
         app_label = 'lynx'
