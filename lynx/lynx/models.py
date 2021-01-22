@@ -130,7 +130,7 @@ class Contact(models.Model):
     first_name = models.CharField(max_length=150)
     middle_name = models.CharField(max_length=150, blank=True, null=True)
     last_name = models.CharField(max_length=150)
-    salutation = models.CharField(max_length=25, choices=SALUTATIONS, blank=True)
+    salutation = models.CharField(max_length=25, choices=SALUTATIONS, blank=True, null=True)
     company = models.CharField(max_length=150, blank=True, null=True)
     do_not_contact = models.BooleanField(blank=True, default=False)
     donor = models.BooleanField(blank=True, default=False)

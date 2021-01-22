@@ -31,7 +31,6 @@
 {% endblock %}
 
 {% block content %}
-<input type="hidden" id="contact_id"  value="{{view.kwargs.contact_id}}">
 <form method="post"> {% csrf_token %}
     <div class="container-fluid">
         <h2>Notes</h2>
