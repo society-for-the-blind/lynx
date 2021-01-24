@@ -79,7 +79,12 @@
                 <td></td>
         </tr>
     </table>
+{% if remaining <= 0 %} disabled
+<input type="button" onclick="location.href='/lynx/add-lesson-note/{{ object.id }}/';" value="Add Lesson Note" disabled/>
+{% else %}
 <input type="button" onclick="location.href='/lynx/add-lesson-note/{{ object.id }}/';" value="Add Lesson Note" />
+{% endif %}
+
 <br><br>
 <h2>Progress Reports</h2>
     <ul>
