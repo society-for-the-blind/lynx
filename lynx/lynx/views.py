@@ -810,8 +810,8 @@ class EmergencyContactUpdateView(LoginRequiredMixin, UpdateView):
 class LessonNoteUpdateView(LoginRequiredMixin, UpdateView):
     form_class = LessonNoteForm
     model = LessonNote
-    fields = ['date', 'attendance', 'instructional_units', 'billed_units', 'students_no', 'successes',
-              'obstacles', 'recommendations', 'note']
+    # fields = ['date', 'attendance', 'instructional_units', 'billed_units', 'students_no', 'successes',
+    #           'obstacles', 'recommendations', 'note']
     template_name_suffix = '_edit'
 
     # def get_form(self, form_class=None):
