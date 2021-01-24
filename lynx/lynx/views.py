@@ -843,7 +843,8 @@ class SipNoteUpdateView(LoginRequiredMixin, UpdateView):
         post.quarter = quarter
         post.fiscal_year = fiscal_year
         post.save()
-        return redirect('client', pk=post.contact_id)
+        action = "/lynx/client/" + str(post.contact_id)
+        return HttpResponseRedirect(action)
 
 
 class SipPlanUpdateView(LoginRequiredMixin, UpdateView):
