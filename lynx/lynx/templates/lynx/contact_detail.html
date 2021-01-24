@@ -69,7 +69,7 @@
 <h2>Emergency Contacts</h2>
 {% for emergency in emergency_list %}
     <h3 class="tab">{{ emergency.name }}</h3>
-    <p class="tab"><strong>Relationship:</strong> {{ emergency.relationship }} </p>
+    {% if emergency.relationship %}<p class="tab"><strong>Relationship:</strong> {{ emergency.relationship }} </p>{% endif %}
     {% for phone in emergency.phone_set.all %}
         {% if phone.active and phone.phone %}
             <p class="tab">
