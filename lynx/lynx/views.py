@@ -831,6 +831,7 @@ class SipNoteUpdateView(LoginRequiredMixin, UpdateView):
     def post(self, request, **kwargs):
         request.POST = request.POST.copy()
         note_date = request.POST['note_date']
+        note_date = datetime.strptime(note_date, '%Y-%m-%d')
         note_month = note_date.month
         note_year = note_date.year
         quarter = get_quarter(note_month)

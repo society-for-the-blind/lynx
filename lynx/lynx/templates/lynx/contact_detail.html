@@ -102,7 +102,7 @@
     <br><br>
 <h2>Intake Information</h2>
 {% for intake in intake_list %}
-    <br><br>
+    <br>
     {% if not request.GET.print %}<input type="button" class="btn btn-primary" aria-label="Edit Intake Information" onclick="location.href='/lynx/intake-edit/{{ intake.id }}';" value="Edit Intake Information" />{% endif %}
     <p class="tab"><strong>Intake Date:</strong> {{intake.intake_date|date:'F j, Y'}} </p>
     <h3>Demographics</h3>
