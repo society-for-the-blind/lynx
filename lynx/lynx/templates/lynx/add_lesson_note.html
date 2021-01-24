@@ -5,7 +5,7 @@
     <script>
         function checkHours(selectObject) {
             var value = selectObject.value;
-            var auth = document.getElementById('authorization').value();
+            var auth = document.getElementById('authorization').value;
 
             $.ajax({                       // initialize an AJAX request
                 url: "/lynx/get-hour-validation/",                    // set the url of the request
