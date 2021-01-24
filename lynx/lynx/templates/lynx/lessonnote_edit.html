@@ -1,11 +1,70 @@
 {% extends 'lynx/base.html' %}
+{% load crispy_forms_tags %}
 
 {% block title %}Edit Lesson Note{% endblock %}
+
+{% block javascript %}
+    <script>
+        function checkHours(selectObject) {
+            var value = selectObject.value;
+            var auth = document.getElementById('authorization').value;
+
+            $.ajax({                       // initialize an AJAX request
+                url: "/lynx/get-hour-validation/",                    // set the url of the request
+                data: {
+                  'authorization_id': auth,
+                  'billed_units': value
+                },
+                success: function (data) {   // `data` is the return of the `get_sip_plans` view function
+                  if (data.result == 'true') {
+                      document.getElementById("submit").disabled = false;
+                      document.getElementById("warning").hidden = true;
+                  } else {
+                      document.getElementById("submit").disabled = true;
+                      document.getElementById("warning").hidden = false;
+                  }
+                },
+            });
+        }
+    </script>
+{% endblock %}
 
 {% block content %}
   <form method="post" >
     {% csrf_token %}
-    {{ form.as_p }}
+    <div class="row">
+      <div class="col-12">{{ form.date|as_crispy_field }}</div>
+    </div>
+    <div class="row">
+      <div class="col-12">{{ form.attendance|as_crispy_field }}</div>
+    </div>
+    <div class="row">
+      <div class="col-12">{{ form.instructional_units|as_crispy_field }}</div>
+    </div>
+    <div class="row">
+      <div class="col-12">{{ form.billed_units|as_crispy_field }}</div>
+    </div>
+    <div class="row">
+      <div class="col-12">{{ form.students_no|as_crispy_field }}</div>
+    </div>
+    <div class="row">
+      <div class="col-12">{{ form.successes|as_crispy_field }}</div>
+    </div>
+    <div class="row">
+      <div class="col-12">{{ form.obstacles|as_crispy_field }}</div>
+    </div>
+    <div class="row">
+      <div class="col-12">{{ form.recommendations|as_crispy_field }}</div>
+    </div>
+    <div class="row">
+      <div class="col-12">{{ form.note|as_crispy_field }}</div>
+    </div>
+
+    <div class="row" hidden id="warning">
+      <div class="col-12">You have exceeded the number of hours allowed on the authorization. Please change this to be able to add the note.</div>
+    </div>
+    <input type="hidden" name="authorization" id="authorization" value="{{form.authorization.value}}">
+
     <input type="submit" value="Update">
   </form>
 {% endblock %}
