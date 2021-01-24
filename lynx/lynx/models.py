@@ -406,6 +406,7 @@ class EmergencyContact(models.Model):
     contact = models.ForeignKey('Contact', on_delete=models.CASCADE)
     name = models.CharField(max_length=150, blank=True, null=True)
     emergency_notes = models.TextField(blank=True, null=True)
+    relationship = models.TextField(blank=True, null=True)
     created = models.DateTimeField(auto_now_add=True, null=True)
     modified = models.DateTimeField(auto_now=True, null=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET(get_sentinel_user))
