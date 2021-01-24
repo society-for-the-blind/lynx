@@ -12,8 +12,7 @@ from django.db.models import Value as V
 from django.db.models.functions import Concat, Replace
 from django.db import connection
 from django.core.paginator import Paginator
-from django.core.exceptions import ValidationError
-from django.utils.translation import gettext_lazy as _
+from django.contrib import messages
 
 import csv
 from datetime import datetime
@@ -381,9 +380,7 @@ def add_lesson_note(request, authorization_id):
         total_hours = float(total_used) + float(note_hours)
 
         if total_hours > float(total_time):
-            raise ValidationError(
-                _('Not enough time on the authorization'),
-            )
+            messages.error(request, 'Not enough time on the authorization')
 
         if form.is_valid():
             form = form.save(commit=False)
