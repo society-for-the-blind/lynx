@@ -19,7 +19,7 @@ from datetime import datetime
 import logging
 
 from .models import Contact, Address, Phone, Email, Intake, IntakeNote, EmergencyContact, Authorization, \
-    ProgressReport, LessonNote, SipNote, Volunteer, SipPlan, OutsideAgency, ContactInfoView
+    ProgressReport, LessonNote, SipNote, Volunteer, SipPlan, OutsideAgency, ContactInfoView, UNITS
 from .forms import ContactForm, IntakeForm, IntakeNoteForm, EmergencyForm, AddressForm, EmailForm, PhoneForm, \
     AuthorizationForm, ProgressReportForm, LessonNoteForm, SipNoteForm, BillingReportForm, SipDemographicReportForm, \
     VolunteerForm, SipCSFReportForm, SipPlanForm, SipNoteBulkForm
@@ -808,10 +808,16 @@ class EmergencyContactUpdateView(LoginRequiredMixin, UpdateView):
 
 
 class LessonNoteUpdateView(LoginRequiredMixin, UpdateView):
+    form_class = LessonNoteForm
     model = LessonNote
     fields = ['date', 'attendance', 'instructional_units', 'billed_units', 'students_no', 'successes',
               'obstacles', 'recommendations', 'note']
     template_name_suffix = '_edit'
+
+    # def get_form(self, form_class=None):
+    #     form = super().get_form(form_class=form_class)
+    #     form.fields["billed_units"].choices = "Instructor(s)"
+    #     billed_units = forms.ChoiceField(choices=UNITS, widget=forms.Select(attrs={"onChange": 'checkHours(this)'}))
 
 
 class ProgressReportUpdateView(LoginRequiredMixin, UpdateView):

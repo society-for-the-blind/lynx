@@ -364,3 +364,28 @@ def get_quarter(month):
         return q
     else:
         return 0
+
+
+def filter_units(authorization_id): #remove any selections that would take instructor over allotted hours
+    authorization = Authorization.objects.get(id=authorization_id)
+    note_list = LessonNote.objects.filter(authorization_id=authorization_id)
+
+    total_time = authorization.total_time
+    minutes = total_time * 60
+    total_time = minutes / 15
+
+    total_units = 0
+    for note in note_list:
+        if note.billed_units:
+            units = float(note.billed_units)
+            total_units += units
+    if total_units is None or len(str(total_units)) == 0:
+        total_units = 0
+    remaining = total_time - total_units
+
+    choices_dictionary = {}
+    for key, value in UNITS:
+        if key <= remaining:
+            choices_dictionary[key] = value
+
+    return choices_dictionary
