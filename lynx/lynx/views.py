@@ -831,7 +831,7 @@ class SipNoteUpdateView(LoginRequiredMixin, UpdateView):
     def form_valid(self, form):
         post = form.save(commit=False)
         note_date = post.note_date
-        note_date = datetime.strptime(note_date, '%Y-%m-%d')
+        # note_date = datetime.strptime(note_date, '%Y-%m-%d')
         note_month = note_date.month
         note_year = note_date.year
         quarter = get_quarter(note_month)
