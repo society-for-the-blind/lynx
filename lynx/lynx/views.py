@@ -828,12 +828,19 @@ class SipNoteUpdateView(LoginRequiredMixin, UpdateView):
               'retreat', 'in_home', 'seminar', 'modesto', 'group', 'community', 'class_hours', 'sip_plan', 'instructor']
     template_name_suffix = '_edit'
 
+    # def form_valid(self, form):
+    #     form.instance.net = form.instance.qty * form.instance.price
+    #
+    #     redirect_url = super(SipNoteUpdateView, self).form_valid(form)
+    #     return redirect_url
+
     def post(self, request, **kwargs):
         request.POST = request.POST.copy()
         note_date = request.POST['note_date']
         note_date = datetime.strptime(note_date, '%Y-%m-%d')
         note_month = note_date.month
         note_year = note_date.year
+        test = test
         quarter = get_quarter(note_month)
         if quarter == 1:
             fiscal_year = get_fiscal_year(note_year)
