@@ -1,4 +1,5 @@
 {% extends 'lynx/base.html' %}
+{% load crispy_forms_tags %}
 
 {% block title %}Edit Lesson Note{% endblock %}
 
@@ -31,11 +32,38 @@
 {% block content %}
   <form method="post" >
     {% csrf_token %}
-    {{ form.as_p }}
+    <div class="row">
+      <div class="col-12">{{ form.date|as_crispy_field }}</div>
+    </div>
+    <div class="row">
+      <div class="col-12">{{ form.attendance|as_crispy_field }}</div>
+    </div>
+    <div class="row">
+      <div class="col-12">{{ form.instructional_units|as_crispy_field }}</div>
+    </div>
+    <div class="row">
+      <div class="col-12">{{ form.billed_units|as_crispy_field }}</div>
+    </div>
+    <div class="row">
+      <div class="col-12">{{ form.students_no|as_crispy_field }}</div>
+    </div>
+    <div class="row">
+      <div class="col-12">{{ form.successes|as_crispy_field }}</div>
+    </div>
+    <div class="row">
+      <div class="col-12">{{ form.obstacles|as_crispy_field }}</div>
+    </div>
+    <div class="row">
+      <div class="col-12">{{ form.recommendations|as_crispy_field }}</div>
+    </div>
+    <div class="row">
+      <div class="col-12">{{ form.note|as_crispy_field }}</div>
+    </div>
+
     <div class="row" hidden id="warning">
       <div class="col-12">You have exceeded the number of hours allowed on the authorization. Please change this to be able to add the note.</div>
     </div>
-    <input type="hidden" name="authorization" id="authorization" value="{{authorization_id}}">
+    <input type="hidden" name="authorization" id="authorization" value="{{form.authorization_id.value}}">
     <input type="submit" value="Update">
   </form>
 {% endblock %}
