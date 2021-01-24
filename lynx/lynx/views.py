@@ -829,7 +829,7 @@ class SipNoteUpdateView(LoginRequiredMixin, UpdateView):
     template_name_suffix = '_edit'
 
     def form_valid(self, form):
-        note_date = form['note_date']
+        note_date = form.note_date
         note_date = datetime.strptime(note_date, '%Y-%m-%d')
         note_month = note_date.month
         note_year = note_date.year
@@ -839,8 +839,8 @@ class SipNoteUpdateView(LoginRequiredMixin, UpdateView):
         else:
             f_year = note_year - 1
             fiscal_year = get_fiscal_year(f_year)
-        form['quarter'] = quarter
-        form['fiscal_year'] = fiscal_year
+        form.quarter = quarter
+        form.fiscal_year = fiscal_year
         redirect_url = super(SipNoteUpdateView, self).form_valid(form)
         return redirect_url
 
