@@ -12,6 +12,7 @@ from django.db.models import Value as V
 from django.db.models.functions import Concat, Replace
 from django.db import connection
 from django.core.paginator import Paginator
+from django.core.exceptions import ValidationError
 
 import csv
 from datetime import datetime
@@ -355,24 +356,33 @@ def add_lesson_note(request, authorization_id):
     authorization = Authorization.objects.get(id=authorization_id)
     note_list = LessonNote.objects.filter(authorization_id=authorization_id)
 
-    total_time = authorization.total_time
-    total_units = 0
-    for note in note_list:
-        if note.billed_units:
-            units = float(note.billed_units)
-            total_units += units
-    total_used = units_to_hours(total_units)
-
     client = Contact.objects.get(id=authorization.contact_id)
     if authorization.authorization_type == 'Hours':
         auth_type = 'individual'
     else:
         auth_type = 'group'
     if request.method == 'POST':
-        # init_form = request.POST.copy()
-        # init_form.update({'authorization': authorization_id})
-        # form = LessonNoteForm(init_form)
         form = LessonNoteForm(request.POST)
+
+        billed_units = form['billed_units'].value
+
+        total_time = authorization.total_time
+        total_units = 0
+        for note in note_list:
+            if note.billed_units:
+                units = float(note.billed_units)
+                total_units += units
+        total_used = units_to_hours(total_units)
+        if total_used is None or len(total_used) == 0:
+            total_used = 0
+
+        note_hours = units_to_hours(float(billed_units))
+        total_hours = float(total_used) + float(note_hours)
+
+        if total_hours > float(total_time):
+            raise ValidationError(
+                _('Not enough time on the authorization'),
+            )
 
         if form.is_valid():
             form = form.save(commit=False)
@@ -381,8 +391,7 @@ def add_lesson_note(request, authorization_id):
             form.save()
             return HttpResponseRedirect(reverse('lynx:authorization_detail', args=(authorization_id,)))
     return render(request, 'lynx/add_lesson_note.html', {'form': form, 'client': client, 'auth_type': auth_type,
-                                                         'authorization_id': authorization_id, 'total_time': total_time,
-                                                         'total_used': total_used})
+                                                         'authorization_id': authorization_id})
 
 
 @login_required
