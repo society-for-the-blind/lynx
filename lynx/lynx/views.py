@@ -373,7 +373,7 @@ def add_lesson_note(request, authorization_id):
                 units = float(note.billed_units)
                 total_units += units
         total_used = units_to_hours(total_units)
-        if total_used is None or len(total_used) == 0:
+        if total_used is None or len(str(total_used)) == 0:
             total_used = 0
 
         note_hours = units_to_hours(float(billed_units))
