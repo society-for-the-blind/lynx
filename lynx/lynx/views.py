@@ -849,7 +849,6 @@ class SipNoteUpdateView(LoginRequiredMixin, UpdateView):
             fiscal_year = get_fiscal_year(f_year)
         request.POST['quarter'] = quarter
         request.POST['fiscal_year'] = fiscal_year
-        test = test
 
         return super(SipNoteUpdateView, self).post(request, **kwargs)
 
