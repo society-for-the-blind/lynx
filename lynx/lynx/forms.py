@@ -5,7 +5,6 @@ from django.utils.translation import gettext_lazy as _
 
 from .models import Contact, Address, Intake, Email, Phone, SipPlan, IntakeNote, EmergencyContact, Authorization, \
     ProgressReport, LessonNote, SipNote, Volunteer
-from .views import get_fiscal_year, get_quarter
 
 from datetime import datetime
 
@@ -390,3 +389,35 @@ class VolunteerForm(forms.ModelForm):
 
         model = Volunteer
         exclude = ('created', 'modified', 'user')
+
+
+# This will not work past 2099 ;)
+def get_fiscal_year(year):
+    year_str = str(year)
+    last_digits = year_str[-2:]
+    last_digits_int = int(last_digits)
+    year_inc = last_digits_int + 1
+    year_inc = str(year_inc)
+    if len(year_inc) == 1:
+        fiscal_year = year_str + '-0' + year_inc
+    else:
+        fiscal_year = year_str + '-' + year_inc
+    return fiscal_year
+
+
+def get_quarter(month):
+    if month:
+        month = int(month)
+        if month == 10 or month == 11 or month == 12:
+            q = 1
+        elif month == 1 or month == 2 or month == 3:
+            q = 2
+        elif month == 4 or month == 5 or month == 6:
+            q = 3
+        elif month == 7 or month == 8 or month == 9:
+            q = 4
+        else:
+            return 0
+        return q
+    else:
+        return 0
