@@ -15,10 +15,11 @@
                 },
                 success: function (data) {   // `data` is the return of the `get_sip_plans` view function
                   if (data.result == 'true') {
-                      $("#submit").prop('disabled', false);
+                      document.getElementById("submit").disabled = false;
+                      document.getElementById("warning").hidden = true;
                   } else {
-                      $("#warning").prop('hidden', false);
-                      $("#submit").prop('disabled', true);
+                      document.getElementById("submit").disabled = true;
+                      document.getElementById("warning").hidden = false;
                   }
                 },
             });
@@ -63,6 +64,6 @@
     </div>
     <input type="hidden" name="authorization" id="authorization" value="{{authorization_id}}">
     {{ form.errors }}
-    <input type="submit" value="Submit" >
+    <input type="submit" value="Submit" id="submit" >
 </form>
 {% endblock %}
