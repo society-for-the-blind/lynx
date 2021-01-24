@@ -59,11 +59,12 @@
     <div class="row">
       <div class="col-12">{{ form.note|as_crispy_field }}</div>
     </div>
-
+    <div class="row" hidden >
+      <div class="col-12">{{ form.authorization_id|as_crispy_field }}</div>
+    </div>
     <div class="row" hidden id="warning">
       <div class="col-12">You have exceeded the number of hours allowed on the authorization. Please change this to be able to add the note.</div>
     </div>
-    <input type="hidden" name="authorization" id="authorization" value="{{form.authorization_id.value}}">
     <input type="submit" value="Update">
   </form>
 {% endblock %}
