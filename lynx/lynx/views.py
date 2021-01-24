@@ -364,24 +364,6 @@ def add_lesson_note(request, authorization_id):
     if request.method == 'POST':
         form = LessonNoteForm(request.POST)
 
-        billed_units = form['billed_units'].value()
-
-        total_time = authorization.total_time
-        total_units = 0
-        for note in note_list:
-            if note.billed_units:
-                units = float(note.billed_units)
-                total_units += units
-        total_used = units_to_hours(total_units)
-        if total_used is None or len(str(total_used)) == 0:
-            total_used = 0
-
-        note_hours = units_to_hours(float(billed_units))
-        total_hours = float(total_used) + float(note_hours)
-
-        if total_hours > float(total_time):
-            messages.error(request, 'Not enough time on the authorization')
-
         if form.is_valid():
             form = form.save(commit=False)
             # form.authorization_id = authorization_id
@@ -390,6 +372,31 @@ def add_lesson_note(request, authorization_id):
             return HttpResponseRedirect(reverse('lynx:authorization_detail', args=(authorization_id,)))
     return render(request, 'lynx/add_lesson_note.html', {'form': form, 'client': client, 'auth_type': auth_type,
                                                          'authorization_id': authorization_id})
+
+
+def get_hour_validation(request): #check if they are entering more hours then allowed on authorization
+    authorization_id = request.GET.get('authorization_id')
+    billed_units = request.GET.get('billed_units')
+    authorization = Authorization.objects.get(id=authorization_id)
+    note_list = LessonNote.objects.filter(authorization_id=authorization_id)
+
+    total_time = authorization.total_time
+    total_units = 0
+    for note in note_list:
+        if note.billed_units:
+            units = float(note.billed_units)
+            total_units += units
+    total_used = units_to_hours(total_units)
+    if total_used is None or len(str(total_used)) == 0:
+        total_used = 0
+
+    note_hours = units_to_hours(float(billed_units))
+    total_hours = float(total_used) + float(note_hours)
+
+    if total_hours > float(total_time):
+        return False
+    else:
+        return True
 
 
 @login_required

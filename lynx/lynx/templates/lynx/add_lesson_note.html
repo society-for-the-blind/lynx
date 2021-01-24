@@ -1,25 +1,65 @@
 {% extends 'lynx/base.html' %}
 
+{% block javascript %}
+    <script>
+        function checkHours(selectObject) {
+            var value = selectObject.value;
+            var auth = document.getElementById('authorization').value();
+
+            $.ajax({                       // initialize an AJAX request
+                url: "/lynx/get-hour-validation/",                    // set the url of the request
+                data: {
+                  'authorization_id': auth,
+                  'billed_units': value
+                },
+                success: function (data) {   // `data` is the return of the `get_sip_plans` view function
+                  $("#submit").prop('disabled', false);
+                },
+                error: function (data) {
+                  $("#warning").prop('hidden', false);
+                }
+            });
+        }
+    </script>
+{% endblock %}
+
 {% block content %}
 <h1>Add New Lesson Note for {{ client }}</h1>
 <br>
 <form method="post"> {% csrf_token %}
     <h2>Lesson Note</h2>
-    <p><label for="id_date">Lesson Date</label> {{ form.date }}</p>
-    <p><label for="id_attendance">Attendance</label> {{ form.attendance }}</p>
-    <p><label for="id_instructional_units">Instructional Units</label> {{ form.instructional_units }}</p>
-    <p><label for="id_billed_units">Billed Units</label> {{ form.billed_units }}</p>
-    <p><label for="id_students_no">Number of Students in Class</label> {{ form.students_no }}</p>
-    <p><label for="id_successes">Successes and accomplishments</label> {{ form.successes }}</p>
-    <p><label for="id_obstacles">Obstacles and barriers to current learning</label> {{ form.obstacles }}</p>
-    <p><label for="id_recommendations">Recommendations to improve learning</label> {{ form.recommendations }}</p>
-    <p><label for="id_note">Other</label> {{ form.note }}</p>
-<!--    <p hidden><label for="id_authorization">Other</label> {{ form.authorization_id }}</p>-->
-    <input type="hidden" name="authorization" value="{{authorization_id}}">
-    <input type="hidden" name="total_time" value="{{total_time}}">
-    <input type="hidden" name="total_hours" value="{{total_hours}}">
-
+    <div class="row">
+      <div class="col-12">{{ form.date|as_crispy_field }}</div>
+    </div>
+    <div class="row">
+      <div class="col-12">{{ form.attendance|as_crispy_field }}</div>
+    </div>
+    <div class="row">
+      <div class="col-12">{{ form.instructional_units|as_crispy_field }}</div>
+    </div>
+    <div class="row">
+      <div class="col-12">{{ form.billed_units|as_crispy_field }}</div>
+    </div>
+    <div class="row">
+      <div class="col-12">{{ form.students_no|as_crispy_field }}</div>
+    </div>
+    <div class="row">
+      <div class="col-12">{{ form.successes|as_crispy_field }}</div>
+    </div>
+    <div class="row">
+      <div class="col-12">{{ form.obstacles|as_crispy_field }}</div>
+    </div>
+    <div class="row">
+      <div class="col-12">{{ form.recommendations|as_crispy_field }}</div>
+    </div>
+    <div class="row">
+      <div class="col-12">{{ form.note|as_crispy_field }}</div>
+    </div>
+    <div class="row" hidden id="warning">
+      <div class="col-12">You have exceeded the number of hours allowed on the authorization. Please change this to be able to add the note.</div>
+    </div>
+    <input type="hidden" name="authorization" id="authorization" value="{{authorization_id}}">
     {{ form.errors }}
-    <input type="submit" value="Submit">
+    <input type="submit" value="Submit" disabled>
 </form>
 {% endblock %}

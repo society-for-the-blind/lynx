@@ -4,7 +4,7 @@ from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 
 from .models import Contact, Address, Intake, Email, Phone, SipPlan, IntakeNote, EmergencyContact, Authorization, \
-    ProgressReport, LessonNote, SipNote, Volunteer
+    ProgressReport, LessonNote, SipNote, Volunteer, UNITS
 
 from datetime import datetime
 
@@ -12,7 +12,6 @@ months = (("1", "January"), ("2", "February"), ("3", "March"), ("4", "April"), (
           ("7", "July"), ("8", "August"), ("9", "September"), ("10", "October"), ("11", "November"), ("12", "December"))
 
 quarters = (("1", "Q1"), ("2", "Q2"), ("3", "Q3"), ("4", "Q4"))
-
 
 class ContactForm(forms.ModelForm):
 
@@ -27,15 +26,6 @@ class ContactForm(forms.ModelForm):
 
 
 class IntakeForm(forms.ModelForm):
-    # currentYear = datetime.now().year
-    # oldYear = currentYear - 125
-    # highYear = currentYear + 2
-    # if oldYear < 1900:
-    #     oldYear = 1900
-
-    # intake_date = forms.DateField(widget=forms.SelectDateWidget(empty_label="Nothing", years=range(1990, highYear)))
-    # eye_condition_date = forms.DateField(widget=forms.SelectDateWidget(empty_label="Nothing", years=range(1920, highYear)))
-    # birth_date = forms.DateField(widget=forms.SelectDateWidget(years=range(oldYear, currentYear)))
 
     class Meta:
 
@@ -157,6 +147,7 @@ class ProgressReportForm(forms.ModelForm):
 class LessonNoteForm(forms.ModelForm):
     total_time = forms.CharField(required=False)
     total_used = forms.CharField(required=False)
+    billed_units = forms.ChoiceField(choices=UNITS, widget=forms.Select(attrs={"onChange": 'checkHours(this)'}))
 
     class Meta:
         model = LessonNote
@@ -165,33 +156,6 @@ class LessonNoteForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(LessonNoteForm, self).__init__(*args, **kwargs)
         self.fields['date'].label = "Lesson Note Date (YYYY-MM-DD)"
-
-    # def clean_atotal_time(self):
-    #     data = self.cleaned_data.get('atotal_time')
-    #     return data
-    #
-    # def clean_atotal_used(self):
-    #     data = self.cleaned_data.get('atotal_used')
-    #     return data
-
-    # def clean(self):
-    #     data = self.cleaned_data.get('billed_units')
-    #
-    #     from .views import units_to_hours
-    #     total_time = self.cleaned_data.get('total_time')
-    #     total_used = self.cleaned_data.get('total_used')
-    #     if total_used is None or len(total_used) == 0:
-    #         total_used = 0
-    #
-    #     note_hours = units_to_hours(int(data))
-    #     total_hours = float(total_used) + note_hours
-    #     total = tot
-    #
-    #     if total_hours > float(total_time):
-    #         raise ValidationError(
-    #             _('Not enough time on the authorization'),
-    #         )
-    #     return data
 
 
 class SipNoteForm(forms.ModelForm):
