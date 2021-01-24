@@ -12,7 +12,7 @@ from django.db.models import Value as V
 from django.db.models.functions import Concat, Replace
 from django.db import connection
 from django.core.paginator import Paginator
-from django.contrib import messages
+from django.http import JsonResponse
 
 import csv
 from datetime import datetime
@@ -394,9 +394,9 @@ def get_hour_validation(request): #check if they are entering more hours then al
     total_hours = float(total_used) + float(note_hours)
 
     if total_hours > float(total_time):
-        return False
+        return JsonResponse({"result": 'false'})
     else:
-        return True
+        return JsonResponse({"result": 'true'})
 
 
 @login_required

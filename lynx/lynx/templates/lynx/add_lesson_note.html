@@ -14,11 +14,13 @@
                   'billed_units': value
                 },
                 success: function (data) {   // `data` is the return of the `get_sip_plans` view function
-                  $("#submit").prop('disabled', false);
+                  if (data.result == 'true') {
+                      $("#submit").prop('disabled', false);
+                  } else {
+                      $("#warning").prop('hidden', false);
+                      $("#submit").prop('disabled', 'disabled');
+                  }
                 },
-                error: function (data) {
-                  $("#warning").prop('hidden', false);
-                }
             });
         }
     </script>
@@ -61,6 +63,6 @@
     </div>
     <input type="hidden" name="authorization" id="authorization" value="{{authorization_id}}">
     {{ form.errors }}
-    <input type="submit" value="Submit" disabled>
+    <input type="submit" value="Submit" >
 </form>
 {% endblock %}
