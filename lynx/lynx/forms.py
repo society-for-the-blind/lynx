@@ -250,6 +250,7 @@ class SipNoteForm(forms.ModelForm):
         # "manipulate it to fill another filed"
         cleaned_data['quarter'] = quarter
         cleaned_data['fiscal_year'] = fiscal_year
+        test = test
 
         return cleaned_data
 
