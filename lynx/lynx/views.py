@@ -828,6 +828,22 @@ class SipNoteUpdateView(LoginRequiredMixin, UpdateView):
               'retreat', 'in_home', 'seminar', 'modesto', 'group', 'community', 'class_hours', 'sip_plan', 'instructor']
     template_name_suffix = '_edit'
 
+    def post(self, request, **kwargs):
+        request.POST = request.POST.copy()
+        note_date = request.POST['note_date']
+        note_month = note_date.month
+        note_year = note_date.year
+        quarter = get_quarter(note_month)
+        if quarter == 1:
+            fiscal_year = get_fiscal_year(note_year)
+        else:
+            f_year = note_year - 1
+            fiscal_year = get_fiscal_year(f_year)
+        request.POST['quarter'] = quarter
+        request.POST['fiscal_year'] = fiscal_year
+
+        return super(SipNoteUpdateView, self).post(request, **kwargs)
+
 
 class SipPlanUpdateView(LoginRequiredMixin, UpdateView):
     model = SipPlan
