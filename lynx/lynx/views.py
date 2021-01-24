@@ -13,6 +13,7 @@ from django.db.models.functions import Concat, Replace
 from django.db import connection
 from django.core.paginator import Paginator
 from django.core.exceptions import ValidationError
+from django.utils.translation import gettext_lazy as _
 
 import csv
 from datetime import datetime
