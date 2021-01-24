@@ -364,7 +364,7 @@ def add_lesson_note(request, authorization_id):
     if request.method == 'POST':
         form = LessonNoteForm(request.POST)
 
-        billed_units = form['billed_units']
+        billed_units = form['billed_units'].value()
 
         total_time = authorization.total_time
         total_units = 0
