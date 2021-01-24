@@ -232,11 +232,15 @@ class SipNoteForm(forms.ModelForm):
         self.fields['instructor'].label = "Instructor"
         self.fields['sip_plan'].label = "SIP Plan"
 
-    def clean(self):
-        cleaned_data = super(SipNoteForm, self).clean()
+    def clean_quarter(self):
+        note_date = self.cleaned_data['note_date']
+        note_date = datetime.strptime(note_date, '%Y-%m-%d')
+        note_month = note_date.month
+        quarter = get_quarter(note_month)
+        return quarter
 
-        # get "some info from the form"
-        note_date = cleaned_data.get('note_date', '')
+    def clean_fiscal_year(self):
+        note_date = self.cleaned_data['note_date']
         note_date = datetime.strptime(note_date, '%Y-%m-%d')
         note_month = note_date.month
         note_year = note_date.year
@@ -246,13 +250,7 @@ class SipNoteForm(forms.ModelForm):
         else:
             f_year = note_year - 1
             fiscal_year = get_fiscal_year(f_year)
-
-        # "manipulate it to fill another filed"
-        cleaned_data['quarter'] = quarter
-        cleaned_data['fiscal_year'] = fiscal_year
-        test = test
-
-        return cleaned_data
+        return fiscal_year
 
 
 class SipNoteBulkForm(forms.ModelForm):
