@@ -5,6 +5,7 @@ from django.utils.translation import gettext_lazy as _
 
 from .models import Contact, Address, Intake, Email, Phone, SipPlan, IntakeNote, EmergencyContact, Authorization, \
     ProgressReport, LessonNote, SipNote, Volunteer
+from .views import get_fiscal_year, get_quarter
 
 from datetime import datetime
 
@@ -231,6 +232,27 @@ class SipNoteForm(forms.ModelForm):
         self.fields['class_hours'].label = "Class Length"
         self.fields['instructor'].label = "Instructor"
         self.fields['sip_plan'].label = "SIP Plan"
+
+    def clean(self):
+        cleaned_data = super(SipNoteForm, self).clean()
+
+        # get "some info from the form"
+        note_date = cleaned_data.get('note_date', '')
+        note_date = datetime.strptime(note_date, '%Y-%m-%d')
+        note_month = note_date.month
+        note_year = note_date.year
+        quarter = get_quarter(note_month)
+        if quarter == 1:
+            fiscal_year = get_fiscal_year(note_year)
+        else:
+            f_year = note_year - 1
+            fiscal_year = get_fiscal_year(f_year)
+
+        # "manipulate it to fill another filed"
+        cleaned_data['quarter'] = quarter
+        cleaned_data['fiscal_year'] = fiscal_year
+
+        return cleaned_data
 
 
 class SipNoteBulkForm(forms.ModelForm):
