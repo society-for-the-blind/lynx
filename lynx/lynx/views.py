@@ -828,6 +828,23 @@ class SipNoteUpdateView(LoginRequiredMixin, UpdateView):
               'retreat', 'in_home', 'seminar', 'modesto', 'group', 'community', 'class_hours', 'sip_plan', 'instructor']
     template_name_suffix = '_edit'
 
+    def form_valid(self, form):
+        post = form.save(commit=False)
+        note_date = post.note_date
+        note_date = datetime.strptime(note_date, '%Y-%m-%d')
+        note_month = note_date.month
+        note_year = note_date.year
+        quarter = get_quarter(note_month)
+        if quarter == 1:
+            fiscal_year = get_fiscal_year(note_year)
+        else:
+            f_year = note_year - 1
+            fiscal_year = get_fiscal_year(f_year)
+        post.quarter = quarter
+        post.fiscal_year = fiscal_year
+        post.save()
+        return redirect('client', pk=post.contact_id)
+
 
 class SipPlanUpdateView(LoginRequiredMixin, UpdateView):
     model = SipPlan
