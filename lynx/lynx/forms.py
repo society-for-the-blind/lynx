@@ -240,6 +240,7 @@ class SipNoteForm(forms.ModelForm):
         return quarter
 
     def clean_fiscal_year(self):
+
         note_date = self.cleaned_data['note_date']
         note_date = datetime.strptime(note_date, '%Y-%m-%d')
         note_month = note_date.month
@@ -250,6 +251,7 @@ class SipNoteForm(forms.ModelForm):
         else:
             f_year = note_year - 1
             fiscal_year = get_fiscal_year(f_year)
+        test = test
         return fiscal_year
 
 
