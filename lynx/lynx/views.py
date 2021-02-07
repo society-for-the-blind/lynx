@@ -9,7 +9,7 @@ from django.views.generic.edit import UpdateView
 from django.urls import reverse_lazy
 from django.db.models import Q, F, Subquery
 from django.db.models import Value as V
-from django.db.models.functions import Concat, Replace
+from django.db.models.functions import Concat, Replace, Lower
 from django.db import connection
 from django.core.paginator import Paginator
 from django.http import JsonResponse
@@ -38,7 +38,7 @@ def index(request):
 
 @login_required
 def client_list_view(request):
-    clients = Contact.objects.filter(active=1).order_by('last_name', 'first_name')
+    clients = Contact.objects.filter(active=1).order_by(Lower('last_name'), Lower('first_name'))
     return render(request, 'lynx/contact_list.html', {'clients': clients})
 
 
@@ -141,7 +141,7 @@ def add_sip_plan(request, contact_id):
 @login_required
 def add_sip_note_bulk(request):
     form = SipNoteBulkForm()
-    client_list = Contact.objects.filter(sip_client=1).order_by('last_name')
+    client_list = Contact.objects.filter(sip_client=1).order_by(Lower('last_name'))
     range = [1, 2, 3, 4, 5, 6, 7, 8, 9]
     if request.method == 'POST':
         form = SipNoteBulkForm(request.POST)
@@ -411,7 +411,7 @@ def client_result_view(request):
             Q(last_name__icontains=query)
         )
 
-        object_list = object_list.order_by('last_name', 'first_name')
+        object_list = object_list.order_by(Lower('last_name'), Lower('first_name'))
     else:
         object_list = None
     return render(request, 'lynx/client_search.html', {'object_list': object_list})
@@ -450,7 +450,7 @@ def client_advanced_result_view(request):
             Q(email_address__icontains=query)
         )
 
-        object_list = object_list.order_by('last_name', 'first_name', 'id')
+        object_list = object_list.order_by(Lower('last_name'), Lower('first_name'), 'id')
         paginator = Paginator(object_list, 20)
         page_number = request.GET.get('page')
         page_obj = paginator.get_page(page_number)
@@ -466,7 +466,7 @@ def progress_result_view(request):
                   "August": 8, "September": 9, "October": 10, "November": 11, "December": 12}
         given_month = MONTHS[request.GET.get('selMonth')]
         object_list = ProgressReport.objects.filter(month=given_month).filter(
-            year=request.GET.get('selYear')).order_by('authorization__contact__last_name', 'authorization__intake_service_area__agency')
+            year=request.GET.get('selYear')).order_by(Lower('authorization__contact__last_name'), 'authorization__intake_service_area__agency')
 
     else:
         object_list = None
@@ -1607,7 +1607,7 @@ def contact_list(request):
     if request.method == 'GET':
         excel = request.GET.get('excel', False)
         strict = True
-        f = ContactFilter(request.GET, queryset=ContactInfoView.objects.all().order_by('full_name'))
+        f = ContactFilter(request.GET, queryset=ContactInfoView.objects.all().order_by(Lower('full_name')))
         if excel == 'true':
             filename = "Lynx Search Results"
             response = HttpResponse(content_type='text/csv')
