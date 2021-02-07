@@ -965,18 +965,32 @@ def billing_report(request):
             month = data.get('month')
             year = data.get('year')
 
-            with connection.cursor() as cursor:
-                cursor.execute("""SELECT CONCAT(c.first_name, ' ', c.last_name) as name, sa.agency as service_area, 
-                                    auth.authorization_type, auth.authorization_number, auth.id as authorization_id,
-                                    ln.billed_units, auth.billing_rate, CONCAT(oa.contact_name, ' - ', oa.agency) as outside_agency
-                                    FROM lynx_authorization as auth
-                                    LEFT JOIN lynx_contact as c on c.id = auth.contact_id
-                                    LEFT JOIN lynx_lessonnote as ln  on ln.authorization_id = auth.id
-                                    LEFT JOIN lynx_intakeservicearea as sa on auth.intake_service_area_id = sa.id
-                                    LEFT JOIN lynx_outsideagency as oa on auth.outside_agency_id = oa.id
-                                    where extract(month FROM date) = '%s' and extract(year FROM date) = '%s'
-                                    order by c.last_name, c.first_name, sa.agency;""" % (month, year))
-                auth_set = dictfetchall(cursor)
+            if month == 'all':
+                with connection.cursor() as cursor:
+                    cursor.execute("""SELECT CONCAT(c.first_name, ' ', c.last_name) as name, sa.agency as service_area, 
+                                        auth.authorization_type, auth.authorization_number, auth.id as authorization_id,
+                                        ln.billed_units, auth.billing_rate, CONCAT(oa.contact_name, ' - ', oa.agency) as outside_agency
+                                        FROM lynx_authorization as auth
+                                        LEFT JOIN lynx_contact as c on c.id = auth.contact_id
+                                        LEFT JOIN lynx_lessonnote as ln  on ln.authorization_id = auth.id
+                                        LEFT JOIN lynx_intakeservicearea as sa on auth.intake_service_area_id = sa.id
+                                        LEFT JOIN lynx_outsideagency as oa on auth.outside_agency_id = oa.id
+                                        where extract(year FROM date) = '%s'
+                                        order by c.last_name, c.first_name, sa.agency;""" % (year,))
+                    auth_set = dictfetchall(cursor)
+            else:
+                with connection.cursor() as cursor:
+                    cursor.execute("""SELECT CONCAT(c.first_name, ' ', c.last_name) as name, sa.agency as service_area, 
+                                        auth.authorization_type, auth.authorization_number, auth.id as authorization_id,
+                                        ln.billed_units, auth.billing_rate, CONCAT(oa.contact_name, ' - ', oa.agency) as outside_agency
+                                        FROM lynx_authorization as auth
+                                        LEFT JOIN lynx_contact as c on c.id = auth.contact_id
+                                        LEFT JOIN lynx_lessonnote as ln  on ln.authorization_id = auth.id
+                                        LEFT JOIN lynx_intakeservicearea as sa on auth.intake_service_area_id = sa.id
+                                        LEFT JOIN lynx_outsideagency as oa on auth.outside_agency_id = oa.id
+                                        where extract(month FROM date) = '%s' and extract(year FROM date) = '%s'
+                                        order by c.last_name, c.first_name, sa.agency;""" % (month, year))
+                    auth_set = dictfetchall(cursor)
 
             reports = {}
             total_amount = 0

@@ -275,6 +275,8 @@ class BillingReportForm(forms.Form):
         year_str = str(x)
         year_pair = (year_str, year_str)
         years.append(year_pair)
+    year_pair = ('all', 'All Year')
+    years.append(year_pair)
 
     month = forms.ChoiceField(choices=months)
     year = forms.ChoiceField(choices=years)

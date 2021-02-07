@@ -239,15 +239,15 @@
     {% if not request.GET.print %}<input type="button" class="btn btn-success" aria-label="Add New SIP Note" onclick="location.href='/lynx/add-sip-note/{{ object.id }}/';" value="Add New SIP Note" />{% endif %}
 
     {% for sip in sip_list %}
-        <div class="row">
-            <div class="col-12"><a href='/lynx/sip-note-edit/{{ sip.id }}?contact_id={{ object.id }}&plan_id={{ sip.sip_plan_id }}'>Edit {{ sip.note_date|date:'F j, Y' }}</a></div>
-        </div>
         <div class="container-fluid">
             <div class="row">
-                <div class="col-12">
-                    <h3>{{ sip.note_date|date:'F j, Y' }}</h3> {{ sip.note|linebreaks }}
-                    <strong>Instructor: </strong>{{ sip.instructor }}
-                </div>
+                <div class="col-12"><h3>{{ sip.note_date|date:'F j, Y' }}</h3> {{ sip.note|linebreaks }}</div>
+            </div>
+            <div class="row">
+                <div class="col-12"><a href='/lynx/sip-note-edit/{{ sip.id }}?contact_id={{ object.id }}&plan_id={{ sip.sip_plan_id }}'>Edit {{ sip.note_date|date:'F j, Y' }}</a></div>
+            </div>
+            <div class="row">
+                <div class="col-12"><strong>Instructor: </strong>{{ sip.instructor }}</div>
             </div>
             <div class="row">
                 <div class="col-12"><strong>Hours: </strong>{{ sip.class_hours|convert_fractions }}</div>
