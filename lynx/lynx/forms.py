@@ -9,7 +9,8 @@ from .models import Contact, Address, Intake, Email, Phone, SipPlan, IntakeNote,
 from datetime import datetime
 
 months = (("1", "January"), ("2", "February"), ("3", "March"), ("4", "April"), ("5", "May"), ("6", "June"),
-          ("7", "July"), ("8", "August"), ("9", "September"), ("10", "October"), ("11", "November"), ("12", "December"))
+          ("7", "July"), ("8", "August"), ("9", "September"), ("10", "October"), ("11", "November"), ("12", "December"),
+          ('all', 'All Year'))
 
 quarters = (("1", "Q1"), ("2", "Q2"), ("3", "Q3"), ("4", "Q4"))
 
@@ -275,8 +276,6 @@ class BillingReportForm(forms.Form):
         year_str = str(x)
         year_pair = (year_str, year_str)
         years.append(year_pair)
-    year_pair = ('all', 'All Year')
-    years.append(year_pair)
 
     month = forms.ChoiceField(choices=months)
     year = forms.ChoiceField(choices=years)
