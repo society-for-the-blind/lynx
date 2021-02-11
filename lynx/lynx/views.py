@@ -680,7 +680,7 @@ class BillingReviewDetailView(LoginRequiredMixin, DetailView):
                 total_units += units
                 total_notes += 1
         for report in reports:
-            if 'instructor' in report:
+            if 'instructor' in report and report['instructor'] is not None:
                 instructors.append(report['instructor'])
         if len(instructors) > 0 and instructors is not None:
             context['instructors'] = ", ".join(instructors)
