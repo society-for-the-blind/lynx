@@ -682,7 +682,7 @@ class BillingReviewDetailView(LoginRequiredMixin, DetailView):
         for report in reports:
             if 'instructor' in report:
                 instructors.append(report['instructor'])
-        if len(instructors) > 0:
+        if len(instructors) > 0 and instructors is not None:
             context['instructors'] = ", ".join(instructors)
 
         if authorization[0]['authorization_type'] == 'Classes':
