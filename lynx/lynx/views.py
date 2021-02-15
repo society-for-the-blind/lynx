@@ -1617,7 +1617,7 @@ def contact_list(request):
             writer.writerow(
                 ["Full Name", "First Name", "Last Name", "Intake Date", "Age Group", "County", "Email", "Phone",
                  "Address 1", "Address 2", "Suite", "City", "State", "Zip Code", "Region", "Bad Address",
-                 "Do Not Contact", "Deceased", "Remove Mailing"])
+                 "Do Not Contact", "Deceased", "Remove Mailing", "Active", "SIP Client", 'Core Client'])
             for client in f.qs:
                 if client.bad_address:
                     client.bad_address = "Bad Address"
@@ -1635,12 +1635,24 @@ def contact_list(request):
                     client.remove_mailing = "Remove from Mailing List"
                 else:
                     client.remove_mailing = ""
+                if client.active:
+                    client.active = "Active"
+                else:
+                    client.active = ""
+                if client.sip_client:
+                    client.sip_client = "SIP Client"
+                else:
+                    client.sip_client = ""
+                if client.core_client:
+                    client.core_client = "Core Client"
+                else:
+                    client.core_client = ""
                 writer.writerow(
                     [client.full_name, client.first_name, client.last_name, client.intake_date,
                      client.age_group, client.county, client.email, client.full_phone,
                      client.address_one, client.address_two, client.suite, client.city, client.state,
                      client.zip_code, client.region, client.bad_address, client.do_not_contact,
-                     client.deceased, client.remove_mailing])
+                     client.deceased, client.remove_mailing, client.active, client.sip_client, client.core_client])
             return response
 
     else:
