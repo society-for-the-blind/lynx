@@ -621,7 +621,7 @@ class ContactInfoView(pg.View):
     sql = """SELECT c.id, concat(last_name, ', ', first_name) AS full_name, first_name, last_name, a.county, a.zip_code,
          REPLACE (REPLACE(REPLACE(REPLACE(p.phone, ' ', ''), '-', ''), ')', ''), '(', '') as phone, e.email,
          i.intake_date, i.age_group, a.address_one, a.address_two, a.suite, a.city, a.state, a.bad_address, 
-         c.do_not_contact, c.deceased, c.remove_mailing, a.region, phone as full_phone
+         c.do_not_contact, c.deceased, c.remove_mailing, a.region, phone as full_phone, c.active, c.sip_client, c.core_client
         FROM lynx_contact AS c
         LEFT JOIN lynx_intake AS i ON c.id = i.contact_id
         LEFT JOIN lynx_address AS a ON a.contact_id = c.id
@@ -646,6 +646,9 @@ class ContactInfoView(pg.View):
     do_not_contact = models.BooleanField(blank=True, default=False)
     deceased = models.BooleanField(blank=True, default=False)
     remove_mailing = models.BooleanField(blank=True, default=False)
+    active = models.BooleanField(blank=True, default=False)
+    sip_client = models.BooleanField(blank=True, default=False)
+    core_client = models.BooleanField(blank=True, default=False)
     region = models.CharField(max_length=255, null=True)
     full_phone = models.CharField(max_length=255, null=True)
     history = HistoricalRecords()
