@@ -91,9 +91,7 @@
         <p class="tab">Sorry, no associated emergency emails for this client</p>
     {% endfor %}
     {% if not request.GET.print %}
-        <input type="button" class="btn btn-primary" aria-label="Edit Emergency Contact" onclick="location.href='/lynx/emergency-contact-edit/{{ emergency.id }}';" value="Edit Emergency Contact" />
-        <input type="button" class="btn btn-success" aria-label="Add Emergency Number" onclick="location.href='/lynx/add-emergency-phone/{{ emergency.id }}/';" value="Add Emergency Phone Number" />
-        <input type="button" class="btn btn-success" aria-label="Add Emergency Email" onclick="location.href='/lynx/add-emergency-email/{{ emergency.id }}/';" value="Add Emergency Email" />
+        <a href='/lynx/emergency-contact-edit/{{ emergency.id }}'>Edit {{ emergency.name }}'s Information</a> | <a href='/lynx/add-emergency-phone/{{ emergency.id }}/'>Add Emergency Phone Number for {{ emergency.name }}</a> | <a href='/lynx/add-emergency-email/{{ emergency.id }}/'>Add Emergency Email for {{ emergency.name }}</a>
     {% endif %}
 {% empty %}
     <p class="tab">Sorry, no emergency contacts for this client</p>
@@ -103,7 +101,6 @@
     <br><br>
 <h2>Intake Information</h2>
 {% for intake in intake_list %}
-    <br>
     {% if not request.GET.print %}<input type="button" class="btn btn-primary" aria-label="Edit Intake Information" onclick="location.href='/lynx/intake-edit/{{ intake.id }}';" value="Edit Intake Information" />{% endif %}
     <p class="tab"><strong>Intake Date:</strong> {{intake.intake_date|date:'F j, Y'}} </p>
     <h3>Demographics</h3>
