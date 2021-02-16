@@ -4,7 +4,7 @@
 {% block content %}
 
 <h1>{{ object.first_name }} {{ object.last_name }}</h1>
-{% if not request.GET.print %}<input type="button" class="btn btn-success" aria-label="Add New SIP Note" onclick="location.href='/lynx/add-sip-note/{{ object.id }}/';" value="Add New SIP Note" />  <input type="button" class="btn btn-success" aria-label="Add New Authorization" onclick="location.href='/lynx/add-authorization/{{ object.id }}/';" value="Add New Authorization" />   <input type="button" class="btn btn-success" aria-label="Jump to Authorizations" onclick="location.href='#authorizations';" value="Jump to Authorizations" /> {% endif %}
+{% if not request.GET.print %}{% if object.sip_client %}<input type="button" class="btn btn-success" aria-label="Add New SIP Note" onclick="location.href='/lynx/add-sip-note/{{ object.id }}/';" value="Add New SIP Note" />  <input type="button" class="btn btn-success" aria-label="Add New SIP Plan" onclick="location.href='/lynx/add-sip-plan/{{ object.id }}/';" value="Add New SIP Plan" />   <input type="button" class="btn btn-success" aria-label="Jump to SIP Plans" onclick="location.href='#sip-plans';" value="Jump to SIP Plans" /> {% endif %}{% if object.core_client %} <input type="button" class="btn btn-success" aria-label="Add New Authorization" onclick="location.href='/lynx/add-authorization/{{ object.id }}/';" value="Add New Authorization" />   <input type="button" class="btn btn-success" aria-label="Jump to Authorizations" onclick="location.href='#authorizations';" value="Jump to Authorizations" /> {% endif %}{% endif %}
 
 <h2>Client Information</h2>
 <p class="tab"><strong>Name:</strong> {{ object.first_name }} {% if object.middle_name %}{{ object.middle_name }} {% endif %}{{ object.last_name }}</p>
@@ -202,7 +202,7 @@
 
 {% if object.sip_client %}
     <br><br>
-    <h2>SIP Plans</h2>
+    <h2 id="sip-plans">SIP Plans</h2>
     <div class="container-fluid">
     {% for sip in sip_plan_list %}
         <div class="container-fluid">
