@@ -1614,7 +1614,7 @@ def contact_list(request):
             if client['id'] in client_condensed:
                 client_condensed[client['id']]['phone_number'] = client_condensed[client['id']]['phone_number'] + ', ' + client['phone_number']
             else:
-                client_condensed[client['id']] =
+                client_condensed[client['id']] = c
 
         if excel == 'true':
             filename = "Lynx Search Results"
