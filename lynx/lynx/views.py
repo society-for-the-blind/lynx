@@ -1609,14 +1609,12 @@ def contact_list(request):
         strict = True
         f = ContactFilter(request.GET, queryset=ContactInfoView.objects.all().order_by(Lower('full_name')))
 
-        qs = f.qs
-
         client_condensed = []
         for client in f.qs:
             if client.id in client_condensed:
                 client_condensed[client.id]['phone_number'] = client_condensed[client.id]['phone_number'] + ', ' + client.phone_number
             else:
-                client_condensed[client.id] = c
+                client_condensed[client.id] = client
 
         if excel == 'true':
             filename = "Lynx Search Results"
