@@ -1622,14 +1622,14 @@ def contact_list(request):
                     client_condensed[client.id]['county'] = client_condensed[client.id]['county'] + ', ' + client.county
             else:
                 client_condensed[client.id] = {}
-                client_condensed[client.id]['full_phone'] = client.full_phone
-                client_condensed[client.id]['full_name'] = client.full_name
-                client_condensed[client.id]['first_name'] = client.first_name
-                client_condensed[client.id]['last_name'] = client.last_name
-                client_condensed[client.id]['email'] = client.email
-                client_condensed[client.id]['intake_date'] = client.intake_date
-                client_condensed[client.id]['zip_code'] = client.zip_code
-                client_condensed[client.id]['county'] = client.county
+                client_condensed[client.id]['full_phone'] = client.full_phone if client.full_phone else ''
+                client_condensed[client.id]['full_name'] = client.full_name if client.full_name else ''
+                client_condensed[client.id]['first_name'] = client.first_name if client.first_name else ''
+                client_condensed[client.id]['last_name'] = client.last_name if client.last_name else ''
+                client_condensed[client.id]['email'] = client.email if client.email else ''
+                client_condensed[client.id]['intake_date'] = client.intake_date if client.intake_date else ''
+                client_condensed[client.id]['zip_code'] = client.zip_code if client.zip_code else ''
+                client_condensed[client.id]['county'] = client.county if client.county else ''
 
         if excel == 'true':
             filename = "Lynx Search Results"
