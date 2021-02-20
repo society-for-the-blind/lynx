@@ -1612,8 +1612,8 @@ def contact_list(request):
         client_condensed = {}
         for client in f.qs:
             if client.id in client_condensed:
-                if client_condensed[client.id]['phone_number'] != client.phone_number and client.phone_number is not None:
-                    client_condensed[client.id]['phone_number'] = client_condensed[client.id]['phone_number'] + ', ' + client.phone_number
+                if client_condensed[client.id]['full_phone'] != client.full_phone and client.full_phone is not None:
+                    client_condensed[client.id]['full_phone'] = client_condensed[client.id]['full_phone'] + ', ' + client.full_phone
                 if client_condensed[client.id]['email'] != client.email and client.email is not None:
                     client_condensed[client.id]['email'] = client_condensed[client.id]['email'] + ', ' + client.email
                 if client_condensed[client.id]['zip_code'] != client.zip_code and client.zip_code is not None:
@@ -1621,7 +1621,7 @@ def contact_list(request):
                 if client_condensed[client.id]['county'] != client.county and client.county is not None:
                     client_condensed[client.id]['county'] = client_condensed[client.id]['county'] + ', ' + client.county
             else:
-                client_condensed[client.id]['phone_number'] = client.phone_number
+                client_condensed[client.id]['full_phone'] = client.full_phone
                 client_condensed[client.id]['full_name'] = client.full_name
                 client_condensed[client.id]['first_name'] = client.first_name
                 client_condensed[client.id]['last_name'] = client.last_name
