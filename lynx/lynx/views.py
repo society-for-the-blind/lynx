@@ -1621,6 +1621,7 @@ def contact_list(request):
                 if client_condensed[client.id]['county'] != client.county and client.county is not None:
                     client_condensed[client.id]['county'] = client_condensed[client.id]['county'] + ', ' + client.county
             else:
+                client_condensed[client.id] = {}
                 client_condensed[client.id]['full_phone'] = client.full_phone
                 client_condensed[client.id]['full_name'] = client.full_name
                 client_condensed[client.id]['first_name'] = client.first_name
