@@ -1680,4 +1680,4 @@ def contact_list(request):
 
     else:
         f = ContactFilter()
-    return render(request, 'lynx/contact_search.html', {'filter': client_condensed})
+    return render(request, 'lynx/contact_search.html', {'filter': f, 'client_list': client_condensed})
