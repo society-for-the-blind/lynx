@@ -21,7 +21,7 @@
             <th scope="col">County</th>
             <th scope="col">Email</th>
         </tr>
-        {% for key, client in client_list %}
+        {% for key, client in client_list.items %}
             <tr>
                 <td><a href="client/{{ key }}">{{ client.full_name }}</a></td>
                 <td>{{ client.intake_date }}</td>
