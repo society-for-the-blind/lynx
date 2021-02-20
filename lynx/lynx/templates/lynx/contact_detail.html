@@ -96,12 +96,13 @@
 {% empty %}
     <p class="tab">Sorry, no emergency contacts for this client</p>
 {% endfor %}
-<br>
+<br><br>
 {% if not request.GET.print %}<input type="button" class="btn btn-success" aria-label="Edit Emergency Contact" onclick="location.href='/lynx/add-emergency/{{ object.id }}/';" value="Add Emergency Contact" />{% endif %}
     <br><br>
 <h2>Intake Information</h2>
 {% for intake in intake_list %}
     {% if not request.GET.print %}<input type="button" class="btn btn-primary" aria-label="Edit Intake Information" onclick="location.href='/lynx/intake-edit/{{ intake.id }}';" value="Edit Intake Information" />{% endif %}
+<br>
     <p class="tab"><strong>Intake Date:</strong> {{intake.intake_date|date:'F j, Y'}} </p>
     <h3>Demographics</h3>
         {% if intake.birth_date %}<p class="tab"><strong>Birth Date:</strong> {{ intake.birth_date|date:'F j, Y' }}</p>{% endif %}
