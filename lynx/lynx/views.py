@@ -1612,9 +1612,23 @@ def contact_list(request):
         client_condensed = {}
         for client in f.qs:
             if client.id in client_condensed:
-                client_condensed[client.id]['phone_number'] = client_condensed[client.id]['phone_number'] + ', ' + client.phone_number
+                if client_condensed[client.id]['phone_number'] != client.phone_number and client.phone_number is not None:
+                    client_condensed[client.id]['phone_number'] = client_condensed[client.id]['phone_number'] + ', ' + client.phone_number
+                if client_condensed[client.id]['email'] != client.email and client.email is not None:
+                    client_condensed[client.id]['email'] = client_condensed[client.id]['email'] + ', ' + client.email
+                if client_condensed[client.id]['zip_code'] != client.zip_code and client.zip_code is not None:
+                    client_condensed[client.id]['zip_code'] = client_condensed[client.id]['zip_code'] + ', ' + client.zip_code
+                if client_condensed[client.id]['county'] != client.county and client.county is not None:
+                    client_condensed[client.id]['county'] = client_condensed[client.id]['county'] + ', ' + client.county
             else:
-                client_condensed[client.id] = client
+                client_condensed[client.id]['phone_number'] = client.phone_number
+                client_condensed[client.id]['full_name'] = client.full_name
+                client_condensed[client.id]['first_name'] = client.first_name
+                client_condensed[client.id]['last_name'] = client.last_name
+                client_condensed[client.id]['email'] = client.email
+                client_condensed[client.id]['intake_date'] = client.intake_date
+                client_condensed[client.id]['zip_code'] = client.zip_code
+                client_condensed[client.id]['county'] = client.county
 
         if excel == 'true':
             filename = "Lynx Search Results"
@@ -1665,4 +1679,4 @@ def contact_list(request):
 
     else:
         f = ContactFilter()
-    return render(request, 'lynx/contact_search.html', {'filter': f})
+    return render(request, 'lynx/contact_search.html', {'filter': client_condensed})
