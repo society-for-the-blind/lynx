@@ -1609,7 +1609,7 @@ def contact_list(request):
         strict = True
         f = ContactFilter(request.GET, queryset=ContactInfoView.objects.all().order_by(Lower('full_name')))
 
-        print(f.query)
+        print(f.qs)
 
         client_condensed = []
         for client in f.qs:
