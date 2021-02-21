@@ -1662,10 +1662,10 @@ def contact_list(request):
                  "Address 1", "Address 2", "Suite", "City", "State", "Zip Code", "Region", "Bad Address",
                  "Do Not Contact", "Deceased", "Remove Mailing", "Active", "SIP Client", 'Core Client'])
             for key, client in client_condensed.items():
-                if client.bad_address:
-                    client.bad_address = "Bad Address"
+                if client['bad_address']:
+                    client['bad_address'] = "Bad Address"
                 else:
-                    client.bad_address = ""
+                    client['bad_address'] = ""
                 if client.do_not_contact:
                     client.do_not_contact = "Do Not Contact"
                 else:
