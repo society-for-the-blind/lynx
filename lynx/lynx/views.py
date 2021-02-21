@@ -1662,35 +1662,14 @@ def contact_list(request):
                  "Address 1", "Address 2", "Suite", "City", "State", "Zip Code", "Region", "Bad Address",
                  "Do Not Contact", "Deceased", "Remove Mailing", "Active", "SIP Client", 'Core Client'])
             for key, client in client_condensed.items():
-                [client]['bad_address'] = "Bad Address" if client['bad_address'] is not None else ''
-                if client['bad_address']:
-                    client['bad_address'] = "Bad Address"
-                else:
-                    client['bad_address'] = ""
-                if client['do_not_contact']:
-                    client['do_not_contact'] = "Do Not Contact"
-                else:
-                    client['do_not_contact'] = ""
-                if client['deceased']:
-                    client['deceased'] = "Deceased"
-                else:
-                    client['deceased'] = ""
-                if client['remove_mailing']:
-                    client['remove_mailing'] = "Remove from Mailing List"
-                else:
-                    client['remove_mailing'] = ""
-                if client['active']:
-                    client['active'] = "Active"
-                else:
-                    client['active'] = ""
-                if client['sip_client']:
-                    client['sip_client'] = "SIP Client"
-                else:
-                    client['sip_client'] = ""
-                if client['core_client']:
-                    client['core_client'] = "Core Client"
-                else:
-                    client['core_client'] = ""
+                client['bad_address'] = "Bad Address" if client['bad_address'] is not None else ''
+                client['do_not_contact'] = "Do Not Contact" if client['do_not_contact'] is not None else ''
+                client['deceased'] = "Deceased" if client['deceased'] is not None else ''
+                client['active'] = "Active" if client['active'] is not None else ''
+                client['sip_client'] = "SIP Client" if client['sip_client'] is not None else ''
+                client['core_client'] = "Core Client" if client['core_client'] is not None else ''
+                client['remove_mailing'] = "Remove from Mailing List" if client['remove_mailing'] is not None else ''
+
                 writer.writerow(
                     [client['full_name'], client['first_name'], client['last_name'], client['intake_date'],
                      client['age_group'], client['county'], client['email'], client['full_phone'],
