@@ -285,14 +285,14 @@
     <p class="tab">{{ object.note_date|date:'F j, Y' }}: {{ object.contact_notes|linebreaks }}<br>
         Note By: {{ user.first_name }} {{ user.last_name }} <a href='/lynx/intake-note-edit/{{ note.id }}'>Edit</a>
 {% endif %}
-<br>
+<br><br>
 <h3>Uploaded Files</h3>
 <ul>
     {% for doc in document_list %}
         {% if doc.description %}
-            <li><a href='/lynx/media/{{ doc.document }}'>{{ doc.description }}</a></li>
+            <li><a href='/lynx/media/{{ doc.document }}' download>{{ doc.description }}</a></li>
         {% else %}
-            <li><a href='/lynx/media/{{ doc.document }}'>No title</a></li>
+            <li><a href='/lynx/media/{{ doc.document }}' download>No title</a></li>
         {% endif %}
     {% empty %}
         <li><p class="tab">Sorry, no files uploaded for this client</p></li>
