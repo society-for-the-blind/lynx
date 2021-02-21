@@ -286,7 +286,7 @@
         Note By: {{ user.first_name }} {{ user.last_name }} <a href='/lynx/intake-note-edit/{{ note.id }}'>Edit</a>
 {% endif %}
 <br><br>
-<h3 id="upload">Uploaded Files</h3>
+<h3>Uploaded Files</h3>
 <ul>
     {% for doc in document_list %}
         {% if doc.description %}
@@ -307,7 +307,7 @@
     <input type="submit" class="btn btn-success" value="Submit Client Note">
 </form>
 <br><br>
-<h3>Upload Files</h3>
+<h3 id="upload">Upload Files</h3>
 <form action="/lynx/client/{{ object.id }}" method="post" enctype="multipart/form-data">
     {% csrf_token %}
     {{ upload_form.as_p }}
