@@ -290,9 +290,9 @@
 <ul>
     {% for doc in document_list %}
         {% if doc.description %}
-            <li><a href='/lynx/media/documents/{{ doc.id }}'>{{ doc.description }}</a></li>
+            <li><a href='/lynx/media/documents/{{ doc.document }}'>{{ doc.description }}</a></li>
         {% else %}
-            <li><a href='/lynx/media/documents/{{ doc.id }}'>No title</a></li>
+            <li><a href='/lynx/media/documents/{{ doc.document }}'>No title</a></li>
         {% endif %}}
     {% empty %}
         <li><p class="tab">Sorry, no files uploaded for this client</p></li>
