@@ -58,5 +58,6 @@ urlpatterns = [
     path('client-advanced-search', views.client_advanced_result_view, name='client_advanced_search'),
     path('report-search', views.progress_result_view, name='report_search'),
     path('search', views.contact_list, name='searcher'),
+    path('download/<path:path>', views.download, name='download'),
     path("", views.index, name='index')
 ]

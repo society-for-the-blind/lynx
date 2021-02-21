@@ -1,19 +1,20 @@
 from django.shortcuts import render, redirect, reverse
 from django.http import HttpResponse, HttpResponseRedirect
-from django.template import loader
-from django.views import generic
 from django.views.generic import DetailView, ListView, FormView, DeleteView
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.views.generic.edit import UpdateView
 from django.urls import reverse_lazy
-from django.db.models import Q, F, Subquery
+from django.db.models import Q, F
 from django.db.models import Value as V
 from django.db.models.functions import Concat, Replace, Lower
 from django.db import connection
 from django.core.paginator import Paginator
 from django.http import JsonResponse
+from django.conf import settings
+from django.http import HttpResponse, Http404
 
+import os
 import csv
 from datetime import datetime
 import logging
@@ -1690,3 +1691,13 @@ def contact_list(request):
         f = ContactFilter()
         client_condensed = {}
     return render(request, 'lynx/contact_search.html', {'filter': f, 'client_list': client_condensed})
+
+
+def download(request, path):
+    file_path = os.path.join(settings.MEDIA_ROOT, path)
+    if os.path.exists(file_path):
+        with open(file_path, 'rb') as fh:
+            response = HttpResponse(fh.read())
+            response['Content-Disposition'] = 'inline; filename=' + os.path.basename(file_path)
+            return response
+    raise Http404
