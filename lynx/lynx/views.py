@@ -19,7 +19,7 @@ from datetime import datetime
 import logging
 
 from .models import Contact, Address, Phone, Email, Intake, IntakeNote, EmergencyContact, Authorization, \
-    ProgressReport, LessonNote, SipNote, Volunteer, SipPlan, OutsideAgency, ContactInfoView, UNITS
+    ProgressReport, LessonNote, SipNote, Volunteer, SipPlan, OutsideAgency, ContactInfoView, UNITS, Document
 from .forms import ContactForm, IntakeForm, IntakeNoteForm, EmergencyForm, AddressForm, EmailForm, PhoneForm, \
     AuthorizationForm, ProgressReportForm, LessonNoteForm, SipNoteForm, BillingReportForm, SipDemographicReportForm, \
     VolunteerForm, SipCSFReportForm, SipPlanForm, SipNoteBulkForm, DocumentForm
@@ -490,6 +490,7 @@ class ContactDetailView(LoginRequiredMixin, DetailView):
         context['sip_list'] = SipNote.objects.filter(contact_id=self.kwargs['pk']).order_by(F('note_date').desc(nulls_last=True))
         context['sip_plan_list'] = SipPlan.objects.filter(contact_id=self.kwargs['pk']).order_by('-created')
         context['emergency_list'] = EmergencyContact.objects.filter(contact_id=self.kwargs['pk']).order_by('-created')
+        context['document_list'] = Document.objects.filter(contact_id=self.kwargs['pk']).order_by('-created')
         context['form'] = IntakeNoteForm
         context['upload_form'] = DocumentForm
 

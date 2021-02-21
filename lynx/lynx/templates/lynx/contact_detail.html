@@ -286,6 +286,19 @@
         Note By: {{ user.first_name }} {{ user.last_name }} <a href='/lynx/intake-note-edit/{{ note.id }}'>Edit</a>
 {% endif %}
 <br>
+<h3>Uploaded Files</h3>
+<ul>
+    {% for doc in document_list %}
+        {% if doc.description %}
+            <li><a href='/lynx/media/documents/{{ doc.id }}'>{{ doc.description }}</a></li>
+        {% else %}
+            <li><a href='/lynx/media/documents/{{ doc.id }}'>No title</a></li>
+        {% endif %}}
+    {% empty %}
+        <li><p class="tab">Sorry, no files uploaded for this client</p></li>
+    {% endfor %}
+</ul>
+<br>
 {% if not request.GET.print %}
 <h3>New Client Note</h3>
 <form action="/lynx/client/{{ object.id }}" method="post">
