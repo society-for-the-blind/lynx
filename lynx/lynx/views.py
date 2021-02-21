@@ -496,13 +496,10 @@ class ContactDetailView(LoginRequiredMixin, DetailView):
         return context
 
     def post(self, request, *args, **kwargs):
-        form = IntakeNoteForm(request.POST, request.FILES)
-        upload_form = DocumentForm(request.POST, request.FILES)
-
         if 'form' in request.POST:
-            form = form.save(commit=False)
+            form = IntakeNoteForm(request.POST, request.FILES)
         else:
-            form = upload_form.save(commit=False)
+            form = DocumentForm(request.POST, request.FILES)
 
         if form.is_valid():
             form = form.save(commit=False)
