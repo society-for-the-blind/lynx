@@ -4,7 +4,7 @@
 {% block content %}
 
 <h1>{{ object.first_name }} {{ object.last_name }}</h1>
-{% if not request.GET.print %}{% if object.sip_client %}<input type="button" class="btn btn-success" aria-label="Add New SIP Note" onclick="location.href='/lynx/add-sip-note/{{ object.id }}/';" value="Add New SIP Note" />  <input type="button" class="btn btn-success" aria-label="Add New SIP Plan" onclick="location.href='/lynx/add-sip-plan/{{ object.id }}/';" value="Add New SIP Plan" />   <input type="button" class="btn btn-success" aria-label="Jump to SIP Plans" onclick="location.href='#sip-plans';" value="Jump to SIP Plans" /> {% endif %}{% if object.core_client %} <input type="button" class="btn btn-success" aria-label="Add New Authorization" onclick="location.href='/lynx/add-authorization/{{ object.id }}/';" value="Add New Authorization" />   <input type="button" class="btn btn-success" aria-label="Jump to Authorizations" onclick="location.href='#authorizations';" value="Jump to Authorizations" /> {% endif %}{% endif %}
+{% if not request.GET.print %}{% if object.sip_client %}<input type="button" class="btn btn-success" aria-label="Add New SIP Note" onclick="location.href='/lynx/add-sip-note/{{ object.id }}/';" value="Add New SIP Note" />  <input type="button" class="btn btn-success" aria-label="Add New SIP Plan" onclick="location.href='/lynx/add-sip-plan/{{ object.id }}/';" value="Add New SIP Plan" />   <input type="button" class="btn btn-success" aria-label="Jump to SIP Plans" onclick="location.href='#sip-plans';" value="Jump to SIP Plans" /> {% endif %}{% if object.core_client %} <input type="button" class="btn btn-success" aria-label="Add New Authorization" onclick="location.href='/lynx/add-authorization/{{ object.id }}/';" value="Add New Authorization" />   <input type="button" class="btn btn-success" aria-label="Jump to Authorizations" onclick="location.href='#authorizations';" value="Jump to Authorizations" /> {% endif %}   <input type="button" class="btn btn-success" aria-label="Jump to File Upload" onclick="location.href='#upload';" value="Jump to File Upload" />{% endif %}
 
 <h2>Client Information</h2>
 <p class="tab"><strong>Name:</strong> {{ object.first_name }} {% if object.middle_name %}{{ object.middle_name }} {% endif %}{{ object.last_name }}</p>
@@ -286,7 +286,7 @@
         Note By: {{ user.first_name }} {{ user.last_name }} <a href='/lynx/intake-note-edit/{{ note.id }}'>Edit</a>
 {% endif %}
 <br><br>
-<h3>Uploaded Files</h3>
+<h3 id="upload">Uploaded Files</h3>
 <ul>
     {% for doc in document_list %}
         {% if doc.description %}
