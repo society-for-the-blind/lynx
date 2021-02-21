@@ -658,3 +658,11 @@ class ContactInfoView(pg.View):
         db_table = 'lynx_contactinfoview'
         managed = False
 
+
+class Document(models.Model):
+    contact = models.ForeignKey('Contact', on_delete=models.CASCADE)
+    description = models.CharField(max_length=255, blank=True)
+    document = models.FileField(upload_to='documents/')
+    created = models.DateTimeField(auto_now_add=True, null=True)
+    modified = models.DateTimeField(auto_now=True, null=True)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET(get_sentinel_user))

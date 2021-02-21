@@ -4,7 +4,7 @@ from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 
 from .models import Contact, Address, Intake, Email, Phone, SipPlan, IntakeNote, EmergencyContact, Authorization, \
-    ProgressReport, LessonNote, SipNote, Volunteer, UNITS
+    ProgressReport, LessonNote, SipNote, Volunteer, UNITS, Document
 
 from datetime import datetime
 
@@ -335,6 +335,12 @@ class VolunteerForm(forms.ModelForm):
         exclude = ('created', 'modified', 'user')
 
 
+class DocumentForm(forms.ModelForm):
+    class Meta:
+        model = Document
+        fields = ('description', 'document', )
+
+
 # This will not work past 2099 ;)
 def get_fiscal_year(year):
     year_str = str(year)
@@ -390,3 +396,4 @@ def filter_units(authorization_id): #remove any selections that would take instr
             choices_dictionary[key] = value
 
     return choices_dictionary
+

@@ -22,7 +22,7 @@ from .models import Contact, Address, Phone, Email, Intake, IntakeNote, Emergenc
     ProgressReport, LessonNote, SipNote, Volunteer, SipPlan, OutsideAgency, ContactInfoView, UNITS
 from .forms import ContactForm, IntakeForm, IntakeNoteForm, EmergencyForm, AddressForm, EmailForm, PhoneForm, \
     AuthorizationForm, ProgressReportForm, LessonNoteForm, SipNoteForm, BillingReportForm, SipDemographicReportForm, \
-    VolunteerForm, SipCSFReportForm, SipPlanForm, SipNoteBulkForm
+    VolunteerForm, SipCSFReportForm, SipPlanForm, SipNoteBulkForm, DocumentForm
 from .filters import ContactFilter
 
 logger = logging.getLogger(__name__)
@@ -491,15 +491,26 @@ class ContactDetailView(LoginRequiredMixin, DetailView):
         context['sip_plan_list'] = SipPlan.objects.filter(contact_id=self.kwargs['pk']).order_by('-created')
         context['emergency_list'] = EmergencyContact.objects.filter(contact_id=self.kwargs['pk']).order_by('-created')
         context['form'] = IntakeNoteForm
+        context['upload_form'] = DocumentForm
+
         return context
 
     def post(self, request, *args, **kwargs):
         form = IntakeNoteForm(request.POST, request.FILES)
+        upload_form = DocumentForm(request.POST, request.FILES)
         if form.is_valid():
             form = form.save(commit=False)
             form.contact_id = self.kwargs['pk']
             form.user_id = request.user.id
             form.save()
+            action = "/lynx/client/" + str(self.kwargs['pk'])
+            return HttpResponseRedirect(action)
+
+        if upload_form.is_valid():
+            upload_form = upload_form.save(commit=False)
+            upload_form.contact_id = self.kwargs['pk']
+            upload_form.user_id = request.user.id
+            upload_form.save()
             action = "/lynx/client/" + str(self.kwargs['pk'])
             return HttpResponseRedirect(action)
 

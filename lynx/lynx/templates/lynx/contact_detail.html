@@ -294,10 +294,15 @@
     {{ form.as_p }}
     <input type="submit" class="btn btn-success" value="Submit Client Note">
 </form>
-{% endif %}
-
-{% if not request.GET.print %}
-<form action="/lynx/client/{{ object.id }}" method="GET">
+<br><br>
+<h3>Upload Files</h3>
+<form action="/lynx/client/{{ object.id }}" method="post">
+    {% csrf_token %}
+    {{ upload_form.as_p }}
+    <input type="submit" class="btn btn-success" value="Upload">
+</form>
+<br><br>
+<form action="/lynx/client/{{ object.id }}" method="GET" enctype="multipart/form-data">
   <input type="hidden" name="print" value="true" />
   <input type="submit" value="Print View" class="btn btn-primary" />
 </form>
