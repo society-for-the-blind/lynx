@@ -1620,6 +1620,12 @@ def contact_list(request):
                     client_condensed[client.id]['zip_code'] = client_condensed[client.id]['zip_code'] + ', ' + client.zip_code
                 if client_condensed[client.id]['county'] != client.county and client.county is not None:
                     client_condensed[client.id]['county'] = client_condensed[client.id]['county'] + ', ' + client.county
+                if client_condensed[client.id]['bad_address'] != client.bad_address and client.bad_address is not None:
+                    client_condensed[client.id]['bad_address'] = client_condensed[client.id]['bad_address'] + ', ' + client.bad_address
+                if client_condensed[client.id]['do_not_contact'] != client.do_not_contact and client.do_not_contact is not None:
+                    client_condensed[client.id]['do_not_contact'] = client_condensed[client.id]['do_not_contact'] + ', ' + client.do_not_contact
+                if client_condensed[client.id]['remove_mailing'] != client.remove_mailing and client.remove_mailing is not None:
+                    client_condensed[client.id]['remove_mailing'] = client_condensed[client.id]['remove_mailing'] + ', ' + client.remove_mailing
             else:
                 client_condensed[client.id] = {}
                 client_condensed[client.id]['full_phone'] = client.full_phone if client.full_phone is not None else ''
@@ -1630,6 +1636,20 @@ def contact_list(request):
                 client_condensed[client.id]['intake_date'] = client.intake_date if client.intake_date is not None else ''
                 client_condensed[client.id]['zip_code'] = client.zip_code if client.zip_code is not None else ''
                 client_condensed[client.id]['county'] = client.county if client.county is not None else ''
+                client_condensed[client.id]['age_group'] = client.age_group if client.age_group is not None else ''
+                client_condensed[client.id]['address_one'] = client.address_one if client.address_one is not None else ''
+                client_condensed[client.id]['address_two'] = client.address_two if client.address_two is not None else ''
+                client_condensed[client.id]['suite'] = client.suite if client.suite is not None else ''
+                client_condensed[client.id]['city'] = client.city if client.city is not None else ''
+                client_condensed[client.id]['state'] = client.state if client.state is not None else ''
+                client_condensed[client.id]['region'] = client.region if client.region is not None else ''
+                client_condensed[client.id]['bad_address'] = client.bad_address if client.bad_address is not None else ''
+                client_condensed[client.id]['do_not_contact'] = client.do_not_contact if client.do_not_contact is not None else ''
+                client_condensed[client.id]['deceased'] = client.deceased if client.deceased is not None else ''
+                client_condensed[client.id]['remove_mailing'] = client.remove_mailing if client.remove_mailing is not None else ''
+                client_condensed[client.id]['active'] = client.active if client.active is not None else ''
+                client_condensed[client.id]['sip_client'] = client.sip_client if client.sip_client is not None else ''
+                client_condensed[client.id]['core_client'] = client.core_client if client.core_client is not None else ''
 
         if excel == 'true':
             filename = "Lynx Search Results"
@@ -1641,7 +1661,7 @@ def contact_list(request):
                 ["Full Name", "First Name", "Last Name", "Intake Date", "Age Group", "County", "Email", "Phone",
                  "Address 1", "Address 2", "Suite", "City", "State", "Zip Code", "Region", "Bad Address",
                  "Do Not Contact", "Deceased", "Remove Mailing", "Active", "SIP Client", 'Core Client'])
-            for client in f.qs:
+            for key, client in client_condensed:
                 if client.bad_address:
                     client.bad_address = "Bad Address"
                 else:
@@ -1680,4 +1700,5 @@ def contact_list(request):
 
     else:
         f = ContactFilter()
+        client_condensed = {}
     return render(request, 'lynx/contact_search.html', {'filter': f, 'client_list': client_condensed})
