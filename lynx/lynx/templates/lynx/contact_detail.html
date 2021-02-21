@@ -298,7 +298,6 @@
         <li><p class="tab">Sorry, no files uploaded for this client</p></li>
     {% endfor %}
 </ul>
-<br>
 {% if not request.GET.print %}
 <h3>New Client Note</h3>
 <form action="/lynx/client/{{ object.id }}" method="post">
