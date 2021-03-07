@@ -500,13 +500,17 @@ class ContactDetailView(LoginRequiredMixin, DetailView):
     def post(self, request, *args, **kwargs):
         if 'form' in request.POST:
             form = IntakeNoteForm(request.POST, request.FILES)
+            upload = False
         else:
             form = DocumentForm(request.POST, request.FILES)
+            upload = True
 
         if form.is_valid():
             form = form.save(commit=False)
             form.contact_id = self.kwargs['pk']
             form.user_id = request.user.id
+            if upload:
+                form.description = request.FILES['file'].name
             form.save()
             action = "/lynx/client/" + str(self.kwargs['pk'])
             return HttpResponseRedirect(action)

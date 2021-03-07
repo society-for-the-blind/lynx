@@ -340,11 +340,10 @@ class VolunteerForm(forms.ModelForm):
 
 
 class DocumentForm(forms.ModelForm):
-    last_name = forms.FileField(widget=forms.FileInput(attrs={'aria-required': 'true'}))
 
     class Meta:
         model = Document
-        fields = ('description', 'document', )
+        fields = ('document', )
 
 
 # This will not work past 2099 ;)
