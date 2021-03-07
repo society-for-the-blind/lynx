@@ -498,7 +498,7 @@ class ContactDetailView(LoginRequiredMixin, DetailView):
         return context
 
     def post(self, request, *args, **kwargs):
-        if 'form' in request.POST:
+        if 'note' in request.POST:
             form = IntakeNoteForm(request.POST, request.FILES)
             upload = False
         else:

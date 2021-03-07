@@ -307,7 +307,7 @@
         <li><p class="tab">Sorry, no files uploaded for this client</p></li>
     {% endfor %}
 </ul>
-<br><br>
+<br>
 <h3 id="upload">Upload Files</h3>
 <form action="/lynx/client/{{ object.id }}" method="post" enctype="multipart/form-data">
     {% csrf_token %}
