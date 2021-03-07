@@ -286,6 +286,15 @@
         Note By: {{ user.first_name }} {{ user.last_name }} <a href='/lynx/intake-note-edit/{{ note.id }}'>Edit</a>
 {% endif %}
 <br><br>
+{% if not request.GET.print %}
+<h3>New Client Note</h3>
+<form action="/lynx/client/{{ object.id }}" method="post">
+    <p>These notes are for high level client information. Please don't record lesson or service information here.</p>
+    {% csrf_token %}
+    {{ form.as_p }}
+    <input type="submit" class="btn btn-success" value="Submit Client Note">
+</form>
+<br><br>
 <h3>Uploaded Files</h3>
 <ul>
     {% for doc in document_list %}
@@ -298,14 +307,6 @@
         <li><p class="tab">Sorry, no files uploaded for this client</p></li>
     {% endfor %}
 </ul>
-{% if not request.GET.print %}
-<h3>New Client Note</h3>
-<form action="/lynx/client/{{ object.id }}" method="post">
-    <p>These notes are for high level client information. Please don't record lesson or service information here.</p>
-    {% csrf_token %}
-    {{ form.as_p }}
-    <input type="submit" class="btn btn-success" value="Submit Client Note">
-</form>
 <br><br>
 <h3 id="upload">Upload Files</h3>
 <form action="/lynx/client/{{ object.id }}" method="post" enctype="multipart/form-data">

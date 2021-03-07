@@ -14,7 +14,10 @@ months = (("1", "January"), ("2", "February"), ("3", "March"), ("4", "April"), (
 
 quarters = (("1", "Q1"), ("2", "Q2"), ("3", "Q3"), ("4", "Q4"))
 
+
 class ContactForm(forms.ModelForm):
+    first_name = forms.CharField(widget=forms.TextInput(attrs={'aria-required': 'true'}))
+    last_name = forms.CharField(widget=forms.TextInput(attrs={'aria-required': 'true'}))
 
     class Meta:
 
@@ -27,6 +30,7 @@ class ContactForm(forms.ModelForm):
 
 
 class IntakeForm(forms.ModelForm):
+    intake_date = forms.CharField(widget=forms.DateInput(attrs={'aria-required': 'true'}))
 
     class Meta:
 
@@ -336,6 +340,8 @@ class VolunteerForm(forms.ModelForm):
 
 
 class DocumentForm(forms.ModelForm):
+    last_name = forms.FileField(widget=forms.FileInput(attrs={'aria-required': 'true'}))
+
     class Meta:
         model = Document
         fields = ('description', 'document', )
