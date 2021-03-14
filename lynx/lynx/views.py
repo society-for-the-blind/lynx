@@ -605,7 +605,7 @@ class ProgressReportDetailView(LoginRequiredMixin, DetailView):
         max_date = str(year) + month_days[month_number]
         notes = LessonNote.objects.filter(authorization_id=auth_id).filter(
             date__month=month_number).filter(date__year=year).values()
-        all_notes = LessonNote.objects.filter(authorization_id=auth_id).filter(date<=max_date).values()
+        all_notes = LessonNote.objects.filter(authorization_id=auth_id).filter(date__lte=max_date).values()
         authorization = Authorization.objects.filter(id=auth_id).values()
 
         total_units = 0
