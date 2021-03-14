@@ -612,9 +612,10 @@ class ProgressReportDetailView(LoginRequiredMixin, DetailView):
 
         for note in all_notes:
             if note['billed_units']:
-                units = float(note['billed_units'])
-                all_units += units
-                class_count += 1
+                if note['month'] > month_number or note['year'] > year:
+                    units = float(note['billed_units'])
+                    all_units += units
+                    class_count += 1
 
         for note in notes:
             if note['billed_units']:
