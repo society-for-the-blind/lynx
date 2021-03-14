@@ -611,7 +611,8 @@ class ProgressReportDetailView(LoginRequiredMixin, DetailView):
         month_count = 0
 
         for note in all_notes:
-            dt = datetime.strptime(note['date'], '%Y-%m-%d')
+            dt = note['date']
+            # dt = datetime.strptime(note['date'], '%Y-%m-%d')
             note_month = dt.month
             note_year = dt.year
             if note['billed_units']:
