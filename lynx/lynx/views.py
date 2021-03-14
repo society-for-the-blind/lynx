@@ -592,6 +592,8 @@ class ProgressReportDetailView(LoginRequiredMixin, DetailView):
         context = super(ProgressReportDetailView, self).get_context_data(**kwargs)
         MONTHS = {"January": 1, "February": 2, "March": 3, "April": 4, "May": 5, "June": 6, "July": 7,
                   "August": 8, "September": 9, "October": 10, "November": 11, "December": 12}
+        month_days = {1: '-01-31', 2: '-02-28', 3: '-03-31', 4: '-04-30', 5: '-05-31', 6: '-06-30', 7: '-07-31',
+                  8: '-08-31', 9:'-09-30', 10: '-10-31', 11:'-11-30', 12: '-12-31'}
 
         report = ProgressReport.objects.filter(id=self.kwargs['pk']).values()
         auth_id = report[0]['authorization_id']
@@ -600,9 +602,10 @@ class ProgressReportDetailView(LoginRequiredMixin, DetailView):
         if len(month_number) > 2:
             month = report[0]['month']
             month_number = MONTHS[month]
+        max_date = str(year) + month_days[month_number]
         notes = LessonNote.objects.filter(authorization_id=auth_id).filter(
             date__month=month_number).filter(date__year=year).values()
-        all_notes = LessonNote.objects.filter(authorization_id=auth_id).values()
+        all_notes = LessonNote.objects.filter(authorization_id=auth_id).filter(date<=max_date).values()
         authorization = Authorization.objects.filter(id=auth_id).values()
 
         total_units = 0
@@ -611,14 +614,12 @@ class ProgressReportDetailView(LoginRequiredMixin, DetailView):
         month_count = 0
 
         for note in all_notes:
-            dt = note['date']
+            # dt = note['date']
             # dt = datetime.strptime(note['date'], '%Y-%m-%d')
-            note_month = dt.month
-            note_year = dt.year
+            # note_month = dt.month
+            # note_year = dt.year
             if note['billed_units']:
-                if (int(note_month) > int(month_number) and int(note_year) > int(year)) or int(note_year) > int(year):
-                    continue
-                else:
+                # if (int(note_month) > int(month_number) and int(note_year) > int(year)) or int(note_year) > int(year):
                     units = float(note['billed_units'])
                     all_units += units
                     class_count += 1
