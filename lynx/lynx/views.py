@@ -592,8 +592,8 @@ class ProgressReportDetailView(LoginRequiredMixin, DetailView):
         context = super(ProgressReportDetailView, self).get_context_data(**kwargs)
         MONTHS = {"January": 1, "February": 2, "March": 3, "April": 4, "May": 5, "June": 6, "July": 7,
                   "August": 8, "September": 9, "October": 10, "November": 11, "December": 12}
-        month_days = {1: '-01-31', 2: '-02-28', 3: '-03-31', 4: '-04-30', 5: '-05-31', 6: '-06-30', 7: '-07-31',
-                  8: '-08-31', 9:'-09-30', 10: '-10-31', 11:'-11-30', 12: '-12-31'}
+        month_days = {'1': '-01-31', '2': '-02-28', '3': '-03-31', '4': '-04-30', '5': '-05-31', '6': '-06-30',
+                      '7': '-07-31', '8': '-08-31', '9':'-09-30', '10': '-10-31', '11':'-11-30', '12': '-12-31'}
 
         report = ProgressReport.objects.filter(id=self.kwargs['pk']).values()
         auth_id = report[0]['authorization_id']
