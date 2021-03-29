@@ -1,0 +1,257 @@
+{% extends 'lynx/base.html' %}
+
+{% block content %}
+<h1>A Guide to Lynx</h1>
+
+<ul>
+    <li><a href="#lynx-1">1. What is Lynx?</a></li>
+    <li><a href="#lynx-2">2. Where are things located in Lynx?</a></li>
+    <ul>
+        <li><a href="#searching">Searching</a></li>
+        <li><a href="#client-page">The Client Page</a></li>
+        <li><a href="#add-client">Add New Client</a></li>
+        <li><a href="#authorization">Authorizations (Core)</a></li>
+        <li><a href="#lesson-notes">Lesson Notes (Core)</a></li>
+        <li><a href="#progress-reports">Progress Reports (Core)</a></li>
+        <li><a href="#billing-report">Core Billing Report (Core)</a></li>
+        <li><a href="#print-invoice">Print Monthly Invoices (Core)</a></li>
+        <li><a href="#sip-plans">SIP Plans (SIP)</a></li>
+        <li><a href="#add-sip-plan">Adding a new SIP Plan</a></li>
+        <li><a href="#edit-sip-plan">Editing a SIP Plan</a></li>
+        <li><a href="#delete-sip-plan">Deleting a SIP Plan</a></li>
+        <li><a href="#view-sip-plan">Viewing a SIP Plan</a></li>
+        <li><a href="#sip-notes">SIP Notes (SIP)</a></li>
+        <li><a href="#add-sip-note">Adding a SIP Note</a></li>
+        <li><a href="#edit-sip-note">Editing a SIP Note</a></li>
+        <li><a href="#delete-sip-note">Deleting a SIP Note</a></li>
+        <li><a href="#bulk-sip-note">Bulk SIP Notes</a></li>
+        <li><a href="#demo-report">Monthly SIP Demographic Report</a></li>
+        <li><a href="#quarterly-report">Quarterly SIP Report</a></li>
+        <li><a href="#update">Update Password</a></li>
+        <li><a href="#admin">Admin</a></li>
+    </ul>
+    <li><a href="#lynx-3">3. Navigation assistance</a></li>
+    <ul>
+        <li><a href="#heading-nav">Heading Navigation</a></li>
+        <li><a href="#table-nav">Table Navigation</a></li>
+        <li><a href="#lists">Moving between lists and list items </a></li>
+    </ul>
+    <li><a href="#lynx-4">4. Reporting Issues with Lynx</a></li>
+    <ul>
+        <li><a href="#reporting">Reporting an Issue</a></li>
+        <li><a href="#login">Login Woes</a></li>
+        <li><a href="#no-pain">No Pain Points</a></li>
+        <li><a href="#request">Requesting a feature</a></li>
+    </ul>
+    <li><a href="#lynx-5">5. Technical Details</a></li>
+</ul>
+
+
+<h2 id="lynx-1">1. What is Lynx?</h2>
+Lynx is a web based application for managing clients at Society for the Blind. It tracks all clients that come through the organization with their basic information, services needed, and services provided.
+
+It is located at this web address: https://lynx.societyfortheblind.org/lynx/
+
+<h2 id="lynx-2">2. Where are things located in Lynx?</h2>
+Unlike Slate, Lynx is centered around the client. To find any information, authorization, SIP notes, etc. for a client all you need to do is visit that client’s page.
+<h3 id="searching">Searching</h3>
+To get to the client page, go to the side navigation bar and navigate through until you find the link called ‘Clients.’ This will take you to the client search page. There are several options for finding a client.
+Any client marked active will be listed in the combobox. You can navigate to it and search by typing the letters in the client’s last name to easily move through the options. Once a name is selected, click the ‘View Client’ button
+At the top of the page there is a button called ‘Search All Clients.’ This will take you to a new page where you can search for the client by name. This search is very picky. It only looks for the name as entered in the database. So if I wanted to find Megan Tolentino, I could search for ‘Megan’ or ‘Tolentino’ or ‘Megan Tolentino’ or ‘Tolen’ and find Megan Tolentino. However, searching for ‘Tolentino, Megan’ will not work, nor will ‘Megan J Tolentino’. All results will be links that appear under the text box.
+There is a button at the top of the page called “Advanced Search”. This is the most flexible search tool and lets you use several different pieces of information to search. It can also be a little slow. When you go here you will see several fields. You can enter information for multiple fields, and the results will be for anyone who matches all of the criteria. They are:
+Last name contains. This will search for any person who has a last name with the characters you search here. If I searched for ‘Pete’ I would get results for anyone with the last name Peters, Peterson, or Tolentino-Peterson.
+First name contains. This will search for any person who has a first name with the characters you search here. If I searched for ‘Mar’ I would get results for anyone with the first name Mary, Marianne, Mark, Marie, Ann Marie, Amara, etc.
+Intake date is greater than. This field is for finding anyone with an intake date after the date you search for. So if I wanted to find everyone who had been added since Biden became president, I would enter the date 1/20/2021.
+Intake date is less than. This field is for finding anyone with an intake date before the date you search for. If I wanted to find everyone who was added before Lynx went live, I would enter the date 10/16/2020.
+*Note: If you want to find someone within a date range, you would but the earliest date in ‘Intake date is greater than’ and the latest date in ‘Intake date is less than’. If I wanted to find anyone who became a client in 2020, I would use 1/1/2020 and 12/31/2020 as my two dates.
+Intake date. This is for finding anyone added on a specific date. If I wanted to figure out who was added on the day Biden became president, I would search for 1/20/2020.
+Age group. This is for finding clients in a set age group. *I will be making this a dropdown at a future date.
+Email contains. This searches clients by their emails. If I wanted to find everyone who uses an aol email address still, I would enter ‘@aol.com’. If I want to find everyone who has an email address in the database I would search for ‘@’
+Zip code contains. This searches by zip code. If I search for 958, it will return results for 95835, 95834, 32958, 49586, 95858, etc. You probably want to search using all five numbers.
+County contains. This searches by county *I will be making this a dropdown at a future date.
+Phone contains. This field searches for clients using their phone number. If I search for 916, I will get all numbers that start with 916 as well as any number that has 916 anywhere else in the phone number. Since phone numbers have been entered in so many different ways, please only enter the numbers for this search. Don’t search for (123) 867-5309 or 123-867-5309, but just 1238675309.
+Using this information, if I wanted to find anyone in Sacramento County added in 2021 who has an email address, I would put ‘Sacramento’ in ‘County contains’, ‘1/1/2021’ in ‘intake date greater than’, ‘12/31/2021’ in ‘intake date lesser than’ and ‘@’ in ‘email contains, The results will be shown in a table below, sorted by last name. The name is a link to the client detail page. Depending on what you search, it may take a while to load, please be patient. You can also download the search results to an excel spreadsheet. To do this, the results must have been searched for and displayed on your screen. Hitting the download results button early will result in an empty excel spreadsheet or one containing the results of your last search.  *Note: Currently if a client has multiple emails, phone numbers, or addresses associated with them, they will show up for each one of those. I will be removing this bug in the future.
+
+<h3 id="client-page">The Client Page</h3>
+Once you make it to the client page you can access any information about that client! The page is divided by headers, which can be navigated through using Jaws or NVDA by pressing ‘H’ or pressing the level of the heading on the number row, such as pressing “1” to jump to the next heading at level 1.
+The page Heading level 1 is the client’s name
+Heading Level 2, Client information
+This contains all of the basic client information; their name, contact info, and services they have received at the organization. Clients can have multiple addresses, phone numbers, or emails associated with them. These can be added or edited in this section.
+Top level employees can delete a client in this section. DO NOT DELETE UNLESS YOU MADE A MISTAKE OR DUPLICATE. The data will be lost. If you want to remove a client, uncheck the active box.
+Heading Level 2, Emergency Contacts
+Each client can have several emergency contacts, and each of those contacts can have multiple phone numbers or emails. These can be added and edited in this section.
+Heading Level 2, Intake information
+This section contains all of the information for a client that is gathered on intake. You can edit the information using the button at the top of the section
+Heading level 3, Demographics. This includes gender, ethnicity, payment source, education, etc.
+Heading level 3, Criminal background. This section is generally only displayed if information is entered about a criminal background. It includes details about the record and parole.
+Heading level 3, Ocular Medical History. This section contains information about their vision impairment.
+Heading level 3, Other Medical History. This section includes notes about other health conditions or factors.
+Heading level 3, Blindness Skills/Other Information. This section is for notes on previous training and needs.
+Heading Level 2, Authorizations (on Core clients only)
+This section is a list of all authorizations the client has, the date range it is valid for, and the authorization number. The most recent authorization is at the top. It can be navigated using shortcuts for link navigation or tab in NVDA and Jaws. There is a link to add a new authorization at the bottom of the section.
+Heading Level 2, SIP Plans (on SIP clients only)
+This section lists all plans associated with a client. The plan name is a link to view the entire plan. It gives a summary of each plan, as well as links to edit or delete each plan. There is a button to add a new plan at the bottom of the section. SIP Notes associated with a SIP plan can be found by viewing the plan via the link.
+Heading Level 2, SIP Notes (on SIP clients only)
+This section lists each SIP Note with the most recent note at the top. A button to add a new note is at the top. For each note, there is a link that starts with “Edit…” that can be clicked to edit that note. The note is identified by the note date. Under the link is a heading level 3 with the note date. You can navigate through the notes by pressing ‘H’ to go from header to header, or by pressing tab to move through the links. Under the note date is the note text, the name of the instructor, hours, services provided, and service delivery. The final item for each note is a link you use to delete the note. Please make sure you are deleting the correct note!
+Heading Level 2, Notes
+This section is not for notes about classes or sessions with the client, but rather high level information. Like ‘Aser got married on April 8, 2016’ or ‘Megan moved on April 28, 2019’ or ‘Aser got a guide dog, Dixie, on 11/16/2019’. These don’t fit neatly anywhere else, but are good things to know about the client.
+There is a text box to add notes at the bottom of the page, and the notes are all listed in this section as well.
+
+<h3 id="add-client">Add New Client</h3>
+This section allows the addition of new clients.
+The first page is very brief with only the minimal information to create a client needed. First name and Last name are required fields. There is a list of checkboxes, with Active checked as a default. Check any additional categories they fall under, if SIP is not checked, you won’t see SIP Notes or SIP Plans on the client page, or a way to add them. Similarly if Core is not checked, you won’t see or be able to add authorizations. You can add an email, address, and phone number here as well. This page only allows the addition of one, if there are multiple phone numbers, you can add those once the client page is created. After you hit submit, the client is created, and you do not need to continue through the rest of the pages. You can add additional information at any time from the client page.
+The next page allows you to add emergency contact information. The Emergency contact can have a phone and email. If additional contact methods exist, they can be added on the client page.
+The next page contains all the intake information. The intake date is automatically set to the current date. I’m not going to detail each of the sections, but there is a lot of space to add any information you need to include.
+
+<h3 id="authorization">Authorizations (Core)</h3>
+Authorizations are necessary for Core Clients. They can be accessed for the Client Page under the header of Authorizations.
+Heading level 1, Client name
+Under this are some options to go back to that client’s page, edit the authorization, or (for high level users) delete the authorization.
+Heading level 2, Authorization Details.
+This section includes all information about the authorization. This tracks the number of hours authorized, how many classes/hours have been used, and how many still remain. The last two are calculated based on lesson notes.
+Heading level 2, Lesson Notes
+There is a quick guide on navigating through the table with the information using JAWS.
+There is a table with every lesson note entered under this authorization. It includes the Lesson Date, Attendance, Billed Units, Instructional Units, Successes, Obstacles, Recommendations, Other, Instructor, and Actions.
+The actions include view (look at the note on it’s own page), edit (edit this note), and delete (delete this note).
+At the bottom of the table attendance (days mark present out of days marked present + days marked absent) is totalled.
+At the bottom of the table, the amount spent on this authorization is totalled. This calculated by the sum of the hours * the billing rate or sum of number of classes * billing rate.
+At the bottom of the section is a button to ‘Add Lesson Note’
+Heading level 2, progress reports.
+This is a list of links. Each link will take you to view the entire progress report. Next to that link is one to edit that progress report, at the bottom of the list is a link to add a new progress report.
+Heading level 2, billing information
+This summarizes the charges made on the authorization. At the top is a link to the billing review, which formats this information into an invoice.
+There is a table containing the columns Lesson Date, Billed Time, Rate, Service Area, and Authorization Type.
+Below the table is the total billed again, and the remaining classes/hours on the authorization.
+
+<h3 id="lesson-notes">Lesson Notes (Core)</h3>
+Lesson notes are used to track what happens during each interaction between an instructor and client. They can be viewed as a summary on the authorization they belong to, or on a page of their own.
+The Lesson note page shows the information in the table in a column instead of a list. It has links to return to the client or to the authorization.
+The lesson note can be edited by clicking on the Edit button on the authorization page
+The lesson note can be deleted by clicking on the Delete button on the authorization page
+
+<h3 id="progress-reports">Progress Reports (Core)</h3>
+Progress reports are a monthly summary for an authorization of the work accomplished. They can be accessed for the authorization they belong to by clicking on the link for the correct month. They can be edited by clicking on the edit link on the authorization page or the edit button on the progress report page. They can be deleted from the progress report page.
+Heading Level 1, Title of the page
+Links to return to authorization client, edit report, and delete report.
+Heading Level 2, Client Information
+The client name and relevant information
+Heading Level 2, authorization information
+The relevant authorization information. It also calculates the hours used in that month through the lesson notes.
+Heading level 2, report
+This summarizes the work accomplished and remaining objectives
+At the bottom of the page is a Print View button. Clicking on this reloads the page to remove the side bar, add the organization’s logo, and remove buttons.
+
+<h3 id="billing-report">Core Billing Report (Core)</h3>
+The Core Billing report can be accessed from the sidebar. It generates an excel spreadsheet with all lesson notes for a selected month. The columns are Clien, Service Area, Authorization Number, Authorization Type, Billed Time, Billing Rate, Amount, and Payment Source. The amount is calculated by the billed time * billing rate. At the bottom of the spreadsheet are the total time and total amount billed.
+
+<h3 id="print-invoice">Print Monthly Invoices (Core)</h3>
+This page allows the user to get all invoices and progress reports for a given month to make it easier to access them for printing. The links are for a print view which removes the sidebar and any buttons and adds the organization’s logo.
+
+<h3 id="sip-plans">SIP Plans (SIP)</h3>
+SIP Plans are used to track the final goal of various SIP Notes. You can view all SIP Plans for a client on a client page, as well as add a new SIP plan. The Plan name is generated for the data input and follows the following format” Plan Start Date - Plan Type - Instructor Name. As a client reaches goals for the plan, instructors can mark progress that is reported in the quarterly OIB reports.
+
+<h3 id="add-sip-plan">Adding a new SIP Plan</h3>
+Heading level 1, Add New SIP Plan - page title
+Heading Level 2, Plan information
+Here you enter the start date, plan type, and instructor name. Unless this plan is being created late, you probably do not need to edit the outcome comboboxes.
+Heading level 2, Services
+This is a list of checkboxes, select all services associated with this plan.
+Heading level 2, Notes
+This is a text box in case you want to make any notes or reminders.
+<h3 id="edit-sip-plan">Editing a SIP Plan</h3>
+There are links to edit a SIP plan on the client page and the sip plan page. The format of the edit page follows the same layout as Adding a new SIP Plan.
+    <h3 id="delete-sip-plan">Deleting a SIP Plan</h3>
+Please do not delete a SIP Plan unless it was created in error. Once deleted, you will have to edit each note that was connected to it to connect to a new plan.
+    <h3 id="view-sip-plan">Viewing a SIP Plan</h3>
+You can view the SIP plan from the link on the Client page.
+Heading level 1, SIP Plan Name
+Below this is button to go back to the client page
+Heading Level 2, SIP Plan Notes
+For each note that has been connected to this plan there is an edit link then a heading level 3 with the SIP Note Date, then the SIP note text. This lets you easily review all the work the client has done for this SIP Plan
+
+<h3 id="sip-notes">SIP Notes (SIP)</h3>
+SIP Notes are records of the interactions instructors have with clients. A new SIP Note can be added from the client page.
+<h3 id="add-sip-note">Adding a SIP Note</h3>
+Heading level 1, Add New SIP Note
+Heading level 2, Notes
+Here you can add the Note, the note date, the length of the class, the instructor or instructors names, and the SIP Plan. SIP Plans track the client has made over a period of time. The combobox will only show Plans that belong to the client you are making the note for.
+Heading level 2, Services
+A list of services with checkboxes
+Heading level 2, Method of delivering services
+A list of delivery methods with checkboxes.
+<h3 id="edit-sip-note">Editing a SIP Note</h3>
+There are links to edit a SIP note on the client page and the sip note page. The format of the edit page follows the same layout as Adding a new SIP Note.
+<h3 id="delete-sip-note">Deleting a SIP Note</h3>
+Please do not delete a SIP Note unless it was created in error.
+<h3 id="bulk-sip-note">Bulk SIP Notes</h3>
+To help with sessions that many clients attend, we added an add Bulk SIP Notes functionality. It can be accessed in the sidebar at the link called Bulk SIP Notes.
+Heading level 1, add new SIP Note
+Heading level 2, Select clients.
+This causes the page to load slower so please be patient.
+There are 20 combo boxes in this section which are used to select a client and a plan that the note goes with.
+From the dropdown ‘Select a Client’, select the client name. They are in alphabetical order by last name. You can begin typing the last name to jump through the list. Once you hit enter to select a name, the combobox next to it ‘Select a plan’ will add new options to select. Any plan associated with the client will show up as an option to select.
+You can select up to 10 clients each time you use this page
+Heading level 2, Notes
+This section is the same as adding a SIP Note. Everything you fill out here will be used to create a note for every client you selected above.
+Heading level 2, Services
+A list of services with checkboxes
+Heading level 2, Method of delivering services
+A list of delivery methods with checkboxes.
+
+<h3 id="demo-report">Monthly SIP Demographic Report</h3>
+This report collects the demographic data for all SIP clients who had a SIP Note entered in the selected month.
+
+<h3 id="quarterly-report">Quarterly SIP Report</h3>
+This generates the quarterly date SIP reports on. Select the quarter and first year of the fiscal year (For November 11 2020 and March 15 2021, which are fiscal year 2020-21, the year selected would be 2020). Below select which type of report you wish to generate. The reports are formatted to be pasted into the OIB report.
+<h3 id="update">Update Password</h3>
+This lets you reset your password from the default one you received upon receiving your account.
+
+<h3 id="admin">Admin</h3>
+To be added…
+
+<h2 id="lynx-3">3. Navigation assistance</h2>
+Lynx was developed in accordance with the current Web Content Accessibility Guidelines (WCAG) version 2.1 guidelines in mind.  This requires screen reader users to be current on their assistive technology of choice. Here are some common techniques for streamlining the process of moving through pages on Lynx.
+<h3 id="heading-nav">Heading Navigation</h3>
+Major parts of any page in Lynx are separated by headings. This means you can quickly jump between sections by pressing “H” to go to the next heading or “Shift+H” to jump to the previous heading while using a screen reader. Larger or more complicated pages will use a hierarchy of headings, with the title of the page at level 1, sections at level 2 and subsections at level 3. Pressing the 1 through 6 keys on your keyboard’s number arrow will jump to the next heading at that level. Adding the Shift key will move to the previous heading at that level.
+<h3 id="table-nav">Table Navigation</h3>
+Several pages in Lynx display information in tables. A screen reader user may use the “T” and “Shift+T” keystrokes to jump to the next or previous table found on the page. Once the right table is found, a user can hold down the Control and Alt keys on their keyboard while pressing an arrow key to move their cursor one cell over in the desired direction on the table. This functionality is identical in JAWS and NVDA. A JAWS user may also use the Table Layer, by using the layered keystroke JAWS+Space followed by the “T” key. In the table navigation mode, the user can move between cells by simply using the arrow keys without holding Control and Alt: The Escape key exits the table layer.
+<h3 id="lists">Moving between lists and list items</h3>
+Some times in Lynx are displayed as lists. A user of JAWS or NVDA may use the “L” and “Shift+L” keystrokes to jump to the next or previous lists on a page respectively. A list is made up of items: and a user may move between items in a list by pressing “I” or “Shift+I.” Depending on your settings, pressing “I” or “Shift+I” may take you to the next or previous list item on a page regardless of whether it is in the same list or not.
+
+<h2 id="lynx-4">4. Reporting Issues with Lynx</h2>
+While we have found most of the issues with Lynx, there is more to do! I want to make it something that is easy to use. To this end, I want to make sure I hear about issues as soon as possible.
+<h3 id="reporting">Reporting an Issue</h3>
+Whenever you are reporting an issue there are a few things that help me quickly resolve it.
+A link. A link to the webpage that is having a problem helps me see exactly what happens when I do the same thing you attempted to do.
+Error text. I still have the website in debug mode, so any time there is an issue a screen with incomprehensible nonsense comes up. This helps me determine what the issue is because it’s included in all of that information. If you can copy and paste this or take a screenshot to send me that helps me out immensely.
+Urgency. I can have a hard time gauging how much of an issue a problem is if you don’t clarify that for me. Letting me know how urgent it is that something gets resolved means I will work on an urgent issue before working down my to do list.
+
+I sort website issues into four categories.
+Work stopping. You cannot get your job done because of an issue with the site. Please contact me immediately through email at mjtolentino247@gmail.com and CC your supervisor so they know of the issue as well.
+Major. There is an issue that is causing problems that aren’t preventing you from doing your job, but is making it difficult. Please send me an email at mjtolentino247@gmail.com with these issues.
+Medium. These are annoyances that cause minor issues. As you notice these, make a list and once you have 2-3 of them send me an email at mjtolentino247@gmail.com and I can fix them.
+Minor. These are general things like appearance, small annoyances or fixes. As you notice these, make a list and once you have 5-6 of them send me an email at mjtolentino247@gmail.com and I can fix them.
+
+<h3 id="login">Login Woes</h3>
+If you are having a problem logging in, Attila and Shane can also change your password! If I don’t respond immediately, please let them know as well.
+<h3 id="no-pain">No Pain Points</h3>
+My goal as a developer is to make something that has no pain points. I want everything to be as easy as possible to use. If something could be working better, labelled differently, moved to a better area, made more accessible, etc., please let me know!
+<h3 id="request">Requesting a feature</h3>
+If there is something you think would make Lynx better, I would love to hear it! However, I do need to clear it with supervisors before working on it. If you have an idea please make sure to CC them on the request so we can make sure it’s approved.
+
+<h2 id="lynx-5">5. Technical Details</h2>
+Lynx is a Django (python) project, built on an Ubuntu server using nGinx and Gunicorn. I used a PostgreSQL database. The entire site is on Azure.
+
+To pull information from the git repository:
+cd /var/www/lynx/slate-2
+sudo git pull [enter sudo password and gitlab credentials]
+sudo systemctl restart gunicorn
+
+To update database structure you must not change the database directly, but edit the models.py file. Afterwards, you migrate the change using the Django architecture.
+cd /var/www/lynx/slate-2
+sudo git pull [enter sudo password and gitlab credentials]
+sudo python3 ./lynx/manage.py makemigrations
+sudo python3 ./lynx/manage.py migrate
+sudo systemctl restart gunicorn
+
+{% endblock %}

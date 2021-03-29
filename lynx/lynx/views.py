@@ -1713,3 +1713,7 @@ def download(request, path):
             response['Content-Disposition'] = 'inline; filename=' + os.path.basename(file_path)
             return response
     raise Http404
+
+
+def manual(request):
+    return render(request, 'manual.html')

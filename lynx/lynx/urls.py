@@ -59,5 +59,6 @@ urlpatterns = [
     path('report-search', views.progress_result_view, name='report_search'),
     path('search', views.contact_list, name='searcher'),
     path('download/<path:path>', views.download, name='download'),
+    path('manual', views.manual, name='manual'),
     path("", views.index, name='index')
 ]
