@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, reverse
 from django.http import HttpResponse, HttpResponseRedirect
-from django.views.generic import DetailView, ListView, FormView, DeleteView
+from django.views.generic import DetailView, ListView, FormView, DeleteView, TemplateView
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.views.generic.edit import UpdateView
@@ -1715,5 +1715,5 @@ def download(request, path):
     raise Http404
 
 
-def manual(request):
-    return render(request, 'manual.html')
+class ManualView(TemplateView):
+    template_name = 'manual.html'
