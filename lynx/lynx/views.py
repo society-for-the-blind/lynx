@@ -1716,4 +1716,4 @@ def download(request, path):
 
 
 class ManualView(TemplateView):
-    template_name = 'manual.html'
+    template_name = 'lynx/manual.html'
