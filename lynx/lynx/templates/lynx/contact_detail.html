@@ -283,7 +283,7 @@
 {% endfor %}
 {% if object.contact_notes %}
     <p class="tab">{{ object.note_date|date:'F j, Y' }}: {{ object.contact_notes|linebreaks }}<br>
-        Note By: {{ user.first_name }} {{ user.last_name }} <a href='/lynx/intake-note-edit/{{ note.id }}'>Edit</a>
+        Note By: {{ object.user.first_name }} {{ object.user.last_name }} <a href='/lynx/intake-edit/{{ object.id }}'>Edit</a>
 {% endif %}
 <br><br>
 {% if not request.GET.print %}
