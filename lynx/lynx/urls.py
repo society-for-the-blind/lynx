@@ -10,6 +10,7 @@ urlpatterns = [
     path('add-authorization/<int:contact_id>/', views.add_authorization, name='add_authorization'),
     path('add-lesson-note/<int:authorization_id>/', views.add_lesson_note, name='add_lesson_note'),
     path('get-hour-validation/', views.get_hour_validation, name='get_hour_validation'),
+    path('get-date-validation/', views.get_date_validation, name='get_date_validation'),
     path('add-intake/<int:contact_id>/', views.add_intake, name='add_intake'),
     path('add-emergency/<int:contact_id>/', views.add_emergency, name='add_emergency'),
     path('add-address/<int:contact_id>/', views.add_address, name='add_address'),

@@ -415,6 +415,19 @@ def get_hour_validation(request): #check if they are entering more hours then al
         return JsonResponse({"result": 'true'})
 
 
+def get_date_validation(request): #check if they are entering a lesson note after the authorization authorization
+    authorization_id = request.GET.get('authorization_id')
+    note_date = request.GET.get('note_date')
+    authorization = Authorization.objects.get(id=authorization_id)
+
+    auth_date = authorization.end_date
+
+    if note_date > auth_date:
+        return JsonResponse({"result": 'false'})
+    else:
+        return JsonResponse({"result": 'true'})
+
+
 @login_required
 def client_result_view(request):
     query = request.GET.get('q')

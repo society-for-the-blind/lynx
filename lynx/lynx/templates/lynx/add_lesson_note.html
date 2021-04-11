@@ -24,6 +24,28 @@
                 },
             });
         }
+
+        function checkDate(selectObject) {
+            var value = selectObject.value;
+            var auth = document.getElementById('authorization').value;
+
+            $.ajax({                       // initialize an AJAX request
+                url: "/lynx/get-date-validation/",                    // set the url of the request
+                data: {
+                  'authorization_id': auth,
+                  'note_date': value
+                },
+                success: function (data) {   // `data` is the return of the `get_sip_plans` view function
+                  if (data.result == 'true') {
+                      document.getElementById("submit").disabled = false;
+                      document.getElementById("dateWarning").hidden = true;
+                  } else {
+                      document.getElementById("submit").disabled = true;
+                      document.getElementById("dateWarning").hidden = false;
+                  }
+                },
+            });
+        }
     </script>
 {% endblock %}
 
@@ -61,6 +83,9 @@
     </div>
     <div class="row" hidden id="warning">
       <div class="col-12">You have exceeded the number of hours allowed on the authorization. Please change this to be able to add the note.</div>
+    </div>
+    <div class="row" hidden id="dateWarning">
+      <div class="col-12">You have entered a date after the end of the authorization. Please change this to be able to add the note.</div>
     </div>
     <input type="hidden" name="authorization" id="authorization" value="{{authorization_id}}">
     {{ form.errors }}
