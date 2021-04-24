@@ -61,5 +61,6 @@ urlpatterns = [
     path('search', views.contact_list, name='searcher'),
     path('download/<path:path>', views.download, name='download'),
     path('manual', views.ManualView.as_view(), name='manual'),
+    path('email', views.send_mail, name='email'),
     path("", views.index, name='index')
 ]
