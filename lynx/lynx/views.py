@@ -1749,7 +1749,7 @@ class ManualView(TemplateView):
 def email_update(request):
     # if request.method == 'POST':
     res = send_mail("Address Changes", "Did it work?", None, ['mjtolentino247@gmail.com'])
-    return HttpResponse('%s' % res)
+    return HttpResponse(res)
 
 
 # send_mail(
