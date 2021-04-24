@@ -1748,13 +1748,14 @@ class ManualView(TemplateView):
 
 def email_update(request):
     # if request.method == 'POST':
-    res = send_mail("Address Changes",
-                    "Did it work?",
-                    None,
-                    ['mjtolentino247@gmail.com'],
-                    fail_silently=False,
-                    )
-    return HttpResponse(res)
+    send_mail("Address Changes",
+            "Did it work?",
+            None,
+            ['mjtolentino247@gmail.com'],
+            fail_silently=False,
+            )
+
+    return HttpResponse('Mail successfully sent')
 
 
 # send_mail(
