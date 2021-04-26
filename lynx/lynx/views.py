@@ -17,6 +17,8 @@ import os
 import csv
 from datetime import datetime
 import logging
+import smtplib
+import ssl
 
 from .models import Contact, Address, Phone, Email, Intake, IntakeNote, EmergencyContact, Authorization, \
     ProgressReport, LessonNote, SipNote, Volunteer, SipPlan, OutsideAgency, ContactInfoView, UNITS, Document
@@ -1748,12 +1750,27 @@ class ManualView(TemplateView):
 
 def email_update(request):
     # if request.method == 'POST':
-    send_mail("Address Changes",
-            "Did it work?",
-            None,
-            ['mjtolentino247@gmail.com'],
-            fail_silently=False,
-            )
+
+    hostname = settings.EMAIL_HOST
+    username = settings.EMAIL_HOST_USER
+    password = settings.EMAIL_HOST_PASSWORD
+    port = settings.EMAIL_PORT
+
+    message = """DJANGO TEST"""
+
+    server = smtplib.SMTP(hostname, port)
+    server.ehlo()  # Can be omitted
+    server.starttls(context=ssl.create_default_context())  # Secure the connection
+    server.login(username, password)
+    server.sendmail(username, "mjtolentino247@gmail.com", message)
+    server.quit
+
+    # send_mail("Address Changes",
+    #         "Did it work?",
+    #         None,
+    #         ['mjtolentino247@gmail.com'],
+    #         fail_silently=False,
+    #         )
 
     return HttpResponse('Mail successfully sent')
 
