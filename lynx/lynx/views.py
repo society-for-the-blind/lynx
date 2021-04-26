@@ -1752,7 +1752,7 @@ def email_update(request):
     # if request.method == 'POST':
 
     # hostname = settings.EMAIL_HOST
-    # username = settings.EMAIL_HOST_USER
+    username = settings.EMAIL_HOST_USER
     # password = settings.EMAIL_HOST_PASSWORD
     # port = settings.EMAIL_PORT
     #
@@ -1766,11 +1766,11 @@ def email_update(request):
     # server.quit
 
     send_mail("Address Changes",
-            "Did it work?",
-            None,
-            ['mjtolentino247@gmail.com'],
-            fail_silently=False,
-            )
+                "Did it work?",
+                username,
+                ['mjtolentino247@gmail.com'],
+                fail_silently=False,
+                )
 
     return HttpResponse('Mail successfully sent')
 
