@@ -340,6 +340,16 @@ class VolunteerForm(forms.ModelForm):
         exclude = ('created', 'modified', 'user')
 
 
+class VolunteerHoursForm(forms.ModelForm):
+    volunteer_list = Contact.objects.filter(volunteer=1).order_by('last_name')
+    # clients = forms.ModelMultipleChoiceField(queryset=volunteer_list)
+
+    class Meta:
+
+        model = Volunteer
+        exclude = ('created', 'modified', 'user')
+
+
 class DocumentForm(forms.ModelForm):
 
     class Meta:

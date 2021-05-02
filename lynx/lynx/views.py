@@ -24,7 +24,7 @@ from .models import Contact, Address, Phone, Email, Intake, IntakeNote, Emergenc
     ProgressReport, LessonNote, SipNote, Volunteer, SipPlan, OutsideAgency, ContactInfoView, UNITS, Document
 from .forms import ContactForm, IntakeForm, IntakeNoteForm, EmergencyForm, AddressForm, EmailForm, PhoneForm, \
     AuthorizationForm, ProgressReportForm, LessonNoteForm, SipNoteForm, BillingReportForm, SipDemographicReportForm, \
-    VolunteerForm, SipCSFReportForm, SipPlanForm, SipNoteBulkForm, DocumentForm
+    VolunteerForm, SipCSFReportForm, SipPlanForm, SipNoteBulkForm, DocumentForm, VolunteerHoursForm
 from .filters import ContactFilter
 
 logger = logging.getLogger(__name__)
@@ -365,6 +365,24 @@ def add_volunteer(request):
     return render(request, 'lynx/add_volunteer.html', {'address_form': address_form, 'phone_form': phone_form,
                                                        'email_form': email_form, 'form': form,
                                                        'contact_form': contact_form})
+
+
+@login_required
+def add_volunteer_hours(request):
+    form = VolunteerHoursForm()
+
+    if request.method == 'POST':
+        form = VolunteerForm(request.POST)
+
+        if form.is_valid():
+            form = form.save()
+            contact_id = form.pk
+            form = form.save(commit=False)
+            form.contact_id = contact_id
+            volunteer_id = form.pk
+            form.save()
+            return HttpResponseRedirect(reverse('lynx:volunteer_hours', args=(volunteer_id,)))
+    return render(request, 'lynx/add_volunteer_hours.html', {'form': form})
 
 
 @login_required
