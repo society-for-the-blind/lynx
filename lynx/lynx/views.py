@@ -381,13 +381,12 @@ def add_volunteer_hours(request):
         form = VolunteerForm(request.POST)
 
         if form.is_valid():
-            form = form.save()
             contact_id = form.pk
             form = form.save(commit=False)
-            form.contact_id = contact_id
-            volunteer_id = form.pk
+            form.contact_id = form.pk
+            # volunteer_id = form.pk
             form.save()
-            return HttpResponseRedirect(reverse('lynx:volunteer_hours', args=(volunteer_id,)))
+            return HttpResponseRedirect(reverse('lynx:volunteer_hours', args=(contact_id,)))
     return render(request, 'lynx/add_volunteer_hours.html', {'form': form})
 
 
