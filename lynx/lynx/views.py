@@ -378,7 +378,7 @@ def add_volunteer_hours(request):
     form = VolunteerHoursForm()
 
     if request.method == 'POST':
-        form = VolunteerForm(request.POST)
+        form = VolunteerHoursForm(request.POST)
 
         if form.is_valid():
             contact_id = form.pk
