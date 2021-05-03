@@ -45,6 +45,12 @@ def client_list_view(request):
 
 
 @login_required
+def volunteer_list_view(request):
+    volunteers = Contact.objects.filter(volunteer=1).order_by(Lower('last_name'), Lower('first_name'))
+    return render(request, 'lynx/volunteer_list.html', {'volunteers': volunteers})
+
+
+@login_required
 def add_contact(request):
     form = ContactForm()
     address_form = AddressForm()
@@ -774,16 +780,16 @@ class SipPlanDetailView(LoginRequiredMixin, DetailView):
 
 
 class VolunteerDetailView(LoginRequiredMixin, DetailView):
-    model = Volunteer
+    model = Contact
 
     def get_context_data(self, **kwargs):
         # Call the base implementation first to get a context
         context = super(VolunteerDetailView, self).get_context_data(**kwargs)
-        context['contact_list'] = Contact.objects.filter(id=self.kwargs['pk'])
+        context['volunteer_list'] = Volunteer.objects.filter(contact_id=self.kwargs['pk'])
         context['address_list'] = Address.objects.filter(contact_id=self.kwargs['pk'])
         context['phone_list'] = Phone.objects.filter(contact_id=self.kwargs['pk'])
         context['email_list'] = Email.objects.filter(contact_id=self.kwargs['pk'])
-        context['emergency_list'] = EmergencyContact.objects.filter(contact_id=self.kwargs['pk'])
+        # context['emergency_list'] = EmergencyContact.objects.filter(contact_id=self.kwargs['pk'])
         return context
 
 
