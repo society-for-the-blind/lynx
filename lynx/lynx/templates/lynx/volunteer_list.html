@@ -3,29 +3,27 @@
 {% block javascript %}
 <script>
     $(document).ready(function(){
-        $('#contactSelect').change(function(){
-            var clientId = document.getElementById("contactSelect").value;
-            $('#viewClient').attr('action', '/lynx/client/' + clientId);
-            console.log($('#viewClient'))
+        $('#volunteerSelect').change(function(){
+            var volunteerId = document.getElementById("volunteerSelect").value;
+            $('#viewVolunteer').attr('action', '/lynx/volunteer/' + volunteerId);
         });
     });
 </script>
 {% endblock %}
 
-
 {% block content %}
 
 <h1>Volunteers</h1>
-<form id='viewClient' action="">
+<form id='viewVolunteer' action="">
     <label for="volunteerSelect">Select Volunteer: </label>
     <select id="volunteerSelect" >
         <option value="">---------</option>
         {% for volunteer in volunteers %}
-            <option value = "{{ client.id }}">{{ volunteer.last_name }}, {{ volunteer.first_name }} {% if volunteer.middle_name %}{{ volunteer.middle_name }} {% endif %}</option>
+            <option value = "{{ volunteer.id }}">{{ volunteer.last_name }}, {{ volunteer.first_name }} {% if volunteer.middle_name %}{{ volunteer.middle_name }} {% endif %}</option>
         {% endfor %}
     </select>
     <br>
-    <input type="submit" value="View Client" />
+    <input type="submit" value="View Volunteer" />
 </form>
 
 {% endblock %}
