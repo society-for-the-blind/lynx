@@ -46,7 +46,7 @@ def client_list_view(request):
 
 @login_required
 def volunteer_list_view(request):
-    volunteers = Contact.objects.filter(volunteer=1).order_by(Lower('last_name'), Lower('first_name'))
+    volunteers = Contact.objects.filter(volunteer_check=1).order_by(Lower('last_name'), Lower('first_name'))
     return render(request, 'lynx/volunteer_list.html', {'volunteers': volunteers})
 
 

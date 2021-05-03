@@ -341,7 +341,7 @@ class VolunteerForm(forms.ModelForm):
 
 
 class VolunteerHoursForm(forms.ModelForm):
-    volunteer_list = Contact.objects.filter(volunteer=1).order_by('last_name')
+    volunteer_list = Contact.objects.filter(volunteer_check=1).order_by('last_name')
     contact = forms.ModelChoiceField(queryset=volunteer_list)
 
     class Meta:
