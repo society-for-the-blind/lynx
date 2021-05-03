@@ -778,7 +778,7 @@ class SipPlanDetailView(LoginRequiredMixin, DetailView):
 
 class VolunteerDetailView(LoginRequiredMixin, DetailView):
     model = Contact
-    template_name = 'volunteer_detail.html'
+    template_name = 'lynx/volunteer_detail.html'
 
     def get_context_data(self, **kwargs):
         # Call the base implementation first to get a context
