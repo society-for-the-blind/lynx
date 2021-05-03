@@ -778,6 +778,7 @@ class SipPlanDetailView(LoginRequiredMixin, DetailView):
 
 class VolunteerDetailView(LoginRequiredMixin, DetailView):
     model = Contact
+    template_name = 'volunteer_detail.html'
 
     def get_context_data(self, **kwargs):
         # Call the base implementation first to get a context
@@ -786,7 +787,6 @@ class VolunteerDetailView(LoginRequiredMixin, DetailView):
         context['address_list'] = Address.objects.filter(contact_id=self.kwargs['pk'])
         context['phone_list'] = Phone.objects.filter(contact_id=self.kwargs['pk'])
         context['email_list'] = Email.objects.filter(contact_id=self.kwargs['pk'])
-        # context['emergency_list'] = EmergencyContact.objects.filter(contact_id=self.kwargs['pk'])
         return context
 
 
