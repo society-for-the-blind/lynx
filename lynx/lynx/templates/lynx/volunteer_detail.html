@@ -1,10 +1,54 @@
 {% extends 'lynx/base.html' %}
+{% load time_convert %}
 
 {% block content %}
 
 <h1>{{ contact.first_name }} {{ contact.last_name }}</h1>
-<h2>{{ object.date|date:'F j, Y' }}</h2>
 
+{% for address in address_list %}
+    {% if not address.bad_address and address.address_one %}
+        <p class="tab">
+            <strong>Address:</strong><br>
+            {{ address.address_one }}<br>
+            {% if address.address_two %}{{ address.address_two }}<br>{% endif %}
+            {% if address.suite %}Apt/Suite {{ address.suite }}<br>{% endif %}
+            {{ address.city }}, {{ address.state }} {{ address.zip_code }}<br>
+            {{ address.county }}<br>
+            {% if not request.GET.print %}<input type="button" class="btn btn-primary" aria-label="Edit Address" onclick="location.href='/lynx/address-edit/{{ address.id }}';" value="Edit Address" />{% endif %}
+        </p>
+    {% endif %}
+{% empty %}
+    <p class="tab">Sorry, no associated addresses for this volunteer</p>
+{% endfor %}
+
+
+{% for phone in phone_list %}
+    {% if phone.active %}
+        <p class="tab">
+            <strong>{{ phone.phone_type }} Phone Number:</strong> {{ phone.phone }} <br>
+            {% if not request.GET.print %}<input type="button" class="btn btn-primary" aria-label="Edit Number" onclick="location.href='/lynx/phone-edit/{{ phone.id }}';" value="Edit Number" />{% endif %}
+        </p>
+    {% endif %}
+{% empty %}
+    <p class="tab">Sorry, no associated phone numbers for this volunteer</p>
+{% endfor %}
+
+
+{% for email in email_list %}
+    {% if email.active %}
+        <p class="tab">
+            <strong>{{ email.email_type }} Email Address:</strong> {{ email.email }} <br>
+            {% if not request.GET.print %}<input type="button" class="btn btn-primary" aria-label="Edit Email" onclick="location.href='/lynx/email-edit/{{ email.id }}';" value="Edit Email" />{% endif %}
+        </p>
+    {% endif %}
+{% empty %}
+    <p class="tab">Sorry, no associated emails for this volunteer</p>
+{% endfor %}
+{% if not request.GET.print %}
+<input type="button" class="btn btn-success" aria-label="Add Address" onclick="location.href='/lynx/add-address/{{ object.id }}/';" value="Add Address" />
+<input type="button" class="btn btn-success" aria-label="Add Phone Number" onclick="location.href='/lynx/add-phone/{{ object.id }}/';" value="Add Phone Number" />
+<input type="button" class="btn btn-success" aria-label="Add Email" onclick="location.href='/lynx/add-email/{{ object.id }}/';" value="Add Email" />
+{% endif %}
 
 <h2>Volunteer History</h2>
     <div class="alert alert-success" role="alert">
