@@ -572,7 +572,7 @@ class Volunteer(models.Model):
     history = HistoricalRecords()
 
     def get_absolute_url(self):
-        return "/lynx/volunteer/%i/" % self.pk
+        return "/lynx/volunteer/%i/" % self.contact_id
 
 
 class SipPlan(models.Model):
