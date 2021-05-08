@@ -1053,7 +1053,7 @@ class VolunteerHourDeleteView(LoginRequiredMixin, DeleteView):
     model = Volunteer
 
     def get_success_url(self):
-        return reverse_lazy('lynx:volunteer_list_view'})
+        return reverse_lazy('lynx:volunteer_list_view')
 
 
 @login_required
