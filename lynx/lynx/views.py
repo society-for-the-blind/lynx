@@ -62,6 +62,8 @@ def add_contact(request):
         phone_form = PhoneForm(request.POST)
         email_form = EmailForm(request.POST)
         if address_form.is_valid() & phone_form.is_valid() & email_form.is_valid() & form.is_valid():
+            form = form.save(commit=False)
+            form.user_id = request.user.id
             form = form.save()
             contact_id = form.pk
             address_form = address_form.save(commit=False)
@@ -70,15 +72,18 @@ def add_contact(request):
             if hasattr(address_form, 'address_one'):
                 if address_form.address_one is not None:
                     address_form.contact_id = contact_id
+                    address_form.user_id = request.user.id
                     address_form.save()
             if hasattr(phone_form, 'phone'):
                 if phone_form.phone is not None:
                     phone_form.contact_id = contact_id
+                    phone_form.user_id = request.user.id
                     phone_form.active = True
                     phone_form.save()
             if hasattr(email_form, 'email'):
                 if email_form.email is not None:
                     email_form.contact_id = contact_id
+                    email_form.user_id = request.user.id
                     email_form.active = True
                     email_form.save()
             return HttpResponseRedirect(reverse('lynx:add_emergency', args=(contact_id,)))
@@ -94,6 +99,7 @@ def add_intake(request, contact_id):
         form = IntakeForm(request.POST)
         if form.is_valid():
             form = form.save(commit=False)
+            form.user_id = request.user.id
             form.contact_id = contact_id
             form.active = 1
             form.save()
@@ -207,6 +213,7 @@ def add_emergency(request, contact_id):
         if phone_form.is_valid() & email_form.is_valid() & form.is_valid():
             form = form.save(commit=False)
             form.contact_id = contact_id
+            form.user_id = request.user.id
             form.active = 1
             form.save()
             emergency_contact_id = form.pk
@@ -214,12 +221,14 @@ def add_emergency(request, contact_id):
                 if phone_form.data['phone'] is not None:
                     phone_form = phone_form.save(commit=False)
                     phone_form.active = True
+                    phone_form.user_id = request.user.id
                     phone_form.emergency_contact_id = emergency_contact_id
                     phone_form.save()
             if email_form.data['email']:
                 if email_form.data['email'] is not None:
                     email_form = email_form.save(commit=False)
                     email_form.active = True
+                    email_form.user_id = request.user.id
                     email_form.emergency_contact_id = emergency_contact_id
                     email_form.save()
 
@@ -237,6 +246,7 @@ def add_address(request, contact_id):
         if form.is_valid():
             form = form.save(commit=False)
             form.contact_id = contact_id
+            form.user_id = request.user.id
             form.active = 1
             form.save()
             return HttpResponseRedirect(reverse('lynx:client', args=(contact_id,)))
@@ -251,6 +261,7 @@ def add_email(request, contact_id):
         if form.is_valid():
             form = form.save(commit=False)
             form.contact_id = contact_id
+            form.user_id = request.user.id
             form.active = 1
             form.save()
             return HttpResponseRedirect(reverse('lynx:client', args=(contact_id,)))
@@ -266,6 +277,7 @@ def add_emergency_email(request, emergency_contact_id):
             form = form.save(commit=False)
             form.emergency_contact_id = emergency_contact_id
             form.active = 1
+            form.user_id = request.user.id
             form.save()
             emergency = EmergencyContact.objects.get(id=emergency_contact_id)
             contact_id = int(emergency.contact_id)
@@ -281,6 +293,7 @@ def add_phone(request, contact_id):
         if form.is_valid():
             form = form.save(commit=False)
             form.contact_id = contact_id
+            form.user_id = request.user.id
             form.active = 1
             form.save()
             return HttpResponseRedirect(reverse('lynx:client', args=(contact_id,)))
@@ -295,6 +308,7 @@ def add_emergency_phone(request, emergency_contact_id):
         if form.is_valid():
             form = form.save(commit=False)
             form.emergency_contact_id = emergency_contact_id
+            form.user_id = request.user.id
             form.active = 1
             form.save()
             emergency = EmergencyContact.objects.get(id=emergency_contact_id)
@@ -311,6 +325,7 @@ def add_authorization(request, contact_id):
         if form.is_valid():
             form = form.save(commit=False)
             form.contact_id = contact_id
+            form.user_id = request.user.id
             form.active = 1
             form.save()
             return HttpResponseRedirect(reverse('lynx:client', args=(contact_id,)))
@@ -354,18 +369,22 @@ def add_volunteer(request):
             form = form.save(commit=False)
             form.contact_id = contact_id
             volunteer_id = form.pk
+            form.user_id = request.user.id
             form.save()
             if address_form['address_one']:
                 address_form = address_form.save(commit=False)
                 address_form.contact_id = contact_id
+                address_form.user_id = request.user.id
                 address_form.save()
             if phone_form.phone:
                 phone_form = phone_form.save(commit=False)
                 phone_form.contact_id = contact_id
+                phone_form.user_id = request.user.id
                 phone_form.save()
             if email_form.email:
                 email_form = email_form.save(commit=False)
                 email_form.contact_id = contact_id
+                email_form.user_id = request.user.id
                 email_form.save()
             return HttpResponseRedirect(reverse('lynx:volunteer_detail', args=(volunteer_id,)))
     return render(request, 'lynx/add_volunteer.html', {'address_form': address_form, 'phone_form': phone_form,
@@ -376,13 +395,12 @@ def add_volunteer(request):
 @login_required
 def add_volunteer_hours(request):
     form = VolunteerHoursForm()
-
     if request.method == 'POST':
         form = VolunteerHoursForm(request.POST)
-
         if form.is_valid():
             form = form.save(commit=False)
             contact_id = form.contact_id
+            form.user_id = request.user.id
             form.save()
             return HttpResponseRedirect(reverse('lynx:volunteer', args=(contact_id,)))
     return render(request, 'lynx/add_volunteer_hours.html', {'form': form})
@@ -961,6 +979,12 @@ class AuthorizationUpdateView(LoginRequiredMixin, UpdateView):
     template_name_suffix = '_edit'
 
 
+class VolunteerHourUpdateView(LoginRequiredMixin, UpdateView):
+    model = Volunteer
+    fields = ['volunteer_type', 'note', 'volunteer_date', 'volunteer_hours']
+    template_name_suffix = '_edit'
+
+
 class SipPlanDeleteView(LoginRequiredMixin, DeleteView):
     model = SipPlan
 
@@ -1023,6 +1047,13 @@ class LessonNoteDeleteView(LoginRequiredMixin, DeleteView):
     def get_success_url(self):
         auth_id = self.kwargs['auth_id']
         return reverse_lazy('lynx:authorization_detail', kwargs={'pk': auth_id})
+
+
+class VolunteerHourDeleteView(LoginRequiredMixin, DeleteView):
+    model = Volunteer
+
+    def get_success_url(self):
+        return reverse_lazy('lynx:volunteer_list_view'})
 
 
 @login_required

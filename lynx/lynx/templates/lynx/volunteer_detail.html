@@ -58,9 +58,9 @@
         <tr>
             <th>Volunteer Date</th>
             <th>Volunteer Hours</th>
-            <th>Volunteer Organization</th>
+            <th>Program</th>
             <th>Notes</th>
-            <th>Instructor</th>
+            <th>Staff</th>
             <th>Actions</th>
         </tr>
         {% for vol in volunteer_list %}
@@ -71,10 +71,10 @@
                 <td>{{ vol.note }}</td>
                 <td>{{ vol.user.first_name }} {{ vol.user.last_name }}</td>
                 <td>
-<!--                    <form>-->
-<!--                      <button class="btn btn-primary" formaction="/lynx/lesson-note-edit/{{ vol.id }}">Edit</button>-->
-<!--                      <button class="btn btn-danger" formaction="/lynx/lesson-note-confirm/{{ vol.id }}/{{ object.id }}">Delete</button>-->
-<!--                    </form>-->
+                    <form>
+                      <button class="btn btn-primary" formaction="/lynx/volunteer-hour-edit/{{ vol.id }}">Edit</button>
+                      <button class="btn btn-danger" formaction="/lynx/volunteer-hour-confirm/{{ vol.id }}">Delete</button>
+                    </form>
 
                 </td>
             </tr>

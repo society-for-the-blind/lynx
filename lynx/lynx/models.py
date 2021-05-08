@@ -559,10 +559,13 @@ class SipNote(models.Model):
 
 class Volunteer(models.Model):
     contact = models.ForeignKey('Contact', on_delete=models.CASCADE)
-    volunteer_type = models.CharField(max_length=150, blank=True, choices=(('Access News', 'Access News'), ('Core', 'Core'), ('SIP', 'SIP')))
+    volunteer_type = models.CharField(max_length=150, blank=True, choices=(('Access News', 'Access News'),
+                                                                           ('Core', 'Core'), ('SIP', 'SIP'),
+                                                                           ('CareersPLUS', 'CareersPLUS'),
+                                                                           ('Agency', 'Agency')))
     note = models.TextField(null=True)
     volunteer_date = models.DateField(blank=True, null=True, default=date.today)
-    volunteer_hours = models.FloatField(blank=True, null=True)
+    volunteer_hours = models.FloatField(blank=True, null=True, choices=SIP_UNITS)
     created = models.DateTimeField(auto_now_add=True, null=True)
     modified = models.DateTimeField(auto_now=True, null=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET(get_sentinel_user))
