@@ -571,6 +571,9 @@ class Volunteer(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET(get_sentinel_user))
     history = HistoricalRecords()
 
+    def get_absolute_url(self):
+        return "/lynx/volunteer/%i/" % self.pk
+
 
 class SipPlan(models.Model):
     PLANS = (("Plan not complete", "Plan not complete"),
