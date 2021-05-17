@@ -64,8 +64,8 @@ def add_contact(request):
         if address_form.is_valid() & phone_form.is_valid() & email_form.is_valid() & form.is_valid():
             form = form.save(commit=False)
             form.user_id = request.user.id
-            con_form = form.save()
-            contact_id = con_form.pk
+            form.save()
+            contact_id = form.pk
             address_form = address_form.save(commit=False)
             phone_form = phone_form.save(commit=False)
             email_form = email_form.save(commit=False)
