@@ -18,7 +18,7 @@ quarters = (("1", "Q1"), ("2", "Q2"), ("3", "Q3"), ("4", "Q4"))
 class ContactForm(forms.ModelForm):
     first_name = forms.CharField(widget=forms.TextInput(attrs={'aria-required': 'true'}))
     last_name = forms.CharField(widget=forms.TextInput(attrs={'aria-required': 'true'}))
-    user = forms.CharField(widget=forms.HiddenInput())
+    # user = forms.CharField(widget=forms.HiddenInput())
 
     class Meta:
 
