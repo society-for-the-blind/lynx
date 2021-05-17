@@ -63,7 +63,7 @@ def add_contact(request):
         email_form = EmailForm(request.POST)
         if address_form.is_valid() & phone_form.is_valid() & email_form.is_valid() & form.is_valid():
             form = form.save(commit=False)
-            form.user_id = request.user
+            form.user_id = request.user.id
             form = form.save()
             contact_id = form.pk
             address_form = address_form.save(commit=False)
