@@ -63,7 +63,7 @@ def add_contact(request):
         email_form = EmailForm(request.POST)
         if address_form.is_valid() & phone_form.is_valid() & email_form.is_valid() & form.is_valid():
             form = form.save(commit=False)
-            form.user_id = request.user.id
+            form.user_id = request.user
             form = form.save()
             contact_id = form.pk
             address_form = address_form.save(commit=False)
@@ -466,6 +466,32 @@ def get_date_validation(request): #check if they are entering a lesson note afte
         return JsonResponse({"result": 'false'})
     else:
         return JsonResponse({"result": 'true'})
+
+
+@login_required
+def get_volunteers_group_month(request):
+    date = request.GET.get('date')
+    month = date.month
+    year = date.year
+    volunteers = Volunteer.objects.raw("""SELECT CONCAT(lc.first_name, ' ', lc.last_name), SUM(volunteer_hours) 
+        FROM lynx_volunteer lv
+        JOIN lynx_contact lc ON lv.contact_id = lc.id
+        WHERE lc.volunteer_check is TRUE 
+            AND EXTRACT(MONTH FROM volunteer_date) = %S 
+            AND EXTRACT(YEAR FROM volunteer_date) = %s
+        GROUP BY lc.id""", [month, year])
+
+    filename = "Volunteer Report - " + month + " - " + year
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="' + filename + '.csv"'
+
+    writer = csv.writer(response)
+    writer.writerow(
+        ['Volunteer Name', 'Month', 'Year', 'Hours', 'Gender'])
+
+    client_ids = []
+    # for client in client_set:
+
 
 
 @login_required
@@ -1306,6 +1332,7 @@ def sip_quarterly_report(request):
     form = SipCSFReportForm()
     return render(request, 'lynx/sip_quarterly_report.html', {'form': form})
 
+
 @login_required
 def sip_csf_services_report(request):
     form = SipCSFReportForm()
@@ -1786,6 +1813,7 @@ def contact_list(request):
     return render(request, 'lynx/contact_search.html', {'filter': f, 'client_list': client_condensed})
 
 
+@login_required
 def download(request, path):
     file_path = os.path.join(settings.MEDIA_ROOT, path)
     if os.path.exists(file_path):
@@ -1796,26 +1824,13 @@ def download(request, path):
     raise Http404
 
 
-class ManualView(TemplateView):
+class ManualView(LoginRequiredMixin, TemplateView):
     template_name = 'lynx/manual.html'
 
 
+@login_required
 def email_update(request):
-    # if request.method == 'POST':
-
-    # hostname = settings.EMAIL_HOST
     username = settings.EMAIL_HOST_USER
-    # password = settings.EMAIL_HOST_PASSWORD
-    # port = settings.EMAIL_PORT
-    #
-    # message = """DJANGO TEST"""
-    #
-    # server = smtplib.SMTP(hostname, port)
-    # server.ehlo()  # Can be omitted
-    # server.starttls(context=ssl.create_default_context())  # Secure the connection
-    # server.login(username, password)
-    # server.sendmail(username, "mjtolentino247@gmail.com", message)
-    # server.quit
 
     send_mail("Address Changes",
                 "Did it work?",
@@ -1827,10 +1842,42 @@ def email_update(request):
     return HttpResponse('Mail successfully sent')
 
 
-# send_mail(
-#     'That’s your subject',
-#     'That’s your message body',
-#     'from@yourdjangoapp.com',
-#     ['to@yourbestuser.com'],
-#     fail_silently=False,
-# )
+@login_required
+def get_volunteers(request):
+    if request.method == 'GET':
+        test = 1
+    else:
+        volunteer_condensed = {}
+    return render(request, 'lynx/contact_search.html', {'filter': f, 'volunteer_list': volunteer_condensed})
+
+    query = request.GET.get('q')
+    if query:
+        object_list = Contact.objects.annotate(
+            full_name=Concat('first_name', V(' '), 'last_name')
+        ).annotate(
+            zip_code=F('address__zip_code')
+        ).annotate(
+            county=F('address__county')
+        ).annotate(
+            intake_date=F('intake__intake_date')
+        ).annotate(
+            email_address=F('email__email')
+        ).filter(
+            Q(volunteer_check=1) & (
+                Q(first_name__icontains=query) |
+                Q(last_name__icontains=query) |
+                Q(zip_code__icontains=query) |
+                Q(county__icontains=query) |
+                Q(phone_number__icontains=query) |
+                Q(intake_date__icontains=query) |
+                Q(email_address__icontains=query)
+            )
+        )
+
+        object_list = object_list.order_by(Lower('last_name'), Lower('first_name'), 'id')
+        paginator = Paginator(object_list, 20)
+        page_number = request.GET.get('page')
+        page_obj = paginator.get_page(page_number)
+    else:
+        page_obj = None
+    return render(request, 'lynx/client_advanced_search.html', {'page_obj': page_obj})

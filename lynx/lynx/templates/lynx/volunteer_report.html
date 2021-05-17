@@ -1,0 +1,49 @@
+{% extends 'lynx/base.html' %}
+{% load crispy_forms_tags %}
+
+{% block javascript %}
+    <script>
+        function checkHours(selectObject) {
+            var value = selectObject.value;
+            var auth = document.getElementById('authorization').value;
+
+            $.ajax({                       // initialize an AJAX request
+                url: "/lynx/get-hour-validation/",                    // set the url of the request
+                data: {
+                  'authorization_id': auth,
+                  'billed_units': value
+                },
+                success: function (data) {   // `data` is the return of the `get_sip_plans` view function
+                  if (data.result == 'true') {
+                      document.getElementById("submit").disabled = false;
+                      document.getElementById("warning").hidden = true;
+                  } else {
+                      document.getElementById("submit").disabled = true;
+                      document.getElementById("warning").hidden = false;
+                  }
+                },
+            });
+        }
+    </script>
+{% endblock %}
+
+{% block content %}
+    <h1>Volunteer Report</h1>
+    <br>
+    <table class="table">
+        <tr>
+            <th>Volunteer Name</th>
+            <th>Month</th>
+            <th>Program</th>
+            <th>Volunteer Hours</th>
+        </tr>
+        {% for vol in volunteer_list %}
+            <tr>
+                <th>{{ vol.volunteer_date|date:'F j, Y' }}</th>
+                <td>{{ vol.volunteer_hours }}</td>
+                <td>{{ vol.volunteer_type }}</td>
+                <td>{{ vol.note }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+{% endblock %}

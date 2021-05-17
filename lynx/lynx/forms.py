@@ -18,6 +18,7 @@ quarters = (("1", "Q1"), ("2", "Q2"), ("3", "Q3"), ("4", "Q4"))
 class ContactForm(forms.ModelForm):
     first_name = forms.CharField(widget=forms.TextInput(attrs={'aria-required': 'true'}))
     last_name = forms.CharField(widget=forms.TextInput(attrs={'aria-required': 'true'}))
+    user = forms.CharField(widget=forms.HiddenInput())
 
     class Meta:
 
@@ -335,7 +336,6 @@ class SipCSFReportForm(forms.Form):
 class VolunteerForm(forms.ModelForm):
 
     class Meta:
-
         model = Volunteer
         exclude = ('created', 'modified', 'user')
 
@@ -345,7 +345,6 @@ class VolunteerHoursForm(forms.ModelForm):
     contact = forms.ModelChoiceField(queryset=volunteer_list)
 
     class Meta:
-
         model = Volunteer
         exclude = ('created', 'modified', 'user')
 
