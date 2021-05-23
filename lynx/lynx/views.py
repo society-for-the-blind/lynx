@@ -24,7 +24,7 @@ from .models import Contact, Address, Phone, Email, Intake, IntakeNote, Emergenc
     ProgressReport, LessonNote, SipNote, Volunteer, SipPlan, OutsideAgency, ContactInfoView, UNITS, Document
 from .forms import ContactForm, IntakeForm, IntakeNoteForm, EmergencyForm, AddressForm, EmailForm, PhoneForm, \
     AuthorizationForm, ProgressReportForm, LessonNoteForm, SipNoteForm, BillingReportForm, SipDemographicReportForm, \
-    VolunteerForm, SipCSFReportForm, SipPlanForm, SipNoteBulkForm, DocumentForm, VolunteerHoursForm
+    VolunteerForm, SipCSFReportForm, SipPlanForm, SipNoteBulkForm, DocumentForm, VolunteerHoursForm, VolunteerReportForm
 from .filters import ContactFilter
 
 logger = logging.getLogger(__name__)
@@ -469,29 +469,36 @@ def get_date_validation(request): #check if they are entering a lesson note afte
 
 
 @login_required
-def get_volunteers_group_month(request):
-    date = request.GET.get('date')
-    month = date.month
-    year = date.year
-    volunteers = Volunteer.objects.raw("""SELECT CONCAT(lc.first_name, ' ', lc.last_name), SUM(volunteer_hours) 
-        FROM lynx_volunteer lv
-        JOIN lynx_contact lc ON lv.contact_id = lc.id
-        WHERE lc.volunteer_check is TRUE 
-            AND EXTRACT(MONTH FROM volunteer_date) = %S 
-            AND EXTRACT(YEAR FROM volunteer_date) = %s
-        GROUP BY lc.id""", [month, year])
+def volunteers_report_month(request):
+    if request.GET.get('startDate') and request.GET.get('endDate'):
+        start = request.GET.get('startDate')
+        end = request.GET.get('endDate')
+        volunteers = Volunteer.objects.raw("""SELECT CONCAT(lc.last_name, ', ', lc.first_name) as name, SUM(volunteer_hours) as hours
+            FROM lynx_volunteer lv
+            JOIN lynx_contact lc ON lv.contact_id = lc.id
+            WHERE lc.volunteer_check is TRUE 
+                AND volunteer_date >= %s 
+                AND volunteer_date <= %s
+            GROUP BY lc.id""", [start, end])
 
-    filename = "Volunteer Report - " + month + " - " + year
-    response = HttpResponse(content_type='text/csv')
-    response['Content-Disposition'] = 'attachment; filename="' + filename + '.csv"'
+        filename = "Volunteer Report - " + start + " - " + end
+        response = HttpResponse(content_type='text/csv')
+        response['Content-Disposition'] = 'attachment; filename="' + filename + '.csv"'
 
-    writer = csv.writer(response)
-    writer.writerow(
-        ['Volunteer Name', 'Month', 'Year', 'Hours', 'Gender'])
+        writer = csv.writer(response)
+        writer.writerow(['Volunteer Name', 'Date', 'Hours'])
 
-    client_ids = []
-    # for client in client_set:
+        for vol in volunteers:
+            name = vol['name']
+            date = start + ' to ' + end
+            hours = vol['hours']
+            writer.writerow([name, date, hours])
 
+        return response
+
+    else:
+        form = VolunteerReportForm
+    return render(request, 'lynx/monthly_progress_reports.html', {'form': form})
 
 
 @login_required

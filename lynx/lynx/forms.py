@@ -333,6 +333,14 @@ class SipCSFReportForm(forms.Form):
         self.fields['year'].label = "Year (Start of Fiscal Year)"
 
 
+class VolunteerReportForm(forms.Form):
+    start_date = forms.DateField()
+    end_date = forms.DateField()
+
+    def __init__(self, *args, **kwargs):
+        super(VolunteerReportForm, self).__init__(*args, **kwargs)
+
+
 class VolunteerForm(forms.ModelForm):
 
     class Meta:

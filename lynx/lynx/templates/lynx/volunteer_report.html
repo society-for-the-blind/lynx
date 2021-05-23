@@ -1,35 +1,15 @@
 {% extends 'lynx/base.html' %}
 {% load crispy_forms_tags %}
 
-{% block javascript %}
-    <script>
-        function checkHours(selectObject) {
-            var value = selectObject.value;
-            var auth = document.getElementById('authorization').value;
-
-            $.ajax({                       // initialize an AJAX request
-                url: "/lynx/get-hour-validation/",                    // set the url of the request
-                data: {
-                  'authorization_id': auth,
-                  'billed_units': value
-                },
-                success: function (data) {   // `data` is the return of the `get_sip_plans` view function
-                  if (data.result == 'true') {
-                      document.getElementById("submit").disabled = false;
-                      document.getElementById("warning").hidden = true;
-                  } else {
-                      document.getElementById("submit").disabled = true;
-                      document.getElementById("warning").hidden = false;
-                  }
-                },
-            });
-        }
-    </script>
-{% endblock %}
-
 {% block content %}
     <h1>Volunteer Report</h1>
     <br>
+    <form method="post"> {% csrf_token %}
+        {{ form.as_p }}
+        {{ form.errors }}
+        <input type="submit" value="Submit">
+    </form>
+    <hr>
     <table class="table">
         <tr>
             <th>Volunteer Name</th>

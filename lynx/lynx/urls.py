@@ -27,6 +27,7 @@ urlpatterns = [
     path('add-progress-report/<int:authorization_id>/', views.add_progress_report, name='add_progress_report'),
     path('add-volunteer/', views.add_volunteer, name='add_volunteer'),
     path('billing-report/', views.billing_report, name='billing_report'),
+    path('volunteer-report/', views.volunteers_report_month, name='volunteer-report-by-month'),
     path('sip-plan/<int:pk>', views.SipPlanDetailView.as_view(), name='sip_plan'),
     path('sip-demographic-report/', views.sip_demographic_report, name='sip_demo_report'),
     path('sip-quarterly-demo-report/', views.sip_csf_demographic_report, name='sip_quarterly_demo_report'),
