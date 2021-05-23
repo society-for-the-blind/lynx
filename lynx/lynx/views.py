@@ -498,7 +498,7 @@ def volunteers_report_month(request):
 
     else:
         form = VolunteerReportForm
-    return render(request, 'lynx/monthly_progress_reports.html', {'form': form})
+    return render(request, 'lynx/volunteer_report.html', {'form': form})
 
 
 @login_required
