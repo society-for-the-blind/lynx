@@ -477,7 +477,7 @@ def volunteers_report_month(request):
             data = request.POST.copy()
             start = data.get('start_date')
             end = data.get('end_date')
-            volunteers = Volunteer.objects.raw("""SELECT lv.id, CONCAT(lc.last_name, ', ', lc.first_name) as name, SUM(volunteer_hours) as hours
+            volunteers = Volunteer.objects.raw("""SELECT lc.id, CONCAT(lc.last_name, ', ', lc.first_name) as name, SUM(volunteer_hours) as hours
                 FROM lynx_volunteer lv
                 JOIN lynx_contact lc ON lv.contact_id = lc.id
                 WHERE lc.volunteer_check is TRUE 
