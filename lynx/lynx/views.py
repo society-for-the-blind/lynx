@@ -470,34 +470,36 @@ def get_date_validation(request): #check if they are entering a lesson note afte
 
 @login_required
 def volunteers_report_month(request):
-    if request.GET.get('startDate') and request.GET.get('endDate'):
-        start = request.GET.get('startDate')
-        end = request.GET.get('endDate')
-        volunteers = Volunteer.objects.raw("""SELECT CONCAT(lc.last_name, ', ', lc.first_name) as name, SUM(volunteer_hours) as hours
-            FROM lynx_volunteer lv
-            JOIN lynx_contact lc ON lv.contact_id = lc.id
-            WHERE lc.volunteer_check is TRUE 
-                AND volunteer_date >= '%s'::date
-                AND volunteer_date <= '%s'::date
-            GROUP BY lc.id""", [start, end])
+    form = VolunteerReportForm()
+    if request.method == 'POST':
+        form = VolunteerReportForm(request.POST)
+        if form.is_valid():
+            data = request.POST.copy()
+            start = data.get('start_date')
+            end = data.get('end_date')
+            volunteers = Volunteer.objects.raw("""SELECT CONCAT(lc.last_name, ', ', lc.first_name) as name, SUM(volunteer_hours) as hours
+                FROM lynx_volunteer lv
+                JOIN lynx_contact lc ON lv.contact_id = lc.id
+                WHERE lc.volunteer_check is TRUE 
+                    AND volunteer_date >= '%s'::date
+                    AND volunteer_date <= '%s'::date
+                GROUP BY lc.id""", [start, end])
 
-        filename = "Volunteer Report - " + start + " - " + end
-        response = HttpResponse(content_type='text/csv')
-        response['Content-Disposition'] = 'attachment; filename="' + filename + '.csv"'
+            filename = "Volunteer Report - " + start + " - " + end
+            response = HttpResponse(content_type='text/csv')
+            response['Content-Disposition'] = 'attachment; filename="' + filename + '.csv"'
 
-        writer = csv.writer(response)
-        writer.writerow(['Volunteer Name', 'Date', 'Hours'])
+            writer = csv.writer(response)
+            writer.writerow(['Volunteer Name', 'Date', 'Hours'])
 
-        for vol in volunteers:
-            name = vol['name']
-            date = start + ' to ' + end
-            hours = vol['hours']
-            writer.writerow([name, date, hours])
+            for vol in volunteers:
+                name = vol['name']
+                date = start + ' to ' + end
+                hours = vol['hours']
+                writer.writerow([name, date, hours])
 
-        return response
+            return response
 
-    else:
-        form = VolunteerReportForm
     return render(request, 'lynx/volunteer_report.html', {'form': form})
 
 
