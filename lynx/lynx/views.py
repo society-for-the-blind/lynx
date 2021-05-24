@@ -477,13 +477,18 @@ def volunteers_report_month(request):
             data = request.POST.copy()
             start = data.get('start_date')
             end = data.get('end_date')
-            volunteers = Volunteer.objects.raw("""SELECT lc.id, CONCAT(lc.last_name, ', ', lc.first_name) as name, SUM(volunteer_hours) as hours
-                FROM lynx_volunteer lv
-                JOIN lynx_contact lc ON lv.contact_id = lc.id
-                WHERE lc.volunteer_check is TRUE 
-                    AND volunteer_date >= %s::date
-                    AND volunteer_date <= %s::date
-                GROUP BY lc.id""", [start, end])
+            volunteers = Volunteer.objects.raw("""SELECT lc.id, CONCAT(lc.last_name, ', ', lc.first_name) as name, 
+                                                        SUM(volunteer_hours) as hours, 
+                                                        EXTRACT(MONTH FROM volunteer_date) as month, 
+                                                        EXTRACT(YEAR FROM volunteer_date) as year
+                                                    FROM lynx_volunteer lv
+                                                    JOIN lynx_contact lc ON lv.contact_id = lc.id
+                                                    WHERE lc.volunteer_check is TRUE
+                                                        AND volunteer_date >= %s::date
+                                                        AND volunteer_date <= %s::date
+                                                    GROUP BY lc.id, 
+                                                             EXTRACT(MONTH FROM volunteer_date), 
+                                                             EXTRACT(YEAR FROM volunteer_date)""", [start, end])
 
             filename = "Volunteer Report - " + start + " - " + end
             response = HttpResponse(content_type='text/csv')
@@ -494,7 +499,7 @@ def volunteers_report_month(request):
 
             for vol in volunteers:
                 name = vol.name
-                date = start + ' to ' + end
+                date = vol.month + ' ' + vol.year
                 hours = vol.hours
                 writer.writerow([name, date, hours])
 
