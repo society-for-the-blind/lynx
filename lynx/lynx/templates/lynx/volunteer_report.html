@@ -9,21 +9,21 @@
         {{ form.errors }}
         <input type="submit" value="Submit">
     </form>
-    <hr>
-    <table class="table">
-        <tr>
-            <th>Volunteer Name</th>
-            <th>Month</th>
-            <th>Program</th>
-            <th>Volunteer Hours</th>
-        </tr>
-        {% for vol in volunteer_list %}
-            <tr>
-                <th>{{ vol.volunteer_date|date:'F j, Y' }}</th>
-                <td>{{ vol.volunteer_hours }}</td>
-                <td>{{ vol.volunteer_type }}</td>
-                <td>{{ vol.note }}</td>
-            </tr>
-        {% endfor %}
-    </table>
+<!--    <hr>-->
+<!--    <table class="table">-->
+<!--        <tr>-->
+<!--            <th>Volunteer Name</th>-->
+<!--            <th>Month</th>-->
+<!--            <th>Program</th>-->
+<!--            <th>Volunteer Hours</th>-->
+<!--        </tr>-->
+<!--        {% for vol in volunteer_list %}-->
+<!--            <tr>-->
+<!--                <th>{{ vol.volunteer_date|date:'F j, Y' }}</th>-->
+<!--                <td>{{ vol.volunteer_hours }}</td>-->
+<!--                <td>{{ vol.volunteer_type }}</td>-->
+<!--                <td>{{ vol.note }}</td>-->
+<!--            </tr>-->
+<!--        {% endfor %}-->
+<!--    </table>-->
 {% endblock %}
