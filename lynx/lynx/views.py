@@ -477,8 +477,8 @@ def volunteers_report_month(request):
             FROM lynx_volunteer lv
             JOIN lynx_contact lc ON lv.contact_id = lc.id
             WHERE lc.volunteer_check is TRUE 
-                AND volunteer_date >= %s 
-                AND volunteer_date <= %s
+                AND volunteer_date >= '%s'::date
+                AND volunteer_date <= '%s'::date
             GROUP BY lc.id""", [start, end])
 
         filename = "Volunteer Report - " + start + " - " + end
