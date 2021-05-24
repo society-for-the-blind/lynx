@@ -493,9 +493,9 @@ def volunteers_report_month(request):
             writer.writerow(['Volunteer Name', 'Date', 'Hours'])
 
             for vol in volunteers:
-                name = vol['name']
+                name = vol.name
                 date = start + ' to ' + end
-                hours = vol['hours']
+                hours = vol.hours
                 writer.writerow([name, date, hours])
 
             return response
