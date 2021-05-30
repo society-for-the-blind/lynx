@@ -4,8 +4,9 @@
 {% block content %}
     <h1>Volunteer Report</h1>
     <br>
+    Write the date in the yyyy-mm-dd format (i.e. 2021-05-21)
     <form method="post"> {% csrf_token %}
-        {{ form.as_p }}
+        {{ form|crispy }}
         {{ form.errors }}
         <button type="submit">Volunteer Hours by Month</button>
         <button type="submit" formaction="/lynx/volunteer-report/by-program">Volunteer Hours by Program</button>
