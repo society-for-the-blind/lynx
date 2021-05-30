@@ -649,7 +649,7 @@ class ContactDetailView(LoginRequiredMixin, DetailView):
         # Call the base implementation first to get a context
         context = super(ContactDetailView, self).get_context_data(**kwargs)
         context['address_list'] = Address.objects.filter(contact_id=self.kwargs['pk'])
-        context['phone_list'] = Phone.objects.filter(contact_id=self.kwargs['pk'])
+        context['phone_list'] = Phone.objects.filter(contact_id=self.kwargs['pk']).order_by('created')
         context['email_list'] = Email.objects.filter(contact_id=self.kwargs['pk'])
         context['intake_list'] = Intake.objects.filter(contact_id=self.kwargs['pk'])
         context['authorization_list'] = Authorization.objects.filter(contact_id=self.kwargs['pk']).order_by('-created')
