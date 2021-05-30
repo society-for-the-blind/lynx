@@ -7,7 +7,6 @@
     <form method="post"> {% csrf_token %}
         {{ form.as_p }}
         {{ form.errors }}
-        <input type="submit" value="Submit">
         <button type="submit">Volunteer Hours by Month</button>
         <button type="submit" formaction="/lynx/volunteer-report/by-program">Volunteer Hours by Program</button>
     </form>

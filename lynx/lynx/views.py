@@ -39,6 +39,14 @@ def index(request):
 
 
 @login_required
+def reports(request):
+    context = {
+        "message": "All Lynx Reports"
+    }
+    return render(request, 'lynx/reports.html', context)
+
+
+@login_required
 def client_list_view(request):
     clients = Contact.objects.filter(active=1).order_by(Lower('last_name'), Lower('first_name'))
     return render(request, 'lynx/contact_list.html', {'clients': clients})

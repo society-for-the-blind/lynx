@@ -35,16 +35,26 @@
             <img src="{% static 'lynx/images/logo.jpg' %}" alt="" style="width:170px;">
             <a href="/lynx/" title="Home">Home</a>
             {% if user.is_authenticated %}
+<!--                <a href="/lynx/clients/" title="Clients">Clients</a>-->
+<!--                <a href="/admin/">Admin</a>-->
+<!--                <a href="/lynx/billing-report/" title="Core Billing Report">Core Billing Report</a>-->
+<!--                <a href="/lynx/report-search" title="Print Monthly Invoices">Print Monthly Invoices</a>-->
+<!--                <a href="/lynx/add-sip-note-bulk/" title="Bulk SIP Notes">Bulk SIP Notes</a>-->
+<!--                <a href="/lynx/sip-demographic-report/" title="SIP Demographic Report">Monthly SIP Demographic Report</a>-->
+<!--                <a href="/lynx/sip-quarterly-report/" title="SIP Quarterly Report">SIP Quarterly Report</a>-->
+<!--                <a href="/lynx/volunteers/" title="Volunteers">Volunteers</a>-->
+<!--                <a href="/lynx/add-volunteer-hours/" title="Add Volunteer Hours">Add Volunteer Hours</a>-->
+<!--                <a href="/lynx/manual" title="Manual">Manual</a>-->
+<!--                <a href="/accounts/password_change/" title="Update Password">Update Password</a>-->
+<!--                <a href="/accounts/logout/">Logout</a>-->
                 <a href="/lynx/clients/" title="Clients">Clients</a>
-                <a href="/admin/">Admin</a>
-                <a href="/lynx/billing-report/" title="Core Billing Report">Core Billing Report</a>
-                <a href="/lynx/report-search" title="Print Monthly Invoices">Print Monthly Invoices</a>
-                <a href="/lynx/add-sip-note-bulk/" title="Bulk SIP Notes">Bulk SIP Notes</a>
-                <a href="/lynx/sip-demographic-report/" title="SIP Demographic Report">Monthly SIP Demographic Report</a>
-                <a href="/lynx/sip-quarterly-report/" title="SIP Quarterly Report">SIP Quarterly Report</a>
                 <a href="/lynx/volunteers/" title="Volunteers">Volunteers</a>
                 <a href="/lynx/add-volunteer-hours/" title="Add Volunteer Hours">Add Volunteer Hours</a>
-                <a href="/lynx/manual" title="Manual">Manual</a>
+                <a href="/lynx/manual" title="Lynx Manual">Lynx Manual</a>
+                <hr>
+                <a href="/admin/">Admin</a>
+                <a href="/reports">Reports</a>
+                <hr>
                 <a href="/accounts/password_change/" title="Update Password">Update Password</a>
                 <a href="/accounts/logout/">Logout</a>
             {% endif %}
