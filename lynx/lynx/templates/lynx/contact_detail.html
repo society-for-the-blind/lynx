@@ -274,7 +274,7 @@
 {% endif %}
 <br>
 <br>
-<h2>Notes</h2>
+<h2>Client Notes</h2>
 {% for note in note_list %}
     <p class="tab">{{ note.created|date:'F j, Y' }}: {{ note.note|linebreaks }}<br>
         -{{ note.user.first_name }} {{ note.user.last_name }}
@@ -287,7 +287,7 @@
 {% endif %}
 <br><br>
 {% if not request.GET.print %}
-<h3>New Client Note</h3>
+<h3>Add New Client Note</h3>
 <form action="/lynx/client/{{ object.id }}" method="post">
     <p>These notes are for high level client information. Please don't record lesson or service information here.</p>
     {% csrf_token %}

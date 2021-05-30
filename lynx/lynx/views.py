@@ -512,6 +512,53 @@ def volunteers_report_month(request):
 
 
 @login_required
+def volunteers_report_program(request):
+    form = VolunteerReportForm()
+    if request.method == 'POST':
+        form = VolunteerReportForm(request.POST)
+        if form.is_valid():
+            data = request.POST.copy()
+            start = data.get('start_date')
+            end = data.get('end_date')
+            volunteers = Volunteer.objects.raw("""SELECT lc.id,
+                                                        CONCAT(lc.last_name, ', ', lc.first_name) as name,
+                                                        SUM(lv.volunteer_hours) as hours,
+                                                        lv.volunteer_type,
+                                                        EXTRACT(MONTH FROM volunteer_date) as month,
+                                                        EXTRACT(YEAR FROM volunteer_date) as year
+                                                    FROM lynx_volunteer lv
+                                                    JOIN lynx_contact lc ON lv.contact_id = lc.id
+                                                    WHERE lc.volunteer_check is TRUE
+                                                        AND lv.volunteer_date >= %s::date
+                                                        AND lv.volunteer_date <= %s::date
+                                                    GROUP BY lc.id,
+                                                        lv.volunteer_type,
+                                                        EXTRACT(MONTH FROM volunteer_date),
+                                                        EXTRACT(YEAR FROM volunteer_date)""", [start, end])
+
+            filename = "Volunteer Report - " + start + " - " + end
+            response = HttpResponse(content_type='text/csv')
+            response['Content-Disposition'] = 'attachment; filename="' + filename + '.csv"'
+
+            writer = csv.writer(response)
+            writer.writerow(['Volunteer Name', 'Date', 'Program', 'Hours'])
+
+            for vol in volunteers:
+                name = vol.name
+                MONTHS = {1: "January", 2: "February", 3: "March", 4: "April", 5: "May", 6: "June", 7: "July",
+                          8: "August", 9: "September", 10: "October", 11: "November", 12: "December"}
+                given_month = MONTHS[vol.month]
+                date = given_month + ' ' + str(int(vol.year)) #there's a weird decimal for the year, casting to int first to remove it
+                hours = vol.hours
+                program = vol.volunteer_type
+                writer.writerow([name, date, program, hours])
+
+            return response
+
+    return render(request, 'lynx/volunteer_report.html', {'form': form})
+
+
+@login_required
 def client_result_view(request):
     query = request.GET.get('q')
     if query:
