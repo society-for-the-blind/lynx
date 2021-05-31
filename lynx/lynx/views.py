@@ -1770,20 +1770,20 @@ def plan_evaluation(progress, previous=None):
 
 def assess_evaluation(progress, previous=None):
     status = progress
-    if progress == "Assessed, improved independence":
+    if progress == "Assessed, improved independence" or progress == 'Assessed with improved independence':
         rank = 3
-    elif progress == "Assessed, maintained independence":
+    elif progress == "Assessed, maintained independence" or progress == 'Assessed and maintained independence':
         rank = 2
-    elif progress == "Assessed, decreased independence":
+    elif progress == "Assessed, decreased independence" or progress == 'Assessed with decreased independence':
         rank = 1
     else:
         rank = 0
 
-    if previous == "Assessed, improved independence":
+    if previous == "Assessed, improved independence" or previous == 'Assessed with improved independence':
         p_rank = 3
-    elif previous == "Assessed, maintained independence":
+    elif previous == "Assessed, maintained independence" or previous == 'Assessed and maintained independence':
         p_rank = 2
-    elif previous == "Assessed, decreased independence":
+    elif previous == "Assessed, decreased independence" or previous == 'Assessed with decreased independence':
         p_rank = 1
     else:
         p_rank = 0

@@ -289,7 +289,7 @@
 {% if not request.GET.print %}
 <h3>Add New Client Note</h3>
 <form action="/lynx/client/{{ object.id }}" method="post">
-    <p>These notes are for high level client information. Please don't record lesson or service information here.</p>
+<!--    <p>These notes are for high level client information. Please don't record lesson or service information here.</p>-->
     {% csrf_token %}
     {{ form.as_p }}
     <input type="submit" class="btn btn-success" value="Submit Client Note">

@@ -52,7 +52,8 @@ GENDERS = (("Female", "Female"), ("Male", "Male"), ("Non-Binary", "Non-Binary"),
 ETHNICITIES = (("American Indian or Alaska Native", "American Indian or Alaska Native"), ("Asian", "Asian"),
                ("Black or African American", "Black or African American"), ("Hispanic or Latino", "Hispanic or Latino"),
                ("Native Hawaiian or Pacific Islander", "Native Hawaiian or Pacific Islander"), ("White", "White"),
-               ("Other", "Other"), ("Did not self identify Race", "Did not self identify Race"))
+               ("Other", "Other"), ("Did not self identify Race", "Did not self identify Race"),
+               ("Two or More Races", "Two or More Races"))
 
 MAILINGS = (("N/A", "N/A"), ("Print", "Print"), ("Large Print", "Large Print"), ("Braille", "Braille"),
             ("E-Mail", "E-Mail"), ("Cassette", "Cassette"))
@@ -107,7 +108,7 @@ SALUTATIONS = (("Mr.", "Mr."), ("Mrs.", "Mrs."), ("Miss", "Miss"), ("Ms.", "Ms."
                ("Rev.", "Rev."))
 
 AGES = (("Less than 54", "Less than 54"), ("55-64", "55-64"), ("65-74", "65-74"), ("75-84", "75-84"),
-        ("84+", "84+"))
+        ("85 and older", "85 and older"))
 
 TASKS = (('Visually', 'Visually'), ('Non-Visually', 'Non-Visually'), ('Both Visually and Non-Visually', 'Both Visually and Non-Visually'))
 
@@ -580,9 +581,9 @@ class SipPlan(models.Model):
              ("Plan complete, feeling more confident in ability to maintain living situation", "Plan complete, feeling more confident in ability to maintain living situation"),
              ("Plan complete, no difference in ability to maintain living situation", "Plan complete, no difference in ability to maintain living situation"),
              ("Plan complete, feeling less confident in ability to maintain living situation", "Plan complete, feeling less confident in ability to maintain living situation"))
-    ASSESSMENTS = (("Not assessed", "Not assessed"), ("Assessed, improved independence", "Assessed, improved independence"),
-                   ("Assessed, maintained independence", "Assessed, maintained independence"),
-                   ("Assessed, decreased independence", "Assessed, decreased independence"))
+    ASSESSMENTS = (("Not assessed", "Not assessed"), ("Assessed with improved independence", "Assessed with improved independence"),
+                   ("Assessed and maintained independence", "Assessed and maintained independence"),
+                   ("Assessed with decreased independence", "Assessed with decreased independence"))
     contact = models.ForeignKey('Contact', on_delete=models.CASCADE)
     note = models.TextField(null=True, blank=True)
     at_services = models.BooleanField(blank=True, default=False)
