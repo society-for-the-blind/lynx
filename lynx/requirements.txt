@@ -14,6 +14,7 @@ sudo pip3 install django-mathfilters
 sudo pip3 install django-audit-log
 sudo pip3 install django-reversion
 sudo pip3 install django-simple-history
+sudo pip3 install django-crontab
 
 sudo apt-get install postgresql postgresql-contrib
 sudo update-rc.d postgresql enable
