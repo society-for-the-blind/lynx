@@ -29,6 +29,10 @@ from .filters import ContactFilter
 
 logger = logging.getLogger(__name__)
 
+from django.core.mail import EmailMessage
+from django.template import Context
+from django.template.loader import get_template
+
 
 def address_changes(self):
     date = datetime.today() - timedelta(days=7)
@@ -48,48 +52,25 @@ def address_changes(self):
                   from lynx_historicaladdress hist group by hist.id);""" % (date))
         change_set = dictfetchall(cursor)
 
-    message = """<str>Address changes for the last week</str> </br>
-                <table>
-                <tr>
-                <td>Client Name</td>
-                <td>Instructor Name</td>
-                <td>Change Type</td>
-                <td>New Address</td>
-                </tr>
-              """
-    for change in change_set:
-        if change["history_type"] == "+":
-            ctype = "New Address"
-        elif change["history_type"] == "-":
-            ctype = "Address Deleted"
-        else:
-            ctype = "Address Changed"
-
-        if change["address_one"] is None:
-            change["address_one"] = ""
-        if change["address_two"] is None:
-            change["address_two"] = ""
-        if change["city"] is None:
-            change["city"] = ""
-
-        new_line = "<tr><td>" + change['client_name'] + "</td><td>" + change['user_name'] + "</td><td>" + ctype + \
-                   "</td><td>" + change['address_one'] + "</br>" + change['address_two'] + "</br>" + change['city'] + \
-                   "</td></tr>"
-        message = message + new_line
-
-    message = message + "</table>"
-
+    template = get_template('lynx/email_change_address.html')
+    context = Context({'change_set': change_set})
+    content = template.render(context)
     username = settings.EMAIL_HOST_USER
 
-    send_mail("Address Changes",
-              message,
-              username,
-              ['mjtolentino247@gmail.com'],
-              # ['jhuynh@societyfortheblind.org '],
-              fail_silently=False,
-              )
+    subject = "Address Changes"
 
-    return HttpResponse('Mail successfully sent')
+    msg = EmailMessage(subject, content, username, to=['mjtolentino247@gmail.com', ])
+    msg.send()
+
+    # send_mail("Address Changes",
+    #           message,
+    #           username,
+    #           ['mjtolentino247@gmail.com'],
+    #           # ['jhuynh@societyfortheblind.org '],
+    #           fail_silently=False,
+    #           )
+    #
+    # return HttpResponse('Mail successfully sent')
 
 @login_required
 def index(request):
