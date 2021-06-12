@@ -70,7 +70,7 @@ def address_changes(self):
     #           fail_silently=False,
     #           )
     #
-    # return HttpResponse('Mail successfully sent')
+    return HttpResponse('Mail successfully sent')
 
 @login_required
 def index(request):
