@@ -1,0 +1,9 @@
+Address changes for the last week
+
+    {% for change in change_set %}
+        {{ change.client_name }}, {% if change.history_type == '+' %}New Address{% endif %}{% if change.history_type == '~' %}Address Changed{% endif %}{% if change.history_type == '-' %}Address Deleted{% endif %}
+        {{ change.address_one }}
+        {{ change.address_two }}
+        {{ change.city }}
+        ~
+    {% endfor %}

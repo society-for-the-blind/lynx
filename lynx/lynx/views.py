@@ -29,9 +29,9 @@ from .filters import ContactFilter
 
 logger = logging.getLogger(__name__)
 
-from django.core.mail import EmailMessage
-from django.template import Context
+from django.core.mail import EmailMultiAlternatives
 from django.template.loader import get_template
+from django.template import Context
 
 
 def address_changes(self):
@@ -52,24 +52,21 @@ def address_changes(self):
                   from lynx_historicaladdress hist group by hist.id);""" % (date))
         change_set = dictfetchall(cursor)
 
-    template = get_template('lynx/email_change_address.html')
-    context = {'change_set': change_set}
-    content = template.render(context)
     username = settings.EMAIL_HOST_USER
 
-    subject = "Address Changes"
+    plaintext = get_template('lynx/email_change_address.txt')
+    htmly = get_template('lynx/email_change_address.html')
 
-    msg = EmailMessage(subject, content, username, to=['mjtolentino247@gmail.com', ])
+    d = Context({'change_set': change_set})
+
+    subject,  to = 'Address Changes', 'mjtolentino247@gmail.com'
+    text_content = plaintext.render(d)
+    html_content = htmly.render(d)
+    msg = EmailMultiAlternatives(subject, text_content, username, [to])
+    msg.attach_alternative(html_content, "text/html")
     msg.send()
 
-    # send_mail("Address Changes",
-    #           message,
-    #           username,
-    #           ['mjtolentino247@gmail.com'],
-    #           # ['jhuynh@societyfortheblind.org '],
-    #           fail_silently=False,
-    #           )
-    #
+              # ['jhuynh@societyfortheblind.org '],
     return HttpResponse('Mail successfully sent')
 
 @login_required
