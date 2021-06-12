@@ -59,9 +59,9 @@ def address_changes(self):
                 </tr>
               """
     for change in change_set:
-        if change.historical_type == "+":
+        if change.history_type == "+":
             ctype = "New Address"
-        elif change.historical_type == "-":
+        elif change.history_type == "-":
             ctype = "Address Deleted"
         else:
             ctype = "Address Changed"
