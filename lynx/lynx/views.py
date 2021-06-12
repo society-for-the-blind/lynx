@@ -30,7 +30,7 @@ from .filters import ContactFilter
 logger = logging.getLogger(__name__)
 
 
-def address_changes():
+def address_changes(self):
     date = datetime.today() - timedelta(days=7)
 
     with connection.cursor() as cursor:
