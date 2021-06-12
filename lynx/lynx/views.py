@@ -53,7 +53,6 @@ def address_changes(self):
                 <tr>
                 <td>Client Name</td>
                 <td>Instructor Name</td>
-                <td>Date Changed</td>
                 <td>Change Type</td>
                 <td>New Address</td>
                 </tr>
@@ -66,7 +65,9 @@ def address_changes(self):
         else:
             ctype = "Address Changed"
 
-        new_line = "<tr><td>" + change['client_name'] + "</td><td>" + change['user_name'] + "</td><td>" + change['history_date'] + "</td><td>" + ctype + "</td><td>" + change['address_one'] + "</br>" + change['address_two'] + "</br>" + change['city'] + "</td></tr>"
+        new_line = "<tr><td>" + change['client_name'] + "</td><td>" + change['user_name'] + "</td><td>" + ctype + \
+                   "</td><td>" + change['address_one'] + "</br>" + change['address_two'] + "</br>" + change['city'] + \
+                   "</td></tr>"
         message = message + new_line
 
     message = message + "</table>"
