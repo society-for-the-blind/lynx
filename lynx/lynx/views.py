@@ -53,7 +53,7 @@ def address_changes(self):
         change_set = dictfetchall(cursor)
 
     template = get_template('lynx/email_change_address.html')
-    context = Context({'change_set': change_set})
+    context = {'change_set': change_set}
     content = template.render(context)
     username = settings.EMAIL_HOST_USER
 
