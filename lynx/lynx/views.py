@@ -65,6 +65,13 @@ def address_changes(self):
         else:
             ctype = "Address Changed"
 
+        if change["address_one"] is None:
+            change["address_one"] = ""
+        if change["address_two"] is None:
+            change["address_two"] = ""
+        if change["city"] is None:
+            change["city"] = ""
+
         new_line = "<tr><td>" + change['client_name'] + "</td><td>" + change['user_name'] + "</td><td>" + ctype + \
                    "</td><td>" + change['address_one'] + "</br>" + change['address_two'] + "</br>" + change['city'] + \
                    "</td></tr>"
