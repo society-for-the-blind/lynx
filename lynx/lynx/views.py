@@ -87,7 +87,6 @@ def address_changes(self):
               ['mjtolentino247@gmail.com'],
               # ['jhuynh@societyfortheblind.org '],
               fail_silently=False,
-              html_message=True,
               )
 
     return HttpResponse('Mail successfully sent')
