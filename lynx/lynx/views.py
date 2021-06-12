@@ -31,7 +31,6 @@ logger = logging.getLogger(__name__)
 
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import get_template
-from django.template import Context
 
 
 def address_changes(self):
@@ -57,7 +56,7 @@ def address_changes(self):
     plaintext = get_template('lynx/email_change_address.txt')
     htmly = get_template('lynx/email_change_address.html')
 
-    d = Context({'change_set': change_set})
+    d = {'change_set': change_set}
 
     subject,  to = 'Address Changes', 'mjtolentino247@gmail.com'
     text_content = plaintext.render(d)
