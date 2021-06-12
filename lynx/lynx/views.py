@@ -59,14 +59,14 @@ def address_changes(self):
                 </tr>
               """
     for change in change_set:
-        if change.history_type == "+":
+        if change["history_type"] == "+":
             ctype = "New Address"
-        elif change.history_type == "-":
+        elif change["history_type"] == "-":
             ctype = "Address Deleted"
         else:
             ctype = "Address Changed"
 
-        new_line = "<tr><td>" + change.client_name + "</td><td>" + change.user_name + "</td><td>" + change.history_date + "</td><td>" + ctype + "</td><td>" + change.address_one + "</br>" + change.address_two + "</br>" + change.city + "</td></tr>"
+        new_line = "<tr><td>" + change['client_name'] + "</td><td>" + change['user_name'] + "</td><td>" + change['history_date'] + "</td><td>" + ctype + "</td><td>" + change['address_one'] + "</br>" + change['address_two'] + "</br>" + change['city'] + "</td></tr>"
         message = message + new_line
 
     message = message + "</table>"
