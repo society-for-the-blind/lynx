@@ -29,44 +29,6 @@ from .filters import ContactFilter
 
 logger = logging.getLogger(__name__)
 
-from django.core.mail import EmailMultiAlternatives
-from django.template.loader import get_template
-
-
-def address_changes(self):
-    date = datetime.today() - timedelta(days=7)
-
-    with connection.cursor() as cursor:
-        cursor.execute("""SELECT CONCAT(client.first_name, ' ', client.last_name) as client_name,
-                       CONCAT(au.first_name, ' ', au.last_name) as user_name,
-                       CONCAT(his.address_one, ' ', his.suite) as address_one,
-                       address_two,
-                       CONCAT(his.city, ' ', his.state, ', ', his.zip_code) as city,
-                       history_type, history_date, his.id
-                FROM lynx_historicaladdress his
-                JOIN lynx_contact client on his.contact_id = client.id
-                JOIN auth_user au on his.history_user_id = au.id
-                WHERE history_date > '%s' 
-                  and (his.id,history_date) in (select hist.id, max(hist.history_date) 
-                  from lynx_historicaladdress hist group by hist.id);""" % (date))
-        change_set = dictfetchall(cursor)
-
-    username = settings.EMAIL_HOST_USER
-
-    plaintext = get_template('lynx/email_change_address.txt')
-    htmly = get_template('lynx/email_change_address.html')
-
-    d = {'change_set': change_set}
-
-    subject,  to = 'Address Changes', 'mjtolentino247@gmail.com'
-    text_content = plaintext.render(d)
-    html_content = htmly.render(d)
-    msg = EmailMultiAlternatives(subject, text_content, username, [to])
-    msg.attach_alternative(html_content, "text/html")
-    msg.send()
-
-              # ['jhuynh@societyfortheblind.org '],
-    return HttpResponse('Mail successfully sent')
 
 @login_required
 def index(request):

@@ -1,15 +1,14 @@
 from django.http import HttpResponse
-from django.contrib.auth.decorators import login_required
 from django.db import connection
 from django.conf import settings
-from django.core.mail import send_mail
+from django.core.mail import EmailMultiAlternatives
+from django.template.loader import get_template
 
 from datetime import datetime, timedelta
-
 from .views import dictfetchall
 
 
-def address_changes():
+def address_changes(self):
     date = datetime.today() - timedelta(days=7)
 
     with connection.cursor() as cursor:
@@ -27,38 +26,18 @@ def address_changes():
                   from lynx_historicaladdress hist group by hist.id);""" % (date))
         change_set = dictfetchall(cursor)
 
-    message = """<str>Address changes for the last week</str> </br>
-                <table>
-                <tr>
-                <td>Client Name</td>
-                <td>Instructor Name</td>
-                <td>Date Changed</td>
-                <td>Change Type</td>
-                <td>New Address</td>
-                </tr>
-              """
-    for change in change_set:
-        if change.historical_type == "+":
-            ctype = "New Address"
-        elif change.historical_type == "-":
-            ctype = "Address Deleted"
-        else:
-            ctype = "Address Changed"
-
-        new_line = "<tr><td>" + change.client_name + "</td><td>" + change.user_name + "</td><td>" + change.history_date + "</td><td>" + ctype + "</td><td>" + change.address_one + "</br>" + change.address_two + "</br>" + change.city + "</td></tr>"
-        message = message + new_line
-
-    message = message + "</table>"
-
     username = settings.EMAIL_HOST_USER
 
-    send_mail("Address Changes",
-              message,
-              username,
-              ['mjtolentino247@gmail.com'],
-              # ['jhuynh@societyfortheblind.org '],
-              fail_silently=False,
-              html_message=True,
-              )
+    plaintext = get_template('lynx/email_change_address.txt')
+    htmly = get_template('lynx/email_change_address.html')
+
+    d = {'change_set': change_set}
+
+    subject = 'Address Changes'
+    text_content = plaintext.render(d)
+    html_content = htmly.render(d)
+    msg = EmailMultiAlternatives(subject, text_content, username, ['mjtolentino247@gmail.com', 'jhuynh@societyfortheblind.org'])
+    msg.attach_alternative(html_content, "text/html")
+    msg.send()
 
     return HttpResponse('Mail successfully sent')
