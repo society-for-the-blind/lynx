@@ -39,5 +39,6 @@ def address_changes(self):
     msg = EmailMultiAlternatives(subject, text_content, username, ['mjtolentino247@gmail.com', 'jhuynh@societyfortheblind.org'])
     msg.attach_alternative(html_content, "text/html")
     msg.send()
+    print("mail sent")
 
     return HttpResponse('Mail successfully sent')
