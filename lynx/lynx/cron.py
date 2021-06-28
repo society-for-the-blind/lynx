@@ -9,8 +9,8 @@ from datetime import datetime, timedelta
 import sys, os, django
 # append root folder of django project
 # could be solved with a relative path like os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..') which corresponds to the parent folder of the actual file.
-# sys.path.append('/var/www/lynx/slate-2/lynx/lynx')
-os.environ['DJANGO_SETTINGS_MODULE'] = 'lynx.settings'
+sys.path.append('/var/www/lynx/slate-2/lynx/')
+os.environ['DJANGO_SETTINGS_MODULE'] = 'mysite.settings'
 django.setup()
 
 
