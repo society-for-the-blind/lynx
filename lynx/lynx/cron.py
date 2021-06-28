@@ -7,6 +7,13 @@ from django.template.loader import get_template
 from datetime import datetime, timedelta
 from .views import dictfetchall
 
+import sys, os, django
+# append root folder of django project
+# could be solved with a relative path like os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..') which corresponds to the parent folder of the actual file.
+sys.path.append('/var/www/lynx/slate-2/lynx')
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "lynx.settings")
+django.setup()
+
 
 def address_changes(self):
     date = datetime.today() - timedelta(days=7)
@@ -36,7 +43,7 @@ def address_changes(self):
     subject = 'Address Changes'
     text_content = plaintext.render(d)
     html_content = htmly.render(d)
-    msg = EmailMultiAlternatives(subject, text_content, username, ['mjtolentino247@gmail.com', 'jhuynh@societyfortheblind.org'])
+    msg = EmailMultiAlternatives(subject, text_content, username, ['mjtolentino247@gmail.com']) #', 'jhuynh@societyfortheblind.org'])
     msg.attach_alternative(html_content, "text/html")
     msg.send()
     print("mail sent")
