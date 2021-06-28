@@ -8,12 +8,9 @@ from datetime import datetime, timedelta
 
 
 import sys
-sys.path.append("/var/www/lynx/slate-2/lynx/")
-print(sys.path)
+
 import os
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'mysite.settings')
 import django
-django.setup()
 
 
 
@@ -26,6 +23,14 @@ def dictfetchall(cursor):
     ]
 
 def address_changes(self):
+    sys.path.append("/var/www/lynx/slate-2/lynx/")
+    sys.path.append("/var/www/lynx/slate-2/lynx/mysite")
+    print(sys.path)
+
+    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'mysite.settings')
+    django.setup()
+
+    print("started")
     date = datetime.today() - timedelta(days=7)
 
     with connection.cursor() as cursor:
@@ -42,6 +47,7 @@ def address_changes(self):
                   and (his.id,history_date) in (select hist.id, max(hist.history_date) 
                   from lynx_historicaladdress hist group by hist.id);""" % (date))
         change_set = dictfetchall(cursor)
+    print("query")
 
     username = settings.EMAIL_HOST_USER
 
