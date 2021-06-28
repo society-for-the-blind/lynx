@@ -5,7 +5,6 @@ from django.core.mail import EmailMultiAlternatives
 from django.template.loader import get_template
 
 from datetime import datetime, timedelta
-from .views import dictfetchall
 
 import sys, os, django
 # append root folder of django project
@@ -14,6 +13,14 @@ sys.path.append('/var/www/lynx/slate-2/lynx')
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "lynx.settings")
 django.setup()
 
+
+def dictfetchall(cursor):
+    """Return all rows from a cursor as a dict"""
+    columns = [col[0] for col in cursor.description]
+    return [
+        dict(zip(columns, row))
+        for row in cursor.fetchall()
+    ]
 
 def address_changes(self):
     date = datetime.today() - timedelta(days=7)
