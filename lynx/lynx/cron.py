@@ -6,12 +6,15 @@ from django.template.loader import get_template
 
 from datetime import datetime, timedelta
 
-import sys, os, django
-# append root folder of django project
-# could be solved with a relative path like os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..') which corresponds to the parent folder of the actual file.
-sys.path.append('/var/www/lynx/slate-2/lynx/')
-os.environ['DJANGO_SETTINGS_MODULE'] = 'mysite.settings'
+
+import sys
+sys.path.append("/var/www/lynx/slate-2/lynx/")
+print(sys.path)
+import os
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'mysite.settings')
+import django
 django.setup()
+
 
 
 def dictfetchall(cursor):
