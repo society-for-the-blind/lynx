@@ -1,10 +1,13 @@
-from django.http import HttpResponse
+import django
 from django.db import connection
 from django.conf import settings
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import get_template
 
 from datetime import datetime, timedelta
+import os
+import sys
+
 
 def dictfetchall(cursor):
     """Return all rows from a cursor as a dict"""
@@ -14,16 +17,14 @@ def dictfetchall(cursor):
         for row in cursor.fetchall()
     ]
 
-import sys
+
 sys.path.append("/var/www/lynx/slate-2/lynx/")
 sys.path.append("/var/www/lynx/slate-2/lynx/mysite")
-print(sys.path)
-import os
+
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'mysite.settings')
-import django
+
 django.setup()
 
-print("started")
 date = datetime.today() - timedelta(days=7)
 
 with connection.cursor() as cursor:
@@ -40,7 +41,6 @@ with connection.cursor() as cursor:
               and (his.id,history_date) in (select hist.id, max(hist.history_date) 
               from lynx_historicaladdress hist group by hist.id);""" % (date))
     change_set = dictfetchall(cursor)
-print("query")
 
 username = settings.EMAIL_HOST_USER
 
@@ -52,12 +52,10 @@ d = {'change_set': change_set}
 subject = 'Address Changes'
 text_content = plaintext.render(d)
 html_content = htmly.render(d)
-msg = EmailMultiAlternatives(subject, text_content, username, ['mjtolentino247@gmail.com']) #', 'jhuynh@societyfortheblind.org'])
+msg = EmailMultiAlternatives(subject, text_content, username, ['mjtolentino247@gmail.com', 'jhuynh@societyfortheblind.org'])
 msg.attach_alternative(html_content, "text/html")
 msg.send()
-print("mail sent")
 
-# return HttpResponse('Mail successfully sent')
-
-
-
+now = datetime.now()
+date_time = now.strftime("%m/%d/%Y, %H:%M:%S")
+print("finished " + date_time)
