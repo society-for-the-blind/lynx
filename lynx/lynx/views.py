@@ -1417,7 +1417,7 @@ def sip_csf_services_report(request):
             fiscal_year = get_fiscal_year(year)
 
             with connection.cursor() as cursor:
-                query = """SELECT CONCAT(c.first_name, ' ', c.last_name) as name, c.id as id, ls.fiscal_year, 
+                query = """SELECT CONCAT(c.last_name, ', ', c.first_name) as name, c.id as id, ls.fiscal_year, 
                 ls.vision_screening, ls.treatment, ls.at_devices, ls.at_services, ls.orientation, ls.communications, 
                 ls.dls, ls.support, ls.advocacy, ls.counseling, ls.information, ls.services, addr.county, ls.note_date,
                 ls.independent_living, sp.living_plan_progress, sp.community_plan_progress, sp.ila_outcomes, 
@@ -1565,7 +1565,7 @@ def sip_csf_demographic_report(request):
             fiscal_year = get_fiscal_year(year)
 
             with connection.cursor() as cursor:
-                cursor.execute("""SELECT CONCAT(c.first_name, ' ', c.last_name) as name, c.id as id, int.age_group, 
+                cursor.execute("""SELECT CONCAT(c.last_name, ' ', c.first_name) as name, c.id as id, int.age_group, 
                 int.gender, int.ethnicity, int.degree, int.eye_condition, int.eye_condition_date, int.education, 
                 int.living_arrangement, int.residence_type, addr.county, int.dialysis, int.stroke, int.seizure, 
                 int.heart, int.arthritis, int.high_bp, int.neuropathy, int.pain, int.asthma, int.cancer, 
@@ -1627,15 +1627,45 @@ def sip_csf_demographic_report(request):
                     # Sort out race/ethnicity
                     client["hispanic"] = "No"
                     hispanic = False
-                    if client["ethnicity"] == "Hispanic or Latino" or client["other_ethnicity"] == "Hispanic or Latino":
+                    if client["ethnicity"] == "Hispanic or Latino" or client["other_ethnicity"] == "Hispanic or Latino" or client["ethnicity"] == "Two or More Races" or client["other_ethnicity"] == "Two or More Races":
                         client["hispanic"] = "Yes"
+                        client["race"] = "2 or More Races"
                         hispanic = True
-                    if client["other_ethnicity"] and not hispanic:
+
+                    if client["other_ethnicity"] or hispanic:
                         client["race"] = "2 or More Races"
                     elif client["ethnicity"] == "Other":
                         client["race"] = "Did not self identify Race"
                     else:
                         client["race"] = client["ethnicity"]
+
+                    #Sort out degree of impairment
+                    if client['degree'] == "Totally Blind (NP or NLP)":
+                        client['degree'] = "Totally Blind"
+                    elif client['degree'] == "Legally Blind":
+                        client['degree'] = "Legally Blind"
+                    else:
+                        client['degree'] = "Severe Visual Impairment"
+
+                    #Sort out cause
+                    if client['eye_condition'] != "Cataracts" and client['eye_condition'] != "Diabetic Retinopathy" and client['eye_condition'] != "Glaucoma" and client['eye_condition'] != "Macular Degeneration":
+                        client['eye_condition'] = "Other causes of visual impairment"
+
+                    #Sort out residence
+                    if client['residence_type'] == "Community Residential":
+                        client['residence_type'] = "Senior Independent Living"
+                    if client['residence_type'] == "Assisted Living":
+                        client['residence_type'] = "Assisted Living Facility"
+                    if client['residence_type'] == "Skilled Nursing Care":
+                        client['residence_type'] = "Nursing Home"
+                    if client['residence_type'] == "Senior Living":
+                        client['residence_type'] = "Senior Independent Living"
+
+                    #sort of referral
+                    if client['referred_by'] == "DOR" or client['referred_by'] == "Alta":
+                        client['referred_by'] = "State VR Service"
+                    if client['referred_by'] == "Physician":
+                        client['referred_by'] = "Other"
 
                     # Find if case was before this fiscal year
                     if client["note_date"]:
