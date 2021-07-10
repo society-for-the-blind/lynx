@@ -1648,7 +1648,8 @@ def sip_csf_demographic_report(request):
                         client['degree'] = "Severe Visual Impairment"
 
                     #Sort out cause
-                    if client['eye_condition'] != "Cataracts" and client['eye_condition'] != "Diabetic Retinopathy" and client['eye_condition'] != "Glaucoma" and client['eye_condition'] != "Macular Degeneration":
+                    ok_diagnosis = ["Cataracts", "Diabetic Retinopathy", "Glaucoma", "Macular Degeneration"]
+                    if client['eye_condition'] not in ok_diagnosis:
                         client['eye_condition'] = "Other causes of visual impairment"
 
                     #Sort out residence
@@ -1662,10 +1663,13 @@ def sip_csf_demographic_report(request):
                         client['residence_type'] = "Senior Independent Living"
 
                     #sort of referral
+                    ok_sources = ["Veterans Administration", "Family or Friend", "Senior Program", "Assisted Living Facility",
+                                  "Nursing Home", "Independent Living Center", "Self-Referral"]
                     if client['referred_by'] == "DOR" or client['referred_by'] == "Alta":
                         client['referred_by'] = "State VR Service"
-                    if client['referred_by'] == "Physician":
+                    elif client['referred_by'] not in ok_sources:
                         client['referred_by'] = "Other"
+
 
                     # Find if case was before this fiscal year
                     if client["note_date"]:
