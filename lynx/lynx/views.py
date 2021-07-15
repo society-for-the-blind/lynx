@@ -1636,6 +1636,8 @@ def sip_csf_demographic_report(request):
                         client["race"] = "2 or More Races"
                     elif client["ethnicity"] == "Other":
                         client["race"] = "Did not self identify Race"
+                    elif client["ethnicity"] == "Two or More Races":
+                        client["race"] = "2 or More Races"
                     else:
                         client["race"] = client["ethnicity"]
 
@@ -1661,12 +1663,17 @@ def sip_csf_demographic_report(request):
                         client['residence_type'] = "Nursing Home"
                     if client['residence_type'] == "Senior Living":
                         client['residence_type'] = "Senior Independent Living"
+                    if client['residence_type'] == "Private Residence - apartment or home (alone, or with roommate, personal care assistant, family, or other person)":
+                        client['residence_type'] = "Private Residence"
 
                     #sort of referral
                     ok_sources = ["Veterans Administration", "Family or Friend", "Senior Program", "Assisted Living Facility",
-                                  "Nursing Home", "Independent Living Center", "Self-Referral"]
+                                  "Nursing Home", "Independent Living Center", "Self-Referral", "Eye Care Provider",
+                                  "Physician/ Medical Provider"]
                     if client['referred_by'] == "DOR" or client['referred_by'] == "Alta":
                         client['referred_by'] = "State VR Service"
+                    elif client['referred_by'] == "Physician":
+                        client['referred_by'] = "Physician/ Medical Provider"
                     elif client['referred_by'] not in ok_sources:
                         client['referred_by'] = "Other"
 
