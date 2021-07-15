@@ -267,10 +267,11 @@ class Intake(models.Model):
               ("Severe Visual Impairment", "Severe Visual Impairment"), ("Light Perception Only", "Light Perception Only"),
               ("Low Vision", "Low Vision"))
 
-    REFERER = (("DOR", "DOR"), ("Alta", "Alta"), ("Veterans Administration", "Veterans Administration"), ("Physician", "Physician"),
+    REFERER = (("DOR", "DOR"), ("Alta", "Alta"), ("Veterans Administration", "Veterans Administration"),
                ("Family or Friend", "Family or Friend"), ("Senior Program", "Senior Program"),
                ("Assisted Living Facility", "Assisted Living Facility"), ("Nursing Home", "Nursing Home"),
                ("Independent Living Center", "Independent Living Center"), ("Self-Referral", "Self-Referral"),
+               ("Physician/ Medical Provider", "Physician/ Medical Provider"), ("Eye Care Provider", "Eye Care Provider"),
                ("Other", "Other"))
 
     contact = models.ForeignKey('Contact', on_delete=models.CASCADE)
