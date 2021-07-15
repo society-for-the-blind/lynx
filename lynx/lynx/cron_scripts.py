@@ -52,7 +52,7 @@ def address():
     subject = 'Address Changes'
     text_content = plaintext.render(d)
     html_content = htmly.render(d)
-    msg = EmailMultiAlternatives(subject, text_content, username, ['mjtolentino247@gmail.com']) #, 'jhuynh@societyfortheblind.org'])
+    msg = EmailMultiAlternatives(subject, text_content, username, ['mjtolentino247@gmail.com', 'jhuynh@societyfortheblind.org'])
     msg.attach_alternative(html_content, "text/html")
     msg.send()
 
