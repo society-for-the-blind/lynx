@@ -5,7 +5,9 @@
 
 {% block content %}
     <h2>SIP Plans for {{ client.first_name }} {{ client.last_name }}</h2>
-    {% if not request.GET.print %}<input type="button" class="btn btn-success" aria-label="Add New SIP Plan" onclick="location.href='/lynx/add-sip-plan/{{ client.id }}/';" value="Add New SIP Plan" />  <button class="btn btn-success" formaction="/lynx/client/{{ client.id }}">Return to {{ client.first_name }} {{ client.last_name }}'s Information </button>{% endif %}
+    {% if not request.GET.print %}
+<input type="button" class="btn btn-success" aria-label="Add New SIP Plan" onclick="location.href='/lynx/add-sip-plan/{{ client.id }}/';" value="Add New SIP Plan" />
+<input type="button" class="btn btn-success" aria-label="Back to Client" onclick="location.href='/lynx/client/{{ client.id }}';" value="Return to {{ client.first_name }} {{ client.last_name }}'s Information" />
     <div class="container-fluid">
     {% for sip in plans %}
         <div class="container-fluid">
