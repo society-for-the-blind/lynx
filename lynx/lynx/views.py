@@ -60,9 +60,23 @@ def volunteer_list_view(request):
 
 @login_required
 def authorization_list_view(request, client_id):
-    authorizations = Authorization.objects.filter(contact_id=client_id).order_by('start_date')
+    authorizations = Authorization.objects.filter(contact_id=client_id).order_by('-start_date')
     client = Contact.objects.get(id=client_id)
     return render(request, 'lynx/authorization_list.html', {'authorizations': authorizations, 'client': client})
+
+
+@login_required
+def sipplan_list_view(request, client_id):
+    plans = SipPlan.objects.filter(contact_id=client_id).order_by('-created')
+    client = Contact.objects.get(id=client_id)
+    return render(request, 'lynx/sipplan_list.html', {'plans': plans, 'client': client})
+
+
+@login_required
+def sipnote_list_view(request, client_id):
+    notes = SipNote.objects.filter(contact_id=client_id).order_by('-note_date')
+    client = Contact.objects.get(id=client_id)
+    return render(request, 'lynx/sipnote_list.html', {'notes': notes, 'client': client})
 
 
 @login_required

@@ -1,0 +1,43 @@
+{% extends 'lynx/base.html' %}
+
+{% block title %}SIP Notes{% endblock %}
+
+{% block content %}
+    <h2>SIP Notes for {{ client.first_name }} {{ client.last_name }}</h2>
+    {% if not request.GET.print %}<input type="button" class="btn btn-success" aria-label="Add New SIP Note" onclick="location.href='/lynx/add-sip-note/{{ client.id }}/';" value="Add New SIP Note" />{% endif %}
+
+    {% for sip in notes %}
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-12"><h3>{{ sip.note_date|date:'F j, Y' }}</h3> {{ sip.note|linebreaks }}</div>
+            </div>
+            <div class="row">
+                <div class="col-12"><a href='/lynx/sip-note-edit/{{ sip.id }}?contact_id={{ object.id }}&plan_id={{ sip.sip_plan_id }}'>Edit {{ sip.note_date|date:'F j, Y' }}</a></div>
+            </div>
+            <div class="row">
+                <div class="col-12"><strong>Instructor: </strong>{{ sip.instructor }}</div>
+            </div>
+            <div class="row">
+                <div class="col-12"><strong>Hours: </strong>{{ sip.class_hours|convert_fractions }}</div>
+            </div>
+            <div class="row">
+                <div class="col-12"><strong>Services: </strong>{% if sip.vision_screening %}Vision screening/examination/low vision evaluation, {% endif %}{% if sip.treatment %}Surgical or therapeutic treatment, {% endif %}{% if sip.at_devices %}AT devices and aids, {% endif %}{% if sip.at_services %}AT Services, {% endif %}{% if sip.independent_living %}ILS, {% endif %}{% if sip.orientation %}O & M, {% endif %}{% if sip.communications %}Communication skills, {% endif %}{% if sip.dls %}DLS, {% endif %}{% if sip.support %}Support services, {% endif %}{% if sip.advocacy %}Advocacy, {% endif %}{% if sip.counseling %}Counseling, {% endif %}{% if sip.information %}I & R, {% endif %}{% if sip.services %}Other IL services{% endif %}</div>
+            </div>
+            <div class="row">
+                <div class="col-12"><strong>Service Delivery: </strong>{% if sip.retreat %}Retreat, {% endif %}{% if sip.in_home %}In-home Training, {% endif %}{% if sip.seminar %}Training Seminar, {% endif %}{% if sip.modesto %}Modesto training site, {% endif %}{% if sip.group %}Support group(s), {% endif %}{% if sip.community %}Community Integration{% endif %}</div>
+            </div>
+            <div class="row">
+                <div class="col-12"><a href='/lynx/sip-note-confirm/{{ sip.id }}/{{ object.id }}'>Delete {{ sip.note_date|date:'F j, Y' }}</a></div>
+            </div>
+        </div>
+        <hr>
+        {% empty %}
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-12">Sorry, no SIP Notes have been entered for this client</div>
+            </div>
+        </div>
+    {% endfor %}
+    </div>
+
+{% endblock %}
