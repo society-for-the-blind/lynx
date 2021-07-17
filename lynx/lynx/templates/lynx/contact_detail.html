@@ -109,6 +109,7 @@
 <br><br>
 {% if not request.GET.print %}<input type="button" class="btn btn-success" aria-label="Edit Emergency Contact" onclick="location.href='/lynx/add-emergency/{{ object.id }}/';" value="Add Emergency Contact" />{% endif %}
     <br><br>
+<br><hr>
 <h2>Intake Information</h2>
 {% for intake in intake_list %}
     {% if not request.GET.print %}<input type="button" class="btn btn-primary" aria-label="Edit Intake Information" onclick="location.href='/lynx/intake-edit/{{ intake.id }}';" value="Edit Intake Information" />{% endif %}
@@ -194,96 +195,7 @@
     <p class="tab">Sorry, no intake information for this client</p>
     {% if not request.GET.print %}<input type="button" class="btn btn-success" aria-label="Add Intake Information" onclick="location.href='/lynx/add-intake/{{ object.id }}/';" value="Add Intake Information" />{% endif %}
 {% endfor %}
-
-<!--{% if object.core_client %}-->
-<!--    <br><br>-->
-<!--    <h2 id="authorizations">Authorizations</h2>-->
-<!--    <ul>-->
-<!--        {% for auth in authorization_list %}-->
-<!--            <li><a href='/lynx/authorization/{{ auth.id }}'>{{ auth.intake_service_area }}: {{ auth.start_date|date:'F j, Y' }}- {{ auth.end_date|date:'F j, Y' }}. {{ auth.authorization_number }}</a></li>-->
-<!--        {% empty %}-->
-<!--            <li><p class="tab">Sorry, no authorizations for this client</p></li>-->
-<!--        {% endfor %}-->
-<!--    </ul>-->
-<!--    {% if not request.GET.print %}<input type="button" class="btn btn-success" aria-label="Add New Authorization" onclick="location.href='/lynx/add-authorization/{{ object.id }}/';" value="Add New Authorization" /> {% endif %}-->
-<!--{% endif %}-->
-
-<!--{% if object.sip_client %}-->
-<!--    <br><br>-->
-<!--    <h2 id="sip-plans">SIP Plans</h2>-->
-<!--    <div class="container-fluid">-->
-<!--    {% for sip in sip_plan_list %}-->
-<!--        <div class="container-fluid">-->
-<!--            <div class="row">-->
-<!--                <div class="col-12"><strong>Plan Name: </strong>{% if sip.plan_name %}<a href='/lynx/sip-plan/{{ sip.id }}'>{{ sip.plan_name }}</a>{% else %}<a href='/lynx/sip-plan/{{ sip.id }}'>Unnamed Plan</a>{% endif %}</div>-->
-<!--            </div>-->
-<!--            <div class="row">-->
-<!--                <div class="col-12"><strong>Plan Services: </strong>{% if sip.at_services %}Assistive Technology or Services, {% endif %}{% if sip.independent_living %}IL/A Services, {% endif %}{% if sip.orientation %}O&M Skills, {% endif %}{% if sip.communications %}Communication skills, {% endif %}{% if sip.dls %}Daily Living Skills, {% endif %}{% if sip.advocacy %}Advocacy Training, {% endif %}{% if sip.counseling %}Adjustment Counseling, {% endif %}{% if sip.information %}I&R (Information & Referral), {% endif %}{% if sip.services %}Other Services{% endif %}</div>-->
-<!--            </div>-->
-<!--            <div class="row">-->
-<!--                <div class="col-12"><strong>Plan Status: </strong>Living Situation Outcome: {{ sip.living_plan_progress}}, Community Involvement Outcome: {{ sip.community_plan_progress}}</div>-->
-<!--            </div>-->
-<!--            <div class="row">-->
-<!--                <div class="col-12"><strong>Assessment Status: </strong>AT Outcome: {{ sip.at_outcomes}}, IL/A Outcome: {{ sip.ila_outcomes}}</div>-->
-<!--            </div>-->
-<!--            <div class="row">-->
-<!--                <div class="col-12"><a href='/lynx/sip-plan-edit/{{ sip.id }}'>Edit</a> | <a href='/lynx/sip-plan-confirm/{{ sip.id }}/{{ object.id }}'>Delete</a></div>-->
-<!--            </div>-->
-<!--        </div>-->
-<!--        <br>-->
-<!--        {% empty %}-->
-<!--        <div class="container-fluid">-->
-<!--            <div class="row">-->
-<!--                <div class="col-11">Sorry, no SIP Plans have been created for this client</div>-->
-<!--            </div>-->
-<!--        </div>-->
-<!--    {% endfor %}-->
-<!--    </div>-->
-<!--    <br>-->
-<!--    {% if not request.GET.print %}<input type="button" class="btn btn-success" aria-label="Add New SIP Plan" onclick="location.href='/lynx/add-sip-plan/{{ object.id }}/';" value="Add New SIP Plan" />{% endif %}-->
-<!--    <br>-->
-<!--    <h2>SIP Notes</h2>-->
-<!--    <div class="container-fluid">-->
-<!--    {% if not request.GET.print %}<input type="button" class="btn btn-success" aria-label="Add New SIP Note" onclick="location.href='/lynx/add-sip-note/{{ object.id }}/';" value="Add New SIP Note" />{% endif %}-->
-
-<!--    {% for sip in sip_list %}-->
-<!--        <div class="container-fluid">-->
-<!--            <div class="row">-->
-<!--                <div class="col-12"><h3>{{ sip.note_date|date:'F j, Y' }}</h3> {{ sip.note|linebreaks }}</div>-->
-<!--            </div>-->
-<!--            <div class="row">-->
-<!--                <div class="col-12"><a href='/lynx/sip-note-edit/{{ sip.id }}?contact_id={{ object.id }}&plan_id={{ sip.sip_plan_id }}'>Edit {{ sip.note_date|date:'F j, Y' }}</a></div>-->
-<!--            </div>-->
-<!--            <div class="row">-->
-<!--                <div class="col-12"><strong>Instructor: </strong>{{ sip.instructor }}</div>-->
-<!--            </div>-->
-<!--            <div class="row">-->
-<!--                <div class="col-12"><strong>Hours: </strong>{{ sip.class_hours|convert_fractions }}</div>-->
-<!--            </div>-->
-<!--            <div class="row">-->
-<!--                <div class="col-12"><strong>Services: </strong>{% if sip.vision_screening %}Vision screening/examination/low vision evaluation, {% endif %}{% if sip.treatment %}Surgical or therapeutic treatment, {% endif %}{% if sip.at_devices %}AT devices and aids, {% endif %}{% if sip.at_services %}AT Services, {% endif %}{% if sip.independent_living %}ILS, {% endif %}{% if sip.orientation %}O & M, {% endif %}{% if sip.communications %}Communication skills, {% endif %}{% if sip.dls %}DLS, {% endif %}{% if sip.support %}Support services, {% endif %}{% if sip.advocacy %}Advocacy, {% endif %}{% if sip.counseling %}Counseling, {% endif %}{% if sip.information %}I & R, {% endif %}{% if sip.services %}Other IL services{% endif %}</div>-->
-<!--            </div>-->
-<!--            <div class="row">-->
-<!--                <div class="col-12"><strong>Service Delivery: </strong>{% if sip.retreat %}Retreat, {% endif %}{% if sip.in_home %}In-home Training, {% endif %}{% if sip.seminar %}Training Seminar, {% endif %}{% if sip.modesto %}Modesto training site, {% endif %}{% if sip.group %}Support group(s), {% endif %}{% if sip.community %}Community Integration{% endif %}</div>-->
-<!--            </div>-->
-<!--            <div class="row">-->
-<!--                <div class="col-12"><a href='/lynx/sip-note-confirm/{{ sip.id }}/{{ object.id }}'>Delete {{ sip.note_date|date:'F j, Y' }}</a></div>-->
-<!--            </div>-->
-<!--        </div>-->
-<!--        <hr>-->
-<!--        {% empty %}-->
-<!--        <div class="container-fluid">-->
-<!--            <div class="row">-->
-<!--                <div class="col-12">Sorry, no SIP Notes have been entered for this client</div>-->
-<!--            </div>-->
-<!--        </div>-->
-<!--    {% endfor %}-->
-<!--    </div>-->
-<!--<br>-->
-<!--    {% if not request.GET.print %}<input type="button" class="btn btn-success" aria-label="Add New SIP Note" onclick="location.href='/lynx/add-sip-note/{{ object.id }}/';" value="Add New SIP Note" />{% endif %}-->
-<!--{% endif %}-->
-<!--<br>-->
-<!--<br>-->
+<br><hr>
 <h2 id="notes">Client Notes</h2>
 {% for note in note_list %}
     <p class="tab">{{ note.created|date:'F j, Y' }}: {{ note.note|linebreaks }}<br>
@@ -304,7 +216,7 @@
     {{ form.as_p }}
     <input type="submit" class="btn btn-success" value="Submit Client Note">
 </form>
-<br><br>
+<br><hr>
 <h3>Uploaded Files</h3>
 <ul>
     {% for doc in document_list %}
