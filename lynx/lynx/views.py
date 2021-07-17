@@ -61,7 +61,8 @@ def volunteer_list_view(request):
 @login_required
 def authorization_list_view(request, client_id):
     authorizations = Authorization.objects.filter(contact_id=client_id).order_by('start_date')
-    return render(request, 'lynx/authorization_list.html', {'authorizations': authorizations})
+    client = Contact.objects.get(id=client_id)
+    return render(request, 'lynx/authorization_list.html', {'authorizations': authorizations, 'client': client})
 
 
 @login_required
