@@ -6,14 +6,14 @@
 <h1>{{ object.first_name }} {{ object.last_name }}</h1>
 {% if not request.GET.print %}
 {% if object.core_client %}
-<input type="button" class="btn btn-success" aria-label="Core Authorizations" onclick="location.href='/lynx/authorizations/{{ object.id }}';" value="Go to Authorizations" />
+<input type="button" class="btn btn-success" aria-label="Core Authorizations" onclick="location.href='/lynx/authorizations/{{ object.id }}';" value="Core Authorizations" />
 {% endif %}
 {% if object.sip_client %}
-<input type="button" class="btn btn-success" aria-label="SIP Notes" onclick="location.href='/lynx/sipnotes/{{ object.id }}';" value="Add New SIP Plan" />
-<input type="button" class="btn btn-success" aria-label="SIP Plans" onclick="location.href='/lynx/sipplans/{{ object.id }}';" value="Jump to SIP Plans" />
+<input type="button" class="btn btn-success" aria-label="SIP Notes" onclick="location.href='/lynx/sipnotes/{{ object.id }}';" value="SIP Notes" />
+<input type="button" class="btn btn-success" aria-label="SIP Plans" onclick="location.href='/lynx/sipplans/{{ object.id }}';" value="SIP Plans" />
 {% endif %}
 <input type="button" class="btn btn-success" aria-label="Jump to File Upload" onclick="location.href='#upload';" value="Jump to File Upload" />
-<input type="button" class="btn btn-success" aria-label="Jump to Client Notes" onclick="location.href='#notes';" value="Jump to File Upload" />
+<input type="button" class="btn btn-success" aria-label="Jump to Client Notes" onclick="location.href='#notes';" value="Jump to Client Notes" />
 {% endif %}
 
 <h2>Client Information</h2>

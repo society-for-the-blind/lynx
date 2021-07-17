@@ -1,10 +1,11 @@
 {% extends 'lynx/base.html' %}
+{% load time_convert %}
 
 {% block title %}SIP Notes{% endblock %}
 
 {% block content %}
     <h2>SIP Notes for {{ client.first_name }} {{ client.last_name }}</h2>
-    {% if not request.GET.print %}<input type="button" class="btn btn-success" aria-label="Add New SIP Note" onclick="location.href='/lynx/add-sip-note/{{ client.id }}/';" value="Add New SIP Note" />{% endif %}
+    {% if not request.GET.print %}<input type="button" class="btn btn-success" aria-label="Add New SIP Note" onclick="location.href='/lynx/add-sip-note/{{ client.id }}/';" value="Add New SIP Note" />  <button class="btn btn-success" formaction="/lynx/client/{{ client.id }}">Return to {{ client.first_name }} {{ client.last_name }}'s Information </button>{% endif %}
 
     {% for sip in notes %}
         <div class="container-fluid">
