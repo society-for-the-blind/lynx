@@ -9,10 +9,16 @@ import os
 import sys
 from . import cron_scripts
 
-sys.path.append("/var/www/lynx/slate-2/lynx/")
-sys.path.append("/var/www/lynx/slate-2/lynx/mysite")
+day_of_week = datetime.today().weekday()
+now = datetime.datetime.now()
+hour = now.hour
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'mysite.settings')
+if day_of_week == 1 and 0 < hour < 2: #this is running whenever I restart the server, this will mean it can only run on a tuesday
 
-django.setup()
-cron_scripts.address()
+    sys.path.append("/var/www/lynx/slate-2/lynx/")
+    sys.path.append("/var/www/lynx/slate-2/lynx/mysite")
+
+    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'mysite.settings')
+
+    django.setup()
+    cron_scripts.address()
