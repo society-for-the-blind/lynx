@@ -4,7 +4,7 @@
 
 {% block content %}
     <br><br>
-    <h2>Authorizations for {{ authorizations.contact.first_name }} {{ authorizations.contact.last_name }}</h2>
+    <h2>Authorizations for {{ object.contact.first_name }} {{ object.contact.last_name }}</h2>
     <ul>
         {% for auth in authorizations %}
             <li><a href='/lynx/authorization/{{ auth.id }}'>{{ auth.intake_service_area }}: {{ auth.start_date|date:'F j, Y' }}- {{ auth.end_date|date:'F j, Y' }}. {{ auth.authorization_number }}</a></li>
