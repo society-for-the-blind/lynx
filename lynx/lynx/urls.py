@@ -8,6 +8,7 @@ app_name = "lynx"
 urlpatterns = [
     path('clients/', views.client_list_view, name='contact_list'),
     path('volunteers/', views.volunteer_list_view, name='volunteer_list'),
+    path('authorizations/<int:client_id>', views.authorization_list_view, name='auth_list'),
     path('add-contact/', views.add_contact, name='add_contact'),
     path('add-authorization/<int:contact_id>/', views.add_authorization, name='add_authorization'),
     path('add-lesson-note/<int:authorization_id>/', views.add_lesson_note, name='add_lesson_note'),

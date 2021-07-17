@@ -4,7 +4,7 @@
 {% block content %}
 
 <h1>{{ object.first_name }} {{ object.last_name }}</h1>
-{% if not request.GET.print %}{% if object.sip_client %}<input type="button" class="btn btn-success" aria-label="Add New SIP Note" onclick="location.href='/lynx/add-sip-note/{{ object.id }}/';" value="Add New SIP Note" />  <input type="button" class="btn btn-success" aria-label="Add New SIP Plan" onclick="location.href='/lynx/add-sip-plan/{{ object.id }}/';" value="Add New SIP Plan" />   <input type="button" class="btn btn-success" aria-label="Jump to SIP Plans" onclick="location.href='#sip-plans';" value="Jump to SIP Plans" /> {% endif %}{% if object.core_client %} <input type="button" class="btn btn-success" aria-label="Add New Authorization" onclick="location.href='/lynx/add-authorization/{{ object.id }}/';" value="Add New Authorization" />   <input type="button" class="btn btn-success" aria-label="Jump to Authorizations" onclick="location.href='#authorizations';" value="Jump to Authorizations" /> {% endif %}   <input type="button" class="btn btn-success" aria-label="Jump to File Upload" onclick="location.href='#upload';" value="Jump to File Upload" />{% endif %}
+{% if not request.GET.print %}{% if object.sip_client %}<input type="button" class="btn btn-success" aria-label="Add New SIP Note" onclick="location.href='/lynx/add-sip-note/{{ object.id }}/';" value="Add New SIP Note" />  <input type="button" class="btn btn-success" aria-label="Add New SIP Plan" onclick="location.href='/lynx/add-sip-plan/{{ object.id }}/';" value="Add New SIP Plan" />   <input type="button" class="btn btn-success" aria-label="Jump to SIP Plans" onclick="location.href='#sip-plans';" value="Jump to SIP Plans" /> {% endif %}{% if object.core_client %} <input type="button" class="btn btn-success" aria-label="Add New Authorization" onclick="location.href='/lynx/add-authorization/{{ object.id }}/';" value="Add New Authorization" />   <input type="button" class="btn btn-success" aria-label="Go to Authorizations" onclick="location.href='/lynx/authorizations/{{ object.id }}';" value="Go to Authorizations" /> {% endif %}   <input type="button" class="btn btn-success" aria-label="Jump to File Upload" onclick="location.href='#upload';" value="Jump to File Upload" />{% endif %}
 
 <h2>Client Information</h2>
 <p class="tab"><strong>Name:</strong> {{ object.first_name }} {% if object.middle_name %}{{ object.middle_name }} {% endif %}{{ object.last_name }}</p>
@@ -185,18 +185,18 @@
     {% if not request.GET.print %}<input type="button" class="btn btn-success" aria-label="Add Intake Information" onclick="location.href='/lynx/add-intake/{{ object.id }}/';" value="Add Intake Information" />{% endif %}
 {% endfor %}
 
-{% if object.core_client %}
-    <br><br>
-    <h2 id="authorizations">Authorizations</h2>
-    <ul>
-        {% for auth in authorization_list %}
-            <li><a href='/lynx/authorization/{{ auth.id }}'>{{ auth.intake_service_area }}: {{ auth.start_date|date:'F j, Y' }}- {{ auth.end_date|date:'F j, Y' }}. {{ auth.authorization_number }}</a></li>
-        {% empty %}
-            <li><p class="tab">Sorry, no authorizations for this client</p></li>
-        {% endfor %}
-    </ul>
-    {% if not request.GET.print %}<input type="button" class="btn btn-success" aria-label="Add New Authorization" onclick="location.href='/lynx/add-authorization/{{ object.id }}/';" value="Add New Authorization" /> {% endif %}
-{% endif %}
+<!--{% if object.core_client %}-->
+<!--    <br><br>-->
+<!--    <h2 id="authorizations">Authorizations</h2>-->
+<!--    <ul>-->
+<!--        {% for auth in authorization_list %}-->
+<!--            <li><a href='/lynx/authorization/{{ auth.id }}'>{{ auth.intake_service_area }}: {{ auth.start_date|date:'F j, Y' }}- {{ auth.end_date|date:'F j, Y' }}. {{ auth.authorization_number }}</a></li>-->
+<!--        {% empty %}-->
+<!--            <li><p class="tab">Sorry, no authorizations for this client</p></li>-->
+<!--        {% endfor %}-->
+<!--    </ul>-->
+<!--    {% if not request.GET.print %}<input type="button" class="btn btn-success" aria-label="Add New Authorization" onclick="location.href='/lynx/add-authorization/{{ object.id }}/';" value="Add New Authorization" /> {% endif %}-->
+<!--{% endif %}-->
 
 {% if object.sip_client %}
     <br><br>
