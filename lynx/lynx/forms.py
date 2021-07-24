@@ -249,7 +249,7 @@ class SipPlanForm(forms.ModelForm):
               ("Training Seminar", "Training Seminar"), ("Workshop", "Workshop"))
     instructor = forms.CharField(required=False)
     plan_type = forms.ChoiceField(choices=types)
-    # start_date = forms.DateField(widget=forms.SelectDateWidget(empty_label="Nothing", years=range(oldYear, highYear)))
+    start_date = forms.CharField(widget=forms.TextInput())
 
     class Meta:
         model = SipPlan
@@ -270,6 +270,7 @@ class SipPlanForm(forms.ModelForm):
         self.fields['community_plan_progress'].label = "Home and Community involvement Outcomes"
         self.fields['at_outcomes'].label = "AT Goal Outcomes"
         self.fields['ila_outcomes'].label = "IL/A Service Goal Outcomes"
+        self.fields['start_date'].label = "Start Date"
 
 
 class BillingReportForm(forms.Form):
