@@ -25,7 +25,6 @@
 <form method="post"> {% csrf_token %}
     <div class="container-fluid">
         <h2>Notes</h2>
-
             <div class="row">
               <div class="col-12">{{ form.note_date|as_crispy_field }}</div>
             </div>
@@ -40,16 +39,7 @@
             </div>
         <h2>Services (check all that apply):</h2>
             <div class="row">
-              <div class="col-6">{{ form.vision_screening|as_crispy_field }}</div>
-            </div>
-            <div class="row">
-              <div class="col-6">{{ form.treatment|as_crispy_field }}</div>
-            </div>
-            <div class="row">
               <div class="col-6">{{ form.at_devices|as_crispy_field }}</div>
-            </div>
-            <div class="row">
-              <div class="col-6">{{ form.at_services|as_crispy_field }}</div>
             </div>
             <div class="row">
               <div class="col-6">{{ form.independent_living|as_crispy_field }}</div>
@@ -64,9 +54,6 @@
               <div class="col-6">{{ form.dls|as_crispy_field }}</div>
             </div>
             <div class="row">
-              <div class="col-6">{{ form.support|as_crispy_field }}</div>
-            </div>
-            <div class="row">
               <div class="col-6">{{ form.advocacy|as_crispy_field }}</div>
             </div>
             <div class="row">
@@ -78,22 +65,10 @@
             <div class="row">
               <div class="col-6">{{ form.services|as_crispy_field }}</div>
             </div>
-        <h2>Method of delivering service (check all that apply):</h2>
             <div class="row">
-              <div class="col-6">{{ form.retreat|as_crispy_field }}</div>
+              <div class="col-6">{{ form.support|as_crispy_field }}</div>
             </div>
-            <div class="row">
-              <div class="col-6">{{ form.in_home|as_crispy_field }}</div>
-            </div>
-            <div class="row">
-              <div class="col-6">{{ form.seminar|as_crispy_field }}</div>
-            </div>
-            <div class="row">
-              <div class="col-6">{{ form.group|as_crispy_field }}</div>
-            </div>
-            <div class="row">
-              <div class="col-6">{{ form.community|as_crispy_field }}</div>
-            </div>
+        <h2>Notes</h2>
             <div class="row">
               <div class="col-12">{{ form.note|as_crispy_field }}</div>
             </div>

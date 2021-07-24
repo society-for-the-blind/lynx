@@ -166,11 +166,11 @@ class LessonNoteForm(forms.ModelForm):
 
 
 class SipNoteForm(forms.ModelForm):
-    currentYear = datetime.now().year
-    oldYear = 2000
-    highYear = currentYear + 2
-
-    note_date = forms.DateField(widget=forms.SelectDateWidget(empty_label="Nothing", years=range(oldYear, highYear)))
+    # currentYear = datetime.now().year
+    # oldYear = 2000
+    # highYear = currentYear + 2
+    #
+    # note_date = forms.DateField(widget=forms.SelectDateWidget(empty_label="Nothing", years=range(oldYear, highYear)))
     client_list = Contact.objects.filter(sip_client=1).order_by('last_name')
     clients = forms.ModelMultipleChoiceField(queryset=client_list, required=False)
 
@@ -182,20 +182,18 @@ class SipNoteForm(forms.ModelForm):
         contact_id = kwargs.pop('contact_id')
         super(SipNoteForm, self).__init__(*args, **kwargs)
         self.fields['sip_plan'].queryset = SipPlan.objects.filter(contact_id=contact_id)
-        self.fields['vision_screening'].label = "Vision screening/examination/low vision evaluation"
-        self.fields['treatment'].label = "Surgical or therapeutic treatment"
-        self.fields['at_devices'].label = "Provision of assistive technology devices and aids (non prescription optics)"
-        self.fields['at_services'].label = "Provision of assistive technology services"
-        self.fields['independent_living'].label = "Independent living and adjustment skills training"
-        self.fields['orientation'].label = "Orientation and Mobility training"
-        self.fields['communications'].label = "Communication skills"
-        self.fields['dls'].label = "Daily Living Skills"
-        self.fields['support'].label = "Support services"
-        self.fields['advocacy'].label = "Advocacy training and support networks"
-        self.fields['information'].label = "Information, referral, and community integration"
-        self.fields['services'].label = "Other IL services"
+        self.fields['at_devices'].label = "Assistive Technology Devices and Services"
+        self.fields['independent_living'].label = "Independent Living and Adjustment Services"
+        self.fields['orientation'].label = "Orientation & Mobility Training"
+        self.fields['communications'].label = "Communication Skills Training"
+        self.fields['dls'].label = "Daily Living Skills Training"
+        self.fields['support'].label = "Supportive Services"
+        self.fields['advocacy'].label = "Advocacy Training"
+        self.fields['information'].label = "Information and Referral"
+        self.fields['other_services'].label = "Other IL/A Services"
         self.fields['in_home'].label = "In-home training"
         self.fields['seminar'].label = "Training Seminar"
+        self.fields['counseling'].label = "Adjustment Counseling"
         # self.fields['modesto'].label = "Modesto training site"
         self.fields['group'].label = "Support group(s)"
         self.fields['community'].label = "Community Integration"

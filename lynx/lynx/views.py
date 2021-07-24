@@ -1043,9 +1043,9 @@ class ProgressReportUpdateView(LoginRequiredMixin, UpdateView):
 
 class SipNoteUpdateView(LoginRequiredMixin, UpdateView):
     model = SipNote
-    fields = ['note', 'note_date', 'vision_screening', 'treatment', 'at_devices', 'at_services', 'independent_living',
-              'orientation', 'communications', 'dls', 'support', 'advocacy', 'counseling', 'information', 'services',
-              'retreat', 'in_home', 'seminar', 'modesto', 'group', 'community', 'class_hours', 'sip_plan', 'instructor']
+    fields = ['note', 'note_date', 'at_devices',  'independent_living', 'orientation', 'communications', 'dls',
+              'support', 'advocacy', 'counseling', 'information', 'services', 'retreat', 'in_home', 'seminar',
+              'modesto', 'group', 'community', 'class_hours', 'sip_plan', 'instructor']
     template_name_suffix = '_edit'
 
     def form_valid(self, form):
@@ -1076,14 +1076,16 @@ class SipPlanUpdateView(LoginRequiredMixin, UpdateView):
 
     def get_form(self, form_class=None):
         form = super().get_form(form_class=form_class)
-        form.fields['at_services'].label = "Assistive Technology or Services"
-        form.fields['independent_living'].label = "IL/A Services"
-        form.fields['orientation'].label = "O&M Skills"
-        form.fields['communications'].label = "Communication skills"
-        form.fields['dls'].label = "Daily Living Skills"
-        form.fields['advocacy'].label = "Advocacy training"
-        form.fields['information'].label = "I&R (Information & Referral)"
+        form.fields['at_services'].label = "Assistive Technology Devices and Services"
+        form.fields['independent_living'].label = "Independent Living and Adjustment Services"
+        form.fields['orientation'].label = "Orientation & Mobility Training"
+        form.fields['communications'].label = "Communication Skills Training"
+        form.fields['dls'].label = "Daily Living Skills Training"
+        form.fields['advocacy'].label = "Advocacy Training"
+        form.fields['information'].label = "Information and Referral"
         form.fields['counseling'].label = "Adjustment Counseling"
+        form.fields['support_services'].label = "Supportive Services"
+        form.fields['other_services'].label = "Other IL/A Services"
         form.fields['living_plan_progress'].label = "Living Situation Outcomes"
         form.fields['community_plan_progress'].label = "Home and Community involvement Outcomes"
         form.fields['at_outcomes'].label = "AT Goal Outcomes"
