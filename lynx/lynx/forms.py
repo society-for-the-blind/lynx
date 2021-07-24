@@ -241,15 +241,15 @@ class SipNoteBulkForm(forms.ModelForm):
 
 
 class SipPlanForm(forms.ModelForm):
-    currentYear = datetime.now().year
-    oldYear = 2015
-    highYear = currentYear + 1
+    # currentYear = datetime.now().year
+    # oldYear = 2015
+    # highYear = currentYear + 1
 
     types = (("Retreat", "Retreat"), ("In-home", "In-home"), ("Support Group", "Support Group"),
               ("Training Seminar", "Training Seminar"), ("Workshop", "Workshop"))
     instructor = forms.CharField(required=False)
     plan_type = forms.ChoiceField(choices=types)
-    start_date = forms.DateField(widget=forms.SelectDateWidget(empty_label="Nothing", years=range(oldYear, highYear)))
+    # start_date = forms.DateField(widget=forms.SelectDateWidget(empty_label="Nothing", years=range(oldYear, highYear)))
 
     class Meta:
         model = SipPlan
