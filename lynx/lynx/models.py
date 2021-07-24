@@ -535,6 +535,7 @@ class SipNote(models.Model):
     orientation = models.BooleanField(blank=True, default=False)
     communications = models.BooleanField(blank=True, default=False)
     dls = models.BooleanField(blank=True, default=False)
+    # other_services = models.BooleanField(blank=True, default=False)
     support = models.BooleanField(blank=True, default=False)
     advocacy = models.BooleanField(blank=True, default=False)
     counseling = models.BooleanField(blank=True, default=False)

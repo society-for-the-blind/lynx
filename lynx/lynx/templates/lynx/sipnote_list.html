@@ -23,11 +23,11 @@
                 <div class="col-12"><strong>Hours: </strong>{{ sip.class_hours|convert_fractions }}</div>
             </div>
             <div class="row">
-                <div class="col-12"><strong>Services: </strong>{% if sip.vision_screening %}Vision screening/examination/low vision evaluation, {% endif %}{% if sip.treatment %}Surgical or therapeutic treatment, {% endif %}{% if sip.at_devices %}AT devices and aids, {% endif %}{% if sip.at_services %}AT Services, {% endif %}{% if sip.independent_living %}ILS, {% endif %}{% if sip.orientation %}O & M, {% endif %}{% if sip.communications %}Communication skills, {% endif %}{% if sip.dls %}DLS, {% endif %}{% if sip.support %}Support services, {% endif %}{% if sip.advocacy %}Advocacy, {% endif %}{% if sip.counseling %}Counseling, {% endif %}{% if sip.information %}I & R, {% endif %}{% if sip.services %}Other IL services{% endif %}</div>
+                <div class="col-12"><strong>Services: </strong>{% if sip.vision_screening %}Vision screening/examination/low vision evaluation, {% endif %}{% if sip.treatment %}Surgical or therapeutic treatment, {% endif %}{% if sip.at_devices %}AT devices and aids, {% endif %}{% if sip.at_services %}AT Services, {% endif %}{% if sip.independent_living %}ILS, {% endif %}{% if sip.orientation %}O & M, {% endif %}{% if sip.communications %}Communication skills, {% endif %}{% if sip.dls %}DLS, {% endif %}{% if sip.support %}Support services, {% endif %}{% if sip.advocacy %}Advocacy, {% endif %}{% if sip.counseling %}Counseling, {% endif %}{% if sip.information %}I & R, {% endif %}{% if sip.services %}Other IL/A services{% endif %}</div>
             </div>
-            <div class="row">
-                <div class="col-12"><strong>Service Delivery: </strong>{% if sip.retreat %}Retreat, {% endif %}{% if sip.in_home %}In-home Training, {% endif %}{% if sip.seminar %}Training Seminar, {% endif %}{% if sip.modesto %}Modesto training site, {% endif %}{% if sip.group %}Support group(s), {% endif %}{% if sip.community %}Community Integration{% endif %}</div>
-            </div>
+<!--            <div class="row">-->
+<!--                <div class="col-12"><strong>Service Delivery: </strong>{% if sip.retreat %}Retreat, {% endif %}{% if sip.in_home %}In-home Training, {% endif %}{% if sip.seminar %}Training Seminar, {% endif %}{% if sip.modesto %}Modesto training site, {% endif %}{% if sip.group %}Support group(s), {% endif %}{% if sip.community %}Community Integration{% endif %}</div>-->
+<!--            </div>-->
             <div class="row">
                 <div class="col-12"><a href='/lynx/sip-note-confirm/{{ sip.id }}/{{ object.id }}'>Delete {{ sip.note_date|date:'F j, Y' }}</a></div>
             </div>
