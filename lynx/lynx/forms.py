@@ -203,11 +203,11 @@ class SipNoteForm(forms.ModelForm):
 
 
 class SipNoteBulkForm(forms.ModelForm):
-    currentYear = datetime.now().year
-    oldYear = 2000
-    highYear = currentYear + 2
-
-    note_date = forms.DateField(widget=forms.SelectDateWidget(empty_label="Nothing", years=range(oldYear, highYear)))
+    # currentYear = datetime.now().year
+    # oldYear = 2000
+    # highYear = currentYear + 2
+    #
+    # note_date = forms.DateField(widget=forms.SelectDateWidget(empty_label="Nothing", years=range(oldYear, highYear)))
     client_list = Contact.objects.filter(sip_client=1).order_by('last_name')
     clients = forms.ModelMultipleChoiceField(queryset=client_list, required=False)
 
