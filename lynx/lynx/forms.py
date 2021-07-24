@@ -249,7 +249,7 @@ class SipPlanForm(forms.ModelForm):
               ("Training Seminar", "Training Seminar"), ("Workshop", "Workshop"))
     instructor = forms.CharField(required=False)
     plan_type = forms.ChoiceField(choices=types)
-    start_date = forms.CharField(widget=forms.TextInput())
+    start_date = forms.CharField(widget=forms.TextInput(attrs={'aria-required': 'true'}))
 
     class Meta:
         model = SipPlan
@@ -257,19 +257,20 @@ class SipPlanForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(SipPlanForm, self).__init__(*args, **kwargs)
-        self.fields['at_services'].label = "Assistive Technology or Services"
-        self.fields['independent_living'].label = "IL/A Services"
-        self.fields['orientation'].label = "O&M Skills"
-        self.fields['communications'].label = "Communication skills"
-        self.fields['dls'].label = "Daily Living Skills"
-        self.fields['advocacy'].label = "Advocacy training"
-        self.fields['information'].label = "I&R (Information & Referral)"
-        self.fields['other_services'].label = "Other services"
+        self.fields['at_services'].label = "Assistive Technology Devices and Services"
+        self.fields['independent_living'].label = "Independent Living and Adjustment Services"
+        self.fields['orientation'].label = "Orientation & Mobility Training"
+        self.fields['communications'].label = "Communication Skills Training"
+        self.fields['dls'].label = "Daily Living Skills Training"
+        self.fields['advocacy'].label = "Advocacy Training"
+        self.fields['information'].label = "Information and Referral"
+        self.fields['other_services'].label = "Other IL/A Services"
+        self.fields['support_services'].label = "Supportive Services"
         self.fields['counseling'].label = "Adjustment Counseling"
-        self.fields['living_plan_progress'].label = "Living Situation Outcomes"
-        self.fields['community_plan_progress'].label = "Home and Community involvement Outcomes"
+        self.fields['living_plan_progress'].label = "Living Situation Outcome"
+        self.fields['community_plan_progress'].label = "Home and Community Involvement Outcome"
         self.fields['at_outcomes'].label = "AT Goal Outcomes"
-        self.fields['ila_outcomes'].label = "IL/A Service Goal Outcomes"
+        self.fields['ila_outcomes'].label = "IL/A Service Goal Outcome"
         self.fields['start_date'].label = "Start Date"
 
 

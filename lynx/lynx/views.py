@@ -1071,7 +1071,7 @@ class SipPlanUpdateView(LoginRequiredMixin, UpdateView):
     model = SipPlan
     fields = ['note', 'at_services', 'independent_living', 'orientation', 'communications', 'dls', 'advocacy',
               'counseling', 'information', 'other_services', 'plan_name', 'living_plan_progress', 'at_outcomes',
-              'community_plan_progress', 'ila_outcomes']
+              'community_plan_progress', 'ila_outcomes', 'support_services']
     template_name_suffix = '_edit'
 
     def get_form(self, form_class=None):
