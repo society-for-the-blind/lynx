@@ -60,12 +60,12 @@
         </div>
         <div class="row">
             <div class="col-1"></div>
-            <div class="col-11"><strong>Services: </strong>{% if sip.vision_screening %}Vision screening/examination/low vision evaluation, {% endif %}{% if sip.treatment %}Surgical or therapeutic treatment, {% endif %}{% if sip.at_devices %}AT devices and aids, {% endif %}{% if sip.at_services %}AT Services, {% endif %}{% if sip.independent_living %}ILS, {% endif %}{% if sip.orientation %}O & M, {% endif %}{% if sip.communications %}Communication skills, {% endif %}{% if sip.dls %}DLS, {% endif %}{% if sip.support %}Support services, {% endif %}{% if sip.advocacy %}Advocacy, {% endif %}{% if sip.counseling %}Counseling, {% endif %}{% if sip.information %}I & R, {% endif %}{% if sip.services %}Other IL services{% endif %}</div>
+            <div class="col-11"><strong>Services: </strong>{% if sip.at_services %}Assistive Technology Devices and Services, {% endif %}{% if sip.independent_living %}Independent Living and Adjustment Services, {% endif %}{% if sip.orientation %}Orientation & Mobility Training, {% endif %}{% if sip.communications %}Communication Skills Training, {% endif %}{% if sip.dls %}Daily Living Skills Training, {% endif %}{% if sip.advocacy %}Advocacy Training, {% endif %}{% if sip.counseling %}Adjustment Counseling, {% endif %}{% if sip.information %}Information and Referral, {% endif %}{% if sip.other_services %}Other IL/A services, {% endif %}{% if sip.support_services %}Supportive Services {% endif %}</div>
         </div>
-        <div class="row">
-            <div class="col-1"></div>
-            <div class="col-11"><strong>Service Delivery: </strong>{% if sip.retreat %}Retreat, {% endif %}{% if sip.in_home %}In-home Training, {% endif %}{% if sip.seminar %}Training Seminar, {% endif %}{% if sip.modesto %}Modesto training site, {% endif %}{% if sip.group %}Support group(s), {% endif %}{% if sip.community %}Community Integration{% endif %}</div>
-        </div>
+<!--        <div class="row">-->
+<!--            <div class="col-1"></div>-->
+<!--            <div class="col-11"><strong>Service Delivery: </strong>{% if sip.retreat %}Retreat, {% endif %}{% if sip.in_home %}In-home Training, {% endif %}{% if sip.seminar %}Training Seminar, {% endif %}{% if sip.modesto %}Modesto training site, {% endif %}{% if sip.group %}Support group(s), {% endif %}{% if sip.community %}Community Integration{% endif %}</div>-->
+<!--        </div>-->
         {% empty %}
         <div class="row">
             <div class="col-1"></div>
