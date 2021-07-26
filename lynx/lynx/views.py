@@ -158,6 +158,7 @@ def add_sip_note(request, contact_id):
                 fiscal_year = get_fiscal_year(f_year)
             form.quarter = quarter
             form.fiscal_year = fiscal_year
+            form.instructor = request.user.first_name + request.user.last_name
             form.user_id = request.user.id
             form.save()
             return HttpResponseRedirect(reverse('lynx:client', args=(contact_id,)))
@@ -171,11 +172,13 @@ def add_sip_plan(request, contact_id):
         form = SipPlanForm(request.POST)
         if form.is_valid():
             form = form.save(commit=False)
+            form.instructor = request.user.first_name + request.user.last_name
             form.plan_name = request.POST.get('start_date_month') + '/' + request.POST.get('start_date_day') + '/' \
                              + request.POST.get('start_date_year') + ' - ' + request.POST.get('plan_type') + ' - ' \
-                             + request.POST.get('instructor')
+                             + form.instructor
             form.contact_id = contact_id
             form.user_id = request.user.id
+
             form.save()
             return HttpResponseRedirect(reverse('lynx:client', args=(contact_id,)))
     return render(request, 'lynx/add_sip_plan.html', {'form': form})
@@ -205,6 +208,7 @@ def add_sip_note_bulk(request):
             form.fiscal_year = fiscal_year
             form.contact_id = request.POST.get('client_0')
             form.sip_plan_id = request.POST.get('plan_0')
+            form.instructor = request.user.first_name + request.user.last_name
             form.user_id = request.user.id
             form.save()
             for i in range:
@@ -1065,6 +1069,20 @@ class SipNoteUpdateView(LoginRequiredMixin, UpdateView):
         post.save()
         action = "/lynx/client/" + str(post.contact_id)
         return HttpResponseRedirect(action)
+
+    def get_form(self, form_class=None):
+        form = super().get_form(form_class=form_class)
+        form.fields['at_devices'].label = "Assistive Technology Devices and Services"
+        form.fields['independent_living'].label = "Independent Living and Adjustment Services"
+        form.fields['orientation'].label = "Orientation & Mobility Training"
+        form.fields['communications'].label = "Communication Skills Training"
+        form.fields['dls'].label = "Daily Living Skills Training"
+        form.fields['advocacy'].label = "Advocacy Training"
+        form.fields['information'].label = "Information and Referral"
+        form.fields['counseling'].label = "Adjustment Counseling"
+        form.fields['support'].label = "Supportive Services"
+        form.fields['services'].label = "Other IL/A Services"
+        return form
 
 
 class SipPlanUpdateView(LoginRequiredMixin, UpdateView):
