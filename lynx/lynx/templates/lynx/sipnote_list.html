@@ -23,7 +23,7 @@
                 <div class="col-12"><strong>Hours: </strong>{{ sip.class_hours|convert_fractions }}</div>
             </div>
             <div class="row">
-                <div class="col-12"><strong>Services: </strong>{% if sip.at_devices %}AT devices and aids, {% endif %} {% if sip.at_services %}Assistive Technology Devices and Services, {% endif %} {% if sip.independent_living %}Independent Living and Adjustment Services, {% endif % }{% if sip.orientation %}Orientation & Mobility Training, {% endif %} {% if sip.communications %}Communication Skills Training, {% endif %} {% if sip.dls %}Daily Living Skills Training, {% endif %} {% if sip.advocacy %}Advocacy Training, {% endif %} {% if sip.counseling %}Adjustment Counseling, {% endif %} {% if sip.information %}Information and Referral, {% endif %} {% if sip.services %}Other IL/A services, {% endif %} {% if sip.support %}Supportive Services{% endif %}
+                <div class="col-12"><strong>Services: </strong>{% if sip.at_devices %}AT devices and aids, {% endif %} {% if sip.at_services %}Assistive Technology Devices and Services, {% endif %} {% if sip.independent_living %}Independent Living and Adjustment Services, {% endif %}{% if sip.orientation %}Orientation & Mobility Training, {% endif %} {% if sip.communications %}Communication Skills Training, {% endif %} {% if sip.dls %}Daily Living Skills Training, {% endif %} {% if sip.advocacy %}Advocacy Training, {% endif %} {% if sip.counseling %}Adjustment Counseling, {% endif %} {% if sip.information %}Information and Referral, {% endif %} {% if sip.services %}Other IL/A services, {% endif %} {% if sip.support %}Supportive Services{% endif %}
                 </div>
             </div>
 <!--            <div class="row">-->
