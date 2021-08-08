@@ -145,6 +145,7 @@ class Contact(models.Model):
     volunteer_check = models.BooleanField(blank=True, default=False)
     access_news = models.BooleanField(blank=True, default=False)
     other_services = models.BooleanField(blank=True, default=False)
+    payment_source = models.BooleanField(blank=True, default=False)
     contact_notes = models.TextField(blank=True, null=True)
     created = models.DateTimeField(auto_now_add=True, null=True)
     modified = models.DateTimeField(auto_now=True, null=True)
