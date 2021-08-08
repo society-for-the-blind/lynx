@@ -118,6 +118,7 @@ class IntakeNoteForm(forms.ModelForm):
 class AuthorizationForm(forms.ModelForm):
     # start_date = forms.DateField(widget=forms.SelectDateWidget(empty_label="Nothing"))
     # end_date = forms.DateField(widget=forms.SelectDateWidget(empty_label="Nothing"))
+    outside_agency = Contact.objects.filter(payment_source=1).order_by('last_name')
 
     class Meta:
 
