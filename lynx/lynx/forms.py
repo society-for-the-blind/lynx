@@ -1,4 +1,5 @@
 from django import forms
+from django.db.models.functions import Lower
 from django.utils.translation import gettext_lazy
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
@@ -118,7 +119,6 @@ class IntakeNoteForm(forms.ModelForm):
 class AuthorizationForm(forms.ModelForm):
     # start_date = forms.DateField(widget=forms.SelectDateWidget(empty_label="Nothing"))
     # end_date = forms.DateField(widget=forms.SelectDateWidget(empty_label="Nothing"))
-    outside_agency = Contact.objects.filter(payment_source=1).order_by('last_name')
 
     class Meta:
 
@@ -127,6 +127,7 @@ class AuthorizationForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(AuthorizationForm, self).__init__(*args, **kwargs)
+        self.fields['outside_agency'].queryset = Contact.objects.filter(payment_source=1).order_by(Lower('last_name'))
         self.fields['outside_agency'].label = "Payment Source"
         self.fields['start_date'].label = "Start Date (YYYY-MM-DD)"
         self.fields['end_date'].label = "End Date (YYYY-MM-DD)"
