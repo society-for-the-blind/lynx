@@ -13,8 +13,7 @@ day_of_week = datetime.today().weekday()
 # now = datetime.datetime.now()
 # hour = now.hour
 
-if 1 <= day_of_week <= 2: #this is running whenever I restart the server, this will mean it can only run on a tuesday
-# if day_of_week == 1 and 0 < hour < 2: #this is running whenever I restart the server, this will mean it can only run on a tuesday
+if 0 <= day_of_week <= 4: #this is running whenever I restart the server, this will mean it can only run on weekdays
 
     sys.path.append("/var/www/lynx/slate-2/lynx/")
     sys.path.append("/var/www/lynx/slate-2/lynx/mysite")
