@@ -4,6 +4,7 @@
 
 {% if form.errors %}
   <p>Your username and password didn't match. Please try again.</p>
+  <p><a href="https://lynx.societyfortheblind.org/accounts/password_reset/">Forgot Password?</a></p>
 {% endif %}
 
 {% if next %}
@@ -32,6 +33,7 @@
 
 <input type="submit" value="login" />
 <input type="hidden" name="next" value="{{ next }}" />
+<p><a href="https://lynx.societyfortheblind.org/accounts/password_reset/">Forgot Password?</a></p>
 </form>
 
 <!--{# Assumes you setup the password_reset view in your URLconf #}-->
