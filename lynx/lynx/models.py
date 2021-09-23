@@ -275,16 +275,8 @@ class Intake(models.Model):
                ("Physician/ Medical Provider", "Physician/ Medical Provider"), ("Eye Care Provider", "Eye Care Provider"),
                ("Other", "Other"))
 
-    DATE_FORMATS = [
-                        '%Y-%m-%d', '%m/%d/%Y', '%m/%d/%y', # '2006-10-25', '10/25/2006', '10/25/06'
-                        '%b %d %Y', '%b %d, %Y',            # 'Oct 25 2006', 'Oct 25, 2006'
-                        '%d %b %Y', '%d %b, %Y',            # '25 Oct 2006', '25 Oct, 2006'
-                        '%B %d %Y', '%B %d, %Y',            # 'October 25 2006', 'October 25, 2006'
-                        '%d %B %Y', '%d %B, %Y',            # '25 October 2006', '25 October, 2006'
-                    ]
-
     contact = models.ForeignKey('Contact', on_delete=models.CASCADE)
-    intake_date = models.DateField(default=date.today, input_formats=DATE_FORMATS)
+    intake_date = models.DateField(default=date.today)
     intake_type = models.CharField(max_length=150, blank=True, null=True)
     age_group = models.CharField(max_length=50, blank=True, choices=AGES, null=True)
     gender = models.CharField(max_length=50, blank=True, choices=GENDERS, null=True)
