@@ -32,8 +32,8 @@ class ContactForm(forms.ModelForm):
 
 
 class IntakeForm(forms.ModelForm):
-    intake_date = forms.CharField(widget=forms.DateInput(attrs={'aria-required': 'true'}))
-
+    # intake_date = forms.CharField(widget=forms.DateInput(attrs={'aria-required': 'true'}))
+    intake_date = forms.DateField(widget=forms.DateInput(format='%m/%d/%Y'), input_formats=('%m/%d/%Y', '%Y-%m-%d', ))
     class Meta:
 
         model = Intake
