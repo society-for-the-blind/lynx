@@ -1115,6 +1115,14 @@ class AuthorizationUpdateView(LoginRequiredMixin, UpdateView):
               'total_time', 'billing_rate', 'outside_agency', 'student_plan', 'notes']
     template_name_suffix = '_edit'
 
+    def get_form(self, form_class=None):
+        form = super().get_form(form_class=form_class)
+        form.fields['outside_agency'].queryset = Contact.objects.filter(payment_source=1).order_by(Lower('last_name'))
+        form.fields['outside_agency'].label = "Payment Source"
+        form.fields['start_date'].label = "Start Date (YYYY-MM-DD)"
+        form.fields['end_date'].label = "End Date (YYYY-MM-DD)"
+        return form
+
 
 class VolunteerHourUpdateView(LoginRequiredMixin, UpdateView):
     model = Volunteer

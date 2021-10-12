@@ -20,6 +20,10 @@
         > put lynx.societyfortheblind.org.cer
         > put lynx.societyfortheblind.org-bundle.crt
         
+* Make your final bundle with the new files by running 
+
+        >cat lynx.societyfortheblind.org.crt lynx.societyfortheblind.org-bundle.crt > ssl-bundle.crt
+
 * Go to /etc/nginx/sites-available and edit lynx. Replace the ssl_certificate with the bundled crt file location and the ssl_certificate_key with the key file location (that you generated)
 
 # UPDATING LYNX
