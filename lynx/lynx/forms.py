@@ -42,6 +42,8 @@ class IntakeForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(IntakeForm, self).__init__(*args, **kwargs)
         self.fields['intake_date'].label = "Intake Date (YYYY-MM-DD)"
+        self.fields['payment_source'].queryset = Contact.objects.filter(payment_source=1).order_by(Lower('last_name'))
+        self.fields['payment_source'].label = "Payment Sources"
         self.fields['eye_condition_date'].label = "Eye Condition Onset Date (YYYY-MM-DD)"
         self.fields['birth_date'].label = "Birthdate (YYYY-MM-DD)"
         self.fields['other_languages'].label = "Other Language(s)"
@@ -128,7 +130,7 @@ class AuthorizationForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(AuthorizationForm, self).__init__(*args, **kwargs)
         self.fields['outside_agency'].queryset = Contact.objects.filter(payment_source=1).order_by(Lower('last_name'))
-        self.fields['outside_agency'].label = "Payment Source"
+        self.fields['outside_agency'].label = "Payment Sources"
         self.fields['start_date'].label = "Start Date (YYYY-MM-DD)"
         self.fields['end_date'].label = "End Date (YYYY-MM-DD)"
 

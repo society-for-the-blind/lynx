@@ -984,6 +984,8 @@ class IntakeUpdateView(LoginRequiredMixin, UpdateView):
         form = super().get_form(form_class=form_class)
         form.fields["other_languages"].label = "Other Language(s)"
         form.fields["other_ethnicity"].label = "Ethnicity (if other)"
+        form.fields['payment_source'].queryset = Contact.objects.filter(payment_source=1).order_by(Lower('last_name'))
+        form.fields['payment_source'].label = "Payment Sources"
         form.fields["crime"].label = "Have you been convicted of a crime?"
         form.fields[
             "crime_info"].label = "If yes, what and when did the convictions occur? What county did this conviction occur in?"
@@ -1118,7 +1120,7 @@ class AuthorizationUpdateView(LoginRequiredMixin, UpdateView):
     def get_form(self, form_class=None):
         form = super().get_form(form_class=form_class)
         form.fields['outside_agency'].queryset = Contact.objects.filter(payment_source=1).order_by(Lower('last_name'))
-        form.fields['outside_agency'].label = "Payment Source"
+        form.fields['outside_agency'].label = "Payment Sources"
         form.fields['start_date'].label = "Start Date (YYYY-MM-DD)"
         form.fields['end_date'].label = "End Date (YYYY-MM-DD)"
         return form
