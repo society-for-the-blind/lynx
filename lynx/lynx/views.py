@@ -236,12 +236,12 @@ def get_sip_plans(request):
 def add_emergency(request, contact_id):
     form = EmergencyForm()
     phone_form = PhoneForm()
-    email_form = EmailForm()
+    # email_form = EmailForm()
     if request.method == 'POST':
         phone_form = PhoneForm(request.POST)
-        email_form = EmailForm(request.POST)
+        # email_form = EmailForm(request.POST)
         form = EmergencyForm(request.POST)
-        if phone_form.is_valid() & email_form.is_valid() & form.is_valid():
+        if phone_form.is_valid() & form.is_valid():
             form = form.save(commit=False)
             form.contact_id = contact_id
             form.user_id = request.user.id
@@ -255,18 +255,11 @@ def add_emergency(request, contact_id):
                     phone_form.user_id = request.user.id
                     phone_form.emergency_contact_id = emergency_contact_id
                     phone_form.save()
-            if email_form.data['email']:
-                if email_form.data['email'] is not None:
-                    email_form = email_form.save(commit=False)
-                    email_form.active = True
-                    email_form.user_id = request.user.id
-                    email_form.emergency_contact_id = emergency_contact_id
-                    email_form.save()
 
-            return HttpResponseRedirect(reverse('lynx:add_intake', args=(contact_id,)))
+            return HttpResponseRedirect(reverse('lynx:client', args=(contact_id,)))
             # return HttpResponseRedirect(reverse('lynx:client', args=(contact_id,)))
     return render(request, 'lynx/add_emergency.html',
-                  {'phone_form': phone_form, 'email_form': email_form, 'form': form})
+                  {'phone_form': phone_form, 'form': form})
 
 
 @login_required
