@@ -1175,7 +1175,7 @@ class AuthorizationDeleteView(UserPassesTestMixin, DeleteView):
 
     def get_success_url(self):
         client_id = self.kwargs['client_id']
-        return reverse_lazy('lynx:contact_detail', kwargs={'pk': client_id})
+        return reverse_lazy('lynx:client', kwargs={'pk': client_id})
 
 
 class ContactDeleteView(UserPassesTestMixin, DeleteView):
@@ -1208,7 +1208,7 @@ class PhoneDeleteView(LoginRequiredMixin, DeleteView):
 
     def get_success_url(self):
         client_id = self.kwargs['client_id']
-        return reverse_lazy('lynx:contact_detail', kwargs={'pk': client_id})
+        return reverse_lazy('lynx:client', kwargs={'pk': client_id})
 
 @login_required
 def billing_report(request):
