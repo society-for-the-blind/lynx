@@ -53,7 +53,7 @@
         <p class="tab">
             <strong>{{ phone.phone_type }} Phone Number:</strong> {{ phone.phone }} <br>
             {% if not request.GET.print %}
-                <a href='/lynx/phone-edit/{{ phone.id }}'>Edit</a> | <a href='/lynx/phone-confirm/{{ phone.id }}/{{object.id}}'>Delete</a>{% endif %}
+                <a href='/lynx/phone-edit/{{ phone.id }}'>Edit</a> | <a href='/lynx/phone-confirm/{{ phone.id }}/{{object.id}}'>Delete</a>
             {% endif %}
         </p>
     {% endif %}
