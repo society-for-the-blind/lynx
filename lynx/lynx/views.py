@@ -1203,6 +1203,13 @@ class VolunteerHourDeleteView(LoginRequiredMixin, DeleteView):
         return reverse_lazy('lynx:volunteer_list')
 
 
+class PhoneDeleteView(LoginRequiredMixin, DeleteView):
+    model = Phone
+
+    def get_success_url(self):
+        client_id = self.kwargs['client_id']
+        return reverse_lazy('lynx:contact_detail', kwargs={'pk': client_id})
+
 @login_required
 def billing_report(request):
     form = BillingReportForm()

@@ -52,7 +52,9 @@
     {% if phone.active %}
         <p class="tab">
             <strong>{{ phone.phone_type }} Phone Number:</strong> {{ phone.phone }} <br>
-            {% if not request.GET.print %}<input type="button" class="btn btn-primary" aria-label="Edit Number" onclick="location.href='/lynx/phone-edit/{{ phone.id }}';" value="Edit Number" />{% endif %}
+            {% if not request.GET.print %}
+                <a href='/lynx/phone-edit/{{ phone.id }}'>Edit</a> | <a href='/lynx/phone-confirm/{{ phone.id }}/{{object.id}}'>Delete</a>{% endif %}
+            {% endif %}
         </p>
     {% endif %}
 {% empty %}
@@ -84,7 +86,9 @@
         {% if phone.active and phone.phone %}
             <p class="tab">
                 <strong>{{ phone.phone_type|default_if_none:"" }} Phone Number:</strong> {{ phone.phone }} <br>
-                {% if not request.GET.print %}<input type="button" class="btn btn-primary" aria-label="Edit Number" onclick="location.href='/lynx/phone-edit/{{ phone.id }}';" value="Edit Number" />{% endif %}
+                {% if not request.GET.print %}
+                    <a href='/lynx/phone-edit/{{ phone.id }}'>Edit</a> | <a href='/lynx/phone-confirm/{{ phone.id }}/{{object.id}}'>Delete</a>{% endif %}
+                {% endif %}
             </p>
         {% endif %}
     {% empty %}

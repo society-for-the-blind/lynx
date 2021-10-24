@@ -6,7 +6,6 @@
         $('#contactSelect').change(function(){
             var clientId = document.getElementById("contactSelect").value;
             $('#viewClient').attr('action', '/lynx/client/' + clientId);
-            console.log($('#viewClient'))
         });
     });
 </script>
@@ -32,5 +31,18 @@
     <br>
     <input type="submit" value="View Client" />
 </form>
+
+<!--<h1>Client Search Results</h1>-->
+<!--<input type="button" onclick="location.href='/lynx/search';" value="Advanced Search" />-->
+
+<!--<form action="{% url 'lynx:client_search' %}" method="get">-->
+<!--    <input name="q" type="text" placeholder="Search...">-->
+<!--    <input type="submit" value="Search All Clients" />-->
+<!--</form>-->
+<!--<ul>-->
+<!--    {% for client in object_list %}-->
+<!--        <li><a href="client/{{ client.id }}">{{ client.last_name }}, {{ client.first_name }} {% if client.middle_name %}{{ client.middle_name }} {% endif %} {{ client.intake_date }}</a></li>-->
+<!--    {% endfor %}-->
+<!--</ul>-->
 
 {% endblock %}
