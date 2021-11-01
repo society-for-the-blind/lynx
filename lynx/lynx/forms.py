@@ -370,7 +370,7 @@ class VaccineForm(forms.ModelForm):
 
     class Meta:
         model = Vaccine
-        exclude = ('created', 'modified', 'user')
+        exclude = ('created', 'modified', 'user', 'contact')
 
     def __init__(self, *args, **kwargs):
         super(VaccineForm, self).__init__(*args, **kwargs)
