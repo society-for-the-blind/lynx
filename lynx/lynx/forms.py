@@ -373,7 +373,6 @@ class VaccineForm(forms.ModelForm):
         exclude = ('created', 'modified', 'user')
 
     def __init__(self, *args, **kwargs):
-        contact_id = kwargs.pop('contact_id')
         super(VaccineForm, self).__init__(*args, **kwargs)
         self.fields['vaccine'].label = "Vaccine Type"
         self.fields['vaccine_date'].label = "Vaccination Date"
