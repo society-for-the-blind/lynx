@@ -456,7 +456,7 @@ def add_lesson_note(request, authorization_id):
 
 
 @login_required
-def add_vaccination_record(request):
+def add_vaccination_record(request, contact_id):
     form = VaccineForm()
     if request.method == 'POST':
         form = VaccineForm(request.POST)
