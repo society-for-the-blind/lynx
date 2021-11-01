@@ -21,10 +21,11 @@ import smtplib
 import ssl
 
 from .models import Contact, Address, Phone, Email, Intake, IntakeNote, EmergencyContact, Authorization, \
-    ProgressReport, LessonNote, SipNote, Volunteer, SipPlan, OutsideAgency, ContactInfoView, UNITS, Document
+    ProgressReport, LessonNote, SipNote, Volunteer, SipPlan, OutsideAgency, ContactInfoView, UNITS, Document, Vaccine
 from .forms import ContactForm, IntakeForm, IntakeNoteForm, EmergencyForm, AddressForm, EmailForm, PhoneForm, \
     AuthorizationForm, ProgressReportForm, LessonNoteForm, SipNoteForm, BillingReportForm, SipDemographicReportForm, \
-    VolunteerForm, SipCSFReportForm, SipPlanForm, SipNoteBulkForm, DocumentForm, VolunteerHoursForm, VolunteerReportForm
+    VolunteerForm, SipCSFReportForm, SipPlanForm, SipNoteBulkForm, DocumentForm, VolunteerHoursForm, \
+    VolunteerReportForm, VaccineForm
 from .filters import ContactFilter
 
 logger = logging.getLogger(__name__)
@@ -454,6 +455,20 @@ def add_lesson_note(request, authorization_id):
                                                          'authorization_id': authorization_id})
 
 
+@login_required
+def add_vaccination_record(request):
+    form = VaccineForm()
+    if request.method == 'POST':
+        form = VaccineForm(request.POST)
+        if form.is_valid():
+            form = form.save(commit=False)
+            contact_id = form.contact_id
+            form.user_id = request.user.id
+            form.save()
+            return HttpResponseRedirect(reverse('lynx:client', args=(contact_id,)))
+    return render(request, 'lynx/add_vaccine_record.html', {'form': form})
+
+
 def get_hour_validation(request): #check if they are entering more hours then allowed on authorization
     authorization_id = request.GET.get('authorization_id')
     billed_units = request.GET.get('billed_units')
@@ -674,6 +689,7 @@ class ContactDetailView(LoginRequiredMixin, DetailView):
         context['sip_plan_list'] = SipPlan.objects.filter(contact_id=self.kwargs['pk']).order_by('-created')
         context['emergency_list'] = EmergencyContact.objects.filter(contact_id=self.kwargs['pk']).order_by('-created')
         context['document_list'] = Document.objects.filter(contact_id=self.kwargs['pk']).order_by('-created')
+        context['vaccine_list'] = Vaccine.objects.filter(contact_id=self.kwargs['pk']).order_by('-created')
         context['form'] = IntakeNoteForm
         context['upload_form'] = DocumentForm
 
@@ -1125,6 +1141,12 @@ class VolunteerHourUpdateView(LoginRequiredMixin, UpdateView):
     template_name_suffix = '_edit'
 
 
+class VaccineUpdateView(LoginRequiredMixin, UpdateView):
+    model = Vaccine
+    fields = ['vaccine', 'vaccine_note', 'vaccination_date']
+    template_name_suffix = '_edit'
+
+
 class SipPlanDeleteView(LoginRequiredMixin, DeleteView):
     model = SipPlan
 
@@ -1202,6 +1224,15 @@ class PhoneDeleteView(LoginRequiredMixin, DeleteView):
     def get_success_url(self):
         client_id = self.kwargs['client_id']
         return reverse_lazy('lynx:client', kwargs={'pk': client_id})
+
+
+class VaccineDeleteView(LoginRequiredMixin, DeleteView):
+    model = Vaccine
+
+    def get_success_url(self):
+        client_id = self.kwargs['client_id']
+        return reverse_lazy('lynx:client', kwargs={'pk': client_id})
+
 
 @login_required
 def billing_report(request):

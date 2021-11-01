@@ -5,7 +5,7 @@ from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 
 from .models import Contact, Address, Intake, Email, Phone, SipPlan, IntakeNote, EmergencyContact, Authorization, \
-    ProgressReport, LessonNote, SipNote, Volunteer, UNITS, Document
+    ProgressReport, LessonNote, SipNote, Volunteer, UNITS, Document, Vaccine
 
 from datetime import datetime
 
@@ -364,6 +364,20 @@ class DocumentForm(forms.ModelForm):
     class Meta:
         model = Document
         fields = ('document', )
+
+
+class VaccineForm(forms.ModelForm):
+
+    class Meta:
+        model = Vaccine
+        exclude = ('created', 'modified', 'user')
+
+    def __init__(self, *args, **kwargs):
+        contact_id = kwargs.pop('contact_id')
+        super(VaccineForm, self).__init__(*args, **kwargs)
+        self.fields['vaccine'].label = "Vaccine Type"
+        self.fields['vaccine_date'].label = "Vaccination Date"
+        self.fields['Vaccine_note'].label = "Vaccination Type"
 
 
 # This will not work past 2099 ;)

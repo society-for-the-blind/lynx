@@ -275,6 +275,7 @@ class Intake(models.Model):
                ("Physician/ Medical Provider", "Physician/ Medical Provider"), ("Eye Care Provider", "Eye Care Provider"),
                ("Other", "Other"))
 
+
     contact = models.ForeignKey('Contact', on_delete=models.CASCADE)
     intake_date = models.DateField(default=date.today)
     intake_type = models.CharField(max_length=150, blank=True, null=True)
@@ -370,9 +371,6 @@ class Intake(models.Model):
     employer = models.CharField(max_length=250, blank=True, null=True)
     position = models.CharField(max_length=250, blank=True, null=True)
     hire_date = models.DateField(blank=True, null=True)
-    created = models.DateTimeField(auto_now_add=True, null=True)
-    modified = models.DateTimeField(auto_now=True, null=True)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET(get_sentinel_user))
     history = HistoricalRecords()
 
     def get_absolute_url(self):
@@ -663,6 +661,18 @@ class Document(models.Model):
     contact = models.ForeignKey('Contact', on_delete=models.CASCADE)
     description = models.CharField(max_length=255, blank=True)
     document = models.FileField(upload_to='documents/')
+    created = models.DateTimeField(auto_now_add=True, null=True)
+    modified = models.DateTimeField(auto_now=True, null=True)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET(get_sentinel_user))
+
+
+class Vaccine(models.Model):
+    VACCINES = (("P or M Dose 2", "P or M Dose 2"), ("J&J Single", "J&J Single"), ("Booster", "Booster"))
+
+    contact = models.ForeignKey('Contact', on_delete=models.CASCADE)
+    vaccine = models.CharField(max_length=25, blank=True, null=True, choices=VACCINES)
+    vaccination_date = models.DateField(blank=True, null=True)
+    vaccine_note = models.TextField(blank=True, null=True)
     created = models.DateTimeField(auto_now_add=True, null=True)
     modified = models.DateTimeField(auto_now=True, null=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET(get_sentinel_user))
