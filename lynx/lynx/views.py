@@ -462,7 +462,7 @@ def add_vaccination_record(request, contact_id):
         form = VaccineForm(request.POST)
         if form.is_valid():
             form = form.save(commit=False)
-            contact_id = form.contact_id
+            form.contact_id = contact_id
             form.user_id = request.user.id
             form.save()
             return HttpResponseRedirect(reverse('lynx:client', args=(contact_id,)))
