@@ -196,10 +196,12 @@
                     <th></th>
                 </tr>
                 {% for vax in vaccine_list %}
-                    <tr> {{ vax.vaccination_date }}</tr>
-                    <tr> {{ vax.vaccine }}</tr>
-                    <tr> {{ vax.vaccine_note }}</tr>
-                    <tr><a href='/lynx/vaccine-edit/{{ vax.id }}'>Edit</a> | <a href='/lynx/vaccine-confirm/{{ vax.id }}/{{ object.id }}'>Delete</a></tr>
+                    <tr>
+                        <td>{{ vax.vaccination_date }}</td>
+                        <td> {{ vax.vaccine }}</td>
+                        <td> {{ vax.vaccine_note }}</td>
+                        <td><a href='/lynx/vaccine-edit/{{ vax.id }}'>Edit</a> | <a href='/lynx/vaccine-confirm/{{ vax.id }}/{{ object.id }}'>Delete</a></td>
+                    <tr>
                 {% endfor %}
             </table>
         {% else %}
