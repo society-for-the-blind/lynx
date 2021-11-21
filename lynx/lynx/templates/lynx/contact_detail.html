@@ -187,7 +187,7 @@
         {% if intake.medical_notes %}<p class="tab"><strong>Medical Notes:</strong> {{ intake.medical_notes|linebreaks }}</p>{% endif %}
 
     <h4>Covid-19 Vaccination Record</h4>
-        {% if notes.all %}
+        {% if vaccine_list.all %}
             <table class="table">
                 <tr>
                     <th>Date</th>
