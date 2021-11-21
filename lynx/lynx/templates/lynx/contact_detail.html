@@ -187,15 +187,24 @@
         {% if intake.medical_notes %}<p class="tab"><strong>Medical Notes:</strong> {{ intake.medical_notes|linebreaks }}</p>{% endif %}
 
     <h4>Covid-19 Vaccination Record</h4>
-        {% for vax in vaccine_list %}
-            {% if vax.vaccination_date %}<p class="tab"><strong>Date of Vaccination:</strong> {{ vax.vaccination_date }}</p>{% endif %}
-            {% if vax.vaccine %}<p class="tab"><strong>Vaccine:</strong> {{ vax.vaccine }}</p>{% endif %}
-            {% if vax.vaccine_note %}<p class="tab"><strong>Vaccine Notes:</strong> {{ vax.vaccine_note }}</p>{% endif %}
-            {% if not request.GET.print %}<a href='/lynx/vaccine-edit/{{ vax.id }}'>Edit</a> | <a href='/lynx/vaccine-confirm/{{ vax.id }}/{{ object.id }}'>Delete</a>{% endif %}
-            <hr>
-        {% empty %}
+        {% if notes.all %}
+            <table class="table">
+                <tr>
+                    <th>Date</th>
+                    <th>Type</th>
+                    <th>Notes</th>
+                    <th></th>
+                </tr>
+                {% for vax in vaccine_list %}
+                    <tr> {{ vax.vaccination_date }}</tr>
+                    <tr> {{ vax.vaccine }}</tr>
+                    <tr> {{ vax.vaccine_note }}</tr>
+                    <tr><a href='/lynx/vaccine-edit/{{ vax.id }}'>Edit</a> | <a href='/lynx/vaccine-confirm/{{ vax.id }}/{{ object.id }}'>Delete</a></tr>
+                {% endfor %}
+            </table>
+        {% else %}
             <p class="tab">Sorry, no vaccination information for this client</p>
-        {% endfor %}
+        {% endif %}
         {% if not request.GET.print %}<input type="button" class="btn btn-success" aria-label="Add Vaccination Record" onclick="location.href='/lynx/add-vaccination/{{ object.id }}/';" value="Add Vaccination Record" />{% endif %}
 
     <h3>Blindness Skills/Other Information</h3>

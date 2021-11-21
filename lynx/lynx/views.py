@@ -1146,6 +1146,13 @@ class VaccineUpdateView(LoginRequiredMixin, UpdateView):
     fields = ['vaccine', 'vaccine_note', 'vaccination_date']
     template_name_suffix = '_edit'
 
+    def get_form(self, form_class=None):
+        form = super().get_form(form_class=form_class)
+        form.fields['vaccine'].label = "Type"
+        form.fields['vaccine_note'].label = "Notes"
+        form.fields['vaccination_date'].label = "Date"
+        return form
+
 
 class SipPlanDeleteView(LoginRequiredMixin, DeleteView):
     model = SipPlan

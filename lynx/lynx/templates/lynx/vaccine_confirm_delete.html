@@ -3,7 +3,7 @@
 
 {% block content %}
 <form method="post">{% csrf_token %}
-    <p>Are you sure you want to delete "{{ object.vaccination_date }}" vaccination record for {{ object.contact.first_name }} {{ object.contact.last_name }}?</p>
+    <p>Are you sure you want to delete the {{ object.vaccination_date }} vaccination record for {{ object.contact.first_name }} {{ object.contact.last_name }}?</p>
     <input type="hidden" name="next" value="{{ request.path }}">
     <input type="submit" value="Confirm">
 </form>

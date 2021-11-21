@@ -374,9 +374,9 @@ class VaccineForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(VaccineForm, self).__init__(*args, **kwargs)
-        self.fields['vaccine'].label = "Vaccine Type"
-        self.fields['vaccination_date'].label = "Vaccination Date"
-        self.fields['vaccine_note'].label = "Vaccination Note"
+        self.fields['vaccine'].label = "Type"
+        self.fields['vaccination_date'].label = "Date"
+        self.fields['vaccine_note'].label = "Notes"
 
 
 # This will not work past 2099 ;)
