@@ -20,7 +20,7 @@
     <hr>
 
     <form id='viewClient' action="">
-        <p>This only shows clients that are marked as active. To search all clients, go to the client search above.</p>
+        <p>This only shows clients that are marked as active. To search all clients, go to the client search below.</p>
         <label for="contactSelect">Select Client: </label>
         <select id="contactSelect" >
             <option value="">---------</option>
@@ -31,7 +31,7 @@
         <br>
         <input type="submit" value="View Client" />
     </form>
-
+<hr>
     <form id="searchClient" action="{% url 'lynx:client_search' %}" method="get">
         <input name="q" type="text" placeholder="Search...">
         <input type="submit" value="Search All Clients" />

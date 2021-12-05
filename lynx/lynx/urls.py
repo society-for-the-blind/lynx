@@ -6,7 +6,7 @@ from . import cron
 app_name = "lynx"
 
 urlpatterns = [
-    path('clients/', views.client_list_view, name='contact_list'),
+    path('clients/', views.client_result_view, name='contact_list'),
     path('volunteers/', views.volunteer_list_view, name='volunteer_list'),
     path('authorizations/<int:client_id>', views.authorization_list_view, name='auth_list'),
     path('sipplans/<int:client_id>', views.sipplan_list_view, name='plan_list'),
