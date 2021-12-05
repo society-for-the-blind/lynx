@@ -600,6 +600,7 @@ def volunteers_report_program(request):
 @login_required
 def client_result_view(request):
     query = request.GET.get('q')
+    clients = Contact.objects.filter(active=1).order_by(Lower('last_name'), Lower('first_name'))
     if query:
         object_list = Contact.objects.annotate(
             full_name=Concat('first_name', V(' '), 'last_name')
@@ -612,7 +613,7 @@ def client_result_view(request):
         object_list = object_list.order_by(Lower('last_name'), Lower('first_name'))
     else:
         object_list = None
-    return render(request, 'lynx/client_search.html', {'object_list': object_list})
+    return render(request, 'lynx/client_search.html', {'object_list': object_list, 'clients': clients})
 
 
 @login_required

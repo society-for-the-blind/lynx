@@ -2,11 +2,37 @@
 
 {% block title %}Client Search{% endblock %}
 
-{% block content %}
-    <h1>Client Search Results</h1>
-    <input type="button" onclick="location.href='/lynx/search';" value="Advanced Search" />
+{% block javascript %}
+<script>
+    $(document).ready(function(){
+        $('#contactSelect').change(function(){
+            var clientId = document.getElementById("contactSelect").value;
+            $('#viewClient').attr('action', '/lynx/client/' + clientId);
+        });
+    });
+</script>
+{% endblock %}
 
-    <form action="{% url 'lynx:client_search' %}" method="get">
+{% block content %}
+    <h1>Clients</h1>
+    <input type="button" onclick="location.href='/lynx/add-contact/';" value="Add New Client" />
+    <input type="button" onclick="location.href='/lynx/search';" value="Advanced Search" />
+    <hr>
+
+    <form id='viewClient' action="">
+        <p>This only shows clients that are marked as active. To search all clients, go to the client search above.</p>
+        <label for="contactSelect">Select Client: </label>
+        <select id="contactSelect" >
+            <option value="">---------</option>
+            {% for client in clients %}
+                <option value = "{{ client.id }}">{{ client.last_name }}, {{ client.first_name }} {% if client.middle_name %}{{ client.middle_name }} {% endif %} {{ client.intake_date }}</option>
+            {% endfor %}
+        </select>
+        <br>
+        <input type="submit" value="View Client" />
+    </form>
+
+    <form id="searchClient" action="{% url 'lynx:client_search' %}" method="get">
         <input name="q" type="text" placeholder="Search...">
         <input type="submit" value="Search All Clients" />
     </form>
