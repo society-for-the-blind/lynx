@@ -1269,7 +1269,8 @@ def billing_report(request):
                 with connection.cursor() as cursor:
                     cursor.execute("""SELECT CONCAT(c.first_name, ' ', c.last_name) as name, sa.agency as service_area, 
                                         auth.authorization_type, auth.authorization_number, auth.id as authorization_id,
-                                        ln.billed_units, auth.billing_rate, CONCAT(oa.contact_name, ' - ', oa.agency) as outside_agency
+                                        ln.billed_units, auth.billing_rate, CONCAT(c.first_name, ' ', c.last_name . ' - ', 
+                                        oa.company) as outside_agency
                                         FROM lynx_authorization as auth
                                         LEFT JOIN lynx_contact as c on c.id = auth.contact_id
                                         LEFT JOIN lynx_lessonnote as ln  on ln.authorization_id = auth.id
