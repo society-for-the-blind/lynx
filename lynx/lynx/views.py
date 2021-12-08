@@ -1261,7 +1261,7 @@ def billing_report(request):
                                         LEFT JOIN lynx_contact as c on c.id = auth.contact_id
                                         LEFT JOIN lynx_lessonnote as ln  on ln.authorization_id = auth.id
                                         LEFT JOIN lynx_intakeservicearea as sa on auth.intake_service_area_id = sa.id
-                                        LEFT JOIN lynx_outsideagency as oa on auth.outside_agency_id = oa.id
+                                        LEFT JOIN lynx_contact as oa on auth.outside_agency_id = oa.id
                                         where extract(year FROM date) = '%s'
                                         order by c.last_name, c.first_name, sa.agency;""" % (year,))
                     auth_set = dictfetchall(cursor)
@@ -1274,7 +1274,7 @@ def billing_report(request):
                                         LEFT JOIN lynx_contact as c on c.id = auth.contact_id
                                         LEFT JOIN lynx_lessonnote as ln  on ln.authorization_id = auth.id
                                         LEFT JOIN lynx_intakeservicearea as sa on auth.intake_service_area_id = sa.id
-                                        LEFT JOIN lynx_outsideagency as oa on auth.outside_agency_id = oa.id
+                                        LEFT JOIN lynx_contact as oa on auth.outside_agency_id = oa.id
                                         where extract(month FROM date) = '%s' and extract(year FROM date) = '%s'
                                         order by c.last_name, c.first_name, sa.agency;""" % (month, year))
                     auth_set = dictfetchall(cursor)
