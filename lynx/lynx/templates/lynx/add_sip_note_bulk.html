@@ -25,7 +25,7 @@
                 },
                 success: function (data) {   // `data` is the return of the `get_sip_plans` view function
                   $("#plan_id_"+planIdNo).html(data);  // replace the contents of the plan input with the data that came from the server
-                  $("#plan_id_"+planIdNo).required;  // replace the contents of the plan input with the data that came from the server
+                  $("#plan_id_"+planIdNo).attr('required', '');  // make this required
                 }
             });
         }
