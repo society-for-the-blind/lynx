@@ -192,7 +192,6 @@ def add_sip_note_bulk(request):
         form = SipNoteBulkForm(request.POST)
         if form.is_valid():
             form = form.save(commit=False)
-
             note_date = form.note_date
             note_month = note_date.month
             note_year = note_date.year
@@ -207,7 +206,6 @@ def add_sip_note_bulk(request):
             form.fiscal_year = fiscal_year
             form.contact_id = request.POST.get('client_0')
             form.sip_plan_id = request.POST.get('plan_0')
-
             form.instructor = request.user.first_name + request.user.last_name
             form.user_id = request.user.id
             form.save()
@@ -218,10 +216,10 @@ def add_sip_note_bulk(request):
                 if len(request.POST.get(client_str)) > 0:
                     form.contact_id = request.POST.get(client_str)
                     form.sip_plan_id = request.POST.get(plan_str)
-                    if form.contact_id != '' and form.sip_plan_id == '':
-                        form.add_error(plan_str, "This is a required field.")
-                        return render(request, 'lynx/add_sip_note_bulk.html',
-                                      {'form': form, 'client_list': client_list, 'range': range})
+                    # if form.contact_id != '' and form.sip_plan_id == '':
+                    #     form.add_error(plan_str, "This is a required field.")
+                    #     return render(request, 'lynx/add_sip_note_bulk.html',
+                    #                   {'form': form, 'client_list': client_list, 'range': range})
                     form.quarter = quarter
                     form.fiscal_year = fiscal_year
                     form.user_id = request.user.id
