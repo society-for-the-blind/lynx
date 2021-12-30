@@ -239,7 +239,7 @@ class SipNoteBulkForm(forms.ModelForm):
         self.fields['class_hours'].label = "Class Length"
         self.fields['instructor'].label = "Instructor"
         self.fields['sip_plan'].label = "SIP Plan"
-        self.fields['sip_plan'].required = True
+        # self.fields['sip_plan'].required = True
 
 
 class SipPlanForm(forms.ModelForm):
