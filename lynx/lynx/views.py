@@ -207,9 +207,9 @@ def add_sip_note_bulk(request):
             form.fiscal_year = fiscal_year
             form.contact_id = request.POST.get('client_0')
             form.sip_plan_id = request.POST.get('plan_0')
-            if form.contact_id and form.sip_plan_id == '':
+            if form.contact_id != '' and form.sip_plan_id == '':
                 return render(request, 'lynx/add_sip_note_bulk.html',
-                              {'form': form, 'client_list': client_list, 'range': range})
+                              {'form': SipNoteBulkForm(), 'client_list': client_list, 'range': range})
             form.instructor = request.user.first_name + request.user.last_name
             form.user_id = request.user.id
             form.save()
