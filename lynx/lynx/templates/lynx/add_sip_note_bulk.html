@@ -41,14 +41,14 @@
             <div class="row">
                 <div class="col-12">
                     <label for="client_0">Select a Client</label>
-                    <select name="client_0" id="client_0" onchange="showPlan(this, 0)">
+                    <select name="client_0" id="client_0" onchange="showPlan(this, 0)" aria-required="true">
                         <option value="">----------</option>
                         {% for client in client_list %}
                             <option value="{{ client.id }}">{{ client.last_name }}, {{ client.first_name }}</option>
                         {% endfor %}
                     </select>
                     <label for="plan_id_0">Select a Plan</label>
-                    <select name="plan_0" id="plan_id_0">
+                    <select name="plan_0" id="plan_id_0" aria-required="true" >
                         <option value="">---------</option>
                     </select>
                 </div>
@@ -57,14 +57,14 @@
                 <div class="row" >
                     <div class="col-12">
                         <label for="client_{{i}}">Select a Client</label>
-                        <select id="client_{{i}}" name="client_{{i}}" onchange="showPlan(this, {{i}})">
+                        <select id="client_{{i}}" name="client_{{i}}" onchange="showPlan(this, {{i}})" aria-required="true" >
                             <option value="">----------</option>
                             {% for client in client_list %}
                                 <option value="{{ client.id }}">{{ client.last_name }}, {{ client.first_name }}</option>
                             {% endfor %}
                         </select>
                         <label for="plan_id_{{i}}">Select a Plan</label>
-                        <select name="plan_{{i}}" id="plan_id_{{i}}" >
+                        <select name="plan_{{i}}" id="plan_id_{{i}}" aria-required="true" >
                             <option value="">---------</option>
                         </select>
                     </div>
