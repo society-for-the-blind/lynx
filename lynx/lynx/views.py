@@ -1520,7 +1520,7 @@ def sip_csf_services_report(request):
                     inner join lynx_address as addr on c.id= addr.contact_id
                     left JOIN lynx_sipplan as sp on sp.id = ls.sip_plan_id
                     where  fiscal_year = '%s' 
-                    and quarter = %d 
+                    and quarter <= %d 
                     and c.sip_client is true 
                     order by c.last_name, c.first_name;""" % (fiscal_year, int(quarter))
                                                                                       #, int(quarter), fiscal_year)
