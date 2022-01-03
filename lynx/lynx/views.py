@@ -1522,7 +1522,8 @@ def sip_csf_services_report(request):
                     where  fiscal_year = '%s' 
                     and quarter = %d 
                     and c.sip_client is true 
-                    order by c.last_name, c.first_name;""" % (fiscal_year, int(quarter), int(quarter), fiscal_year)
+                    order by c.last_name, c.first_name;""" % (fiscal_year, int(quarter))
+                                                                                      #, int(quarter), fiscal_year)
                 # and c.id not in (SELECT contact_id FROM lynx_sipnote AS sip WHERE quarter < %d and fiscal_year = '%s')
                 cursor.execute(query)
                 note_set = dictfetchall(cursor)
