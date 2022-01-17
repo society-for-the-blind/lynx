@@ -185,7 +185,7 @@ class SipNoteForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         contact_id = kwargs.pop('contact_id')
         super(SipNoteForm, self).__init__(*args, **kwargs)
-        self.fields['sip_plan'].queryset = SipPlan.objects.filter(contact_id=contact_id)
+        self.fields['sip_plan'].queryset = SipPlan.objects.filter(contact_id=contact_id).order_by('-plan_name')
         self.fields['sip_plan'].required = True
         self.fields['at_devices'].label = "Assistive Technology Devices and Services"
         self.fields['independent_living'].label = "Independent Living and Adjustment Services"
