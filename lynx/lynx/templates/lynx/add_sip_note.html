@@ -23,7 +23,7 @@
 <h1>Add New SIP Note</h1>
 <br>
 <form method="post"> {% csrf_token %}
-    <div class="container-fluid">
+    < class="container-fluid">
         <h2>Notes</h2>
             <div class="row">
               <div class="col-12">{{ form.note_date|as_crispy_field }}</div>
@@ -35,9 +35,7 @@
               <div class="col-12">{{ form.sip_plan|as_crispy_field }}</div>
             </div>
         <h2>Services (check all that apply):</h2>
-            <div class="row">
-              <div class="col-6">{{ form.at_devices|as_crispy_field }}</div>
-            </div>
+        <h3>{{ form.at_devices|as_crispy_field }}</h3>
         <h3>Independent Living and Adjustment Services</h3>
             <div class="row">
               <div class="col-6">{{ form.orientation|as_crispy_field }}</div>
@@ -60,9 +58,7 @@
             <div class="row">
               <div class="col-6">{{ form.services|as_crispy_field }}</div>
             </div>
-            <div class="row">
-              <div class="col-6">{{ form.support|as_crispy_field }}</div>
-            </div>
+            <h3>{{ form.support|as_crispy_field }}</h3>
         <h2>Notes</h2>
             <div class="row">
               <div class="col-12">{{ form.note|as_crispy_field }}</div>
