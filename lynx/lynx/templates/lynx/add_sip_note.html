@@ -23,7 +23,7 @@
 <h1>Add New SIP Note</h1>
 <br>
 <form method="post"> {% csrf_token %}
-    < class="container-fluid">
+    <div class="container-fluid">
         <h2>Notes</h2>
             <div class="row">
               <div class="col-12">{{ form.note_date|as_crispy_field }}</div>
