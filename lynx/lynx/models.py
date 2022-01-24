@@ -265,7 +265,7 @@ class Intake(models.Model):
     PROGNOSIS = (("Stable", "Stable"), ("Diminishing", "Diminishing"))
 
     DEGREE = (("Totally Blind (NP or NLP)", "Totally Blind (NP or NLP)"), ("Legally Blind", "Legally Blind"),
-              ("Severe Visual Impairment", "Severe Visual Impairment"), ("Light Perception Only", "Light Perception Only"),
+              ("Severe Vision Impairment", "Severe Vision Impairment"), ("Light Perception Only", "Light Perception Only"),
               ("Low Vision", "Low Vision"))
 
     REFERER = (("DOR", "DOR"), ("Alta", "Alta"), ("Veterans Administration", "Veterans Administration"),
@@ -274,7 +274,6 @@ class Intake(models.Model):
                ("Independent Living Center", "Independent Living Center"), ("Self-Referral", "Self-Referral"),
                ("Physician/ Medical Provider", "Physician/ Medical Provider"), ("Eye Care Provider", "Eye Care Provider"),
                ("Other", "Other"))
-
 
     contact = models.ForeignKey('Contact', on_delete=models.CASCADE)
     intake_date = models.DateField(default=date.today)
