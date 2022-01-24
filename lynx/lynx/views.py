@@ -1741,7 +1741,7 @@ def sip_csf_demographic_report(request):
                     elif client['degree'] == "Legally Blind":
                         client['degree'] = "Legally Blind"
                     else:
-                        client['degree'] = "Severe Visual Impairment"
+                        client['degree'] = "Severe Vision Impairment"
 
                     #Sort out cause
                     ok_diagnosis = ["Cataracts", "Diabetic Retinopathy", "Glaucoma", "Macular Degeneration"]
@@ -1765,7 +1765,7 @@ def sip_csf_demographic_report(request):
                                   "Nursing Home", "Independent Living Center", "Self-Referral", "Eye Care Provider",
                                   "Physician/ Medical Provider"]
                     if client['referred_by'] == "DOR" or client['referred_by'] == "Alta":
-                        client['referred_by'] = "State VR Service"
+                        client['referred_by'] = "State VR Agency"
                     elif client['referred_by'] == "Physician":
                         client['referred_by'] = "Physician/ Medical Provider"
                     elif client['referred_by'] not in ok_sources:
