@@ -174,7 +174,8 @@ def add_sip_plan(request, contact_id):
         if form.is_valid():
             form = form.save(commit=False)
             form.instructor = request.user.first_name + request.user.last_name
-            form.plan_name = request.POST.get('start_date')  + ' - ' + request.POST.get('plan_type') + ' - ' + form.instructor
+            form.plan_name = request.POST.get('plan_date') + ' - ' + request.POST.get('plan_type') + ' - ' + form.instructor
+            # form.plan_date = request.POST.get('start_date')
             form.contact_id = contact_id
             form.user_id = request.user.id
 
@@ -1102,7 +1103,7 @@ class SipPlanUpdateView(LoginRequiredMixin, UpdateView):
     model = SipPlan
     fields = ['note', 'at_services', 'independent_living', 'orientation', 'communications', 'dls', 'advocacy',
               'counseling', 'information', 'other_services', 'plan_name', 'living_plan_progress', 'at_outcomes',
-              'community_plan_progress', 'ila_outcomes', 'support_services']
+              'community_plan_progress', 'ila_outcomes', 'support_services', 'plan_date']
     template_name_suffix = '_edit'
 
     def get_form(self, form_class=None):
@@ -1112,6 +1113,7 @@ class SipPlanUpdateView(LoginRequiredMixin, UpdateView):
         form.fields['orientation'].label = "Orientation & Mobility Training"
         form.fields['communications'].label = "Communication Skills Training"
         form.fields['dls'].label = "Daily Living Skills Training"
+        form.fields['plan_date'].label = "Start Date"
         form.fields['advocacy'].label = "Advocacy Training"
         form.fields['information'].label = "Information and Referral"
         form.fields['counseling'].label = "Adjustment Counseling"
