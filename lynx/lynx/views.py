@@ -7,7 +7,7 @@ from django.views.generic.edit import UpdateView
 from django.urls import reverse_lazy
 from django.db.models import Q, F
 from django.db.models import Value as V
-from django.db.models.functions import Concat, Replace, Lower
+from django.db.models.functions import Concat, Replace, Lower, Coalesce
 from django.db import connection
 from django.core.paginator import Paginator
 from django.conf import settings
@@ -233,7 +233,8 @@ def add_sip_note_bulk(request):
 
 def get_sip_plans(request):
     contact_id = request.GET.get('client_id')
-    plans = SipPlan.objects.filter(contact_id=contact_id).order_by('-created', '-sip_plan')
+    # plans = SipPlan.objects.order_by('-sip_plan')
+    plans = SipPlan.objects.filter(contact_id=contact_id).order_by(Coalesce('sip_plan', 'created').desc())
     return render(request, 'lynx/sip_plan_list_options.html', {'plans': plans})
 
 
