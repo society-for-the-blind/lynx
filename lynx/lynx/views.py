@@ -1659,7 +1659,7 @@ def sip_csf_demographic_report(request):
             fiscal_year = get_fiscal_year(year)
 
             with connection.cursor() as cursor:
-                cursor.execute("""SELECT CONCAT(c.last_name, ' ', c.first_name) as name, c.id as id, int.age_group, 
+                cursor.execute("""SELECT CONCAT(c.last_name, ', ', c.first_name) as name, c.id as id, int.age_group, 
                 int.gender, int.ethnicity, int.degree, int.eye_condition, int.eye_condition_date, int.education, 
                 int.living_arrangement, int.residence_type, addr.county, int.dialysis, int.stroke, int.seizure, 
                 int.heart, int.arthritis, int.high_bp, int.neuropathy, int.pain, int.asthma, int.cancer, 
