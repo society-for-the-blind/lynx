@@ -234,7 +234,7 @@ def add_sip_note_bulk(request):
 def get_sip_plans(request):
     contact_id = request.GET.get('client_id')
     # plans = SipPlan.objects.order_by('-sip_plan')
-    plans = SipPlan.objects.filter(contact_id=contact_id).order_by(Coalesce('sip_plan', 'created').desc())
+    plans = SipPlan.objects.filter(contact_id=contact_id).order_by(Coalesce('plan_date', 'created').desc())
     return render(request, 'lynx/sip_plan_list_options.html', {'plans': plans})
 
 
