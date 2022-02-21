@@ -680,9 +680,9 @@ class Vaccine(models.Model):
 
 class Assignment(models.Model):
     contact = models.ForeignKey('Contact', on_delete=models.CASCADE)
-    # vaccine = models.CharField(max_length=25, blank=True, null=True, choices=VACCINES)
-    # vaccination_date = models.DateField(blank=True, null=True)
-    # vaccine_note = models.TextField(blank=True, null=True)
+    instructors = models.ManyToManyField('User')
+    assignment_date = models.DateField(auto_now=True, null=True)
+    note = models.TextField(blank=True, null=True)
     created = models.DateTimeField(auto_now_add=True, null=True)
     modified = models.DateTimeField(auto_now=True, null=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET(get_sentinel_user))
