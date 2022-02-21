@@ -5,7 +5,7 @@ from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 
 from .models import Contact, Address, Intake, Email, Phone, SipPlan, IntakeNote, EmergencyContact, Authorization, \
-    ProgressReport, LessonNote, SipNote, Volunteer, UNITS, Document, Vaccine
+    ProgressReport, LessonNote, SipNote, Volunteer, UNITS, Document, Vaccine, Assignment
 
 from datetime import datetime
 
@@ -186,7 +186,7 @@ class SipNoteForm(forms.ModelForm):
         contact_id = kwargs.pop('contact_id')
         super(SipNoteForm, self).__init__(*args, **kwargs)
         # self.fields['sip_plan'].queryset = SipPlan.objects.filter(contact_id=contact_id).order_by('-created')
-        self.fields['sip_plan'].queryset = SipPlan.objects.filter(contact_id=contact_id).order_by(Coalesce('plan_date', 'created').desc())
+        self.fields['sip_plan'].queryset = SipPlan.objects.filter(contact_id=contact_id).order_by('-plan_date')
         self.fields['sip_plan'].required = True
         self.fields['at_devices'].label = "Assistive Technology Devices and Services"
         self.fields['independent_living'].label = "Independent Living and Adjustment Services"
@@ -380,6 +380,19 @@ class VaccineForm(forms.ModelForm):
         self.fields['vaccine'].label = "Type"
         self.fields['vaccination_date'].label = "Date"
         self.fields['vaccine_note'].label = "Notes"
+
+
+class AssignmentForm(forms.ModelForm):
+
+    class Meta:
+        model = Assignment
+        exclude = ('created', 'modified', 'user', 'assignment_date')
+
+    # def __init__(self, *args, **kwargs):
+    #     super(VaccineForm, self).__init__(*args, **kwargs)
+    #     self.fields['vaccine'].label = "Type"
+    #     self.fields['vaccination_date'].label = "Date"
+    #     self.fields['vaccine_note'].label = "Notes"
 
 
 # This will not work past 2099 ;)

@@ -68,7 +68,7 @@ def authorization_list_view(request, client_id):
 
 @login_required
 def sipplan_list_view(request, client_id):
-    plans = SipPlan.objects.filter(contact_id=client_id).order_by('-created')
+    plans = SipPlan.objects.filter(contact_id=client_id).order_by('-plan_date')
     client = Contact.objects.get(id=client_id)
     return render(request, 'lynx/sipplan_list.html', {'plans': plans, 'client': client})
 
@@ -234,7 +234,7 @@ def add_sip_note_bulk(request):
 def get_sip_plans(request):
     contact_id = request.GET.get('client_id')
     # plans = SipPlan.objects.order_by('-sip_plan')
-    plans = SipPlan.objects.filter(contact_id=contact_id).order_by(Coalesce('plan_date', 'created').desc())
+    plans = SipPlan.objects.filter(contact_id=contact_id).order_by('-plan_date')
     return render(request, 'lynx/sip_plan_list_options.html', {'plans': plans})
 
 
@@ -471,6 +471,20 @@ def add_vaccination_record(request, contact_id):
     return render(request, 'lynx/add_vaccine_record.html', {'form': form})
 
 
+@login_required
+def add_assignments(request, contact_id):
+    form = VaccineForm()
+    if request.method == 'POST':
+        form = VaccineForm(request.POST)
+        if form.is_valid():
+            form = form.save(commit=False)
+            form.contact_id = contact_id
+            form.user_id = request.user.id
+            form.save()
+            return HttpResponseRedirect(reverse('lynx:client', args=(contact_id,)))
+    return render(request, 'lynx/add_vaccine_record.html', {'form': form})
+
+
 def get_hour_validation(request): #check if they are entering more hours then allowed on authorization
     authorization_id = request.GET.get('authorization_id')
     billed_units = request.GET.get('billed_units')
@@ -689,7 +703,7 @@ class ContactDetailView(LoginRequiredMixin, DetailView):
         context['authorization_list'] = Authorization.objects.filter(contact_id=self.kwargs['pk']).order_by('-created')
         context['note_list'] = IntakeNote.objects.filter(contact_id=self.kwargs['pk']).order_by('-created')
         context['sip_list'] = SipNote.objects.filter(contact_id=self.kwargs['pk']).order_by(F('note_date').desc(nulls_last=True))
-        context['sip_plan_list'] = SipPlan.objects.filter(contact_id=self.kwargs['pk']).order_by('-created')
+        context['sip_plan_list'] = SipPlan.objects.filter(contact_id=self.kwargs['pk']).order_by('-plan_date')
         context['emergency_list'] = EmergencyContact.objects.filter(contact_id=self.kwargs['pk']).order_by('-created')
         context['document_list'] = Document.objects.filter(contact_id=self.kwargs['pk']).order_by('-created')
         context['vaccine_list'] = Vaccine.objects.filter(contact_id=self.kwargs['pk']).order_by('-created')
