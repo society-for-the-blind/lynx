@@ -242,10 +242,8 @@ def get_sip_plans(request):
 def add_emergency(request, contact_id):
     form = EmergencyForm()
     phone_form = PhoneForm()
-    # email_form = EmailForm()
     if request.method == 'POST':
         phone_form = PhoneForm(request.POST)
-        # email_form = EmailForm(request.POST)
         form = EmergencyForm(request.POST)
         if phone_form.is_valid() & form.is_valid():
             form = form.save(commit=False)
@@ -263,7 +261,6 @@ def add_emergency(request, contact_id):
                     phone_form.save()
 
             return HttpResponseRedirect(reverse('lynx:client', args=(contact_id,)))
-            # return HttpResponseRedirect(reverse('lynx:client', args=(contact_id,)))
     return render(request, 'lynx/add_emergency.html',
                   {'phone_form': phone_form, 'form': form})
 

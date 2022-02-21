@@ -1,5 +1,5 @@
 from django import forms
-from django.db.models.functions import Lower
+from django.db.models.functions import Lower, Coalesce
 from django.utils.translation import gettext_lazy
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
@@ -185,7 +185,8 @@ class SipNoteForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         contact_id = kwargs.pop('contact_id')
         super(SipNoteForm, self).__init__(*args, **kwargs)
-        self.fields['sip_plan'].queryset = SipPlan.objects.filter(contact_id=contact_id).order_by('-created')
+        # self.fields['sip_plan'].queryset = SipPlan.objects.filter(contact_id=contact_id).order_by('-created')
+        self.fields['sip_plan'].queryset = SipPlan.objects.filter(contact_id=contact_id).order_by(Coalesce('plan_date', 'created').desc())
         self.fields['sip_plan'].required = True
         self.fields['at_devices'].label = "Assistive Technology Devices and Services"
         self.fields['independent_living'].label = "Independent Living and Adjustment Services"
