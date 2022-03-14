@@ -242,6 +242,7 @@ def add_assignments(request, contact_id):
         if form.is_valid():
             form = form.save(commit=False)
             form.instructor_id = request.POST.get('instructor_0')
+            form.contact_id = contact_id
             form.user_id = request.user.id
             form.save()
             for i in range:
@@ -249,12 +250,13 @@ def add_assignments(request, contact_id):
                 instructor_str = "instructor_" + str(i)
                 if len(request.POST.get(instructor_str)) > 0:
                     form.instructor_id = request.POST.get(instructor_str)
+                    form.contact_id = contact_id
                     form.user_id = request.user.id
                     form.save()
                 else:
                     continue
         return HttpResponseRedirect(reverse('lynx:contact_list'))
-    return render(request, 'lynx/add_sip_note_bulk.html', {'form': form, 'instructors': instructors, 'range': range})
+    return render(request, 'lynx/add_assignments.html', {'form': form, 'instructors': instructors, 'range': range})
 
 
 def get_sip_plans(request):
