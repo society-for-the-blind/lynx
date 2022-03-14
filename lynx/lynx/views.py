@@ -11,6 +11,7 @@ from django.db.models.functions import Concat, Replace, Lower, Coalesce
 from django.db import connection
 from django.core.paginator import Paginator
 from django.conf import settings
+from django.contrib.auth.models import User
 from django.core.mail import send_mail
 
 import os
@@ -25,7 +26,7 @@ from .models import Contact, Address, Phone, Email, Intake, IntakeNote, Emergenc
 from .forms import ContactForm, IntakeForm, IntakeNoteForm, EmergencyForm, AddressForm, EmailForm, PhoneForm, \
     AuthorizationForm, ProgressReportForm, LessonNoteForm, SipNoteForm, BillingReportForm, SipDemographicReportForm, \
     VolunteerForm, SipCSFReportForm, SipPlanForm, SipNoteBulkForm, DocumentForm, VolunteerHoursForm, \
-    VolunteerReportForm, VaccineForm
+    VolunteerReportForm, VaccineForm, AssignmentForm
 from .filters import ContactFilter
 
 logger = logging.getLogger(__name__)
@@ -229,6 +230,31 @@ def add_sip_note_bulk(request):
                     continue
         return HttpResponseRedirect(reverse('lynx:contact_list'))
     return render(request, 'lynx/add_sip_note_bulk.html', {'form': form, 'client_list': client_list, 'range': range})
+
+
+@login_required
+def add_assignments(request, contact_id):
+    form = AssignmentForm()
+    instructors = User.objects.filter(is_active=True).order_by(Lower('last_name'))
+    range = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+    if request.method == 'POST':
+        form = AssignmentForm(request.POST)
+        if form.is_valid():
+            form = form.save(commit=False)
+            form.instructor_id = request.POST.get('instructor_0')
+            form.user_id = request.user.id
+            form.save()
+            for i in range:
+                form.pk = None
+                instructor_str = "instructor_" + str(i)
+                if len(request.POST.get(instructor_str)) > 0:
+                    form.instructor_id = request.POST.get(instructor_str)
+                    form.user_id = request.user.id
+                    form.save()
+                else:
+                    continue
+        return HttpResponseRedirect(reverse('lynx:contact_list'))
+    return render(request, 'lynx/add_sip_note_bulk.html', {'form': form, 'instructors': instructors, 'range': range})
 
 
 def get_sip_plans(request):
@@ -459,20 +485,6 @@ def add_lesson_note(request, authorization_id):
 
 @login_required
 def add_vaccination_record(request, contact_id):
-    form = VaccineForm()
-    if request.method == 'POST':
-        form = VaccineForm(request.POST)
-        if form.is_valid():
-            form = form.save(commit=False)
-            form.contact_id = contact_id
-            form.user_id = request.user.id
-            form.save()
-            return HttpResponseRedirect(reverse('lynx:client', args=(contact_id,)))
-    return render(request, 'lynx/add_vaccine_record.html', {'form': form})
-
-
-@login_required
-def add_assignments(request, contact_id):
     form = VaccineForm()
     if request.method == 'POST':
         form = VaccineForm(request.POST)
