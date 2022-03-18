@@ -236,27 +236,35 @@ def add_sip_note_bulk(request):
 def add_assignments(request, contact_id):
     form = AssignmentForm()
     instructors = User.objects.filter(is_active=True).order_by(Lower('last_name'))
-    range = [1, 2, 3, 4, 5, 6, 7, 8, 9]
     if request.method == 'POST':
         form = AssignmentForm(request.POST)
         if form.is_valid():
             form = form.save(commit=False)
-            form.instructor_id = request.POST.get('instructor_0')
             form.contact_id = contact_id
             form.user_id = request.user.id
             form.save()
-            for i in range:
-                form.pk = None
-                instructor_str = "instructor_" + str(i)
-                if len(request.POST.get(instructor_str)) > 0:
-                    form.instructor_id = request.POST.get(instructor_str)
-                    form.contact_id = contact_id
-                    form.user_id = request.user.id
-                    form.save()
-                else:
-                    continue
-        return HttpResponseRedirect(reverse('lynx:contact_list'))
-    return render(request, 'lynx/add_assignments.html', {'form': form, 'instructors': instructors, 'range': range})
+            return HttpResponseRedirect(reverse('lynx:client', args=(contact_id,)))
+    # range = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+    # if request.method == 'POST':
+    #     form = AssignmentForm(request.POST)
+    #     if form.is_valid():
+    #         form = form.save(commit=False)
+    #         form.instructor_id = request.POST.get('instructor_0')
+    #         form.contact_id = contact_id
+    #         form.user_id = request.user.id
+    #         form.save()
+    #         for i in range:
+    #             form.pk = None
+    #             instructor_str = "instructor_" + str(i)
+    #             if len(request.POST.get(instructor_str)) > 0:
+    #                 form.instructor_id = request.POST.get(instructor_str)
+    #                 form.contact_id = contact_id
+    #                 form.user_id = request.user.id
+    #                 form.save()
+    #             else:
+    #                 continue
+    #     return HttpResponseRedirect(reverse('lynx:contact_list'))
+    return render(request, 'lynx/add_assignments.html', {'form': form, 'instructors': instructors})
 
 
 def get_sip_plans(request):

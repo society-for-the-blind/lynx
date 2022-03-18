@@ -22,11 +22,11 @@
 <br>
 <form method="post"> {% csrf_token %}
     <div class="container-fluid">
-        <h2>Select Clients</h2>
+        <h2>Select Instructor</h2>
             <div class="row">
                 <div class="col-12">
-                    <label for="instructor_0">Select a Instructor</label>
-                    <select name="instructor_0" id="instructor_0" aria-required="true">
+                    <label for="instructor">Select a Instructor</label>
+                    <select name="instructor" id="instructor" aria-required="true">
                         <option value="">----------</option>
                         {% for instructor in instructors %}
                             <option value="{{ instructor.id }}">{{ instructor.last_name }}, {{ instructor.first_name }}</option>
@@ -34,19 +34,19 @@
                     </select>
                 </div>
             </div>
-            {%for i in range %}
-                <div class="row" >
-                    <div class="col-12">
-                        <label for="instructor_{{i}}">Select a Client</label>
-                        <select id="instructor_{{i}}" name="instructor_{{i}}" aria-required="true" >
-                            <option value="">----------</option>
-                            {% for instructor in instructors %}
-                                <option value="{{ instructor.id }}">{{ instructor.last_name }}, {{ instructor.first_name }}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
-                </div>
-            {% endfor %}
+<!--            {%for i in range %}-->
+<!--                <div class="row" >-->
+<!--                    <div class="col-12">-->
+<!--                        <label for="instructor_{{i}}">Select a Client</label>-->
+<!--                        <select id="instructor_{{i}}" name="instructor_{{i}}" aria-required="true" >-->
+<!--                            <option value="">&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;</option>-->
+<!--                            {% for instructor in instructors %}-->
+<!--                                <option value="{{ instructor.id }}">{{ instructor.last_name }}, {{ instructor.first_name }}</option>-->
+<!--                            {% endfor %}-->
+<!--                        </select>-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--            {% endfor %}-->
         <h2>Notes</h2>
             <div class="row">
               <div class="col-12">{{ form.note|as_crispy_field }}</div>
