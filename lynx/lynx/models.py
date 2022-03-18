@@ -680,7 +680,8 @@ class Vaccine(models.Model):
 
 class Assignment(models.Model):
     contact = models.ForeignKey('Contact', on_delete=models.CASCADE)
-    instructor = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='instructors')
+    instructor = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='instructors')
+    # instructor = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='instructors')
     assignment_date = models.DateField(auto_now=True, null=True)
     note = models.TextField(blank=True, null=True)
     created = models.DateTimeField(auto_now_add=True, null=True)
