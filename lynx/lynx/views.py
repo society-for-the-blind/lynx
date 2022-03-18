@@ -22,7 +22,8 @@ import smtplib
 import ssl
 
 from .models import Contact, Address, Phone, Email, Intake, IntakeNote, EmergencyContact, Authorization, \
-    ProgressReport, LessonNote, SipNote, Volunteer, SipPlan, OutsideAgency, ContactInfoView, UNITS, Document, Vaccine
+    ProgressReport, LessonNote, SipNote, Volunteer, SipPlan, ContactInfoView, UNITS, Document, Vaccine, \
+    Assignment
 from .forms import ContactForm, IntakeForm, IntakeNoteForm, EmergencyForm, AddressForm, EmailForm, PhoneForm, \
     AuthorizationForm, ProgressReportForm, LessonNoteForm, SipNoteForm, BillingReportForm, SipDemographicReportForm, \
     VolunteerForm, SipCSFReportForm, SipPlanForm, SipNoteBulkForm, DocumentForm, VolunteerHoursForm, \
@@ -265,20 +266,18 @@ def add_sip_note_bulk(request):
 #     #                 continue
 #     #     return HttpResponseRedirect(reverse('lynx:contact_list'))
 #     return render(request, 'lynx/add_assignments.html', {'form': form, 'instructors': instructors})
-
-
 @login_required
 def add_assignments(request, contact_id):
-    form = AssignmentForm(instance=request.user)
+    form = AssignmentForm()
     instructors = User.objects.filter(Q(is_active=True) & Q(is_staff=True)).order_by(Lower('last_name'))
-    # instructors = User.objects.filter(is_active=True AND is_staff=True).order_by(Lower('last_name'))
     if request.method == 'POST':
-        form = AssignmentForm(request.POST, instance=request.user)
+        form = AssignmentForm(request.POST)
         if form.is_valid():
             form = form.save(commit=False)
             form.contact_id = contact_id
             form.user_id = request.user.id
             form.save()
+            # form.instructors.add(form.instructor_id)
             return HttpResponseRedirect(reverse('lynx:contact_list'))
     return render(request, 'lynx/add_assignments.html', {'form': form, 'instructors': instructors})
 
