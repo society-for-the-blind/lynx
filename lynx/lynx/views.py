@@ -280,7 +280,7 @@ def add_assignments(request, contact_id):
             form.instructor.create(instructor_id=form.instructor_id, contact_id=contact_id)
             # form.instructors.add(form.instructor_id)
             return HttpResponseRedirect(reverse('lynx:contact_list'))
-    return render(request, 'lynx/add_assignments.html', {'form': form, 'instructors': instructors})
+    return render(request, 'lynx/add_assignments.html', {'form': form, 'instructors': instructors, 'contact_id': contact_id})
 
 
 def get_sip_plans(request):
