@@ -26,7 +26,7 @@ Assigned Instructors:   {% for instructor in instructor_list %}
                             {% endif %}
                           {% endfor %}
                         {% endif %}
-
+<br>
 <h2>Client Information</h2>
 <p class="tab"><strong>Name:</strong> {{ object.first_name }} {% if object.middle_name %}{{ object.middle_name }} {% endif %}{{ object.last_name }}</p>
 {% if object.company %}<p class="tab"><strong>Company:</strong> {{ object.company }}</p>{% endif %}
