@@ -4,7 +4,7 @@ from django.contrib import admin
 
 
 from .models import Contact, Intake, Address, Authorization, Email, EmergencyContact, SipPlan, SipNote, \
-    IntakeNote, IntakeServiceArea, Phone, ProgressReport, LessonNote, Staff, Assignment
+    IntakeNote, IntakeServiceArea, Phone, ProgressReport, LessonNote, Assignment
 
 admin.site.register(Contact)
 admin.site.register(Intake)
@@ -20,5 +20,5 @@ admin.site.register(IntakeServiceArea)
 admin.site.register(Phone)
 admin.site.register(ProgressReport)
 admin.site.register(LessonNote)
-admin.site.register(Staff)
+# admin.site.register(Staff)
 admin.site.register(Assignment)

@@ -269,7 +269,7 @@ def add_sip_note_bulk(request):
 @login_required
 def add_assignments(request, contact_id):
     form = AssignmentForm()
-    instructors = User.objects.filter(Q(is_active=True) & Q(is_staff=True)).order_by(Lower('last_name'))
+    instructors = User.objects.filter(groups__name='SIP').order_by(Lower('last_name'))
     if request.method == 'POST':
         form = AssignmentForm(request.POST)
         if form.is_valid():
