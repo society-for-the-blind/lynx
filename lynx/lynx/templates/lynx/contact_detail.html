@@ -11,7 +11,7 @@
 {% if object.sip_client %}
 <input type="button" class="btn btn-success" aria-label="SIP Plans" onclick="location.href='/lynx/sipplans/{{ object.id }}';" value="SIP Plans" />
 <input type="button" class="btn btn-success" aria-label="SIP Notes" onclick="location.href='/lynx/sipnotes/{{ object.id }}';" value="SIP Notes" />
-<input type="button" class="btn btn-success" aria-label="Assign Instructor" onclick="location.href='/lynx/add_assignment/{{ object.id }}';" value="Add Assignment" />
+<input type="button" class="btn btn-success" aria-label="Assign Instructor" onclick="location.href='/lynx/add-assignment/{{ object.id }}';" value="Add Assignment" />
 {% endif %}
 <input type="button" class="btn btn-success" aria-label="Jump to Client Notes" onclick="location.href='#notes';" value="Jump to Client Notes" />
 <input type="button" class="btn btn-success" aria-label="Jump to File Upload" onclick="location.href='#upload';" value="Jump to File Upload" />
@@ -19,13 +19,13 @@
 {% if object.sip_client %}
 <br>
 Assigned Instructors:   {% for instructor in instructor_list %}
-    {% if not forloop.last %}
-      {{ instructor.instructor_id.first_name }} {{ instructor.instructor_id.last_name }},
-    {% else %}
-      {{ instructor.instructor.first_name }} {{ instructor.user.last_name }}
-    {% endif %}
-  {% endfor %}
-{% endif %}
+                            {% if not forloop.last %}
+                              {{ instructor.instructor.first_name }} {{ instructor.instructor.last_name }},
+                            {% else %}
+                              {{ instructor.instructor.first_name }} {{ instructor.instructor.last_name }}
+                            {% endif %}
+                          {% endfor %}
+                        {% endif %}
 
 <h2>Client Information</h2>
 <p class="tab"><strong>Name:</strong> {{ object.first_name }} {% if object.middle_name %}{{ object.middle_name }} {% endif %}{{ object.last_name }}</p>
