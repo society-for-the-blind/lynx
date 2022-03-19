@@ -4,6 +4,7 @@ from django.contrib.auth import get_user_model
 from django.conf import settings
 from django.urls import reverse
 from django.utils.timezone import now
+from django.contrib.auth.models import User
 
 from django_pgviews import view as pg
 from datetime import datetime, date
@@ -680,7 +681,7 @@ class Vaccine(models.Model):
 
 class Assignment(models.Model):
     contact = models.ForeignKey('Contact', on_delete=models.CASCADE)
-    instructor = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='instructors')
+    instructor = models.ForeignKey(User, on_delete=models.CASCADE, related_name='instructors')
     # instructor = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='instructors')
     assignment_date = models.DateField(auto_now=True, null=True)
     note = models.TextField(blank=True, null=True)
@@ -688,3 +689,7 @@ class Assignment(models.Model):
     modified = models.DateTimeField(auto_now=True, null=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET(get_sentinel_user))
 
+
+class Staff(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    department = models.CharField(max_length=100)
