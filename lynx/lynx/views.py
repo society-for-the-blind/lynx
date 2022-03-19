@@ -233,39 +233,6 @@ def add_sip_note_bulk(request):
     return render(request, 'lynx/add_sip_note_bulk.html', {'form': form, 'client_list': client_list, 'range': range})
 
 
-# @login_required
-# def add_assignments(request, contact_id):
-#     form = AssignmentForm()
-#     instructors = User.objects.filter(is_active=True).order_by(Lower('last_name'))
-#     if request.method == 'POST':
-#         form = AssignmentForm(request.POST)
-#         if form.is_valid():
-#             form = form.save(commit=False)
-#             form.contact_id = contact_id
-#             form.user_id = request.user.id
-#             form.save()
-#             return HttpResponseRedirect(reverse('lynx:client', args=(contact_id,)))
-#     # range = [1, 2, 3, 4, 5, 6, 7, 8, 9]
-#     # if request.method == 'POST':
-#     #     form = AssignmentForm(request.POST)
-#     #     if form.is_valid():
-#     #         form = form.save(commit=False)
-#     #         form.instructor_id = request.POST.get('instructor_0')
-#     #         form.contact_id = contact_id
-#     #         form.user_id = request.user.id
-#     #         form.save()
-#     #         for i in range:
-#     #             form.pk = None
-#     #             instructor_str = "instructor_" + str(i)
-#     #             if len(request.POST.get(instructor_str)) > 0:
-#     #                 form.instructor_id = request.POST.get(instructor_str)
-#     #                 form.contact_id = contact_id
-#     #                 form.user_id = request.user.id
-#     #                 form.save()
-#     #             else:
-#     #                 continue
-#     #     return HttpResponseRedirect(reverse('lynx:contact_list'))
-#     return render(request, 'lynx/add_assignments.html', {'form': form, 'instructors': instructors})
 @login_required
 def add_assignments(request, contact_id):
     form = AssignmentForm()
@@ -277,9 +244,7 @@ def add_assignments(request, contact_id):
             form.contact_id = contact_id
             form.user_id = request.user.id
             form.save()
-            # form.instructor.create(contact_id=contact_id)
-            # form.instructors.add(form.instructor_id)
-            return HttpResponseRedirect(reverse('lynx:contact_list'))
+            return HttpResponseRedirect(reverse('lynx:client', args=(contact_id,)))
     return render(request, 'lynx/add_assignments.html', {'form': form, 'instructors': instructors, 'contact_id': contact_id})
 
 
@@ -745,6 +710,7 @@ class ContactDetailView(LoginRequiredMixin, DetailView):
         context['emergency_list'] = EmergencyContact.objects.filter(contact_id=self.kwargs['pk']).order_by('-created')
         context['document_list'] = Document.objects.filter(contact_id=self.kwargs['pk']).order_by('-created')
         context['vaccine_list'] = Vaccine.objects.filter(contact_id=self.kwargs['pk']).order_by('-created')
+        context['instructor_list'] = Assignment.objects.filter(contact_id=self.kwargs['pk']).order_by('-created')
         context['form'] = IntakeNoteForm
         context['upload_form'] = DocumentForm
 
