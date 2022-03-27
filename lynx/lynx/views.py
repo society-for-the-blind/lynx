@@ -966,6 +966,7 @@ class AssignmentDetailView(LoginRequiredMixin, DetailView):
     def get_context_data(self, **kwargs):
         # Call the base implementation first to get a context
         context = super(AssignmentDetailView, self).get_context_data(**kwargs)
+        print( Assignment.objects.filter(contact_id=self.kwargs['pk']).query())
         context['instructor_list'] = Assignment.objects.filter(contact_id=self.kwargs['pk'])
         return context
 
