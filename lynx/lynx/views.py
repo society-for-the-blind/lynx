@@ -244,7 +244,7 @@ def add_assignments(request, contact_id):
             form.contact_id = contact_id
             form.user_id = request.user.id
             form.save()
-            return HttpResponseRedirect(reverse('lynx:client', args=(contact_id,)))
+            return HttpResponseRedirect(reverse('lynx:assignment', args=(contact_id,)))
     return render(request, 'lynx/add_assignments.html', {'form': form, 'instructors': instructors, 'contact_id': contact_id})
 
 
