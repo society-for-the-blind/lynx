@@ -963,6 +963,9 @@ class AssignmentDetailView(LoginRequiredMixin, DetailView):
     model = Assignment
     template_name = 'lynx/assignment_detail.html'
 
+    def get_object(self, queryset=None):
+        return Assignment.objects.get(contact_id=self.kwargs['contact_id'])
+
     def get_context_data(self, **kwargs):
         # Call the base implementation first to get a context
         context = super(AssignmentDetailView, self).get_context_data(**kwargs)
