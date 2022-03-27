@@ -693,6 +693,12 @@ def progress_result_view(request):
                                                                   'givenYear': request.GET.get('selYear')})
 
 
+@login_required
+def assignment_detail(request, contact_id):
+    instructor_list = Assignment.objects.filter(contact_id=contact_id)
+    return render(request, 'lynx/add_volunteer_hours.html', {'instructor_list': instructor_list})
+
+
 class ContactDetailView(LoginRequiredMixin, DetailView):
     model = Contact
 
@@ -959,19 +965,19 @@ class VolunteerDetailView(LoginRequiredMixin, DetailView):
         return context
 
 
-class AssignmentDetailView(LoginRequiredMixin, DetailView):
-    model = Assignment
-    template_name = 'lynx/assignment_detail.html'
-
-    def get_object(self, queryset=None):
-        return Assignment.objects.get(contact_id=self.kwargs['contact_id'])
-
-    def get_context_data(self, **kwargs):
-        # Call the base implementation first to get a context
-        context = super(AssignmentDetailView, self).get_context_data(**kwargs)
-        # print( Assignment.objects.filter(contact_id=self.kwargs['pk']).query())
-        context['instructor_list'] = Assignment.objects.filter(contact_id=self.kwargs['contact_id'])
-        return context
+# class AssignmentDetailView(LoginRequiredMixin, DetailView):
+#     model = Assignment
+#     template_name = 'lynx/assignment_detail.html'
+#
+#     def get_object(self, queryset=None):
+#         return Assignment.objects.get(contact_id=self.kwargs['contact_id'])
+#
+#     def get_context_data(self, **kwargs):
+#         # Call the base implementation first to get a context
+#         context = super(AssignmentDetailView, self).get_context_data(**kwargs)
+#         # print( Assignment.objects.filter(contact_id=self.kwargs['pk']).query())
+#         context['instructor_list'] = Assignment.objects.filter(contact_id=self.kwargs['contact_id'])
+#         return context
 
 
 class ClientUpdateView(LoginRequiredMixin, UpdateView):
