@@ -959,6 +959,17 @@ class VolunteerDetailView(LoginRequiredMixin, DetailView):
         return context
 
 
+class AssignmentDetailView(LoginRequiredMixin, DetailView):
+    model = Assignment
+    template_name = 'lynx/assignment_detail.html'
+
+    def get_context_data(self, **kwargs):
+        # Call the base implementation first to get a context
+        context = super(AssignmentDetailView, self).get_context_data(**kwargs)
+        context['instructor_list'] = Assignment.objects.filter(contact_id=self.kwargs['pk'])
+        return context
+
+
 class ClientUpdateView(LoginRequiredMixin, UpdateView):
     model = Contact
     fields = ['first_name', 'middle_name', 'last_name', 'company', 'do_not_contact', 'donor', 'deceased',
