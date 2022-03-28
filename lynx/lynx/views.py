@@ -696,7 +696,7 @@ def progress_result_view(request):
 @login_required
 def assignment_detail(request, contact_id):
     instructor_list = Assignment.objects.filter(contact_id=contact_id)
-    return render(request, 'lynx/assignment_detail.html', {'instructor_list': instructor_list})
+    return render(request, 'lynx/assignment_detail.html', {'instructor_list': instructor_list, "contact_id": contact_id})
 
 
 class ContactDetailView(LoginRequiredMixin, DetailView):

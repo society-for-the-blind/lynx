@@ -3,7 +3,7 @@
 {% block content %}
 
 <h1>Instructors assigned to {{ object.contact.first_name }} {{ object.contact.last_name }}</h1>
-<input type="button" onclick="location.href='/lynx/contact/{{ object.contact_id }}';" value="Return to Client" /> <input type="button" onclick="location.href='/lynx/client/{{ object.authorization.contact_id}}';" value="Return to Client" />
+<input type="button" onclick="location.href='/lynx/contact/{{ object.contact_id }}';" value="Return to Client" />
     <table class="table">
         <tr>
             <th>Instructor</th>
@@ -14,7 +14,7 @@
         {% for instructor in instructor_list %}
             <tr>
                 <td>{{ instructor.instructor.first_name }} {{ instructor.instructor.last_name }}</td>
-                <th>{{ instructor.assignment_date|date:'F j, Y' }}</th>
+                <td>{{ instructor.assignment_date|date:'F j, Y' }}</td>
                 <td>{{ instructor.note|linebreaksbr }}</td>
 <!--                <td>-->
 <!--                    <form>-->
