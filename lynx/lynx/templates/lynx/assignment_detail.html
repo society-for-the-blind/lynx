@@ -2,8 +2,8 @@
 
 {% block content %}
 
-<h1>Instructors assigned to {{ object.contact.first_name }} {{ object.contact.last_name }}</h1>
-<input type="button" onclick="location.href='/lynx/contact/{{ contact_id }}';" value="Return to Client" />
+<h1>Instructors assigned to {{ contact.first_name }} {{ contact.last_name }}</h1>
+<input type="button" onclick="location.href='/lynx/client/{{ contact_id }}';" value="Return to Client" />
     <table class="table">
         <tr>
             <th>Instructor</th>
