@@ -13,7 +13,7 @@
         </tr>
         {% for instructor in instructor_list %}
             <tr>
-                <td>{{ instructor.user.first_name }} {{ instructor.user.last_name }}</td>
+                <td>{{ instructor.instructor.first_name }} {{ instructor.instructor.last_name }}</td>
                 <th>{{ instructor.assignment_date|date:'F j, Y' }}</th>
                 <td>{{ instructor.note|linebreaksbr }}</td>
 <!--                <td>-->
