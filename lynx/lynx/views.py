@@ -274,7 +274,7 @@ def add_assignments(request, contact_id):
                     continue
         return HttpResponseRedirect(reverse('lynx:contact_list'))
     return render(request, 'lynx/add_assignments.html',
-                  {'form': form, 'instructors': instructors, 'contact_id': contact_id, 'contact': contact})
+                  {'form': form, 'instructors': instructors, 'contact_id': contact_id, 'contact': contact, 'num_range': num_range})
 
 
 def get_sip_plans(request):
