@@ -690,4 +690,4 @@ class Assignment(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET(get_sentinel_user))
 
     def get_absolute_url(self):
-        return "/lynx/client/%i" % self.contact_id
+        return "/lynx/assignments/%i" % self.contact_id
