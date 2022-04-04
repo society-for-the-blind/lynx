@@ -20,8 +20,8 @@
                 <td>{{ instructor.user.first_name }} {{ instructor.user.last_name }}</td>
                 <td>
                     <form>
-                      <button class="btn btn-primary" formaction="/lynx/assignment-edit/{{ object.id }}">Edit</button>
-                      <button class="btn btn-danger" formaction="/lynx/assignment-confirm/{{ object.id }}">Delete</button>
+                      <button class="btn btn-primary" formaction="/lynx/assignment-edit/{{ instructor.id }}">Edit</button>
+                      <button class="btn btn-danger" formaction="/lynx/assignment-confirm/{{ instructor.id }}">Delete</button>
                     </form>
                 </td>
             </tr>
