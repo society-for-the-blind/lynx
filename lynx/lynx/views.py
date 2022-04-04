@@ -219,10 +219,6 @@ def add_sip_note_bulk(request):
                 if len(request.POST.get(client_str)) > 0:
                     form.contact_id = request.POST.get(client_str)
                     form.sip_plan_id = request.POST.get(plan_str)
-                    # if form.contact_id != '' and form.sip_plan_id == '':
-                    #     form.add_error(plan_str, "This is a required field.")
-                    #     return render(request, 'lynx/add_sip_note_bulk.html',
-                    #                   {'form': form, 'client_list': client_list, 'range': range})
                     form.quarter = quarter
                     form.fiscal_year = fiscal_year
                     form.user_id = request.user.id
@@ -233,48 +229,48 @@ def add_sip_note_bulk(request):
     return render(request, 'lynx/add_sip_note_bulk.html', {'form': form, 'client_list': client_list, 'range': range})
 
 
-# @login_required
-# def add_assignments(request, contact_id):
-#     form = AssignmentForm()
-#     instructors = User.objects.filter(groups__name='SIP').order_by(Lower('last_name'))
-#     if request.method == 'POST':
-#         form = AssignmentForm(request.POST)
-#         if form.is_valid():
-#             form = form.save(commit=False)
-#             form.contact_id = contact_id
-#             form.user_id = request.user.id
-#             form.save()
-#             return HttpResponseRedirect(reverse('lynx:assignment', args=(contact_id,)))
-#     return render(request, 'lynx/add_assignments.html', {'form': form, 'instructors': instructors, 'contact_id': contact_id})
-
-
 @login_required
 def add_assignments(request, contact_id):
     form = AssignmentForm()
     instructors = User.objects.filter(groups__name='SIP').order_by(Lower('last_name'))
-    contact = Contact.objects.get(id=contact_id)
-    num_range = [1, 2, 3, 4, 5, 6, 7, 8, 9]
     if request.method == 'POST':
         form = AssignmentForm(request.POST)
         if form.is_valid():
             form = form.save(commit=False)
-            form.instructor_id = request.POST.get('instructor_0')
             form.contact_id = contact_id
             form.user_id = request.user.id
             form.save()
-            for i in num_range:
-                form.pk = None
-                instructor_str = "instructor_" + str(i)
-                if len(request.POST.get(instructor_str)) > 0:
-                    form.instructor_id = request.POST.get(instructor_str)
-                    form.contact_id = contact_id
-                    form.user_id = request.user.id
-                    form.save()
-                else:
-                    continue
-        return HttpResponseRedirect(reverse('lynx:contact_list'))
-    return render(request, 'lynx/add_assignments.html',
-                  {'form': form, 'instructors': instructors, 'contact_id': contact_id, 'contact': contact, 'num_range': num_range})
+            return HttpResponseRedirect(reverse('lynx:assignment', args=(contact_id,)))
+    return render(request, 'lynx/add_assignments.html', {'form': form, 'instructors': instructors, 'contact_id': contact_id})
+
+
+# @login_required
+# def add_assignments(request, contact_id):
+#     form = AssignmentForm()
+#     instructors = User.objects.filter(groups__name='SIP').order_by(Lower('last_name'))
+#     contact = Contact.objects.get(id=contact_id)
+#     num_range = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+#     if request.method == 'POST':
+#         form = AssignmentForm(request.POST)
+#         if form.is_valid():
+#             form = form.save(commit=False)
+#             form.instructor_id = request.POST.get('instructor_0')
+#             form.contact_id = contact_id
+#             form.user_id = request.user.id
+#             form.save()
+#             for i in num_range:
+#                 form.pk = None
+#                 instructor_str = "instructor_" + str(i)
+#                 if len(request.POST.get(instructor_str)) > 0:
+#                     form.instructor_id = request.POST.get(instructor_str)
+#                     form.contact_id = contact_id
+#                     form.user_id = request.user.id
+#                     form.save()
+#                 else:
+#                     continue
+#         return HttpResponseRedirect(reverse('lynx:contact_list'))
+#     return render(request, 'lynx/add_assignments.html',
+#                   {'form': form, 'instructors': instructors, 'contact_id': contact_id, 'contact': contact, 'num_range': num_range})
 
 
 def get_sip_plans(request):
@@ -1227,6 +1223,12 @@ class VaccineUpdateView(LoginRequiredMixin, UpdateView):
         return form
 
 
+class AssignmentUpdateView(LoginRequiredMixin, UpdateView):
+    model = Assignment
+    fields = ['note']
+    template_name_suffix = '_edit'
+
+
 class SipPlanDeleteView(LoginRequiredMixin, DeleteView):
     model = SipPlan
 
@@ -1313,6 +1315,13 @@ class VaccineDeleteView(LoginRequiredMixin, DeleteView):
         client_id = self.kwargs['client_id']
         return reverse_lazy('lynx:client', kwargs={'pk': client_id})
 
+
+class AssignmentDeleteView(LoginRequiredMixin, DeleteView):
+    model = Assignment
+
+    def get_success_url(self):
+        client_id = self.kwargs['client_id']
+        return reverse_lazy('lynx:client', kwargs={'pk': client_id})
 
 @login_required
 def billing_report(request):

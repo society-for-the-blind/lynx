@@ -10,7 +10,7 @@
             <th>Instructor</th>
             <th>Notes</th>
             <th>Assigned By</th>
-<!--            <th>Actions</th>-->
+            <th>Actions</th>
         </tr>
         {% for instructor in instructor_list %}
             <tr>
@@ -18,12 +18,12 @@
                 <td>{{ instructor.instructor.first_name }} {{ instructor.instructor.last_name }}</td>
                 <td>{{ instructor.note|linebreaksbr }}</td>
                 <td>{{ instructor.user.first_name }} {{ instructor.user.last_name }}</td>
-<!--                <td>-->
-<!--                    <form>-->
-<!--                      <button class="btn btn-primary" formaction="/lynx/lesson-note-edit/{{ note.id }}">Edit</button>-->
-<!--                      <button class="btn btn-danger" formaction="/lynx/lesson-note-confirm/{{ note.id }}/{{ object.id }}">Delete</button>-->
-<!--                    </form>-->
-<!--                </td>-->
+                <td>
+                    <form>
+                      <button class="btn btn-primary" formaction="/lynx/assignment-edit/{{ object.id }}">Edit</button>
+                      <button class="btn btn-danger" formaction="/lynx/assignment-confirm/{{ object.id }}">Delete</button>
+                    </form>
+                </td>
             </tr>
         {% endfor %}
     </table>
