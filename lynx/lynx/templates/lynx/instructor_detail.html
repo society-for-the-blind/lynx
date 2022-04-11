@@ -1,0 +1,29 @@
+{% extends 'lynx/base.html' %}
+
+{% block content %}
+
+<h1>Instructor Details for {{ object.first_name }} {{ object.last_name }}</h1>
+    <table class="table">
+        <tr>
+            <th>Assignment Date</th>
+            <th>Client</th>
+            <th>Notes</th>
+            <th>Assigned By</th>
+            <th>Actions</th>
+        </tr>
+        {% for assign in assignment_list %}
+            <tr>
+                <td>{{ assign.assignment_date|date:'F j, Y' }}</td>
+                <td><a href="/lynx/client/{{ assign.contact_id}}">{{ assign.contact.first_name }} {{ assign.contact.last_name }}</a></td>
+                <td>{{ assign.note|linebreaksbr }}</td>
+                <td>{{ assign.user.first_name }} {{ assign.user.last_name }}</td>
+                <td>
+                    <form>
+                      <button class="btn btn-primary" formaction="/lynx/assignment-edit/{{ instructor.id }}">Edit</button>
+<!--                      <button class="btn btn-danger" formaction="/lynx/assignment-confirm/{{ instructor.id }}/{{ contact_id }}">Delete</button>-->
+                    </form>
+                </td>
+            </tr>
+        {% endfor %}
+    </table>
+{% endblock %}

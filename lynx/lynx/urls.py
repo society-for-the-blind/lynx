@@ -81,6 +81,7 @@ urlpatterns = [
     path('manual', views.ManualView.as_view(), name='manual'),
     path('email', views.email_update, name='email'),
     path('reports/', views.reports, name='reports'),
+    path('instructor/<int:pk>', views.InstructorDetailView.as_view(), name='instructor'),
     # path('test/', cron.address_changes, name='address'),
     path("", views.index, name='index')
 ]
