@@ -85,7 +85,7 @@ def sipnote_list_view(request, client_id):
 @login_required
 def instructor_list_view(request):
     instructors = User.objects.filter(groups__name='SIP').order_by(Lower('last_name'))
-    return render(request, 'lynx/instructor_list.html', {'instructors': instructors})
+    return render(request, 'lynx/instructor_search.html', {'instructors': instructors})
 
 
 @login_required
