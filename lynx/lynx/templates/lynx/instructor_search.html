@@ -1,0 +1,31 @@
+{% extends 'lynx/base.html' %}
+
+{% block title %}Instructor Assignments{% endblock %}
+
+{% block javascript %}
+<script>
+    $(document).ready(function(){
+        $('#instructorSelect').change(function(){
+            var instructorId = document.getElementById("instructorSelect").value;
+            $('#viewInstructor').attr('action', '/lynx/instructor/' + instructorId);
+        });
+    });
+</script>
+{% endblock %}
+
+{% block content %}
+    <h1>Instructors</h1>
+
+    <form id='viewInstructor' action="">
+        <label for="instructorSelect">Select Instructor: </label>
+        <select id="instructorSelect" >
+            <option value="">---------</option>
+            {% for instructor in instructors %}
+                <option value = "{{ instructor.id }}">{{ instructor.last_name }}, {{ instructor.first_name }}</option>
+            {% endfor %}
+        </select>
+        <br>
+        <input type="submit" value="View Instructor" />
+    </form>
+<hr>
+{% endblock %}
