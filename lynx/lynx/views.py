@@ -726,7 +726,7 @@ def progress_result_view(request):
 
 @login_required
 def assignment_detail(request, contact_id):
-    instructor_list = Assignment.objects.filter(contact_id=contact_id)
+    instructor_list = Assignment.objects.filter(contact_id=contact_id).order_by('-assignment_date')
     contact = Contact.objects.filter(pk=contact_id)
     return render(request, 'lynx/assignment_detail.html', {'instructor_list': instructor_list, "contact_id": contact_id, 'contact': contact})
 
@@ -1004,7 +1004,7 @@ class InstructorDetailView(LoginRequiredMixin, DetailView):
     def get_context_data(self, **kwargs):
         # Call the base implementation first to get a context
         context = super(InstructorDetailView, self).get_context_data(**kwargs)
-        context['assignment_list'] = Assignment.objects.filter(instructor_id=self.kwargs['pk'])
+        context['assignment_list'] = Assignment.objects.filter(instructor_id=self.kwargs['pk']).order_by('-assignment_date')
         return context
 
 
