@@ -246,6 +246,16 @@ def add_assignments(request, contact_id):
             form.contact_id = contact_id
             form.user_id = request.user.id
             form.save()
+
+            username = settings.EMAIL_HOST_USER
+
+            send_mail("Address Changes", #subject
+                      "Did it work?", #message
+                      username,#from email
+                      ['mjtolentino247@gmail.com'], #recipient list
+                      fail_silently=False,
+                      )
+
             return HttpResponseRedirect(reverse('lynx:assignment', args=(contact_id,)))
     return render(request, 'lynx/add_assignments.html', {'form': form, 'instructors': instructors, 'contact_id': contact_id})
 
