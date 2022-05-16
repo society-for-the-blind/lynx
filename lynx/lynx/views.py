@@ -256,7 +256,7 @@ def add_assignments(request, contact_id):
             send_mail("SIP Assignment", #subject
                       message, #message
                       username,#from email
-                      [instructor.email.email], #recipient list
+                      [instructor__email.email], #recipient list
                       fail_silently=False,
                       )
 
