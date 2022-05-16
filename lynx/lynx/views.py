@@ -251,7 +251,7 @@ def add_assignments(request, contact_id):
             message = "You have been assigned " + form.contact.first_name + " " + form.contact.last_name + \
                       " as a SIP Assignment by " + request.user.first_name + " with the following note: " + \
                       form.note + " Please review your SIP Assignments for further information."
-            instructor = User.objects.filter(pk=form.instructor_id)
+            instructor = User.objects.filter(pk=form.instructor_id).values('email')
             email = instructor.email
 
             send_mail("SIP Assignment", #subject
