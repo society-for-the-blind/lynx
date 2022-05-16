@@ -250,12 +250,12 @@ def add_assignments(request, contact_id):
             username = settings.EMAIL_HOST_USER
             message = "You have been assigned " + form.contact.first_name + " " + form.contact.last_name + \
                       " as a SIP Assignment by " + request.user.first_name + " with the following note: " + \
-                      form.note + " Please review your SIP Assignments for further."
+                      form.note + " Please review your SIP Assignments for further information."
 
             send_mail("SIP Assignment", #subject
                       message, #message
                       username,#from email
-                      [form.contact.email__email], #recipient list
+                      [form.contact.email], #recipient list
                       fail_silently=False,
                       )
 
