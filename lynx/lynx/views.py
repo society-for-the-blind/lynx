@@ -247,14 +247,13 @@ def add_assignments(request, contact_id):
             form.user_id = request.user.id
             form.save()
 
-            username = settings.EMAIL_HOST_USER
-            message = "You have been assigned " + form.contact.first_name + " " + form.contact.last_name + \
-                      " as a SIP Assignment by " + request.user.first_name + " with the following note: " + \
-                      form.note + " Please review your SIP Assignments for further information."
+            username = 'SIP Assignments <' + settings.EMAIL_HOST_USER + '>'
+            message = "You have a new SIP Assignment by " + request.user.first_name + " with the following note: " + form.note
             instructor = User.objects.filter(pk=form.instructor_id).values('email')
             inst_email = instructor[0]['email']
+            client_name = form.contact.first_name + " " + form.contact.last_name
 
-            send_mail("SIP Assignment", #subject
+            send_mail(client_name, #subject
                       message, #message
                       username,#from email
                       [inst_email], #recipient list
