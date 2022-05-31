@@ -1186,6 +1186,14 @@ class SipPlanUpdateView(LoginRequiredMixin, UpdateView):
     template_name_suffix = '_edit'
 
     def get_form(self, form_class=None):
+        notes = SipNote.objects.filter(sip_plan_id=self.kwargs['pk'])
+        ils = True
+        ats = True
+        if notes.orientation or notes.communications or notes.dls or notes.advocacy or notes.counseling or \
+                notes.information or notes.services or notes.support:
+            ils = False
+        if notes.at_devices or notes.at_services:
+            ats = False
         form = super().get_form(form_class=form_class)
         form.fields['at_services'].label = "Assistive Technology Devices and Services"
         form.fields['independent_living'].label = "Independent Living and Adjustment Services"
@@ -1202,6 +1210,8 @@ class SipPlanUpdateView(LoginRequiredMixin, UpdateView):
         form.fields['community_plan_progress'].label = "Home and Community involvement Outcomes"
         form.fields['at_outcomes'].label = "AT Goal Outcomes"
         form.fields['ila_outcomes'].label = "IL/A Service Goal Outcomes"
+        form.fields['at_outcomes'].disabled = ats
+        form.fields['ila_outcomes'].disabled = ils
         return form
 
 
