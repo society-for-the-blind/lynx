@@ -1189,11 +1189,12 @@ class SipPlanUpdateView(LoginRequiredMixin, UpdateView):
         notes = SipNote.objects.filter(sip_plan_id=self.kwargs['pk'])
         ils = True
         ats = True
-        if notes.orientation or notes.communications or notes.dls or notes.advocacy or notes.counseling or \
-                notes.information or notes.services or notes.support:
-            ils = False
-        if notes.at_devices or notes.at_services:
-            ats = False
+        for note in notes:
+            if note.orientation or note.communications or note.dls or note.advocacy or note.counseling or \
+                    note.information or note.services or note.support:
+                ils = False
+            if note.at_devices or note.at_services:
+                ats = False
         form = super().get_form(form_class=form_class)
         form.fields['at_services'].label = "Assistive Technology Devices and Services"
         form.fields['independent_living'].label = "Independent Living and Adjustment Services"
