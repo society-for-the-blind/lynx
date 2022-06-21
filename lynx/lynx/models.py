@@ -241,14 +241,6 @@ class Address(models.Model):
         return "/lynx/client/%i" % self.contact_id
 
 
-# class Billing(models.Model):
-#     employee = models.ForeignKey('Employee', on_delete=models.CASCADE)
-#     invoice_date = models.DateField()
-#     created = models.DateTimeField(auto_now_add=True)
-#     modified = models.DateTimeField(auto_now=True)
-#     user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET(get_sentinel_user))
-
-
 # Intake questionnaire
 class Intake(models.Model):
     INCOMES = (("<$12,500", "<$12,500"), ("$12,500-$25,000", "$12,500-$25,000"), ("$25,001-$50,000", "$25,001-$50,000"),

@@ -249,7 +249,8 @@ class SipPlanForm(forms.ModelForm):
     # highYear = currentYear + 1
 
     types = (("Retreat", "Retreat"), ("In-home", "In-home"), ("Support Group", "Support Group"),
-              ("Training Seminar", "Training Seminar"), ("Workshop", "Workshop"))
+              ("Training Seminar", "Training Seminar"), ("Workshop", "Workshop"),
+             ("Community Integration", "Community Integration"))
     instructor = forms.CharField(required=False)
     plan_type = forms.ChoiceField(choices=types)
     # start_date = forms.CharField(widget=forms.TextInput(attrs={'aria-required': 'true'}))
