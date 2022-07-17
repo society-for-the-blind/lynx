@@ -89,7 +89,7 @@
 <h2>Progress Reports</h2>
     <ul>
         {% for report in report_list %}
-            <li><a href='/lynx/progress-report/{{ report.id }}/'>{{ report.month|month_name }} by {{ report.instructor }}</a> | <a href='/lynx/progress-report-edit/{{ report.id }}'>Edit {{ report.month|month_name }} Report</a> </li>
+            <li><a href='/lynx/progress-report/{{ report.id }}/'>{{ report.month|month_name }} by {{ report.instructor }}</a> | <a href='/lynx/progress-report-edit/{{ report.id }}'>Edit {{ report.month|month_name }} Report</a> {% if user.is_superuser %} | <a href='/lynx/progress-report-confirm/{{ report.id }}/{{ object.id }}'>Delete {{ report.month|month_name }} Report{% endif %} </a> </li>
         {% empty %}
             <li>Sorry, no progress reports for this authorization</li>
         {% endfor %}
