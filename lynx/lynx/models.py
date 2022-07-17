@@ -203,14 +203,6 @@ class Phone (models.Model):
     def __str__(self):
         return self.phone
 
-# # Employee information. Contact information in Contact table, addresses in Address table.
-# class Employee(models.Model):
-#     contact = models.ForeignKey('Contact', on_delete=models.CASCADE)
-#     employee_type = models.CharField(max_length=150)
-#     created = models.DateTimeField(auto_now_add=True)
-#     modified = models.DateTimeField(auto_now=True)
-#     user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET(get_sentinel_user))
-
 
 # Addresses for Contacts.
 class Address(models.Model):
@@ -306,7 +298,6 @@ class Intake(models.Model):
     degree = models.CharField(max_length=250, blank=True, choices=DEGREE, null=True)
     prognosis = models.CharField(max_length=250, blank=True, choices=PROGNOSIS, null=True)
     referred_by = models.CharField(max_length=250, blank=True, choices=REFERER, null=True)
-    # payment_source = models.ForeignKey('Contact', on_delete=models.SET_NULL, blank=True, null=True)
     payment_source = models.ForeignKey('Contact', on_delete=models.CASCADE, blank=True, null=True, related_name='intake_outside_agent')
     diabetes = models.BooleanField(blank=True, default=False)
     diabetes_notes = models.CharField(max_length=255, blank=True, null=True)
@@ -371,16 +362,6 @@ class Intake(models.Model):
     def __str__(self):
         return '%s Intake' % (self.contact_id,)
 
-
-# class Referral(models.Model):
-#     intake = models.ForeignKey('Intake', on_delete=models.CASCADE)
-#     source = models.CharField(max_length=250, null=True)
-#     name = models.CharField(max_length=250, null=True)
-#     referral_date = models.DateField(null=True, default=date.today)
-#     created = models.DateTimeField(null=True)
-#     modified = models.DateTimeField(auto_now=True, null=True)
-#     user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET(get_sentinel_user))
-#
 
 class IntakeNote(models.Model):
     contact = models.ForeignKey('Contact', on_delete=models.CASCADE)

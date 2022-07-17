@@ -1680,6 +1680,9 @@ def sip_csf_services_report(request):
                     aggregated_data[client_id][quarter]['community_plan_progress'] = plan_evaluation(note['community_plan_progress'])
                     aggregated_data[client_id][quarter]['at_outcomes'] = assess_evaluation(note['at_outcomes'])
                     aggregated_data[client_id][quarter]['ila_outcomes'] = assess_evaluation(note['ila_outcomes'])
+                    ila_outcomes = aggregated_data[client_id][quarter]['ila_outcomes']
+                    at_outcomes = aggregated_data[client_id][quarter]['at_outcomes']
+                    aggregated_data[client_id][quarter]['assessed'] = is_assessed(ila_outcomes, at_outcomes)
                     if aggregated_data[client_id][quarter]['at_services'] == "Yes" or aggregated_data[client_id][quarter]['at_devices'] == "Yes":
                         aggregated_data[client_id][quarter]['at_devices_services'] = "Yes"
                     else:
@@ -1717,6 +1720,10 @@ def sip_csf_services_report(request):
                         aggregated_data[client_id][quarter]['at_outcomes'] = assess_evaluation(note['at_outcomes'], aggregated_data[client_id][quarter]['at_outcomes'])
                     if note['ila_outcomes']:
                         aggregated_data[client_id][quarter]['ila_outcomes'] = assess_evaluation(note['ila_outcomes'], aggregated_data[client_id][quarter]['ila_outcomes'])
+                    if note['ila_outcomes'] and note['at_outcomes']:
+                        aggregated_data[client_id][quarter]['assessed'] = is_assessed(
+                            aggregated_data[client_id][quarter]['ila_outcomes'],
+                            aggregated_data[client_id][quarter]['at_outcomes'])
 
             for key, value in aggregated_data.items():
                 if '1' in value:
@@ -1725,7 +1732,7 @@ def sip_csf_services_report(request):
                                      value['1']['independent_living'], value['1']['orientation'],
                                      value['1']['communications'], value['1']['dls'], value['1']['advocacy'],
                                      value['1']['counseling'], value['1']['information'], value['1']['services'],
-                                     value['1']['ila_outcomes'], "", value['1']['support'], "",
+                                     value['1']['ila_outcomes'], "", value['1']['support'], value['1']['assessed'],
                                      value['1']['living_plan_progress'], value['1']['community_plan_progress']])
                 if '2' in value:
                     writer.writerow([value['client_name'], "0", "", "", "", "", "",
@@ -1733,7 +1740,7 @@ def sip_csf_services_report(request):
                                      value['2']['independent_living'], value['2']['orientation'],
                                      value['2']['communications'], value['2']['dls'], value['2']['advocacy'],
                                      value['2']['counseling'], value['2']['information'], value['2']['services'],
-                                     value['2']['ila_outcomes'], "", value['2']['support'], "",
+                                     value['2']['ila_outcomes'], "", value['2']['support'], value['2']['assessed'],
                                      value['2']['living_plan_progress'], value['2']['community_plan_progress']])
                 if '3' in value:
                     writer.writerow([value['client_name'], "0", "", "", "", "", "",
@@ -1741,7 +1748,7 @@ def sip_csf_services_report(request):
                                      value['3']['independent_living'], value['3']['orientation'],
                                      value['3']['communications'], value['3']['dls'], value['3']['advocacy'],
                                      value['3']['counseling'], value['3']['information'], value['3']['services'],
-                                     value['3']['ila_outcomes'], "", value['3']['support'], "",
+                                     value['3']['ila_outcomes'], "", value['3']['support'], value['3']['assessed'],
                                      value['3']['living_plan_progress'], value['3']['community_plan_progress']])
                 if '4' in value:
                     writer.writerow([value['client_name'], "0", "", "", "", "", "",
@@ -1749,7 +1756,7 @@ def sip_csf_services_report(request):
                                      value['4']['independent_living'], value['4']['orientation'],
                                      value['4']['communications'], value['4']['dls'], value['4']['advocacy'],
                                      value['4']['counseling'], value['4']['information'], value['4']['services'],
-                                     value['4']['ila_outcomes'], "", value['4']['support'], "",
+                                     value['4']['ila_outcomes'], "", value['4']['support'], value['4']['assessed'],
                                      value['4']['living_plan_progress'], value['4']['community_plan_progress']])
 
             return response
@@ -2198,3 +2205,16 @@ def get_volunteers(request):
     else:
         page_obj = None
     return render(request, 'lynx/client_advanced_search.html', {'page_obj': page_obj})
+
+
+def is_assessed(ila_outcomes, at_outcomes):
+    ila_assessed = False
+    at_assessed = True
+    if ila_outcomes and ila_outcomes != "Not assessed":
+        ila_assessed = True
+    if at_outcomes and at_outcomes != "Not assessed":
+        at_assessed = True
+    if at_assessed == True and ila_assessed == True:
+       return "Assessed"
+    else:
+        return "Not Assessed"
