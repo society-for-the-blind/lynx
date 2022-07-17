@@ -533,9 +533,7 @@ def add_vaccination_record(request, contact_id):
     return render(request, 'lynx/add_vaccine_record.html', {'form': form})
 
 
-def get_hour_validation(request): #check if they are entering more hours then allowed on authorization
-    authorization_id = request.GET.get('authorization_id')
-    billed_units = request.GET.get('billed_units')
+def get_hour_validation(request, authorization_id, billed_units): #check if they are entering more hours then allowed on authorization
     authorization = Authorization.objects.get(id=authorization_id)
     note_list = LessonNote.objects.filter(authorization_id=authorization_id)
 
@@ -558,11 +556,8 @@ def get_hour_validation(request): #check if they are entering more hours then al
         return JsonResponse({"result": 'true'})
 
 
-def get_date_validation(request): #check if they are entering a lesson note after the authorization authorization
-    authorization_id = request.GET.get('authorization_id')
-    note_date = request.GET.get('note_date')
+def get_date_validation(request, authorization_id, note_date): #check if they are entering a lesson note after the authorization authorization
     authorization = Authorization.objects.get(id=authorization_id)
-
     auth_date = authorization.end_date
 
     if note_date > auth_date:

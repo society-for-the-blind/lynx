@@ -8,11 +8,11 @@
             var auth = document.getElementById('authorization').value;
 
             $.ajax({                       // initialize an AJAX request
-                url: "/lynx/get-hour-validation/",                    // set the url of the request
-                data: {
-                  'authorization_id': auth,
-                  'billed_units': value
-                },
+                url: "/lynx/get-hour-validation/" + auth + "/" + value,                    // set the url of the request
+                // data: {
+                //   'authorization_id': auth,
+                //   'billed_units': value
+                // },
                 success: function (data) {   // `data` is the return of the `get_sip_plans` view function
                   if (data.result == 'true') {
                       document.getElementById("submit").disabled = false;
@@ -31,11 +31,11 @@
             console.log(value, auth);
 
             $.ajax({                       // initialize an AJAX request
-                url: "/lynx/get-date-validation/",                    // set the url of the request
-                data: {
-                  'authorization_id': auth,
-                  'note_date': value
-                },
+                url: "/lynx/get-date-validation/" + auth + "/" + value,                    // set the url of the request
+                // data: {
+                //   'authorization_id': auth,
+                //   'note_date': value
+                // },
                 success: function (data) {   // `data` is the return of the `get_sip_plans` view function
                   if (data.result == 'true') {
                       document.getElementById("submit").disabled = false;
