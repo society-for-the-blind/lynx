@@ -544,7 +544,7 @@ def get_hour_validation(request): #check if they are entering more hours then al
     for note in note_list:
         if note.billed_units:
             units = float(note.billed_units)
-            total_units += unitsad
+            total_units += units
     total_used = units_to_hours(total_units)
     if total_used is None or len(str(total_used)) == 0:
         total_used = 0
