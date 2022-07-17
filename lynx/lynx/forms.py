@@ -1,8 +1,5 @@
 from django import forms
-from django.db.models.functions import Lower, Coalesce
-from django.utils.translation import gettext_lazy
-from django.core.exceptions import ValidationError
-from django.utils.translation import gettext_lazy as _
+from django.db.models.functions import Lower
 
 from .models import Contact, Address, Intake, Email, Phone, SipPlan, IntakeNote, EmergencyContact, Authorization, \
     ProgressReport, LessonNote, SipNote, Volunteer, UNITS, Document, Vaccine, Assignment
@@ -19,7 +16,6 @@ quarters = (("1", "Q1"), ("2", "Q2"), ("3", "Q3"), ("4", "Q4"))
 class ContactForm(forms.ModelForm):
     first_name = forms.CharField(widget=forms.TextInput(attrs={'aria-required': 'true'}))
     last_name = forms.CharField(widget=forms.TextInput(attrs={'aria-required': 'true'}))
-    # user = forms.CharField(widget=forms.HiddenInput())
 
     class Meta:
 
@@ -32,10 +28,9 @@ class ContactForm(forms.ModelForm):
 
 
 class IntakeForm(forms.ModelForm):
-    # intake_date = forms.CharField(widget=forms.DateInput(attrs={'aria-required': 'true'}))
     intake_date = forms.DateField(widget=forms.DateInput(format='%m/%d/%Y'), input_formats=('%m/%d/%Y', '%Y-%m-%d', ))
-    class Meta:
 
+    class Meta:
         model = Intake
         exclude = ('contact', 'created', 'modified', 'user')
 
@@ -119,8 +114,6 @@ class IntakeNoteForm(forms.ModelForm):
 
 
 class AuthorizationForm(forms.ModelForm):
-    # start_date = forms.DateField(widget=forms.SelectDateWidget(empty_label="Nothing"))
-    # end_date = forms.DateField(widget=forms.SelectDateWidget(empty_label="Nothing"))
 
     class Meta:
 
@@ -158,7 +151,7 @@ class LessonNoteForm(forms.ModelForm):
     total_time = forms.CharField(required=False)
     total_used = forms.CharField(required=False)
     billed_units = forms.ChoiceField(choices=UNITS, widget=forms.Select(attrs={"onChange": 'checkHours(this)'}))
-    # date = forms.CharField(widget=forms.CharField(attrs={"onChange": 'checkDate(this)'}))
+    date = forms.CharField(widget=forms.CharField(attrs={"onChange": 'checkDate(this)', "onLoad": 'checkDate(this)'}))
 
     class Meta:
         model = LessonNote
@@ -170,11 +163,6 @@ class LessonNoteForm(forms.ModelForm):
 
 
 class SipNoteForm(forms.ModelForm):
-    # currentYear = datetime.now().year
-    # oldYear = 2000
-    # highYear = currentYear + 2
-    #
-    # note_date = forms.DateField(widget=forms.SelectDateWidget(empty_label="Nothing", years=range(oldYear, highYear)))
     client_list = Contact.objects.filter(sip_client=1).order_by('last_name')
     clients = forms.ModelMultipleChoiceField(queryset=client_list, required=False)
 
@@ -200,7 +188,6 @@ class SipNoteForm(forms.ModelForm):
         self.fields['in_home'].label = "In-home training"
         self.fields['seminar'].label = "Training Seminar"
         self.fields['counseling'].label = "Adjustment Counseling"
-        # self.fields['modesto'].label = "Modesto training site"
         self.fields['group'].label = "Support group(s)"
         self.fields['community'].label = "Community Integration"
         self.fields['class_hours'].label = "Class Length"
@@ -209,11 +196,6 @@ class SipNoteForm(forms.ModelForm):
 
 
 class SipNoteBulkForm(forms.ModelForm):
-    # currentYear = datetime.now().year
-    # oldYear = 2000
-    # highYear = currentYear + 2
-    #
-    # note_date = forms.DateField(widget=forms.SelectDateWidget(empty_label="Nothing", years=range(oldYear, highYear)))
     client_list = Contact.objects.filter(sip_client=1).order_by('last_name')
     clients = forms.ModelMultipleChoiceField(queryset=client_list, required=False)
 
@@ -240,14 +222,9 @@ class SipNoteBulkForm(forms.ModelForm):
         self.fields['class_hours'].label = "Class Length"
         self.fields['instructor'].label = "Instructor"
         self.fields['sip_plan'].label = "SIP Plan"
-        # self.fields['sip_plan'].required = True
 
 
 class SipPlanForm(forms.ModelForm):
-    # currentYear = datetime.now().year
-    # oldYear = 2015
-    # highYear = currentYear + 1
-
     types = (("Retreat", "Retreat"), ("In-home", "In-home"), ("Support Group", "Support Group"),
               ("Training Seminar", "Training Seminar"), ("Workshop", "Workshop"),
              ("Community Integration", "Community Integration"))
@@ -389,12 +366,6 @@ class AssignmentForm(forms.ModelForm):
         model = Assignment
         exclude = ('created', 'modified', 'user', 'assignment_date')
 
-    # def __init__(self, *args, **kwargs):
-    #     super(VaccineForm, self).__init__(*args, **kwargs)
-    #     self.fields['vaccine'].label = "Type"
-    #     self.fields['vaccination_date'].label = "Date"
-    #     self.fields['vaccine_note'].label = "Notes"
-
 
 # This will not work past 2099 ;)
 def get_fiscal_year(year):
@@ -451,4 +422,3 @@ def filter_units(authorization_id): #remove any selections that would take instr
             choices_dictionary[key] = value
 
     return choices_dictionary
-

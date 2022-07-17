@@ -79,7 +79,7 @@
                 <td></td>
         </tr>
     </table>
-{% if remaining_hours <= 0 %}
+{% if remaining_hours <= 0 or auth_ended %}
 <input type="button" onclick="location.href='/lynx/add-lesson-note/{{ object.id }}/';" value="Add Lesson Note" disabled/>
 {% else %}
 <input type="button" onclick="location.href='/lynx/add-lesson-note/{{ object.id }}/';" value="Add Lesson Note" />
