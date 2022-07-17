@@ -28,6 +28,7 @@
         function checkDate(selectObject) {
             var value = selectObject.value;
             var auth = document.getElementById('authorization').value;
+            console.log(value, auth);
 
             $.ajax({                       // initialize an AJAX request
                 url: "/lynx/get-date-validation/",                    // set the url of the request
