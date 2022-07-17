@@ -559,6 +559,7 @@ def get_hour_validation(request, authorization_id, billed_units): #check if they
 def get_date_validation(request, authorization_id, note_date): #check if they are entering a lesson note after the authorization authorization
     authorization = Authorization.objects.get(id=authorization_id)
     auth_date = authorization.end_date
+    auth_date = auth_date.strftime("%m-%d-%Y")
 
     if note_date > auth_date:
         return JsonResponse({"result": 'false'})
