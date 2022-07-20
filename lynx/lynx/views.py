@@ -1187,12 +1187,11 @@ class SipPlanUpdateView(LoginRequiredMixin, UpdateView):
         ats = True
         outcomes = True
         for note in notes:
-            if note.orientation or note.communications or note.dls or note.advocacy or note.counseling or \
-                    note.information or note.services or note.support:
+            if note.orientation or note.communications or note.dls or note.advocacy or note.counseling or note.information or note.services or note.support:
                 ils = False
             if note.at_devices or note.at_services:
                 ats = False
-        if ils or ats:
+        if not ils or not ats:
             outcomes = False
         form = super().get_form(form_class=form_class)
         form.fields['at_services'].label = "Assistive Technology Devices and Services"
