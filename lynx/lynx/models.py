@@ -293,7 +293,7 @@ class Intake(models.Model):
     training_preferences = models.TextField(blank=True, null=True)
     other = models.TextField(blank=True, null=True)
     eye_condition = models.CharField(max_length=250, blank=True, null=True, choices=CONDITIONS)
-    secondary_eye_condition = models.CharField(max_length=250, blank=True, null=True)
+    secondary_eye_condition = models.CharField(max_length=400, blank=True, null=True)
     eye_condition_date = models.DateField(null=True, blank=True)
     degree = models.CharField(max_length=250, blank=True, choices=DEGREE, null=True)
     prognosis = models.CharField(max_length=250, blank=True, choices=PROGNOSIS, null=True)
@@ -355,6 +355,7 @@ class Intake(models.Model):
     position = models.CharField(max_length=250, blank=True, null=True)
     hire_date = models.DateField(blank=True, null=True)
     history = HistoricalRecords()
+    updated = models.DateTimeField(auto_now=True, auto_now_add=True)
 
     def get_absolute_url(self):
         return "/lynx/client/%i" % self.contact_id
