@@ -355,7 +355,7 @@ class Intake(models.Model):
     position = models.CharField(max_length=250, blank=True, null=True)
     hire_date = models.DateField(blank=True, null=True)
     history = HistoricalRecords()
-    updated = models.DateTimeField(auto_now=True)
+    updated = models.DateTimeField(auto_now=True, null=True)
 
     def get_absolute_url(self):
         return "/lynx/client/%i" % self.contact_id
