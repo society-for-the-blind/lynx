@@ -1350,6 +1350,15 @@ class AssignmentDeleteView(LoginRequiredMixin, DeleteView):
         client_id = self.kwargs['client_id']
         return reverse_lazy('lynx:client', kwargs={'pk': client_id})
 
+
+class DocumentDeleteView(LoginRequiredMixin, DeleteView):
+    model = Document
+
+    def get_success_url(self):
+        client_id = self.kwargs['client_id']
+        return reverse_lazy('lynx:client', kwargs={'pk': client_id})
+
+
 @login_required
 def billing_report(request):
     form = BillingReportForm()

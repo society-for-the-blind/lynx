@@ -74,6 +74,7 @@ urlpatterns = [
     path('contact-confirm/<int:pk>', views.ContactDeleteView.as_view(), name='contact-delete'),
     path('volunteer-hour-confirm/<int:pk>', views.VolunteerHourDeleteView.as_view(), name='contact-delete'),
     path('assignment-confirm/<int:pk>/<int:client_id>', views.AssignmentDeleteView.as_view(), name='assignment-delete'),
+    path('document-confirm/<int:pk>/<int:client_id>', views.DocumentDeleteView.as_view(), name='document-delete'),
     path('client-search', views.client_result_view, name='client_search'),
     path('client-advanced-search', views.client_advanced_result_view, name='client_advanced_search'),
     path('report-search', views.progress_result_view, name='report_search'),

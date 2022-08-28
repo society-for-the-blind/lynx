@@ -17,6 +17,7 @@
 <input type="button" class="btn btn-success" aria-label="Jump to Client Notes" onclick="location.href='#notes';" value="Jump to Client Notes" />
 <input type="button" class="btn btn-success" aria-label="Jump to File Upload" onclick="location.href='#upload';" value="Jump to File Upload" />
 {% endif %}
+{% endif %}
 <br>
 <h2>Client Information</h2>
 <p class="tab"><strong>Name:</strong> {{ object.first_name }} {% if object.middle_name %}{{ object.middle_name }} {% endif %}{{ object.last_name }}</p>
@@ -249,9 +250,9 @@
 <ul>
     {% for doc in document_list %}
         {% if doc.description %}
-            <li><a href='/lynx/download/{{ doc.document }}' download>{{ doc.description }}</a></li>
+    <li><a href='/lynx/download/{{ doc.document }}' download>{{ doc.description }}</a>  {% if user.is_superuser %}<input type="button" aria-label="Delete Document {{doc.document}}" class="btn btn-danger" onclick="location.href='/lynx/document-confirm/{{ object.id }}/{{object.pk}}';" value="Delete Document" /> {% endif %}</li>
         {% else %}
-            <li><a href='/lynx/download/{{ doc.document }}' download>No title</a></li>
+            <li><a href='/lynx/download/{{ doc.document }}' download>No title</a> {% if user.is_superuser %}<input type="button" aria-label="Delete Document {{doc.document}}" class="btn btn-danger" onclick="location.href='/lynx/document-confirm/{{ object.id }}/{{object.pk}}';" value="Delete Document" /> {% endif %}</li>
         {% endif %}
     {% empty %}
         <li><p class="tab">Sorry, no files uploaded for this client</p></li>
