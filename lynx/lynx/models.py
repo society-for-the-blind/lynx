@@ -44,7 +44,8 @@ COUNTIES = (("Alameda", "Alameda"), ("Alpine", "Alpine"), ("Amador", "Amador"), 
           ("Tehama", "Tehama"), ("Trinity", "Trinity"), ("Tulare", "Tulare"), ("Tuolumne", "Tuolumne"),
           ("Ventura", "Ventura"), ("Yolo", "Yolo"), ("Yuba", "Yuba"), ("Other/None", "Other/None"))
 
-REGIONS = (("Chico", "Chico"), ("Diablo", "Diablo"), ("Fresno", "Fresno"), ("Sacramento", "Sacramento"), ("Other", "Other"))
+REGIONS = (("Chico", "Chico"), ("Diablo", "Diablo"), ("Fresno", "Fresno"), ("Sacramento", "Sacramento"),
+           ("Other", "Other"))
 
 GENDERS = (("Female", "Female"), ("Male", "Male"), ("Non-Binary", "Non-Binary"),
            ("Gender Non-Conforming", "Gender Non-Conforming"), ("Other (in notes)", "Other (in notes)"),
@@ -81,20 +82,21 @@ LANGUAGES = (("English", "English"), ("Armenian", "Armenian"), ("Arabic", "Arabi
              ("Thai (laotian)", "Thai (laotian)"), ("Turkish", "Turkish"), ("Ukrainian", "Ukrainian"),
              ("Vietnamese", "Vietnamese"))
 
-EDUCATION = (("None", "None"), ("Less than High School", "Less than High School"), ("GED", "GED"), ("High School", "High School"),
-             ("Associates", "Associates"), ("Bachelors", "Bachelors"), ("Masters", "Masters"), ("Doctorate", "Doctorate"))
+EDUCATION = (("None", "None"), ("Less than High School", "Less than High School"), ("GED", "GED"),
+             ("High School", "High School"), ("Associates", "Associates"), ("Bachelors", "Bachelors"),
+             ("Masters", "Masters"), ("Doctorate", "Doctorate"))
 
 PRONOUNS = (("He/Him", "He/Him"), ("She/Her", "She/Her"), ("They/Them", "They/Them"), ("Ve/Ver", "Ve/Ver"),
             ("Xe/Xim", "Xe/Xim"), ("Ze/Hir", "Ze/Hir"), ("Other (in notes)", "Other (in notes)"))
 
-UNITS = (("0", "0 Minutes"), ("1", "15 Minutes"), ("2", "30 Minutes"), ("3", "45 Minutes"), ("4", "1 Hour"), ("5", "1 Hour 15 Minutes"),
-         ("6", "1 Hour 30 Minutes"), ("7", "1 Hour 45 Minutes"), ("8", "2 Hours"), ("9", "2 Hours 15 Minutes"),
-         ("10", "2 Hours 30 Minutes"), ("11", "2 Hours 45 Minutes"), ("12", "3 Hours"), ("13", "3 Hours 15 Minutes"),
-         ("14", "3 Hours 30 Minutes"), ("15", "3 Hours 45 Minutes"), ("16", "4 Hours"), ("17", "4 Hours 15 Minutes"),
-         ("18", "4 Hours 30 Minutes"), ("19", "4 Hours 45 Minutes"), ("20", "5 Hours"), ("21", "5 Hours 15 Minutes"),
-         ("22", "5 Hours 30 Minutes"), ("23", "5 Hours 45 Minutes"), ("24", "6 Hours"), ("25", "6 Hours 15 Minutes"),
-         ("26", "6 Hours 30 Minutes"), ("27", "6 Hours 45 Minutes"), ("28", "7 Hours"), ("29", "7 Hours 15 Minutes"),
-         ("30", "7 Hours 30 Minutes"), ("31", "7 Hours 45 Minutes"), ("32", "8 Hours"))
+UNITS = (("0", "0 Minutes"), ("1", "15 Minutes"), ("2", "30 Minutes"), ("3", "45 Minutes"), ("4", "1 Hour"),
+         ("5", "1 Hour 15 Minutes"), ("6", "1 Hour 30 Minutes"), ("7", "1 Hour 45 Minutes"), ("8", "2 Hours"),
+         ("9", "2 Hours 15 Minutes"), ("10", "2 Hours 30 Minutes"), ("11", "2 Hours 45 Minutes"), ("12", "3 Hours"),
+         ("13", "3 Hours 15 Minutes"), ("14", "3 Hours 30 Minutes"), ("15", "3 Hours 45 Minutes"), ("16", "4 Hours"),
+         ("17", "4 Hours 15 Minutes"), ("18", "4 Hours 30 Minutes"), ("19", "4 Hours 45 Minutes"), ("20", "5 Hours"),
+         ("21", "5 Hours 15 Minutes"), ("22", "5 Hours 30 Minutes"), ("23", "5 Hours 45 Minutes"), ("24", "6 Hours"),
+         ("25", "6 Hours 15 Minutes"), ("26", "6 Hours 30 Minutes"), ("27", "6 Hours 45 Minutes"), ("28", "7 Hours"),
+         ("29", "7 Hours 15 Minutes"), ("30", "7 Hours 30 Minutes"), ("31", "7 Hours 45 Minutes"), ("32", "8 Hours"))
 
 SIP_UNITS = ((.25, "15 Minutes"), (.5, "30 Minutes"), (.75, "45 Minutes"), (1, "1 Hour"), (1.25, "1 Hour 15 Minutes"),
          (1.5, "1 Hour 30 Minutes"), (1.75, "1 Hour 45 Minutes"), (2, "2 Hours"), (2.25, "2 Hours 15 Minutes"),
@@ -111,16 +113,12 @@ SALUTATIONS = (("Mr.", "Mr."), ("Mrs.", "Mrs."), ("Miss", "Miss"), ("Ms.", "Ms."
 AGES = (("Less than 54", "Less than 54"), ("55-64", "55-64"), ("65-74", "65-74"), ("75-84", "75-84"),
         ("85 and older", "85 and older"))
 
-TASKS = (('Visually', 'Visually'), ('Non-Visually', 'Non-Visually'), ('Both Visually and Non-Visually', 'Both Visually and Non-Visually'))
+TASKS = (('Visually', 'Visually'), ('Non-Visually', 'Non-Visually'),
+         ('Both Visually and Non-Visually', 'Both Visually and Non-Visually'))
 
-CONDITIONS = (('Cataracts', 'Cataracts'), ('Cone Rod Dystrophy', 'Cone Rod Dystrophy'),
-              ('Diabetic Retinopathy', 'Diabetic Retinopathy'), ('Glaucoma', 'Glaucoma'), ('Keratoconus','Keratoconus'),
-              ('Leber Hereditary Optic Neuropathy (LHON)', 'Leber Hereditary Optic Neuropathy (LHON)'),
-              ('Macular Degeneration', 'Macular Degeneration'), ('Ocular Albinism', 'Ocular Albinism'),
-              ('Optic Nerve Hypoplasia', 'Optic Nerve Hypoplasia'), ('Retinitis Pigmentosa (RP)', 'Retinitis Pigmentosa (RP)'),
-              ('Retinopathy of Prematurity(ROP)', 'Retinopathy of Prematurity(ROP)'), ('Stargardt Disease', 'Stargardt Disease'),
-              ('Stroke-related', 'Stroke-related'), ('Trauma or injury', 'Trauma or injury'), ('Uveitis', 'Uveitis'),
-              ('Other', 'Other'))
+CONDITIONS = (('Cataracts', 'Cataracts'), ('Diabetic Retinopathy', 'Diabetic Retinopathy'), ('Glaucoma', 'Glaucoma'),
+              ('Macular Degeneration', 'Macular Degeneration'),
+              ('Other causes of visual impairment', 'Other causes of visual impairment'))
 
 
 def get_sentinel_user():
@@ -173,7 +171,13 @@ class Email (models.Model):
     active = models.BooleanField(blank=True, default=False)
     created = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='contact_emails', null=True, blank=True, on_delete=models.SET(get_sentinel_user))
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        related_name='contact_emails',
+        null=True,
+        blank=True,
+        on_delete=models.SET(get_sentinel_user)
+    )
     history = HistoricalRecords()
 
     def get_absolute_url(self):
@@ -257,8 +261,8 @@ class Intake(models.Model):
                ("Family or Friend", "Family or Friend"), ("Senior Program", "Senior Program"),
                ("Assisted Living Facility", "Assisted Living Facility"), ("Nursing Home", "Nursing Home"),
                ("Independent Living Center", "Independent Living Center"), ("Self-Referral", "Self-Referral"),
-               ("Physician/ Medical Provider", "Physician/ Medical Provider"), ("Eye Care Provider", "Eye Care Provider"),
-               ("Other", "Other"))
+               ("Physician/ Medical Provider", "Physician/ Medical Provider"),
+               ("Eye Care Provider", "Eye Care Provider"), ("Other", "Other"))
 
     contact = models.ForeignKey('Contact', on_delete=models.CASCADE)
     intake_date = models.DateField(default=date.today)
@@ -298,7 +302,13 @@ class Intake(models.Model):
     degree = models.CharField(max_length=250, blank=True, choices=DEGREE, null=True)
     prognosis = models.CharField(max_length=250, blank=True, choices=PROGNOSIS, null=True)
     referred_by = models.CharField(max_length=250, blank=True, choices=REFERER, null=True)
-    payment_source = models.ForeignKey('Contact', on_delete=models.CASCADE, blank=True, null=True, related_name='intake_outside_agent')
+    payment_source = models.ForeignKey(
+        'Contact',
+        on_delete=models.CASCADE,
+        blank=True,
+        null=True,
+        related_name='intake_outside_agent'
+    )
     diabetes = models.BooleanField(blank=True, default=False)
     diabetes_notes = models.CharField(max_length=255, blank=True, null=True)
     dialysis = models.BooleanField(blank=True, default=False)
@@ -394,10 +404,21 @@ class EmergencyContact(models.Model):
 
 class Authorization(models.Model):
     contact = models.ForeignKey('Contact', on_delete=models.CASCADE)
-    outside_agency = models.ForeignKey('Contact', on_delete=models.CASCADE, blank=True, null=True, related_name='outside_agent')
+    outside_agency = models.ForeignKey(
+        'Contact',
+        on_delete=models.CASCADE,
+        blank=True,
+        null=True,
+        related_name='outside_agent'
+    )
     intake_service_area = models.ForeignKey('IntakeServiceArea', on_delete=models.CASCADE)
     authorization_number = models.CharField(max_length=150, blank=True, null=True)
-    authorization_type = models.CharField(max_length=25, choices=(("Hours", "Hours"), ("Classes", "Classes")), blank=True, null=True)
+    authorization_type = models.CharField(
+        max_length=25,
+        choices=(("Hours", "Hours"), ("Classes", "Classes")),
+        blank=True,
+        null=True
+    )
     start_date = models.DateField(blank=True, null=True, default=date.today)
     end_date = models.DateField(blank=True, null=True, default=date.today)
     total_time = models.CharField(max_length=150, blank=True, null=True)
@@ -443,18 +464,6 @@ class IntakeServiceArea(models.Model):
         return self.agency
 
 
-# class BillingName(models.Model):
-#     agency = models.CharField(max_length=150, blank=True, null=True)
-#     cost = models.CharField(max_length=50, blank=True, null=True)
-#     active = models.BooleanField(blank=True, default=False)
-#     created = models.DateTimeField(auto_now_add=True, null=True)
-#     modified = models.DateTimeField(auto_now=True, null=True)
-#     user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET(get_sentinel_user))
-#
-#     def __str__(self):
-#         return '%s ($%s)' % (self.agency, self.cost)
-
-
 class ProgressReport(models.Model):
     month = models.CharField(max_length=25, choices=MONTHS, blank=True, null=True)
     year = models.CharField(max_length=25, blank=True, null=True)
@@ -479,7 +488,17 @@ class ProgressReport(models.Model):
 class LessonNote(models.Model):
     authorization = models.ForeignKey('Authorization', on_delete=models.CASCADE, related_name='lesson')
     date = models.DateField(default=date.today, null=True)
-    attendance = models.CharField(max_length=150, blank=True, choices=(('Present', 'Present'), ('Absent', 'Absent'), ('Other', 'Other')), null=True, default='Present')
+    attendance = models.CharField(
+        max_length=150,
+        blank=True,
+        choices=(
+            ('Present', 'Present'),
+            ('Absent', 'Absent'),
+            ('Other', 'Other')
+        ),
+        null=True,
+        default='Present'
+    )
     instructional_units = models.CharField(max_length=15, blank=True, null=True)
     billed_units = models.CharField(max_length=50, blank=True, choices=UNITS, null=True)
     students_no = models.CharField(max_length=15, blank=True, null=True)
@@ -554,10 +573,14 @@ class Volunteer(models.Model):
 
 class SipPlan(models.Model):
     PLANS = (("Plan not complete", "Plan not complete"),
-             ("Plan complete, feeling more confident in ability to maintain living situation", "Plan complete, feeling more confident in ability to maintain living situation"),
-             ("Plan complete, no difference in ability to maintain living situation", "Plan complete, no difference in ability to maintain living situation"),
-             ("Plan complete, feeling less confident in ability to maintain living situation", "Plan complete, feeling less confident in ability to maintain living situation"))
-    ASSESSMENTS = (("Not assessed", "Not assessed"), ("Assessed with improved independence", "Assessed with improved independence"),
+             ("Plan complete, feeling more confident in ability to maintain living situation",
+              "Plan complete, feeling more confident in ability to maintain living situation"),
+             ("Plan complete, no difference in ability to maintain living situation",
+              "Plan complete, no difference in ability to maintain living situation"),
+             ("Plan complete, feeling less confident in ability to maintain living situation",
+              "Plan complete, feeling less confident in ability to maintain living situation"))
+    ASSESSMENTS = (("Not assessed", "Not assessed"), ("Assessed with improved independence",
+                                                      "Assessed with improved independence"),
                    ("Assessed and maintained independence", "Assessed and maintained independence"),
                    ("Assessed with decreased independence", "Assessed with decreased independence"))
     contact = models.ForeignKey('Contact', on_delete=models.CASCADE)
@@ -574,8 +597,20 @@ class SipPlan(models.Model):
     plan_name = models.CharField(max_length=100, null=True, blank=True)
     plan_date = models.DateField(blank=True, null=True)
     support_services = models.BooleanField(blank=True, default=False)
-    living_plan_progress = models.CharField(max_length=150, choices=PLANS, blank=True, null=True, default="Plan not complete")
-    community_plan_progress = models.CharField(max_length=150, choices=PLANS, blank=True, null=True, default="Plan not complete")
+    living_plan_progress = models.CharField(
+        max_length=150,
+        choices=PLANS,
+        blank=True,
+        null=True,
+        default="Plan not complete"
+    )
+    community_plan_progress = models.CharField(
+        max_length=150,
+        choices=PLANS,
+        blank=True,
+        null=True,
+        default="Plan not complete"
+    )
     at_outcomes = models.CharField(max_length=150, choices=ASSESSMENTS, blank=True, null=True, default="Not assessed")
     ila_outcomes = models.CharField(max_length=150, choices=ASSESSMENTS, blank=True, null=True, default="Not assessed")
     created = models.DateTimeField(auto_now_add=True, null=True)
@@ -594,7 +629,8 @@ class ContactInfoView(pg.View):
     sql = """SELECT c.id, concat(last_name, ', ', first_name) AS full_name, first_name, last_name, a.county, a.zip_code,
          REPLACE (REPLACE(REPLACE(REPLACE(p.phone, ' ', ''), '-', ''), ')', ''), '(', '') as phone, e.email,
          i.intake_date, i.age_group, a.address_one, a.address_two, a.suite, a.city, a.state, a.bad_address, 
-         c.do_not_contact, c.deceased, c.remove_mailing, a.region, phone as full_phone, c.active, c.sip_client, c.core_client
+         c.do_not_contact, c.deceased, c.remove_mailing, a.region, phone as full_phone, c.active, c.sip_client, 
+         c.core_client
         FROM lynx_contact AS c
         LEFT JOIN lynx_intake AS i ON c.id = i.contact_id
         LEFT JOIN lynx_address AS a ON a.contact_id = c.id
@@ -656,7 +692,6 @@ class Vaccine(models.Model):
 class Assignment(models.Model):
     contact = models.ForeignKey('Contact', on_delete=models.CASCADE)
     instructor = models.ForeignKey(User, on_delete=models.CASCADE, related_name='instructors')
-    # instructor = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='instructors')
     assignment_date = models.DateField(auto_now=True, null=True)
     note = models.TextField(blank=True, null=True)
     created = models.DateTimeField(auto_now_add=True, null=True)
