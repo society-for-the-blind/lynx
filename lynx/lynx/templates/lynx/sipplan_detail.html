@@ -45,7 +45,6 @@
        <div class="row">
             <div class="col-1"></div>
             <div class="col-12"><a href='/lynx/sip-note-edit/{{ sip.id }}?contact_id={{ sip.contact_id }}&plan_id={{ sip.sip_plan_id }}'>Edit {{ sip.note_date|date:'F j, Y' }}</a></div>
-
         </div>
         <div class="row">
             <div class="col-1"></div>
@@ -58,10 +57,6 @@
             <div class="col-1"></div>
             <div class="col-11"><strong>Services: </strong>{% if sip.at_services or sip.at_devices %}Assistive Technology Devices and Services, {% endif %}{% if sip.independent_living %}Independent Living and Adjustment Services, {% endif %}{% if sip.orientation %}Orientation & Mobility Training, {% endif %}{% if sip.communications %}Communication Skills Training, {% endif %}{% if sip.dls %}Daily Living Skills Training, {% endif %}{% if sip.advocacy %}Advocacy Training, {% endif %}{% if sip.counseling %}Adjustment Counseling, {% endif %}{% if sip.information %}Information and Referral, {% endif %}{% if sip.other_services %}Other IL/A services, {% endif %}{% if sip.support_services %}Supportive Services {% endif %}</div>
         </div>
-<!--        <div class="row">-->
-<!--            <div class="col-1"></div>-->
-<!--            <div class="col-11"><strong>Service Delivery: </strong>{% if sip.retreat %}Retreat, {% endif %}{% if sip.in_home %}In-home Training, {% endif %}{% if sip.seminar %}Training Seminar, {% endif %}{% if sip.modesto %}Modesto training site, {% endif %}{% if sip.group %}Support group(s), {% endif %}{% if sip.community %}Community Integration{% endif %}</div>-->
-<!--        </div>-->
         {% empty %}
         <div class="row">
             <div class="col-1"></div>

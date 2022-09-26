@@ -1187,7 +1187,8 @@ class SipPlanUpdateView(LoginRequiredMixin, UpdateView):
         ats = True
         outcomes = True
         for note in notes:
-            if note.orientation or note.communications or note.dls or note.advocacy or note.counseling or note.information or note.services or note.support:
+            if note.orientation or note.communications or note.dls or note.advocacy or note.counseling \
+                    or note.information or note.services or note.support:
                 ils = False
             if note.at_devices or note.at_services:
                 ats = False
@@ -1209,6 +1210,7 @@ class SipPlanUpdateView(LoginRequiredMixin, UpdateView):
         form.fields['community_plan_progress'].label = "Home and Community involvement Outcomes"
         form.fields['at_outcomes'].label = "AT Goal Outcomes"
         form.fields['ila_outcomes'].label = "IL/A Service Goal Outcomes"
+
         form.fields['at_outcomes'].disabled = ats
         form.fields['ila_outcomes'].disabled = ils
         form.fields['living_plan_progress'].disabled = outcomes
@@ -2213,12 +2215,12 @@ def get_volunteers(request):
 
 def is_assessed(ila_outcomes, at_outcomes):
     ila_assessed = False
-    at_assessed = True
+    at_assessed = False
     if ila_outcomes and ila_outcomes != "Not assessed":
         ila_assessed = True
     if at_outcomes and at_outcomes != "Not assessed":
         at_assessed = True
-    if at_assessed == True and ila_assessed == True:
-       return "Assessed"
+    if at_assessed and ila_assessed:
+        return "Assessed"
     else:
         return "Not Assessed"
