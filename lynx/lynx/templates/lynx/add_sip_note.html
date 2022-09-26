@@ -16,6 +16,10 @@
         $("#id_note_date_day").val(thisDay);
     });
 
+    function setDate(selectObject) {
+        document.getElementById('id_note_date').value = new Date().toISOString().slice(0, 10);
+    }
+
 </script>
 {% endblock %}
 

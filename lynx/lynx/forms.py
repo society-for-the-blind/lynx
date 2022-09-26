@@ -165,6 +165,7 @@ class LessonNoteForm(forms.ModelForm):
 class SipNoteForm(forms.ModelForm):
     client_list = Contact.objects.filter(sip_client=1).order_by('last_name')
     clients = forms.ModelMultipleChoiceField(queryset=client_list, required=False)
+    date = forms.CharField(widget=forms.TextInput(attrs={"onCLick": 'setDate(this)'}))
 
     class Meta:
         model = SipNote
