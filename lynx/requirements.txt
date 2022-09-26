@@ -1,21 +1,59 @@
-On Ubuntu 18.0.4 run these commands to install all required packages.
-
-sudo apt update
-sudo apt-get install git
-sudo apt-get install python3
-sudo apt install python3-pip
-sudo pip3 install Django==2.1.5
-sudo pip3 install psycopg2-binary
-sudo pip3 install --upgrade django-crispy-forms
-sudo pip3 install django-debug-toolbar
-sudo pip3 install django-tables2
-sudo pip3 install openpyxl
-sudo pip3 install django-mathfilters
-sudo pip3 install django-audit-log
-sudo pip3 install django-reversion
-sudo pip3 install django-simple-history
-sudo pip3 install django-crontab
-
-sudo apt-get install postgresql postgresql-contrib
-sudo update-rc.d postgresql enable
-sudo service postgresql start
+acme==0.31.0
+asgiref==3.3.0
+asn1crypto==0.24.0
+attrs==17.4.0
+Automat==0.6.0
+blinker==1.4
+certbot==0.31.0
+certbot-nginx==0.31.0
+certifi==2018.1.18
+chardet==3.0.4
+click==6.7
+cryptography==2.1.4
+Django==2.2.17
+django-appconf==1.0.5
+django-audit-log==0.7.0
+django-crispy-forms==1.8.0
+django-crontab==0.7.1
+django-debug-toolbar==2.1
+django-filter==2.4.0
+django-mathfilters==1.0.0
+django-pgviews-redux==0.6.1
+django-reversion==3.0.8
+django-simple-history==2.12.0
+django-tables2==2.2.0
+django-user-accounts==3.0.4
+et-xmlfile==1.0.1
+future==0.15.2
+gunicorn==20.0.4
+httplib2==0.9.2
+hyperlink==17.3.1
+idna==2.6
+incremental==16.10.1
+jdcal==1.4.1
+Jinja2==2.10
+josepy==1.1.0
+jsonpatch==1.16
+jsonpointer==1.10
+jsonschema==2.6.0
+keyring==10.6.0
+keyrings.alt==3.0
+mock==2.0.0
+ndg-httpsclient==0.4.4
+netifaces==0.10.4
+oauthlib==2.0.6
+openpyxl==3.0.4
+psycopg2-binary==2.8.4
+pycrypto==2.6.1
+pyserial==3.4
+pytz==2021.1
+pyxdg==0.25
+PyYAML==3.12
+requests==2.18.4
+requests-toolbelt==0.8.0
+requests-unixsocket==0.1.5
+six==1.11.0
+sqlparse==0.3.0
+ssh-import-id==5.7
+urllib3==1.22
+virtualenv==16.7.9

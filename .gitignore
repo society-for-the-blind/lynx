@@ -5,3 +5,7 @@ lynx/lynx/__pycache__/
 lynx/lynx/migrations/__pycache__/
 *.pyc
 lynx/mysite/settings.py
+lynx/lynx-debug.log
+.idea/*
+.idea/misc.xml
+.idea/slate-2.iml

@@ -514,6 +514,10 @@ class LessonNote(models.Model):
     def get_absolute_url(self):
         return "/lynx/authorization/%i" % self.authorization_id
 
+    # def save(self, *args, **kwargs):
+    #
+    #     super().save(*args, **kwargs)
+
 
 class SipNote(models.Model):
     contact = models.ForeignKey('Contact', on_delete=models.CASCADE)
