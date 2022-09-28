@@ -151,7 +151,8 @@ class LessonNoteForm(forms.ModelForm):
     total_time = forms.CharField(required=False)
     total_used = forms.CharField(required=False)
     billed_units = forms.ChoiceField(choices=UNITS, widget=forms.Select(attrs={"onChange": 'checkHours(this)'}))
-    date = forms.CharField(widget=forms.TextInput(attrs={"onChange": 'checkDate(this)', "onCLick": 'setDate(this)'}))
+    date = forms.CharField(widget=forms.TextInput(attrs={"onChange": 'checkDate(this)'}))
+    # date = forms.CharField(widget=forms.TextInput(attrs={"onChange": 'checkDate(this)', "onCLick": 'setDate(this)'}))
 
     class Meta:
         model = LessonNote
