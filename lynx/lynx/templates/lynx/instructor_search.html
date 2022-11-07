@@ -1,31 +1,63 @@
 {% extends 'lynx/base.html' %}
 
-{% block title %}Instructor Assignments{% endblock %}
-
-{% block javascript %}
-<script>
-    $(document).ready(function(){
-        $('#instructorSelect').change(function(){
-            var instructorId = document.getElementById("instructorSelect").value;
-            $('#viewInstructor').attr('action', '/lynx/instructor/' + instructorId);
-        });
-    });
-</script>
-{% endblock %}
+{% block title %}Assignments by Instructor{% endblock %}
 
 {% block content %}
     <h1>Assignments by Instructor</h1>
-
-    <form id='viewInstructor' action="">
-        <label for="instructorSelect">Select SIP Instructor: </label>
-        <select id="instructorSelect" >
-            <option value="">---------</option>
-            {% for instructor in instructors %}
-                <option value = "{{ instructor.id }}">{{ instructor.last_name }}, {{ instructor.first_name }}</option>
-            {% endfor %}
-        </select>
-        <br>
-        <input type="submit" value="View Assignments" />
+{% if not request.GET.print %}
+    <p>Search by client name, phone number, zip code, county, email address, or intake date.</p>
+    <p>Notes: Format any dates as yyyy-mm-dd, so March 15, 2020 would be 2020-03-15</p>
+    <form action="{% url 'lynx:instructors' %}" method="get">
+        <input name="q" type="text" placeholder="Search...">
+        <input type="submit" value="Search All Clients" />
     </form>
-<hr>
+    <hr>
+{% endif %}
+    <table class="table">
+        <tr>
+            <th scope="col">Assignment Date</th>
+            <th scope="col">Client</th>
+            <th scope="col">Notes</th>
+            <th scope="col">Instructor</th>
+            <th scope="col">Assigned By</th>
+            <th scope="col">Status</th>
+        </tr>
+        {% for client in page_obj %}
+            <tr>
+                <td>{{ client.intake_date }}</td>
+                <td><a href="client/{{ client.id }}">{{ client.last_name }}, {{ client.first_name }} {% if client.middle_name %}{{ client.middle_name }} {% endif %}</a></td>
+                <td>{{ client.notes }}</td>
+                <td>{{ client.instructor }}</td>
+                <td>{{ client.assigned_by }}</td>
+                <td>{{ client.status }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+
+<div class="pagination">
+    <span class="step-links">
+        {% if page_obj.has_previous %}
+            <a href="?page=1{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">&laquo; first</a>
+            <a href="?page={{ page_obj.previous_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">previous</a>
+        {% endif %}
+
+        <span class="current">
+            Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+        </span>
+
+        {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number}}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">next</a>
+            <a href="?page={{ page_obj.paginator.num_pages}}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">last &raquo;</a>
+        {% endif %}
+    </span>
+</div>
+
+{% if not request.GET.print %}
+<form action="/lynx/client-advanced-search" method="GET">
+  <input type="hidden" name="print" value="true" />
+  <input type="hidden" name="q" value="{{ request.GET.q }}" />
+  <input type="submit" value="Print View" class="btn btn-primary" />
+</form>
+{% endif %}
+
 {% endblock %}

@@ -84,7 +84,20 @@ def sipnote_list_view(request, client_id):
 
 @login_required
 def instructor_list_view(request):
+    query = request.GET.get('q')
     instructors = User.objects.filter(groups__name='SIP').order_by(Lower('last_name'))
+    if query:
+        instructor_list = User.objects.filter(groups__name='SIP').order_by(Lower('last_name'))
+        object_list = Contact.objects.filter(
+            Q(full_name__icontains=query) |
+            Q(first_name__icontains=query) |
+            Q(last_name__icontains=query)
+        )
+
+        object_list = object_list.order_by(Lower('last_name'), Lower('first_name'))
+    else:
+        object_list = None
+    # return render(request, 'lynx/client_search.html', {'object_list': object_list, 'clients': clients})
     return render(request, 'lynx/instructor_search.html', {'instructors': instructors})
 
 
@@ -2180,37 +2193,37 @@ def get_volunteers(request):
         volunteer_condensed = {}
     return render(request, 'lynx/contact_search.html', {'filter': f, 'volunteer_list': volunteer_condensed})
 
-    query = request.GET.get('q')
-    if query:
-        object_list = Contact.objects.annotate(
-            full_name=Concat('first_name', V(' '), 'last_name')
-        ).annotate(
-            zip_code=F('address__zip_code')
-        ).annotate(
-            county=F('address__county')
-        ).annotate(
-            intake_date=F('intake__intake_date')
-        ).annotate(
-            email_address=F('email__email')
-        ).filter(
-            Q(volunteer_check=1) & (
-                Q(first_name__icontains=query) |
-                Q(last_name__icontains=query) |
-                Q(zip_code__icontains=query) |
-                Q(county__icontains=query) |
-                Q(phone_number__icontains=query) |
-                Q(intake_date__icontains=query) |
-                Q(email_address__icontains=query)
-            )
-        )
-
-        object_list = object_list.order_by(Lower('last_name'), Lower('first_name'), 'id')
-        paginator = Paginator(object_list, 20)
-        page_number = request.GET.get('page')
-        page_obj = paginator.get_page(page_number)
-    else:
-        page_obj = None
-    return render(request, 'lynx/client_advanced_search.html', {'page_obj': page_obj})
+    # query = request.GET.get('q')
+    # if query:
+    #     object_list = Contact.objects.annotate(
+    #         full_name=Concat('first_name', V(' '), 'last_name')
+    #     ).annotate(
+    #         zip_code=F('address__zip_code')
+    #     ).annotate(
+    #         county=F('address__county')
+    #     ).annotate(
+    #         intake_date=F('intake__intake_date')
+    #     ).annotate(
+    #         email_address=F('email__email')
+    #     ).filter(
+    #         Q(volunteer_check=1) & (
+    #             Q(first_name__icontains=query) |
+    #             Q(last_name__icontains=query) |
+    #             Q(zip_code__icontains=query) |
+    #             Q(county__icontains=query) |
+    #             Q(phone_number__icontains=query) |
+    #             Q(intake_date__icontains=query) |
+    #             Q(email_address__icontains=query)
+    #         )
+    #     )
+    #
+    #     object_list = object_list.order_by(Lower('last_name'), Lower('first_name'), 'id')
+    #     paginator = Paginator(object_list, 20)
+    #     page_number = request.GET.get('page')
+    #     page_obj = paginator.get_page(page_number)
+    # else:
+    #     page_obj = None
+    # return render(request, 'lynx/client_advanced_search.html', {'page_obj': page_obj})
 
 
 def is_assessed(ila_outcomes, at_outcomes):
@@ -2224,3 +2237,24 @@ def is_assessed(ila_outcomes, at_outcomes):
         return "Assessed"
     else:
         return "Not Assessed"
+
+
+@login_required
+def assignment_advanced_result_view(request):
+    query = request.GET.get('q')
+    if query:
+        object_list = Assignment.objects.annotate(
+            instructor_name=Concat('contact__first_name', V(' '), 'contact__last_name')
+        ).filter(
+            Q(instructor_name__icontains=query) |
+            Q(status__icontains=query) |
+            Q(assignment_date__icontains=query)
+        )
+
+        object_list = object_list.order_by('assignment_date', 'status')
+        paginator = Paginator(object_list, 20)
+        page_number = request.GET.get('page')
+        page_obj = paginator.get_page(page_number)
+    else:
+        page_obj = None
+    return render(request, 'lynx/instructors.html', {'page_obj': page_obj})
