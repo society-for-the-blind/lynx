@@ -2257,4 +2257,4 @@ def assignment_advanced_result_view(request):
         page_obj = paginator.get_page(page_number)
     else:
         page_obj = None
-    return render(request, 'lynx/instructors.html', {'page_obj': page_obj})
+    return render(request, 'lynx/instructor_search.html', {'page_obj': page_obj})
