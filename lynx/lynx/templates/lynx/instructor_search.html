@@ -9,7 +9,7 @@
     <p>Notes: Format any dates as yyyy-mm-dd, so March 15, 2020 would be 2020-03-15</p>
     <form action="{% url 'lynx:instructors' %}" method="get">
         <input name="q" type="text" placeholder="Search...">
-        <input type="submit" value="Search All Clients" />
+        <input type="submit" value="Search Instructors" />
     </form>
     <hr>
 {% endif %}
@@ -24,7 +24,7 @@
         </tr>
         {% for client in page_obj %}
             <tr>
-                <td>{{ client.intake_date }}</td>
+                <td>{{ client.assignment_date }}</td>
                 <td><a href="client/{{ client.id }}">{{ client.last_name }}, {{ client.first_name }} {% if client.middle_name %}{{ client.middle_name }} {% endif %}</a></td>
                 <td>{{ client.notes }}</td>
                 <td>{{ client.instructor }}</td>

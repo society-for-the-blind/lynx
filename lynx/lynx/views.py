@@ -1,13 +1,13 @@
-from django.shortcuts import render, redirect, reverse
+from django.shortcuts import render, reverse
 from django.http import HttpResponse, HttpResponseRedirect, Http404, JsonResponse
-from django.views.generic import DetailView, ListView, FormView, DeleteView, TemplateView, CreateView
+from django.views.generic import DetailView, DeleteView, TemplateView
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.views.generic.edit import UpdateView
 from django.urls import reverse_lazy
 from django.db.models import Q, F
 from django.db.models import Value as V
-from django.db.models.functions import Concat, Replace, Lower, Coalesce
+from django.db.models.functions import Concat, Replace, Lower
 from django.db import connection
 from django.core.paginator import Paginator
 from django.conf import settings
@@ -16,10 +16,8 @@ from django.core.mail import send_mail
 
 import os
 import csv
-from datetime import datetime, timedelta
+from datetime import datetime
 import logging
-import smtplib
-import ssl
 
 from .models import Contact, Address, Phone, Email, Intake, IntakeNote, EmergencyContact, Authorization, \
     ProgressReport, LessonNote, SipNote, Volunteer, SipPlan, ContactInfoView, UNITS, Document, Vaccine, \
@@ -28,7 +26,7 @@ from .forms import ContactForm, IntakeForm, IntakeNoteForm, EmergencyForm, Addre
     AuthorizationForm, ProgressReportForm, LessonNoteForm, SipNoteForm, BillingReportForm, SipDemographicReportForm, \
     VolunteerForm, SipCSFReportForm, SipPlanForm, SipNoteBulkForm, DocumentForm, VolunteerHoursForm, \
     VolunteerReportForm, VaccineForm, AssignmentForm
-from .filters import ContactFilter
+from .filters import AssignmentFilter, ContactFilter
 
 logger = logging.getLogger(__name__)
 
@@ -277,38 +275,8 @@ def add_assignments(request, contact_id):
     return render(request, 'lynx/add_assignments.html', {'form': form, 'instructors': instructors, 'contact_id': contact_id})
 
 
-# @login_required
-# def add_assignments(request, contact_id):
-#     form = AssignmentForm()
-#     instructors = User.objects.filter(groups__name='SIP').order_by(Lower('last_name'))
-#     contact = Contact.objects.get(id=contact_id)
-#     num_range = [1, 2, 3, 4, 5, 6, 7, 8, 9]
-#     if request.method == 'POST':
-#         form = AssignmentForm(request.POST)
-#         if form.is_valid():
-#             form = form.save(commit=False)
-#             form.instructor_id = request.POST.get('instructor_0')
-#             form.contact_id = contact_id
-#             form.user_id = request.user.id
-#             form.save()
-#             for i in num_range:
-#                 form.pk = None
-#                 instructor_str = "instructor_" + str(i)
-#                 if len(request.POST.get(instructor_str)) > 0:
-#                     form.instructor_id = request.POST.get(instructor_str)
-#                     form.contact_id = contact_id
-#                     form.user_id = request.user.id
-#                     form.save()
-#                 else:
-#                     continue
-#         return HttpResponseRedirect(reverse('lynx:contact_list'))
-#     return render(request, 'lynx/add_assignments.html',
-#                   {'form': form, 'instructors': instructors, 'contact_id': contact_id, 'contact': contact, 'num_range': num_range})
-
-
 def get_sip_plans(request):
     contact_id = request.GET.get('client_id')
-    # plans = SipPlan.objects.order_by('-sip_plan')
     plans = SipPlan.objects.filter(contact_id=contact_id).order_by('-plan_date')
     return render(request, 'lynx/sip_plan_list_options.html', {'plans': plans})
 
@@ -524,7 +492,6 @@ def add_lesson_note(request, authorization_id):
 
         if form.is_valid():
             form = form.save(commit=False)
-            # form.authorization_id = authorization_id
             form.user_id = request.user.id
             form.save()
             return HttpResponseRedirect(reverse('lynx:authorization_detail', args=(authorization_id,)))
@@ -2239,22 +2206,50 @@ def is_assessed(ila_outcomes, at_outcomes):
         return "Not Assessed"
 
 
+# @login_required
+# def assignment_advanced_result_view(request):
+#     query = request.GET.get('q')
+#     if query:
+#         object_list = Assignment.objects.annotate(
+#             instructor_name=Concat('contact__first_name', V(' '), 'contact__last_name')
+#         ).filter(
+#             Q(instructor_name__icontains=query) |
+#             Q(status__icontains=query) |
+#             Q(assignment_date__icontains=query)
+#         )
+#
+#         object_list = object_list.order_by('assignment_date', 'status')
+#         paginator = Paginator(object_list, 20)
+#         page_number = request.GET.get('page')
+#         page_obj = paginator.get_page(page_number)
+#     else:
+#         page_obj = None
+#     return render(request, 'lynx/instructor_search.html', {'page_obj': page_obj})
+
+
 @login_required
 def assignment_advanced_result_view(request):
-    query = request.GET.get('q')
-    if query:
-        object_list = Assignment.objects.annotate(
-            instructor_name=Concat('contact__first_name', V(' '), 'contact__last_name')
-        ).filter(
-            Q(instructor_name__icontains=query) |
-            Q(status__icontains=query) |
-            Q(assignment_date__icontains=query)
-        )
+    if request.method == 'GET':
+        strict = True
+        f = AssignmentFilter(request.GET, queryset=Assignment.objects.all().order_by('assignment_date'))
 
-        object_list = object_list.order_by('assignment_date', 'status')
-        paginator = Paginator(object_list, 20)
-        page_number = request.GET.get('page')
-        page_obj = paginator.get_page(page_number)
+        # assignment_condensed = {}
+        # for assignment in f.qs:
+        #     if assignment.id in assignment_condensed:
+        #         if assignment_condensed[assignment.id]['full_phone'] != assignment.full_phone and assignment.full_phone is not None:
+        #             assignment_condensed[assignment.id]['full_phone'] = assignment_condensed[assignment.id]['full_phone'] + ', ' + assignment.full_phone
+        #         if assignment_condensed[assignment.id]['email'] != assignment.email and assignment.email is not None:
+        #             assignment_condensed[assignment.id]['email'] = assignment_condensed[assignment.id]['email'] + ', ' + assignment.email
+        #         if assignment_condensed[assignment.id]['zip_code'] != assignment.zip_code and assignment.zip_code is not None:
+        #             assignment_condensed[assignment.id]['zip_code'] = assignment_condensed[assignment.id]['zip_code'] + ', ' + assignment.zip_code
+        #      else:
+        #         assignment_condensed[assignment.id] = {}
+        #         assignment_condensed[assignment.id]['full_phone'] = assignment.full_phone if assignment.full_phone is not None else ''
+        #         assignment_condensed[assignment.id]['full_name'] = assignment.full_name if assignment.full_name is not None else ''
+        #         assignment_condensed[assignment.id]['first_name'] = assignment.first_name if assignment.first_name is not None else ''
+        #         assignment_condensed[assignment.id]['last_name'] = assignment.last_name if assignment.last_name is not None else ''
+
     else:
-        page_obj = None
-    return render(request, 'lynx/instructor_search.html', {'page_obj': page_obj})
+        f = AssignmentFilter()
+        # assignment_condensed = {}
+    return render(request, 'lynx/instructor_search.html', {'filter': f, 'assignment_list': f})
