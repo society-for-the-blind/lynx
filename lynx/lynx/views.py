@@ -2206,50 +2206,25 @@ def is_assessed(ila_outcomes, at_outcomes):
         return "Not Assessed"
 
 
-# @login_required
-# def assignment_advanced_result_view(request):
-#     query = request.GET.get('q')
-#     if query:
-#         object_list = Assignment.objects.annotate(
-#             instructor_name=Concat('contact__first_name', V(' '), 'contact__last_name')
-#         ).filter(
-#             Q(instructor_name__icontains=query) |
-#             Q(status__icontains=query) |
-#             Q(assignment_date__icontains=query)
-#         )
-#
-#         object_list = object_list.order_by('assignment_date', 'status')
-#         paginator = Paginator(object_list, 20)
-#         page_number = request.GET.get('page')
-#         page_obj = paginator.get_page(page_number)
-#     else:
-#         page_obj = None
-#     return render(request, 'lynx/instructor_search.html', {'page_obj': page_obj})
-
-
 @login_required
 def assignment_advanced_result_view(request):
     if request.method == 'GET':
         strict = True
-        f = AssignmentFilter(request.GET, queryset=Assignment.objects.all().order_by('assignment_date'))
-
-        # assignment_condensed = {}
-        # for assignment in f.qs:
-        #     if assignment.id in assignment_condensed:
-        #         if assignment_condensed[assignment.id]['full_phone'] != assignment.full_phone and assignment.full_phone is not None:
-        #             assignment_condensed[assignment.id]['full_phone'] = assignment_condensed[assignment.id]['full_phone'] + ', ' + assignment.full_phone
-        #         if assignment_condensed[assignment.id]['email'] != assignment.email and assignment.email is not None:
-        #             assignment_condensed[assignment.id]['email'] = assignment_condensed[assignment.id]['email'] + ', ' + assignment.email
-        #         if assignment_condensed[assignment.id]['zip_code'] != assignment.zip_code and assignment.zip_code is not None:
-        #             assignment_condensed[assignment.id]['zip_code'] = assignment_condensed[assignment.id]['zip_code'] + ', ' + assignment.zip_code
-        #      else:
-        #         assignment_condensed[assignment.id] = {}
-        #         assignment_condensed[assignment.id]['full_phone'] = assignment.full_phone if assignment.full_phone is not None else ''
-        #         assignment_condensed[assignment.id]['full_name'] = assignment.full_name if assignment.full_name is not None else ''
-        #         assignment_condensed[assignment.id]['first_name'] = assignment.first_name if assignment.first_name is not None else ''
-        #         assignment_condensed[assignment.id]['last_name'] = assignment.last_name if assignment.last_name is not None else ''
+        f = AssignmentFilter(request.GET, queryset=Assignment.objects.all())
+        # f = AssignmentFilter(request.GET, queryset=Assignment.objects.all().order_by('assignment_date'))
+        assignment_condensed = {}
+        for assignment in f.qs:
+            assignment_condensed[assignment.id] ={}
+            assignment_condensed[assignment.id]['assignment_date'] = assignment.assignment_date if assignment.full_phone is not None else ''
+            assignment_condensed[assignment.id]['client_first_name'] = assignment.contact.first_name if assignment.contact.first_name is not None else ''
+            assignment_condensed[assignment.id]['client_last_name'] = assignment.contact.last_name if assignment.contact.last_name is not None else ''
+            assignment_condensed[assignment.id]['notes'] = assignment.notes if assignment.notes is not None else ''
+            assignment_condensed[assignment.id]['assigned_by_first_name'] = assignment.user.first_name if assignment.user.first_name is not None else ''
+            assignment_condensed[assignment.id]['assigned_by_last_name'] = assignment.user.last_name if assignment.user.last_name is not None else ''
+            assignment_condensed[assignment.id]['assignment_status'] = assignment.assignment_status if assignment.assignment_status is not None else ''
 
     else:
         f = AssignmentFilter()
-        # assignment_condensed = {}
-    return render(request, 'lynx/instructor_search.html', {'filter': f, 'assignment_list': f})
+        assignment_condensed = {}
+
+    return render(request, 'lynx/instructor_search.html', {'filter': f, 'assignment_list': assignment_condensed})

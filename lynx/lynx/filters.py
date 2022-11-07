@@ -37,7 +37,7 @@ class AssignmentFilter(django_filters.FilterSet):
     class Meta:
         model = Assignment
         fields = {
-            'assignment_date': ['gt', 'lt', 'exact'],
+            'assignment_date': ['gt', 'lt'],
             'assignment_status': ['exact'],
         }
 
