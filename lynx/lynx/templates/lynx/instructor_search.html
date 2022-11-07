@@ -24,9 +24,9 @@
         {% for key, assignment in assignment_list.items %}
             <tr>
                 <td>{{ assignment.assignment_date }}</td>
-                <td><a href="client/{{ assignment.client_id }}">{{ assignment.client.last_name }}, {{ assignment.client.first_name }}</a></td>
+                <td><a href="client/{{ assignment.client_id }}">{{ assignment.client_last_name }}, {{ assignment.client_first_name }}</a></td>
                 <td>{{ assignment.notes }}</td>
-                <td>{{ assignment.instructor.first_name }}</td>
+                <td>{{ assignment.assigned_by_first_name }} {{ assignment.assigned_by_last_name }}</td>
                 <td>{{ assignment.assigned_by }}</td>
                 <td>{{ assignment.assignment_status }}</td>
             </tr>
