@@ -1,6 +1,6 @@
 import django_filters
 
-from .models import ContactInfoView, AGES, COUNTIES, STATUSES
+from .models import Assignment, ContactInfoView, AGES, COUNTIES, STATUSES
 
 
 class ContactFilter(django_filters.FilterSet):
@@ -35,9 +35,9 @@ class AssignmentFilter(django_filters.FilterSet):
     assignment_status = django_filters.ChoiceFilter(choices=STATUSES)
 
     class Meta:
-        model = ContactInfoView
+        model = Assignment
         fields = {
-            'intake_date': ['gt', 'lt', 'exact'],
+            'assignment_date': ['gt', 'lt', 'exact'],
             'assignment_status': ['exact'],
         }
 
