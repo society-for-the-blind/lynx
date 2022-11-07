@@ -120,6 +120,8 @@ CONDITIONS = (('Cataracts', 'Cataracts'), ('Diabetic Retinopathy', 'Diabetic Ret
               ('Macular Degeneration', 'Macular Degeneration'),
               ('Other causes of visual impairment', 'Other causes of visual impairment'))
 
+STATUSES = (("Assigned", "Assigned"), ("In Progress", "In Progress"), ("Completed", "Completed"))
+
 
 def get_sentinel_user():
     return get_user_model().objects.get_or_create(username='deleted')[0]
@@ -694,8 +696,6 @@ class Vaccine(models.Model):
 
 
 class Assignment(models.Model):
-    STATUSES = (("Assigned", "Assigned"), ("In Progress", "In Progress"), ("Completed", "Completed"))
-
     contact = models.ForeignKey('Contact', on_delete=models.CASCADE)
     instructor = models.ForeignKey(User, on_delete=models.CASCADE, related_name='instructors')
     assignment_date = models.DateField(auto_now=True, null=True)

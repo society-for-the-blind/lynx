@@ -1,6 +1,6 @@
 import django_filters
 
-from .models import ContactInfoView, AGES, COUNTIES
+from .models import ContactInfoView, AGES, COUNTIES, STATUSES
 
 
 class ContactFilter(django_filters.FilterSet):
@@ -32,6 +32,7 @@ class ContactFilter(django_filters.FilterSet):
 
 
 class AssignmentFilter(django_filters.FilterSet):
+    assignment_status = django_filters.ChoiceFilter(choices=STATUSES)
 
     class Meta:
         model = ContactInfoView
