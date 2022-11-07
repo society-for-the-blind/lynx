@@ -1,6 +1,45 @@
-{% extends 'lynx/base.html' %}
+{% extends "lynx/base.html" %}
+{% load crispy_forms_tags %}
 
 {% block title %}Assignments by Instructor{% endblock %}
+
+{% block content %}
+    <form method="get">
+        {{ filter.form|crispy }}
+        <input class="btn btn-success" type="submit" />
+    </form>
+<br>
+<hr>
+<br>
+    <table class="table">
+        <tr>
+            <th scope="col">Assignment Date</th>
+            <th scope="col">Client</th>
+            <th scope="col">Notes</th>
+            <th scope="col">Instructor</th>
+            <th scope="col">Assigned By</th>
+            <th scope="col">Status</th>
+        </tr>
+        {% for key, assignment in assignment_list.items %}
+            <tr>
+                <td>{{ assignment.assignment_date }}</td>
+                <td><a href="client/{{ assignment.client_id }}">{{ assignment.client.last_name }}, {{ assignment.client.first_name }}</a></td>
+                <td>{{ assignment.notes }}</td>
+                <td>{{ assignment.instructor.first_name }}</td>
+                <td>{{ assignment.assigned_by }}</td>
+                <td>{{ assignment.assignment_status }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+{% endblock %}
+
+
+
+
+
+
+
+
 
 {% block content %}
     <h1>Assignments by Instructor</h1>

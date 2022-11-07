@@ -2081,13 +2081,13 @@ def contact_list(request):
                 client_condensed[client.id]['city'] = client.city if client.city is not None else ''
                 client_condensed[client.id]['state'] = client.state if client.state is not None else ''
                 client_condensed[client.id]['region'] = client.region if client.region is not None else ''
-                client_condensed[client.id]['bad_address'] = client.bad_address if client.bad_address is not None else ''
-                client_condensed[client.id]['do_not_contact'] = client.do_not_contact if client.do_not_contact is not None else ''
-                client_condensed[client.id]['deceased'] = client.deceased if client.deceased is not None else ''
-                client_condensed[client.id]['remove_mailing'] = client.remove_mailing if client.remove_mailing is not None else ''
-                client_condensed[client.id]['active'] = client.active if client.active is not None else ''
-                client_condensed[client.id]['sip_client'] = client.sip_client if client.sip_client is not None else ''
-                client_condensed[client.id]['core_client'] = client.core_client if client.core_client is not None else ''
+                client_condensed[client.id]['bad_address'] = str(client.bad_address) if client.bad_address is not None else ''
+                client_condensed[client.id]['do_not_contact'] = str(client.do_not_contact) if client.do_not_contact is not None else ''
+                client_condensed[client.id]['deceased'] = str(client.deceased) if client.deceased is not None else ''
+                client_condensed[client.id]['remove_mailing'] = str(client.remove_mailing) if client.remove_mailing is not None else ''
+                client_condensed[client.id]['active'] = str(client.active) if client.active is not None else ''
+                client_condensed[client.id]['sip_client'] = str(client.sip_client) if client.sip_client is not None else ''
+                client_condensed[client.id]['core_client'] = str(client.core_client) if client.core_client is not None else ''
 
         if excel == 'true':
             filename = "Lynx Search Results"
