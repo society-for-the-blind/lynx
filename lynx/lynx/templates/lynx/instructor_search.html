@@ -53,7 +53,7 @@
 </div>
 
 {% if not request.GET.print %}
-<form action="/lynx/client-advanced-search" method="GET">
+<form action="/lynx/instructors/" method="GET">
   <input type="hidden" name="print" value="true" />
   <input type="hidden" name="q" value="{{ request.GET.q }}" />
   <input type="submit" value="Print View" class="btn btn-primary" />

@@ -84,7 +84,7 @@ urlpatterns = [
     path('email', views.email_update, name='email'),
     path('reports/', views.reports, name='reports'),
     path('instructor/<int:pk>', views.InstructorDetailView.as_view(), name='instructor'),
-    path('instructors/', views.assignment_advanced_result_view, name='instructor_search'),
+    path('instructors/', views.assignment_advanced_result_view, name='instructors'),
     # path('test/', cron.address_changes, name='address'),
     path("", views.index, name='index')
 ]
