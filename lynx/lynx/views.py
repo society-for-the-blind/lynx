@@ -2059,11 +2059,11 @@ def contact_list(request):
                 if client_condensed[client.id]['county'] != client.county and client.county is not None:
                     client_condensed[client.id]['county'] = client_condensed[client.id]['county'] + ', ' + client.county
                 if client_condensed[client.id]['bad_address'] != client.bad_address and client.bad_address is not None:
-                    client_condensed[client.id]['bad_address'] = client_condensed[client.id]['bad_address'] + ', ' + client.bad_address
+                    client_condensed[client.id]['bad_address'] = client_condensed[client.id]['bad_address'] + ', ' + str(client.bad_address)
                 if client_condensed[client.id]['do_not_contact'] != client.do_not_contact and client.do_not_contact is not None:
-                    client_condensed[client.id]['do_not_contact'] = client_condensed[client.id]['do_not_contact'] + ', ' + client.do_not_contact
+                    client_condensed[client.id]['do_not_contact'] = client_condensed[client.id]['do_not_contact'] + ', ' + str(client.do_not_contact)
                 if client_condensed[client.id]['remove_mailing'] != client.remove_mailing and client.remove_mailing is not None:
-                    client_condensed[client.id]['remove_mailing'] = client_condensed[client.id]['remove_mailing'] + ', ' + client.remove_mailing
+                    client_condensed[client.id]['remove_mailing'] = client_condensed[client.id]['remove_mailing'] + ', ' + str(client.remove_mailing)
             else:
                 client_condensed[client.id] = {}
                 client_condensed[client.id]['full_phone'] = client.full_phone if client.full_phone is not None else ''
