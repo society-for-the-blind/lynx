@@ -1,6 +1,8 @@
 import django_filters
 
 from .models import Assignment, ContactInfoView, AGES, COUNTIES, STATUSES
+from django.contrib.auth.models import User
+from django.db.models.functions import Lower
 
 
 class ContactFilter(django_filters.FilterSet):
@@ -33,12 +35,15 @@ class ContactFilter(django_filters.FilterSet):
 
 class AssignmentFilter(django_filters.FilterSet):
     assignment_status = django_filters.ChoiceFilter(choices=STATUSES)
+    instructors = User.objects.filter(groups__name='SIP').order_by(Lower('last_name'))
+    instructor = django_filters.ModelChoiceFilter(queryset=instructors)
 
     class Meta:
         model = Assignment
         fields = {
             'assignment_date': ['gt', 'lt'],
             'assignment_status': ['exact'],
+            'instructor': ['exact']
         }
 
     def __init__(self, *args, **kwargs):
