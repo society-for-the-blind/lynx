@@ -2211,7 +2211,7 @@ def assignment_advanced_result_view(request):
     if request.method == 'GET':
         strict = True
         # f = AssignmentFilter(request.GET, queryset=Assignment.objects.all())
-        f = AssignmentFilter(request.GET, queryset=Assignment.objects.all().order_by('assignment_date'))
+        f = AssignmentFilter(request.GET, queryset=Assignment.objects.all().order_by('-assignment_date'))
         assignment_condensed = {}
         for assignment in f.qs:
             assignment_condensed[assignment.id] ={}
