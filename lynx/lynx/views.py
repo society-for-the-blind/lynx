@@ -2214,7 +2214,7 @@ def assignment_advanced_result_view(request):
         f = AssignmentFilter(request.GET, queryset=Assignment.objects.all().order_by('-assignment_date'))
         assignment_condensed = {}
         for assignment in f.qs:
-            assignment_condensed[assignment.id] ={}
+            assignment_condensed[assignment.id] = {}
             assignment_condensed[assignment.id]['assignment_date'] = assignment.assignment_date if assignment.assignment_date is not None else ''
             assignment_condensed[assignment.id]['client_first_name'] = assignment.contact.first_name if assignment.contact.first_name is not None else ''
             assignment_condensed[assignment.id]['client_last_name'] = assignment.contact.last_name if assignment.contact.last_name is not None else ''
@@ -2222,6 +2222,8 @@ def assignment_advanced_result_view(request):
             assignment_condensed[assignment.id]['assigned_by_first_name'] = assignment.user.first_name if assignment.user.first_name is not None else ''
             assignment_condensed[assignment.id]['assigned_by_last_name'] = assignment.user.last_name if assignment.user.last_name is not None else ''
             assignment_condensed[assignment.id]['assignment_status'] = assignment.assignment_status if assignment.assignment_status is not None else ''
+            assignment_condensed[assignment.id]['instructor_first_name'] = assignment.instructor.first_name if assignment.instructor.first_name is not None else ''
+            assignment_condensed[assignment.id]['instructor_last_name'] = assignment.instructor.first_name if assignment.instructor.first_name is not None else ''
 
     else:
         f = AssignmentFilter()
