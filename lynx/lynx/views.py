@@ -2228,3 +2228,19 @@ def assignment_advanced_result_view(request):
         assignment_condensed = {}
 
     return render(request, 'lynx/instructor_search.html', {'filter': f, 'assignment_list': assignment_condensed})
+
+
+@login_required
+def change_assignment_status(request, assignment_id, status):
+    assignment = Assignment.objects.get(assignment_id=assignment_id)
+    if status == 'Assigned':
+        new_status = 'In Progress'
+    elif status == 'In Progress':
+        new_status = 'Completed'
+    else:
+        new_status = 'Completed'
+
+    assignment.status = new_status
+    assignment.save()
+
+    return render(request, 'lynx/instructor_search.html')

@@ -85,6 +85,7 @@ urlpatterns = [
     path('reports/', views.reports, name='reports'),
     path('instructor/<int:pk>', views.InstructorDetailView.as_view(), name='instructor'),
     path('instructors/', views.assignment_advanced_result_view, name='instructors'),
+    path('assignment-status-change/<int:assignment_id>/<str:status>', views.change_assignment_status, name='instructors'),
     # path('test/', cron.address_changes, name='address'),
     path("", views.index, name='index')
 ]

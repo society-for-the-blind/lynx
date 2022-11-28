@@ -27,6 +27,7 @@
                 <td>{{ assignment.note }}</td>
                 <td>{{ assignment.assigned_by_first_name }} {{ assignment.assigned_by_last_name }}</td>
                 <td>{{ assignment.assigned_by }}</td>
+                <td><a href="client/{{ key }}/{{ assignment.assignment_status }}">{{ assignment.assignment_status }}</a></td>
                 <td>{{ assignment.assignment_status }}</td>
             </tr>
         {% endfor %}
