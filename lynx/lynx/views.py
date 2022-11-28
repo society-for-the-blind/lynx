@@ -2235,7 +2235,7 @@ def change_assignment_status(request, assignment_id, status):
     assignment = Assignment.objects.get(assignment_id=assignment_id)
     if status == 'Assigned':
         new_status = 'In Progress'
-    elif status == 'In Progress':
+    elif status == 'InProgress':
         new_status = 'Completed'
     else:
         new_status = 'Completed'
