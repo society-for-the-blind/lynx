@@ -2243,4 +2243,6 @@ def change_assignment_status(request, assignment_id, status):
     assignment.status = new_status
     assignment.save()
 
-    return render(request, 'lynx/instructor_search.html')
+    f = AssignmentFilter()
+    assignment_condensed = {}
+    return render(request, 'lynx/instructor_search.html', {'filter': f, 'assignment_list': assignment_condensed})
