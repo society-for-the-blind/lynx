@@ -2246,8 +2246,8 @@ def change_assignment_status(request, assignment_id, status):
     assignment.save()
 
     # return
-    f = AssignmentFilter()
-    return reverse_lazy('lynx:instructors')
+    # f = AssignmentFilter()
+    return reverse_lazy('lynx:index')
 
     # f = AssignmentFilter()
     # url = reverse('lynx:instructors', kwargs={'filter': f, 'assignment_list': {}})
