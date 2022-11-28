@@ -2223,7 +2223,7 @@ def assignment_advanced_result_view(request):
             assignment_condensed[assignment.id]['assigned_by_last_name'] = assignment.user.last_name if assignment.user.last_name is not None else ''
             assignment_condensed[assignment.id]['assignment_status'] = assignment.assignment_status if assignment.assignment_status is not None else ''
             assignment_condensed[assignment.id]['instructor_first_name'] = assignment.instructor.first_name if assignment.instructor.first_name is not None else ''
-            assignment_condensed[assignment.id]['instructor_last_name'] = assignment.instructor.first_name if assignment.instructor.first_name is not None else ''
+            assignment_condensed[assignment.id]['instructor_last_name'] = assignment.instructor.last_name if assignment.instructor.last_name is not None else ''
 
     else:
         f = AssignmentFilter()
@@ -2234,7 +2234,6 @@ def assignment_advanced_result_view(request):
 
 @login_required
 def change_assignment_status(request, assignment_id, status):
-    assignment = Assignment.objects.get(id=assignment_id)
     if status == 'Assigned':
         new_status = 'In Progress'
     elif status == 'InProgress':
@@ -2242,6 +2241,7 @@ def change_assignment_status(request, assignment_id, status):
     else:
         new_status = 'Completed'
 
+    assignment = Assignment.objects.get(id=assignment_id)
     assignment.status = new_status
     assignment.save()
 

@@ -698,7 +698,7 @@ class Vaccine(models.Model):
 class Assignment(models.Model):
     contact = models.ForeignKey('Contact', on_delete=models.CASCADE)
     instructor = models.ForeignKey(User, on_delete=models.CASCADE, related_name='instructors')
-    assignment_date = models.DateField(auto_now=True, null=True)
+    assignment_date = models.DateField(auto_now_add=True, null=True)
     note = models.TextField(blank=True, null=True)
     assignment_status = models.CharField(max_length=25, blank=True, null=True, choices=STATUSES, default='Assigned', )
     created = models.DateTimeField(auto_now_add=True, null=True)
