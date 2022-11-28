@@ -1234,7 +1234,7 @@ class VaccineUpdateView(LoginRequiredMixin, UpdateView):
 
 class AssignmentUpdateView(LoginRequiredMixin, UpdateView):
     model = Assignment
-    fields = ['note']
+    fields = ['note', 'status']
     template_name_suffix = '_edit'
 
 
@@ -2231,21 +2231,21 @@ def assignment_advanced_result_view(request):
 
     return render(request, 'lynx/instructor_search.html', {'filter': f, 'assignment_list': assignment_condensed})
 
-
-@login_required
-def change_assignment_status(request, assignment_id, status):
-    if status == 'Assigned':
-        new_status = 'In Progress'
-    elif status == 'InProgress':
-        new_status = 'Completed'
-    else:
-        new_status = 'Completed'
-
-    assignment = Assignment.objects.get(id=assignment_id)
-    assignment.status = new_status
-    assignment.save()
-
-    # f = AssignmentFilter()
-    # assignment_condensed = {}
-    return redirect('lynx/instructors/')
-    # return render(request, 'lynx/instructor_search.html', {'filter': f, 'assignment_list': assignment_condensed})
+#
+# @login_required
+# def change_assignment_status(request, assignment_id, status):
+#     if status == 'Assigned':
+#         new_status = 'In Progress'
+#     elif status == 'InProgress':
+#         new_status = 'Completed'
+#     else:
+#         new_status = 'Completed'
+#
+#     assignment = Assignment.objects.get(id=assignment_id)
+#     assignment.status = new_status
+#     assignment.save()
+#
+#     # f = AssignmentFilter()
+#     # assignment_condensed = {}
+#     return redirect('lynx/instructors/')
+#     # return render(request, 'lynx/instructor_search.html', {'filter': f, 'assignment_list': assignment_condensed})

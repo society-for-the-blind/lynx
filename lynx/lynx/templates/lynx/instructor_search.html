@@ -27,7 +27,7 @@
                 <td>{{ assignment.note }}</td>
                 <td>{{ assignment.instructor_first_name }} {{ assignment.instructor_last_name }}</td>
                 <td>{{ assignment.assigned_by_first_name }} {{ assignment.assigned_by_last_name }}</td>
-                <td><a href="assignment-status-change/{{ key }}/{{ assignment.assignment_status|cut:' ' }}">{{ assignment.assignment_status }}</a></td>
+                <td><a href="assignment-edit/{{ key }}">{{ assignment.assignment_status }}</a></td>
             </tr>
         {% endfor %}
     </table>
