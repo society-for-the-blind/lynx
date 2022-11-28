@@ -1234,7 +1234,7 @@ class VaccineUpdateView(LoginRequiredMixin, UpdateView):
 
 class AssignmentUpdateView(LoginRequiredMixin, UpdateView):
     model = Assignment
-    fields = ['note', 'status']
+    fields = ['note', 'assignment_status']
     template_name_suffix = '_edit'
 
 
