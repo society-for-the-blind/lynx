@@ -2246,5 +2246,5 @@ def change_assignment_status(request, assignment_id, status):
     assignment.save()
 
     f = AssignmentFilter()
-    url = reverse('assignment_advanced_result_view', kwargs={'filter': f, 'assignment_list': {}})
+    url = reverse('lynx:assignment_advanced_result_view', kwargs={'filter': f, 'assignment_list': {}})
     return HttpResponseRedirect(url)
