@@ -2232,7 +2232,7 @@ def assignment_advanced_result_view(request):
 
 @login_required
 def change_assignment_status(request, assignment_id, status):
-    assignment = Assignment.objects.get(assignment_id=assignment_id)
+    assignment = Assignment.objects.get(id=assignment_id)
     if status == 'Assigned':
         new_status = 'In Progress'
     elif status == 'InProgress':
