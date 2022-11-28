@@ -1,4 +1,4 @@
-from django.shortcuts import render, reverse
+from django.shortcuts import render, reverse, redirect
 from django.http import HttpResponse, HttpResponseRedirect, Http404, JsonResponse
 from django.views.generic import DetailView, DeleteView, TemplateView
 from django.contrib.auth.decorators import login_required
@@ -2245,10 +2245,7 @@ def change_assignment_status(request, assignment_id, status):
     assignment.status = new_status
     assignment.save()
 
-    # return
     # f = AssignmentFilter()
-    return reverse_lazy('lynx:index')
-
-    # f = AssignmentFilter()
-    # url = reverse('lynx:instructors', kwargs={'filter': f, 'assignment_list': {}})
-    # return HttpResponseRedirect(url)
+    # assignment_condensed = {}
+    return redirect('lynx/instructors/')
+    # return render(request, 'lynx/instructor_search.html', {'filter': f, 'assignment_list': assignment_condensed})
