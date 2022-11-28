@@ -2246,5 +2246,5 @@ def change_assignment_status(request, assignment_id, status):
     assignment.save()
 
     f = AssignmentFilter()
-    assignment_condensed = {}
-    return render(request, 'lynx/instructor_search.html', {'filter': f, 'assignment_list': assignment_condensed})
+    url = reverse('instructors', kwargs={'filter': f, 'assignment_list': {}})
+    return HttpResponseRedirect(url)
