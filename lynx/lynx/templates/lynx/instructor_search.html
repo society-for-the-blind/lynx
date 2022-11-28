@@ -25,7 +25,7 @@
                 <td>{{ assignment.assignment_date }}</td>
                 <td><a href="client/{{ assignment.client_id }}">{{ assignment.client_last_name }}, {{ assignment.client_first_name }}</a></td>
                 <td>{{ assignment.note }}</td>
-                <td>{{ assignment.instructor }}</td>
+                <td>{{ assignment.instructor.first_name }} {{ assignment.instructor.last_name }}</td>
                 <td>{{ assignment.assigned_by_first_name }} {{ assignment.assigned_by_last_name }}</td>
                 <td><a href="assignment-status-change/{{ key }}/{{ assignment.assignment_status|cut:' ' }}">{{ assignment.assignment_status }}</a></td>
             </tr>
