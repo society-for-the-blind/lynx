@@ -23,8 +23,8 @@
         {% for key, assignment in assignment_list.items %}
             <tr>
                 <td>{{ assignment.assignment_date }}</td>
-<!--                <td><a href="/lynx/client/{{ assignment.contact_id }}">{{ assignment.client_last_name }}, {{ assignment.client_first_name }}</a></td>-->
-                <td>{{ assignment }}</td>
+                <td><a href="/lynx/client/{{ assignment.client_id }}">{{ assignment.client_last_name }}, {{ assignment.client_first_name }}</a></td>
+<!--                <td>{{ assignment }}</td>-->
                 <td>{{ assignment.note }}</td>
                 <td>{{ assignment.instructor_first_name }} {{ assignment.instructor_last_name }}</td>
                 <td>{{ assignment.assigned_by_first_name }} {{ assignment.assigned_by_last_name }}</td>
