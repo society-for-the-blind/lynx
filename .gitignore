@@ -9,3 +9,5 @@ lynx/lynx-debug.log
 .idea/*
 .idea/misc.xml
 .idea/slate-2.iml
+lynx/media/documents/*
+*egg-info

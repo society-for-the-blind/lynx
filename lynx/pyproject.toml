@@ -1,0 +1,32 @@
+[build-system]
+requires = ["setuptools==65.6.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "lynx"
+version = "1.0"
+# authors = [
+#     {name = "Josiah Carberry", email = "josiah_carberry@brown.edu"},
+# ]
+# description = "My package description"
+# readme = "README.rst"
+# requires-python = ">=3.7"
+# keywords = ["one", "two"]
+# license = {text = "BSD-3-Clause"}
+# classifiers = [
+#     "Framework :: Django",
+#     "Programming Language :: Python :: 3",
+# ]
+dynamic = ["dependencies"]
+
+# https://stackoverflow.com/questions/72294299/multiple-top-level-packages-discovered-in-a-flat-layout
+[tool.setuptools]
+py-modules = []
+
+[tool.setuptools.dynamic]
+dependencies = {file = ["requirements.txt"]}
+
+# ... other project metadata fields as specified in:
+#     https://packaging.python.org/en/latest/specifications/declaring-project-metadata/
+
+# vim: set foldmethod=marker foldmarker={{-,}}- foldlevelstart=0 tabstop=2 shiftwidth=2 expandtab:
