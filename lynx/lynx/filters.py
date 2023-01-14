@@ -1,8 +1,8 @@
 import django_filters
-
-from .models import Assignment, ContactInfoView, AGES, COUNTIES, STATUSES
 from django.contrib.auth.models import User
 from django.db.models.functions import Lower
+
+from .models import Assignment, ContactInfoView, AGES, COUNTIES, STATUSES
 
 
 class ContactFilter(django_filters.FilterSet):

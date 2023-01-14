@@ -1,15 +1,11 @@
-from django.db import models
-from django import forms
-from django.contrib.auth import get_user_model
+from datetime import date
+
 from django.conf import settings
-from django.urls import reverse
-from django.utils.timezone import now
+from django.contrib.auth import get_user_model
 from django.contrib.auth.models import User
-
+from django.db import models
 from django_pgviews import view as pg
-from datetime import datetime, date
 from simple_history.models import HistoricalRecords
-
 
 STATES = (("Alabama", "Alabama"), ("Alaska", "Alaska"), ("Arizona", "Arizona"), ("Arkansas", "Arkansas"),
           ("California", "California"), ("Colorado", "Colorado"), ("Connecticut", "Connecticut"),
@@ -28,28 +24,28 @@ STATES = (("Alabama", "Alabama"), ("Alaska", "Alaska"), ("Arizona", "Arizona"), 
           ("Wisconsin", "Wisconsin"), ("Wyoming", "Wyoming"))
 
 COUNTIES = (("Alameda", "Alameda"), ("Alpine", "Alpine"), ("Amador", "Amador"), ("Butte", "Butte"),
-          ("Colusa", "Colusa"), ("Calaveras", "Calaveras"), ("Contra Costa", "Contra Costa"),
-          ("Del Norte", "Del Norte"), ("El Dorado", "El Dorado"), ("Fresno", "Fresno"), ("Glenn", "Glenn"),
-          ("Humboldt", "Humboldt"), ("Imperial", "Imperial"), ("Inyo", "Inyo"), ("Kern", "Kern"),
-          ("Kings", "Kings"), ("Klamath", "Klamath"), ("Lake", "Lake"), ("Lassen", "Lassen"),
-          ("Los Angeles", "Los Angeles"), ("Madera", "Madera"), ("Marin", "Marin"), ("Mariposa", "Mariposa"),
-          ("Mendocino", "Mendocino"), ("Merced", "Merced"), ("Modoc", "Modoc"), ("Mono", "Mono"),
-          ("Monterey", "Monterey"), ("Napa", "Napa"), ("Nevada", "Nevada"), ("Orange", "Orange"),
-          ("Placer", "Placer"), ("Plumas", "Plumas"), ("Riverside", "Riverside"), ("Sacramento", "Sacramento"),
-          ("San Benito", "San Benito"), ("San Bernardino", "San Bernardino"), ("San Diego", "San Diego"),
-          ("San Francisco", "San Francisco"), ("San Joaquin", "San Joaquin"), ("San Luis Obispo", "San Luis Obispo"),
-          ("San Mateo", "San Mateo"), ("Santa Barbara", "Santa Barbara"), ("Santa Clara", "Santa Clara"),
-          ("Santa Cruz", "Santa Cruz"), ("Shasta", "Shasta"), ("Sierra", "Sierra"), ("Siskiyou", "Siskiyou"),
-          ("Solano", "Solano"), ("Sonoma", "Sonoma"), ("Stanislaus", "Stanislaus"), ("Sutter", "Sutter"),
-          ("Tehama", "Tehama"), ("Trinity", "Trinity"), ("Tulare", "Tulare"), ("Tuolumne", "Tuolumne"),
-          ("Ventura", "Ventura"), ("Yolo", "Yolo"), ("Yuba", "Yuba"), ("Other/None", "Other/None"))
+            ("Colusa", "Colusa"), ("Calaveras", "Calaveras"), ("Contra Costa", "Contra Costa"),
+            ("Del Norte", "Del Norte"), ("El Dorado", "El Dorado"), ("Fresno", "Fresno"), ("Glenn", "Glenn"),
+            ("Humboldt", "Humboldt"), ("Imperial", "Imperial"), ("Inyo", "Inyo"), ("Kern", "Kern"),
+            ("Kings", "Kings"), ("Klamath", "Klamath"), ("Lake", "Lake"), ("Lassen", "Lassen"),
+            ("Los Angeles", "Los Angeles"), ("Madera", "Madera"), ("Marin", "Marin"), ("Mariposa", "Mariposa"),
+            ("Mendocino", "Mendocino"), ("Merced", "Merced"), ("Modoc", "Modoc"), ("Mono", "Mono"),
+            ("Monterey", "Monterey"), ("Napa", "Napa"), ("Nevada", "Nevada"), ("Orange", "Orange"),
+            ("Placer", "Placer"), ("Plumas", "Plumas"), ("Riverside", "Riverside"), ("Sacramento", "Sacramento"),
+            ("San Benito", "San Benito"), ("San Bernardino", "San Bernardino"), ("San Diego", "San Diego"),
+            ("San Francisco", "San Francisco"), ("San Joaquin", "San Joaquin"), ("San Luis Obispo", "San Luis Obispo"),
+            ("San Mateo", "San Mateo"), ("Santa Barbara", "Santa Barbara"), ("Santa Clara", "Santa Clara"),
+            ("Santa Cruz", "Santa Cruz"), ("Shasta", "Shasta"), ("Sierra", "Sierra"), ("Siskiyou", "Siskiyou"),
+            ("Solano", "Solano"), ("Sonoma", "Sonoma"), ("Stanislaus", "Stanislaus"), ("Sutter", "Sutter"),
+            ("Tehama", "Tehama"), ("Trinity", "Trinity"), ("Tulare", "Tulare"), ("Tuolumne", "Tuolumne"),
+            ("Ventura", "Ventura"), ("Yolo", "Yolo"), ("Yuba", "Yuba"), ("Other/None", "Other/None"))
 
 REGIONS = (("Chico", "Chico"), ("Diablo", "Diablo"), ("Fresno", "Fresno"), ("Sacramento", "Sacramento"),
            ("Other", "Other"))
 
 GENDERS = (("Female", "Female"), ("Male", "Male"), ("Non-Binary", "Non-Binary"),
            ("Gender Non-Conforming", "Gender Non-Conforming"), ("Other (in notes)", "Other (in notes)"),
-           ("Prefer Not to Say", "Prefer Not to Say"), )
+           ("Prefer Not to Say", "Prefer Not to Say"),)
 
 ETHNICITIES = (("American Indian or Alaska Native", "American Indian or Alaska Native"), ("Asian", "Asian"),
                ("Black or African American", "Black or African American"), ("Hispanic or Latino", "Hispanic or Latino"),
@@ -67,8 +63,8 @@ TRINARY = (('Yes', 'Yes'), ('No', 'No'), ('Other', 'Other'))
 #             ("October", "October"), ("November", "November"), ("December", "December"))
 
 MONTHS = (("1", "January"), ("2", "February"), ("3", "March"), ("4", "April"),
-            ("5", "May"), ("6", "June"), ("7", "July"), ("8", "August"), ("9", "September"),
-            ("10", "October"), ("11", "November"), ("12", "December"))
+          ("5", "May"), ("6", "June"), ("7", "July"), ("8", "August"), ("9", "September"),
+          ("10", "October"), ("11", "November"), ("12", "December"))
 
 LANGUAGES = (("English", "English"), ("Armenian", "Armenian"), ("Arabic", "Arabic"), ("Bengali", "Bengali"),
              ("Cantonese", "Cantonese"), ("Czech", "Czech"), ("Danish", "Danish"), ("Dutch", "Dutch"),
@@ -77,7 +73,7 @@ LANGUAGES = (("English", "English"), ("Armenian", "Armenian"), ("Arabic", "Arabi
              ("Italian", "Italian"), ("Japanese", "Japanese"), ("Korean", "Korean"), ("Lithuanian", "Lithuanian"),
              ("Malayalam", "Malayalam"), ("Mandarin", "Mandarin"), ("Mon-khmer (cambodian)", "Mon-khmer (cambodian)"),
              ("Norwegian", "Norwegian"), ("Panjabi", "Panjabi"), ("Persian", "Persian"), ("Polish", "Polish"),
-             ("Portuguese", "Portuguese"), ("Russian", "Russian"),  ("Slovak", "Slovak"), ("Samoan", "Samoan"),
+             ("Portuguese", "Portuguese"), ("Russian", "Russian"), ("Slovak", "Slovak"), ("Samoan", "Samoan"),
              ("Spanish", "Spanish"), ("Swahili", "Swahili"), ("Swedish", "Swedish"), ("Tagalog", "Tagalog"),
              ("Thai (laotian)", "Thai (laotian)"), ("Turkish", "Turkish"), ("Ukrainian", "Ukrainian"),
              ("Vietnamese", "Vietnamese"))
@@ -99,13 +95,13 @@ UNITS = (("0", "0 Minutes"), ("1", "15 Minutes"), ("2", "30 Minutes"), ("3", "45
          ("29", "7 Hours 15 Minutes"), ("30", "7 Hours 30 Minutes"), ("31", "7 Hours 45 Minutes"), ("32", "8 Hours"))
 
 SIP_UNITS = ((.25, "15 Minutes"), (.5, "30 Minutes"), (.75, "45 Minutes"), (1, "1 Hour"), (1.25, "1 Hour 15 Minutes"),
-         (1.5, "1 Hour 30 Minutes"), (1.75, "1 Hour 45 Minutes"), (2, "2 Hours"), (2.25, "2 Hours 15 Minutes"),
-         (2.5, "2 Hours 30 Minutes"), (2.75, "2 Hours 45 Minutes"), (3, "3 Hours"), (3.25, "3 Hours 15 Minutes"),
-         (3.5, "3 Hours 30 Minutes"), (3.75, "3 Hours 45 Minutes"), (4, "4 Hours"), (4.25, "4 Hours 15 Minutes"),
-         (4.5, "4 Hours 30 Minutes"), (4.75, "4 Hours 45 Minutes"), (5, "5 Hours"), (5.25, "5 Hours 15 Minutes"),
-         (5.5, "5 Hours 30 Minutes"), (5.75, "5 Hours 45 Minutes"), (6, "6 Hours"), (6.25, "6 Hours 15 Minutes"),
-         (6.5, "6 Hours 30 Minutes"), (6.75, "6 Hours 45 Minutes"), (7, "7 Hours"), (7.25, "7 Hours 15 Minutes"),
-         (7.5, "7 Hours 30 Minutes"), (7.75, "7 Hours 45 Minutes"), (8, "8 Hours"))
+             (1.5, "1 Hour 30 Minutes"), (1.75, "1 Hour 45 Minutes"), (2, "2 Hours"), (2.25, "2 Hours 15 Minutes"),
+             (2.5, "2 Hours 30 Minutes"), (2.75, "2 Hours 45 Minutes"), (3, "3 Hours"), (3.25, "3 Hours 15 Minutes"),
+             (3.5, "3 Hours 30 Minutes"), (3.75, "3 Hours 45 Minutes"), (4, "4 Hours"), (4.25, "4 Hours 15 Minutes"),
+             (4.5, "4 Hours 30 Minutes"), (4.75, "4 Hours 45 Minutes"), (5, "5 Hours"), (5.25, "5 Hours 15 Minutes"),
+             (5.5, "5 Hours 30 Minutes"), (5.75, "5 Hours 45 Minutes"), (6, "6 Hours"), (6.25, "6 Hours 15 Minutes"),
+             (6.5, "6 Hours 30 Minutes"), (6.75, "6 Hours 45 Minutes"), (7, "7 Hours"), (7.25, "7 Hours 15 Minutes"),
+             (7.5, "7 Hours 30 Minutes"), (7.75, "7 Hours 45 Minutes"), (8, "8 Hours"))
 
 SALUTATIONS = (("Mr.", "Mr."), ("Mrs.", "Mrs."), ("Miss", "Miss"), ("Ms.", "Ms."), ("Dr.", "Dr."), ("Prof.", "Prof."),
                ("Rev.", "Rev."))
@@ -128,6 +124,7 @@ def get_sentinel_user():
 
 
 # Contact information. For Clients, Employees and Volunteers.
+# Django level staff info is in auth_user
 class Contact(models.Model):
     first_name = models.CharField(max_length=150)
     middle_name = models.CharField(max_length=150, blank=True, null=True)
@@ -163,16 +160,11 @@ class Contact(models.Model):
         ordering = ['last_name', 'first_name']
 
 
-class Email (models.Model):
+class Email(models.Model):
     EMAIL_TYPES = (("Work", "Work"), ("Personal", "Personal"))
 
     contact = models.ForeignKey('Contact', on_delete=models.CASCADE, null=True, blank=True)
     emergency_contact = models.ForeignKey('EmergencyContact', on_delete=models.CASCADE, null=True, blank=True)
-    email = models.EmailField(blank=True, null=True)
-    email_type = models.CharField(max_length=25, choices=EMAIL_TYPES, blank=True)
-    active = models.BooleanField(blank=True, default=False)
-    created = models.DateTimeField(auto_now_add=True)
-    modified = models.DateTimeField(auto_now=True)
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         related_name='contact_emails',
@@ -180,6 +172,11 @@ class Email (models.Model):
         blank=True,
         on_delete=models.SET(get_sentinel_user)
     )
+    email = models.EmailField(blank=True, null=True)
+    email_type = models.CharField(max_length=25, choices=EMAIL_TYPES, blank=True)
+    active = models.BooleanField(blank=True, default=False)
+    created = models.DateTimeField(auto_now_add=True)
+    modified = models.DateTimeField(auto_now=True)
     history = HistoricalRecords()
 
     def get_absolute_url(self):
@@ -189,18 +186,18 @@ class Email (models.Model):
         return self.email
 
 
-class Phone (models.Model):
+class Phone(models.Model):
     PHONE_TYPES = (("Work", "Work"), ("Home", "Home"), ("Cell", "Cell"), ("Evening", "Evening"), ("Day", "Day"),
                    ("Fax", "Fax"), ("Other", "Other"))
 
     contact = models.ForeignKey('Contact', on_delete=models.CASCADE, null=True, blank=True)
     emergency_contact = models.ForeignKey('EmergencyContact', on_delete=models.CASCADE, null=True, blank=True)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET(get_sentinel_user))
     phone = models.CharField(max_length=50, blank=True, null=True)
     phone_type = models.CharField(max_length=25, choices=PHONE_TYPES, blank=True, null=True)
     active = models.BooleanField(blank=True, default=False)
     created = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET(get_sentinel_user))
     history = HistoricalRecords()
 
     def get_absolute_url(self):
@@ -210,9 +207,10 @@ class Phone (models.Model):
         return self.phone
 
 
-# Addresses for Contacts.
+# Addresses for Contacts, we don't record addresses for emergency contacts
 class Address(models.Model):
     contact = models.ForeignKey('Contact', on_delete=models.CASCADE, null=True, blank=True)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET(get_sentinel_user))
     address_one = models.CharField(max_length=150, blank=True, null=True)
     address_two = models.CharField(max_length=150, blank=True, null=True)
     suite = models.CharField(max_length=50, blank=True, null=True)
@@ -224,12 +222,10 @@ class Address(models.Model):
     region = models.CharField(max_length=150, blank=True, null=True)
     cross_streets = models.CharField(max_length=150, blank=True, null=True)
     bad_address = models.BooleanField(blank=True, default=False)
-    # billing = models.BooleanField(blank=True, default=False)  # Only applies to employees
     preferred_medium = models.CharField(max_length=150, blank=True, choices=MAILINGS, null=True)
     address_notes = models.TextField(blank=True, null=True)
     created = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET(get_sentinel_user))
     history = HistoricalRecords()
 
     class Meta:
@@ -256,7 +252,8 @@ class Intake(models.Model):
     PROGNOSIS = (("Stable", "Stable"), ("Diminishing", "Diminishing"))
 
     DEGREE = (("Totally Blind (NP or NLP)", "Totally Blind (NP or NLP)"), ("Legally Blind", "Legally Blind"),
-              ("Severe Vision Impairment", "Severe Vision Impairment"), ("Light Perception Only", "Light Perception Only"),
+              ("Severe Vision Impairment", "Severe Vision Impairment"),
+              ("Light Perception Only", "Light Perception Only"),
               ("Low Vision", "Low Vision"))
 
     REFERER = (("DOR", "DOR"), ("Alta", "Alta"), ("Veterans Administration", "Veterans Administration"),
@@ -267,6 +264,13 @@ class Intake(models.Model):
                ("Eye Care Provider", "Eye Care Provider"), ("Other", "Other"))
 
     contact = models.ForeignKey('Contact', on_delete=models.CASCADE)
+    payment_source = models.ForeignKey(
+        'Contact',
+        on_delete=models.CASCADE,
+        blank=True,
+        null=True,
+        related_name='intake_outside_agent'
+    )
     intake_date = models.DateField(default=date.today)
     intake_type = models.CharField(max_length=150, blank=True, null=True)
     age_group = models.CharField(max_length=50, blank=True, choices=AGES, null=True)
@@ -304,13 +308,6 @@ class Intake(models.Model):
     degree = models.CharField(max_length=250, blank=True, choices=DEGREE, null=True)
     prognosis = models.CharField(max_length=250, blank=True, choices=PROGNOSIS, null=True)
     referred_by = models.CharField(max_length=250, blank=True, choices=REFERER, null=True)
-    payment_source = models.ForeignKey(
-        'Contact',
-        on_delete=models.CASCADE,
-        blank=True,
-        null=True,
-        related_name='intake_outside_agent'
-    )
     diabetes = models.BooleanField(blank=True, default=False)
     diabetes_notes = models.CharField(max_length=255, blank=True, null=True)
     dialysis = models.BooleanField(blank=True, default=False)
@@ -389,7 +386,6 @@ class IntakeNote(models.Model):
         return "/lynx/client/%i" % self.contact_id
 
 
-# Addresses for Contacts.
 class EmergencyContact(models.Model):
     contact = models.ForeignKey('Contact', on_delete=models.CASCADE)
     name = models.CharField(max_length=150, blank=True, null=True)
@@ -414,6 +410,7 @@ class Authorization(models.Model):
         related_name='outside_agent'
     )
     intake_service_area = models.ForeignKey('IntakeServiceArea', on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET(get_sentinel_user))
     authorization_number = models.CharField(max_length=150, blank=True, null=True)
     authorization_type = models.CharField(
         max_length=25,
@@ -425,12 +422,10 @@ class Authorization(models.Model):
     end_date = models.DateField(blank=True, null=True, default=date.today)
     total_time = models.CharField(max_length=150, blank=True, null=True)
     billing_rate = models.CharField(max_length=150, blank=True, null=True)
-    # outside_agency = models.ForeignKey('OutsideAgency', on_delete=models.CASCADE)
     student_plan = models.CharField(max_length=25, choices=(("Yes", "Yes"), ("No", "No")), blank=True, null=True)
     notes = models.TextField(blank=True, null=True)
     created = models.DateTimeField(auto_now_add=True, null=True)
     modified = models.DateTimeField(auto_now=True, null=True)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET(get_sentinel_user))
     history = HistoricalRecords()
 
     def get_absolute_url(self):
@@ -439,12 +434,12 @@ class Authorization(models.Model):
 
 class OutsideAgency(models.Model):
     contact = models.ForeignKey('Contact', on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET(get_sentinel_user))
     agency = models.CharField(max_length=150, blank=True, null=True)
     contact_name = models.CharField(max_length=150, blank=True, null=True)
     active = models.BooleanField(blank=True, default=False)
     created = models.DateTimeField(auto_now_add=True, null=True)
     modified = models.DateTimeField(auto_now=True, null=True)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET(get_sentinel_user))
     history = HistoricalRecords()
 
     class Meta:
@@ -455,11 +450,11 @@ class OutsideAgency(models.Model):
 
 
 class IntakeServiceArea(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET(get_sentinel_user))
     agency = models.CharField(max_length=150, blank=True, null=True)
     active = models.BooleanField(blank=True, default=False)
     created = models.DateTimeField(auto_now_add=True, null=True)
     modified = models.DateTimeField(auto_now=True, null=True)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET(get_sentinel_user))
     history = HistoricalRecords()
 
     def __str__(self):
@@ -467,9 +462,10 @@ class IntakeServiceArea(models.Model):
 
 
 class ProgressReport(models.Model):
+    authorization = models.ForeignKey('Authorization', on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET(get_sentinel_user))
     month = models.CharField(max_length=25, choices=MONTHS, blank=True, null=True)
     year = models.CharField(max_length=25, blank=True, null=True)
-    authorization = models.ForeignKey('Authorization', on_delete=models.CASCADE)
     instructor = models.CharField(max_length=150, blank=True, null=True)
     accomplishments = models.TextField(blank=True, null=True)
     short_term_goals = models.TextField(blank=True, null=True)
@@ -480,7 +476,6 @@ class ProgressReport(models.Model):
     notes = models.TextField(blank=True, null=True)
     created = models.DateTimeField(auto_now_add=True, null=True)
     modified = models.DateTimeField(auto_now=True, null=True)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET(get_sentinel_user))
     history = HistoricalRecords()
 
     def get_absolute_url(self):
@@ -489,6 +484,7 @@ class ProgressReport(models.Model):
 
 class LessonNote(models.Model):
     authorization = models.ForeignKey('Authorization', on_delete=models.CASCADE, related_name='lesson')
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET(get_sentinel_user))
     date = models.DateField(default=date.today, null=True)
     attendance = models.CharField(
         max_length=150,
@@ -510,20 +506,16 @@ class LessonNote(models.Model):
     note = models.TextField(null=True, blank=True)
     created = models.DateTimeField(auto_now_add=True, null=True)
     modified = models.DateTimeField(auto_now=True, null=True)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET(get_sentinel_user))
     history = HistoricalRecords()
 
     def get_absolute_url(self):
         return "/lynx/authorization/%i" % self.authorization_id
 
-    # def save(self, *args, **kwargs):
-    #
-    #     super().save(*args, **kwargs)
-
 
 class SipNote(models.Model):
     contact = models.ForeignKey('Contact', on_delete=models.CASCADE)
     sip_plan = models.ForeignKey('SipPlan', on_delete=models.CASCADE, blank=True, null=True)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET(get_sentinel_user))
     note = models.TextField(null=True)
     note_date = models.DateField(blank=True, null=True)
     vision_screening = models.BooleanField(blank=True, default=False)
@@ -534,7 +526,6 @@ class SipNote(models.Model):
     orientation = models.BooleanField(blank=True, default=False)
     communications = models.BooleanField(blank=True, default=False)
     dls = models.BooleanField(blank=True, default=False)
-    # other_services = models.BooleanField(blank=True, default=False)
     support = models.BooleanField(blank=True, default=False)
     advocacy = models.BooleanField(blank=True, default=False)
     counseling = models.BooleanField(blank=True, default=False)
@@ -552,7 +543,6 @@ class SipNote(models.Model):
     instructor = models.CharField(max_length=50, blank=True, null=True)
     created = models.DateTimeField(auto_now_add=True, null=True)
     modified = models.DateTimeField(auto_now=True, null=True)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET(get_sentinel_user))
     history = HistoricalRecords()
 
     def get_absolute_url(self):
@@ -560,17 +550,17 @@ class SipNote(models.Model):
 
 
 class Volunteer(models.Model):
+    VOLUNTEER_TYPES = (('Access News', 'Access News'), ('Core', 'Core'), ('SIP', 'SIP'), ('CareersPLUS', 'CareersPLUS'),
+                       ('Agency', 'Agency'))
+
     contact = models.ForeignKey('Contact', on_delete=models.CASCADE)
-    volunteer_type = models.CharField(max_length=150, blank=True, choices=(('Access News', 'Access News'),
-                                                                           ('Core', 'Core'), ('SIP', 'SIP'),
-                                                                           ('CareersPLUS', 'CareersPLUS'),
-                                                                           ('Agency', 'Agency')))
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET(get_sentinel_user))
+    volunteer_type = models.CharField(max_length=150, blank=True, choices=VOLUNTEER_TYPES)
     note = models.TextField(null=True)
     volunteer_date = models.DateField(blank=True, null=True, default=date.today)
     volunteer_hours = models.FloatField(blank=True, null=True, choices=SIP_UNITS)
     created = models.DateTimeField(auto_now_add=True, null=True)
     modified = models.DateTimeField(auto_now=True, null=True)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET(get_sentinel_user))
     history = HistoricalRecords()
 
     def get_absolute_url(self):
@@ -589,7 +579,9 @@ class SipPlan(models.Model):
                                                       "Assessed with improved independence"),
                    ("Assessed and maintained independence", "Assessed and maintained independence"),
                    ("Assessed with decreased independence", "Assessed with decreased independence"))
+
     contact = models.ForeignKey('Contact', on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET(get_sentinel_user))
     note = models.TextField(null=True, blank=True)
     at_services = models.BooleanField(blank=True, default=False)
     independent_living = models.BooleanField(blank=True, default=False)
@@ -621,7 +613,6 @@ class SipPlan(models.Model):
     ila_outcomes = models.CharField(max_length=150, choices=ASSESSMENTS, blank=True, null=True, default="Not assessed")
     created = models.DateTimeField(auto_now_add=True, null=True)
     modified = models.DateTimeField(auto_now=True, null=True)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET(get_sentinel_user))
     history = HistoricalRecords()
 
     def __str__(self):
@@ -629,6 +620,41 @@ class SipPlan(models.Model):
 
     def get_absolute_url(self):
         return "/lynx/client/%i" % self.contact_id
+
+
+class Document(models.Model):
+    contact = models.ForeignKey('Contact', on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET(get_sentinel_user))
+    description = models.CharField(max_length=255, blank=True)
+    document = models.FileField(upload_to='documents/')
+    created = models.DateTimeField(auto_now_add=True, null=True)
+    modified = models.DateTimeField(auto_now=True, null=True)
+
+
+class Vaccine(models.Model):
+    VACCINES = (("P or M Dose 2", "P or M Dose 2"), ("J&J Single", "J&J Single"), ("Booster", "Booster"))
+
+    contact = models.ForeignKey('Contact', on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET(get_sentinel_user))
+    vaccine = models.CharField(max_length=25, blank=True, null=True, choices=VACCINES)
+    vaccination_date = models.DateField(blank=True, null=True)
+    vaccine_note = models.TextField(blank=True, null=True)
+    created = models.DateTimeField(auto_now_add=True, null=True)
+    modified = models.DateTimeField(auto_now=True, null=True)
+
+
+class Assignment(models.Model):
+    contact = models.ForeignKey('Contact', on_delete=models.CASCADE)
+    instructor = models.ForeignKey(User, on_delete=models.CASCADE, related_name='instructors')
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET(get_sentinel_user))
+    assignment_date = models.DateField(auto_now_add=True, null=True)
+    note = models.TextField(blank=True, null=True)
+    assignment_status = models.CharField(max_length=25, blank=True, null=True, choices=STATUSES, default='Assigned')
+    created = models.DateTimeField(auto_now_add=True, null=True)
+    modified = models.DateTimeField(auto_now=True, null=True)
+
+    def get_absolute_url(self):
+        return "/lynx/assignments/%i" % self.contact_id
 
 
 class ContactInfoView(pg.View):
@@ -672,38 +698,3 @@ class ContactInfoView(pg.View):
         app_label = 'lynx'
         db_table = 'lynx_contactinfoview'
         managed = False
-
-
-class Document(models.Model):
-    contact = models.ForeignKey('Contact', on_delete=models.CASCADE)
-    description = models.CharField(max_length=255, blank=True)
-    document = models.FileField(upload_to='documents/')
-    created = models.DateTimeField(auto_now_add=True, null=True)
-    modified = models.DateTimeField(auto_now=True, null=True)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET(get_sentinel_user))
-
-
-class Vaccine(models.Model):
-    VACCINES = (("P or M Dose 2", "P or M Dose 2"), ("J&J Single", "J&J Single"), ("Booster", "Booster"))
-
-    contact = models.ForeignKey('Contact', on_delete=models.CASCADE)
-    vaccine = models.CharField(max_length=25, blank=True, null=True, choices=VACCINES)
-    vaccination_date = models.DateField(blank=True, null=True)
-    vaccine_note = models.TextField(blank=True, null=True)
-    created = models.DateTimeField(auto_now_add=True, null=True)
-    modified = models.DateTimeField(auto_now=True, null=True)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET(get_sentinel_user))
-
-
-class Assignment(models.Model):
-    contact = models.ForeignKey('Contact', on_delete=models.CASCADE)
-    instructor = models.ForeignKey(User, on_delete=models.CASCADE, related_name='instructors')
-    assignment_date = models.DateField(auto_now_add=True, null=True)
-    note = models.TextField(blank=True, null=True)
-    assignment_status = models.CharField(max_length=25, blank=True, null=True, choices=STATUSES, default='Assigned', )
-    created = models.DateTimeField(auto_now_add=True, null=True)
-    modified = models.DateTimeField(auto_now=True, null=True)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET(get_sentinel_user))
-
-    def get_absolute_url(self):
-        return "/lynx/assignments/%i" % self.contact_id
