@@ -183,7 +183,7 @@ class Email (models.Model):
     history = HistoricalRecords()
 
     def get_absolute_url(self):
-        return "/lynx/client/%i" % self.contact_id
+        return "/lynx/clients/"
 
     def __str__(self):
         return self.email
@@ -204,7 +204,7 @@ class Phone (models.Model):
     history = HistoricalRecords()
 
     def get_absolute_url(self):
-        return "/lynx/client/%i" % self.contact_id
+        return "/lynx/clients"
 
     def __str__(self):
         return self.phone
