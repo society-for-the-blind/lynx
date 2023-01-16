@@ -33,6 +33,12 @@
         >sudo git pull 
         >sudo systemctl restart gunicorn
 
+* To run migrations:
+
+        >sudo python manage.py makemigrations
+        >sudo python manage.py migrate
+        >sudo systemctl restart gunicorn
+
 # SLOW PERFORMANCE
 * This is caused by diskspace being eaten up by the log in /var/www/lynx/slate-2/lynx/lynx-debug.log
 * I have set up logrotate to rotate through the logs each day to help prevent this
