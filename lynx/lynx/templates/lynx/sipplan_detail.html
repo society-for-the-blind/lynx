@@ -64,8 +64,8 @@
         </div>
         <div class="row">
             <div class="col-1"></div>
-            <div class="col-11"><strong>Services: </strong>{
-                % if sip.at_services or sip.at_devices %}Assistive Technology Devices and Services, {% endif %}
+            <div class="col-11"><strong>Services: </strong>
+                {% if sip.at_services or sip.at_devices %}Assistive Technology Devices and Services, {% endif %}
                 {% if sip.independent_living %}Independent Living and Adjustment Services, {% endif %}
                 {% if sip.orientation %}Orientation & Mobility Training, {% endif %}
                 {% if sip.communications %}Communication Skills Training, {% endif %}
