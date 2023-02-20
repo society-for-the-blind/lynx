@@ -120,6 +120,16 @@
     >
     >      createuser --host=$PGDATA --port=<settings.py_DATABASES_PORT> <settings.py_DATABASES_USER>
 
+    > MORE TODO
+    > Set the password using its hash when it comes to deploying in production.
+    > + [PostgreSQL: Documentation: 15: CREATE ROLE](https://www.postgresql.org/docs/current/sql-createrole.html)
+    > + [PostgreSQL: Documentation: 15: 21.5. Password Authentication](https://www.postgresql.org/docs/current/auth-password.html)
+    > + [c# - How to Generate SCRAM-SHA-256 to Create Postgres 13 User - Stack Overflow](https://stackoverflow.com/questions/68400120/how-to-generate-scram-sha-256-to-create-postgres-13-user)
+    > + [Generating an SHA-256 Hash From the Command Line | Baeldung on Linux](https://www.baeldung.com/linux/sha-256-from-command-line)
+    > + [Creating user with encrypted password in PostgreSQL - Stack Overflow](https://stackoverflow.com/questions/17429040/creating-user-with-encrypted-password-in-postgresql)
+    > + [PostgreSQL: Documentation: 15: 20.3. Connections and Authentication](https://www.postgresql.org/docs/current/runtime-config-connection.html#GUC-PASSWORD-ENCRYPTION)
+
+
 11. Set up virtual Python environment
 
           python -m venv .venv
@@ -144,11 +154,19 @@
 
           python lynx/manage.py showmigrations
 
-    If that went through, go ahead with applying the migrations:
+    Second, to accomodate included applications (and to apply existing migrations):
+
+          python lynx/manage.py makemigrations
+
+    Finally, go ahead with applying the migrations:
 
           python lynx/manage.py migrate
 
-15. Start the app with
+15. Check for issues
+
+          python lynx/manage.py check --deploy
+
+16. Start the app with
 
           python lynx/manage.py runserver 0:8000
 
