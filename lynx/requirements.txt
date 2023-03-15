@@ -62,7 +62,7 @@ jupyter_core==5.1.5
 keyring==23.13.1
 keyrings.alt==4.2.0
 # language-selector==0.1 BENCHED
-lynx @ file:///home/lynx-dev/lynx_dev_data_disk/dev/clones/slate-2/lynx
+# lynx @ file:///home/lynx-dev/lynx_dev_data_disk/dev/clones/slate-2/lynx
 MarkupSafe==2.1.2
 mock==5.0.1
 more-itertools==9.0.0

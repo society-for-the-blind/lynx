@@ -66,15 +66,15 @@
 
 3. Clone this repo & enter the clone
 
-        git clone https://gitlab.com/society-for-the-blind/slate-2.git
+        git clone https://github.com/society-for-the-blind/slate-2.git
         cd slate-2
 
-4. Make Python3 available (deliberately avoiding the word "install"), and add external dependencies for packages in[ `lynx/requirements.txt`](./lynx/requirements.txt):
+4. Make Python3 available (deliberately avoiding the word "install"), and add external dependencies for packages in [`lynx/requirements.txt`](./lynx/requirements.txt):
 
         nix-shell -p systemd pkg-config cairo gobject-introspection icu python3
 
    > **NOTE** `.venv`
-   > Steps 11. and 12. will set up and activate a Python virtual environment, but they are deferred to set up a PostgreSQL instance first as some of the header files are needed during `pip install`, and didn't want to take any chances.
+   > Setting  up a Python virtual environment is deferred until step 11. as some of the PostgreSQL header files are needed during `pip install`, and didn't want to take any chances.
 
 5. Copy `settings.py` into `<repo_root>/lynx/mysite` directory
 
@@ -104,7 +104,7 @@
 
 10. Create user (i.e., login role)
 
-    Connect to the PostgreSQL instance via `psql` ( `--username` is probably superfluous: when PostgreSQL is start via the `shell.nix` in **step 7.**, then the active system user  will be the superuser, and `psql` uses it to log in.)
+    Connect to the PostgreSQL instance via `psql` ( `--username` is probably superfluous: when PostgreSQL is started via the `shell.nix` in **step 7.**, then the active system user  will be the superuser, and `psql` uses it to log in.)
 
           psql --host=$PGDATA --username=$(whoami) --port=<settings.py_DATABASES_PORT> --dbname=<settings.py_DATABASES_NAME>
 
@@ -118,7 +118,7 @@
     > Especially because production settings will be tightened up anyway.
 
     > NOTE
-    > Decided against using `createuser`, because the password could be save in the shell history. Otherwise it would have looked like this:
+    > Decided against using `createuser`, because the password will probably be saved in the shell's history. Otherwise it would have looked like this:
     >
     >      createuser --host=$PGDATA --port=<settings.py_DATABASES_PORT> <settings.py_DATABASES_USER>
 
@@ -142,6 +142,8 @@
 12. Activate virtual Python environment
 
           source .venv/bin/activate
+
+          pip install --upgrade pip
 
 13. Install packages
 
