@@ -44,7 +44,7 @@
 
 6. Cull dependencies
 
-   There are a lot of packages that may not even be needed so audit `requirements.txt`.
+   There are a lot of packages that may not even be needed, so audit `requirements.txt`.
 
 ## Reproducible build steps after upgrading Django to 4.1
 
@@ -55,6 +55,8 @@
 1. Install Nix (see [download page](https://nixos.org/download.html) for more):
 
         sh <(curl -L https://nixos.org/nix/install) --daemon
+
+   (... and then issue `source '/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh'` if you don't want to restart your shell.)
 
 2. (OPTIONAL) Enter shell with most common tools
 
