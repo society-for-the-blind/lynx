@@ -13,7 +13,10 @@ certbot-nginx==2.2.0
 certifi==2022.12.7
 cffi==1.15.1
 chardet==5.1.0
-charset-normalizer==3.0.1
+# Needed to downgrade because `aiohttp` has a <3.0.0 requirement.
+# TODO Which package needs `aiohttp` as a dependency? Anyway, it was easier to downgrade than risk errors with Django.
+# charset-normalizer==3.1.0
+charset-normalizer==2.1.1
 click==8.1.3
 # cloud-init==22.2 BENCHED
 colorama==0.4.6
@@ -25,7 +28,7 @@ cryptography==39.0.0
 # distro-info===0.18ubuntu0.18.04.1 BENCHED
 distlib==0.3.6
 distro==1.8.0
-Django==4.1.5
+Django==4.2
 django-appconf==1.0.5
 django-audit-log==0.7.0
 django-crispy-forms==1.14.0
