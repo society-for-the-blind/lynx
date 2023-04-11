@@ -1,4 +1,7 @@
 ```text
+lxc list
+lxc stop <container>
+lxc start <container>
 lxc launch -c security.nesting=true ubuntu:22.04 ubuntu2204
 lxc exec ubuntu2204 -- adduser toraritte sudo
 lxc exec ubuntu2204 -- sudo --login --user toraritte
@@ -22,35 +25,50 @@ lxc exec ubuntu2204 -- sudo --login --user toraritte
 
 ## TOP PRIORITY TODOS
 
-0. !!! https://docs.djangoproject.com/en/4.1/intro/tutorial01/
+1. !!! https://docs.djangoproject.com/en/4.1/intro/tutorial01/
 
-1. Figure out how to add `settings.py` to version control in a safe manner.
+1. Rename the current production PostgreSQL user. (Just do `\du` in the `psql` shell and you'll see why.)
 
-   Just spent ca. 3 hours solving runtime errors that were resolved by (1) adjusting version numbers in `requirements.txt` and (2) adding missing entries to `INSTALLED_APPS` in `settings.py`. Adding `dummy_settings.py` as a workaround for now.
+   On that note, it would be prudent to implement security best practices. For example:
+   + [should a postgresql cluster in production have superusers](https://www.google.com/search?q=should+a+postgresql+cluster+in+production+have+superusers&oq=should+a+postgresql+cluster+in+production+have+superusers&aqs=chrome..69i57j33i160l3.17593j0j7&sourceid=chrome&ie=UTF-8)
+   + see tab group on phone
 
-   Places to start:
+1. [Django: How to manage development and production settings? (SO)](https://stackoverflow.com/questions/10664244/django-how-to-manage-development-and-production-settings)
 
-   + [(loading secrets into `settings.py` from textfiles)](https://serverfault.com/questions/1022877/do-i-have-to-restart-my-server-after-changing-settings-py)
+   Related: [(loading secrets into `settings.py` from textfiles)](https://serverfault.com/questions/1022877/do-i-have-to-restart-my-server-after-changing-settings-py)
 
-   + [Django: How to manage development and production settings? (SO)](https://stackoverflow.com/questions/10664244/django-how-to-manage-development-and-production-settings]
+1. Save documents in database?
 
-2. Save documents in database?
+1. (Related to 2.) Set up database backup and/or replication.
 
-3. (Related to 2.) Set up database backup and/or replication.
-
-4. Avoid stacking subshells -> Package properly with Nix (or, at least, do it in a single `shell.nix`)
-
-   (case in point: https://stackoverflow.com/questions/21976606/why-avoid-subshells)
-
-5. Adopt decision records (DR)
+1. Adopt decision records (DR)
 
    + https://github.com/joelparkerhenderson/decision-record
    + https://adr.github.io/
    + https://docs.aws.amazon.com/prescriptive-guidance/latest/architectural-decision-records/adr-process.html
 
-6. Cull dependencies
+1. Cull dependencies
 
    There are a lot of packages that may not even be needed, so audit `requirements.txt`.
+
+1. Make dev environment more flexible.
+
+   That is, don't make `dev_shell.nix` run until the web server is running (this would be a good candidate task for `prod_shell.nix` or something similar), but just add the tools needed (plus maybe add clean up commands to `shellHook`), but the rest (setting up the database, set up virtualenv, run migrations etc) should be done by job runners (e.g., with `just`).
+
+### Done TODOs (or considered done, at least)
+
+1. Avoid stacking subshells -> Package properly with Nix (or, at least, do it in a single `shell.nix`)
+
+   (case in point: https://stackoverflow.com/questions/21976606/why-avoid-subshells)
+
+   > **RESOLUTION**: see `dev_shell.nix`.
+
+1. Figure out how to add `settings.py` to version control in a safe manner.
+
+   Just spent ca. 3 hours solving runtime errors that were resolved by (1) adjusting version numbers in `requirements.txt` and (2) adding missing entries to `INSTALLED_APPS` in `settings.py`. Adding `dummy_settings.py` as a workaround for now.
+
+   > **RESOLUTION**: Use KeePassXC and SOPS. See commands in `dev_shell.nix` and [this Stackoverlow answer](https://stackoverflow.com/a/75972492/1498178).
+
 
 ## Reproducible build steps after upgrading Django to 4.1
 
@@ -62,8 +80,8 @@ lxc exec ubuntu2204 -- sudo --login --user toraritte
 
         sh <(curl -L https://nixos.org/nix/install) --daemon
 
-   > NOTE
-   > I'm trying out [Determinate Systems' Nix installer](https://determinate.systems/posts/determinate-nix-installer):
+   > TODO
+   > The [Determinate Systems' Nix installer](https://determinate.systems/posts/determinate-nix-installer) works like a charm, and should switch to that:
    > ```text
    > curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix | sh -s -- install
    > ```
