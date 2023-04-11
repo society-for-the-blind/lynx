@@ -1,8 +1,6 @@
-# TODO pin to commit instead of to an ever-moving channel
-{ nixpkgs_commit ? "22.11"
-#                                                         !!  VVV  !!
-, _utils_file ? "https://github.com/toraritte/shell.nixes/raw/main/_utils.nix"
-#                                                         !!  ^^^  !!
+# nixos-22.11 channel
+# Apr 9, 2023, 9:59 PM EDT
+{ nixpkgs_commit ? "ea96b4af6148114421fda90df33cf236ff5ecf1d"
 }:
 
 let
@@ -42,11 +40,26 @@ in
     shellHook =
 
       let
-        # short for shell.nixes_utils
-        url_dir = ( builtins.dirOf _utils_file ) + "/";
-        sn_utils = (import (builtins.fetchurl _utils_file)) url_dir;
-        fetchContents = sn_utils.fetchContents sn_utils.fetchRemoteFile;
-        cleanUp       = sn_utils.cleanUp       sn_utils.fetchLocalOrRemoteFile;
+        # sn = shell.nixes
+        sn_dir = "https://github.com/toraritte/shell.nixes/raw/main/";
+
+        snFetchContents =
+          rel_path:
+          builtins.readFile
+            ( builtins.fetchurl (sn_dir + rel_path) )
+        ;
+
+        cleanUp =
+          shell_scripts:
+            ''
+              trap \
+              "
+              ${ builtins.concatStringsSep "" shell_scripts }
+              " \
+              EXIT
+            ''
+        ;
+
       in
 
       # TODO this may not be correct anymore
@@ -61,9 +74,17 @@ in
       # https://github.com/mozilla/sops/issues/1190
       # ),  so I  used a  dedicated Azure  service principal
       # instead -  but that SOPS authentication  method does
-      # require secrets in environmental variables...
-        fetchContents "postgres/shell-hook.sh"
-      + cleanUp [./postgres/clean-up.sh]
+      # require secrets in environment variables...
+        snFetchContents "postgres/shell-hook.sh"
+      + cleanUp
+          [
+            ( snFetchContents "postgres/clean-up.sh" )
+            ''
+              echo -n 'deleting .venv ... '
+              rm -rf .venv
+              echo 'done'
+            ''
+          ]
       +
         ''
           source <(keepassxc-cli attachment-export secrets/sp.kdbx az_sp_creds export.sh --stdout)
@@ -88,6 +109,8 @@ in
           # python lynx/manage.py migrate
           # python lynx/manage.py check --deploy
 
+          # python lynx/manage.py createsuperuser
+          # python lynx/manage.py collectstatic
           # python lynx/manage.py runserver 0:8000
       ''
     ;

@@ -1,3 +1,9 @@
+```text
+lxc launch -c security.nesting=true ubuntu:22.04 ubuntu2204
+lxc exec ubuntu2204 -- adduser toraritte sudo
+lxc exec ubuntu2204 -- sudo --login --user toraritte
+```
+
 > NOTE
 > Legacy build steps can be found in [`build-steps-Django-2.2.md`](./build-steps-Django-2.2.md)
 
@@ -55,6 +61,12 @@
 1. Install Nix (see [download page](https://nixos.org/download.html) for more):
 
         sh <(curl -L https://nixos.org/nix/install) --daemon
+
+   > NOTE
+   > I'm trying out [Determinate Systems' Nix installer](https://determinate.systems/posts/determinate-nix-installer):
+   > ```text
+   > curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix | sh -s -- install
+   > ```
 
    (... and then issue `source '/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh'` if you don't want to restart your shell.)
 
