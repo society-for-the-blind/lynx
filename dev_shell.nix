@@ -82,6 +82,13 @@ in
             ''
               echo -n 'deleting .venv ... '
               rm -rf .venv
+
+              # NOTE
+              # `lynx/lynx/static`  has the  static assets  for this
+              # project  that will  get copied  via `collectstatic`!
+              # `settings.py` controls  the destination;  search for
+              # `STATIC`.
+
               rm -rf lynx/static
               echo 'done'
             ''
@@ -111,8 +118,8 @@ in
           python lynx/manage.py check --deploy
 
           python lynx/manage.py createsuperuser
-          # python lynx/manage.py collectstatic
-          # python lynx/manage.py runserver 0:8000
+          python lynx/manage.py collectstatic
+          python lynx/manage.py runserver 0:8000
       ''
     ;
 
