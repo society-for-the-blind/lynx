@@ -82,6 +82,7 @@ in
             ''
               echo -n 'deleting .venv ... '
               rm -rf .venv
+              rm -rf lynx/static
               echo 'done'
             ''
           ]
@@ -98,18 +99,18 @@ in
             --dbname=$(d "NAME")  \
             --command="CREATE ROLE $(d 'USER') WITH LOGIN PASSWORD '$(d 'PASSWORD')'"
 
-          # python -m venv .venv
-          # source .venv/bin/activate
-          # pip install --upgrade pip
-          # pip install lynx/.
+          python -m venv .venv
+          source .venv/bin/activate
+          pip install --upgrade pip
+          pip install lynx/.
 
-          # python lynx/manage.py showmigrations
+          python lynx/manage.py showmigrations
 
-          # python lynx/manage.py makemigrations
-          # python lynx/manage.py migrate
-          # python lynx/manage.py check --deploy
+          python lynx/manage.py makemigrations
+          python lynx/manage.py migrate
+          python lynx/manage.py check --deploy
 
-          # python lynx/manage.py createsuperuser
+          python lynx/manage.py createsuperuser
           # python lynx/manage.py collectstatic
           # python lynx/manage.py runserver 0:8000
       ''
