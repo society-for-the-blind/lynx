@@ -112,6 +112,11 @@ lxc exec ubuntu2204 -- adduser toraritte sudo
         git clone https://github.com/society-for-the-blind/slate-2.git
         cd slate-2
 
+   If the `dev` branch is needed, then use:
+
+        git clone -b dev https://github.com/society-for-the-blind/slate-2.git
+        cd slate-2
+
    > NOTE - The rest of the steps are / will be part of [`dev_shell.nix`](./dev_shell.nix) so run that instead (e.g., via `nix-shell -v --argstr "nixpkgs_commit" "22.11" dev_shell.nix` or simply `nix-shell -v dev_shell.nix`)
 
 4. Make Python3 available (deliberately avoiding the word "install"), and add external dependencies for packages in [`lynx/requirements.txt`](./lynx/requirements.txt):
