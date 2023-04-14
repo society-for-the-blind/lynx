@@ -5,6 +5,13 @@
 ,  debug ? false
 }:
 
+# EXAMPLE CALLS
+# -------------
+#
+# nix-shell dev_shell.nix
+# nix-shell dev_shell.nix --arg "deploy" "true" --arg "debug" "true"
+# nix-shell dev_shell.nix --arg "debug"  "true" -v
+
 let
 
   nixpkgs_url = "https://github.com/nixos/nixpkgs/tarball/${nixpkgs_commit}";
@@ -67,25 +74,19 @@ in
         # }}-
       in
 
-        # set -euxo pipefail {{-
-          ''
-            set -euo pipefail
-          ''
-
           # NOTE Why the `debug` flag?
           #      ---------------------
           # Because it will output secrets stored in environment
           # variables as  well, thus it  feels safer to  make it
           # optional.
 
-        + ( if (debug)
+          ( if (debug)
             then ''
                   set -x
-                ''
+                 ''
             else ""
           )
 
-          # }}-
         + snFetchContents "postgres/shell-hook.sh"
 
       # + cleanUp {{-
@@ -167,7 +168,7 @@ in
         + ( if (deploy)
             then ''
                   just
-                ''
+                 ''
             else ""
           )
     ;
