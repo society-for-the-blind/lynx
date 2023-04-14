@@ -1,8 +1,8 @@
-default: db get_deps migrate prep serve
+default: db deps migrate prep serve
 
-alias s := get_database_setting
+alias s := _get_database_setting
 
-get_database_setting name:
+_get_database_setting name:
   sops --decrypt secrets/lynx_settings.sops.json | jq -r ".[\"DATABASES\"][\"default\"][\"{{name}}\"]"
 
 db:
@@ -15,7 +15,7 @@ db:
   --dbname=$(just s "NAME")  \
   --command="CREATE ROLE $(just s 'USER') WITH LOGIN PASSWORD '$(just s 'PASSWORD')'"
 
-get_deps:
+deps:
   pip install --upgrade pip
   pip install lynx/.
 
@@ -31,4 +31,5 @@ prep:
 
 serve:
   python lynx/manage.py runserver 0:8000
+
 # vim: set foldmethod=marker foldmarker={{-,}}- foldlevelstart=0 tabstop=2 shiftwidth=2 expandtab:
