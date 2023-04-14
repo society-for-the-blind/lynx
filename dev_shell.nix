@@ -1,6 +1,7 @@
 # nixos-22.11 channel
 # Apr 9, 2023, 9:59 PM EDT
 { nixpkgs_commit ? "ea96b4af6148114421fda90df33cf236ff5ecf1d"
+, deploy ? false
 }:
 
 let
@@ -20,6 +21,7 @@ in
     buildInputs = with pkgs; [
       postgresql
       python3
+      just
 
       # `sops` is  needed to  decrypt `secrets.json`  and to
       # export  its  contents as  environment variables; the
@@ -40,7 +42,7 @@ in
     shellHook =
 
       let
-        # sn = shell.nixes
+        # sn =:= shell.nixes
         sn_dir = "https://github.com/toraritte/shell.nixes/raw/main/";
 
         snFetchContents =
@@ -67,60 +69,92 @@ in
       # Step 1. Env vars for SOPS to work (see NOTE below)
       # Step 2. Env vars for Django to run Lynx itself
 
-      # NOTE
-      # The dance  with KeePassXC is needed  beforehand as I
-      # was not able  to use a Azure  managed identity (MSI)
-      # with SOPS (see
-      # https://github.com/mozilla/sops/issues/1190
-      # ),  so I  used a  dedicated Azure  service principal
-      # instead -  but that SOPS authentication  method does
-      # require secrets in environment variables...
         snFetchContents "postgres/shell-hook.sh"
+
+        # CLEAN UP AFTER EXITING NIX-SHELL
+        # --------------------------------
+
       + cleanUp
           [
             ( snFetchContents "postgres/clean-up.sh" )
+
             ''
-              echo -n 'deleting .venv ... '
+              echo -n 'deleting .venv/ static/ ... '
               rm -rf .venv
+            ''
 
-              # NOTE
-              # `lynx/lynx/static`  has the  static assets  for this
-              # project  that will  get copied  via `collectstatic`!
-              # `settings.py` controls  the destination;  search for
-              # `STATIC`.
-
+            # NOTE static assets
+            #      -------------
+            # `lynx/lynx/static`  has the  static assets  for this
+            # project  that will  get copied  via `collectstatic`!
+            # `settings.py` controls  the destination;  search for
+            # `STATIC`.
+            ''
               rm -rf lynx/static
               echo 'done'
             ''
           ]
       +
+        # SETUP
+        # -----
+        # `just` is used to organize  commands and to only run
+        # them when needed.
+
+        # NOTE Why KeePassXC + SOPS?
+        #      ---------------------
+        # The dance  with KeePassXC is needed  beforehand as I
+        # was not able  to use a Azure  managed identity (MSI)
+        # with SOPS (see
+        # https://github.com/mozilla/sops/issues/1190
+        # ),  so I  used a  dedicated Azure  service principal
+        # instead -  but that SOPS authentication  method does
+        # require secrets in environment variables...
+        #
+        # See also https://stackoverflow.com/a/75972492/1498178
+
+          # NOTE Why didn't this get moved to Justfile?
+          #      --------------------------------------
+          # Because  the  `get_database_setting  <name>`  recipe
+          # (more  specifically, SOPS)  in the  Justfile depends
+          # on  the  environment  variables  exported  from  the
+          # KeePassXC database. See note "Why KeePassXC + SOPS?"
+          # above.
+          #
+          # `just`, just  as `make`, executes each  command in a
+          # new shell,  therefore environment variables  have to
+          # be set  before hand if  the recipes need  them. This
+          # could  have been  set  in the  `Justfile`, but  then
+          # running any recipe would probably nagged the user to
+          # unlock the KeePassXC database.
+          #
+          # Also, the whole point of  a `shell.nix` is to set up
+          # (and tear down) a shell environment after all.
         ''
           source <(keepassxc-cli attachment-export secrets/sp.kdbx az_sp_creds export.sh --stdout)
-          d () { sops --decrypt secrets/lynx_settings.sops.json | jq -r ".[\"DATABASES\"][\"default\"][\"$1\"]"; }
+        ''
 
-          createdb $(d "NAME") --host=$PGDATA --port=$(d "PORT")
-
-          psql \
-            --host=$PGDATA \
-            --username=$(whoami) \
-            --dbname=$(d "NAME")  \
-            --command="CREATE ROLE $(d 'USER') WITH LOGIN PASSWORD '$(d 'PASSWORD')'"
-
+          # NOTE Why not simple use a `just venv` recipe?
+          #      ----------------------------------------
+          # Because the  first command creates a  virtual Python
+          # environment, and the second one  enters into it in a
+          # new  sub-shell. `just`  commands  run  in their  own
+          # sub-shell so  any other recipe that  depends on this
+          # `venv` will fail.
+          #
+          # Plus, as noted above:
+          #
+          # > Also, the whole point of  a `shell.nix` is to set up
+          # > (and tear down) a shell environment after all.
+      + ''
           python -m venv .venv
           source .venv/bin/activate
-          pip install --upgrade pip
-          pip install lynx/.
-
-          python lynx/manage.py showmigrations
-
-          python lynx/manage.py makemigrations
-          python lynx/manage.py migrate
-          python lynx/manage.py check --deploy
-
-          python lynx/manage.py createsuperuser
-          python lynx/manage.py collectstatic
-          python lynx/manage.py runserver 0:8000
-      ''
+        ''
+      + ( if (deploy)
+          then ''
+                 just
+               ''
+          else ""
+        )
     ;
 
     ######################################################################
