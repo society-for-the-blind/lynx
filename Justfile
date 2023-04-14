@@ -1,10 +1,5 @@
 default: db deps migrate prep serve
 
-alias s := _get_database_setting
-
-_get_database_setting name:
-  sops --decrypt secrets/lynx_settings.sops.json | jq -r ".[\"DATABASES\"][\"default\"][\"{{name}}\"]"
-
 db:
   # ---
   createdb $(just s "NAME") --host=$PGDATA --port=$(just s "PORT")
@@ -31,5 +26,17 @@ prep:
 
 serve:
   python lynx/manage.py runserver 0:8000
+
+# CONVENIENCE RECIPES
+# -------------------
+
+alias s := _get_database_setting
+alias c := _connect_lynx_db
+
+_get_database_setting name:
+  sops --decrypt secrets/lynx_settings.sops.json | jq -r ".[\"DATABASES\"][\"default\"][\"{{name}}\"]"
+
+_connect_lynx_db:
+  psql --host=$PGDATA --username=$(whoami) --dbname=$(just s "NAME")
 
 # vim: set foldmethod=marker foldmarker={{-,}}- foldlevelstart=0 tabstop=2 shiftwidth=2 expandtab:
