@@ -1,25 +1,3 @@
-```text
-lxc list
-lxc stop <container>
-lxc start <container>
-lxc launch -c security.nesting=true ubuntu:22.04 ubuntu2204
-lxc exec ubuntu2204 -- sudo --login --user toraritte
-
-# To check the latest Ubuntu LXC containers:
-lxc image list ubuntu: | ag x86_64 | ag CONTAINER | sort -t '|' -k4 | less
-
-# To avoid having to set up a storage pool and network manually. It has a lot of questions I'm not sure of though, but the defaults worked out well so far.
-# https://chat.openai.com/chat/f8d2c4e1-85d4-494b-a500-325b9547661e
-# !!!
-lxd init
-# !!!
-
-lxc storage create lxd-zfs-slate2-pool zfs
-lxc launch -c security.nesting=true --storage lxd-zfs-slate2-pool ubuntu:22.04 ubuntu2204
-lxc exec ubuntu2204 -- adduser toraritte
-lxc exec ubuntu2204 -- adduser toraritte sudo
-```
-
 > NOTE
 > Legacy build steps can be found in [`build-steps-Django-2.2.md`](./build-steps-Django-2.2.md)
 
