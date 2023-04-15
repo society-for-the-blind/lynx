@@ -14,7 +14,7 @@
 >    + https://realpython.com/django-migrations-a-primer/
 >    + https://docs.djangoproject.com/en/4.1/intro/overview/
 
-## TOP PRIORITY TODOS
+## TODOs
 
 1. !!! https://docs.djangoproject.com/en/4.1/intro/tutorial01/
 
@@ -45,6 +45,15 @@
 1. Make dev environment more flexible.
 
    That is, don't make `dev_shell.nix` run until the web server is running (this would be a good candidate task for `prod_shell.nix` or something similar), but just add the tools needed (plus maybe add clean up commands to `shellHook`), but the rest (setting up the database, set up virtualenv, run migrations etc) should be done by job runners (e.g., with `just`).
+
+   > UPDATE (2023-04-15)
+   > This has largely been achieved with the latest set of commits (adding [`Justfile`](./Justfile) and parameters to [`dev_shell.nix`](./dev_shell.nix)), but still unsure what the ideal producion environment would look like (and how it should be deployed). See also the LXD/LXC-related TODO somewhere on this list.
+
+1. Explore containerization
+
+   The [`DRAFT-lxc-deploy.sh`](./DRAFT-lxc-deploy.sh) script is an attempt at using LXD/LXC containers, but it also adds extra complexity (see file). The current approach with Nix seems highly reproducible already, but could be wrong and there may be other benefits.
+
+1. Fetch Python packages from Nixpkgs (or create a new package collection)
 
 ### Done TODOs (or considered done, at least)
 

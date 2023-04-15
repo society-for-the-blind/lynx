@@ -53,4 +53,11 @@ lxc exec "${CONTAINER}" -- sudo --login --user toraritte
 # which is quite forward, but  then where to store it?
 # What are the benefits?
 
+# TODO How to expose services in containers?
+# There is  port-forwarding, bridging(?),  and reverse
+# proxy  (e.g.,  NGINX).  The  last  one  seem  to  be
+# the  best option,  because Lynx  already uses  it in
+# production,  and it  has  to be  used (or  something
+# similar) anyway for enabling HTTPS.
+
 # vim: set foldmethod=marker foldmarker={{-,}}- foldlevelstart=0 tabstop=2 shiftwidth=2 expandtab:
