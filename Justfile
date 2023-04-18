@@ -1,20 +1,27 @@
 default: db deps migrate prep serve
 
-db:
-  # >>>
-  # TODO Add ICU? (postgres15)
+db: create_db add_role
+
+# TODO Add ICU? (postgres15)
+create_db:
   createdb           \
     $(just s "NAME") \
     --host=$PGDATA   \
     --port=$(just s "PORT")
-  # >>>
-  # >>> The  argument  to  `just c`  needs  to  be
-  # >>> surrounded by  quotes because  it contains
-  # >>> spaces  and  `just`  will  parse  them  as
-  # >>> individual  tokens  to executed.  See  the
-  # >>> `aaa` recipe at the bottom.
-  # >>>
-  just c "--command=\"CREATE ROLE $(just s 'USER') WITH LOGIN PASSWORD '$(just s 'PASSWORD')'\""
+
+# NOTE
+# Tried to  replace this with `just  c --command`, but
+# it is  impossible to  figure out the  quoting scheme
+# that  works through  all execution  layers (just  ->
+# shell -> psql).  Not going to waste  to another hour
+# to make it look good.
+
+add_role:
+  psql \
+    --host=$PGDATA \
+    --username=$(whoami) \
+    --dbname=$(just s "NAME")  \
+    --command="CREATE ROLE $(just s 'USER') WITH LOGIN PASSWORD '$(just s 'PASSWORD')'"
 
 deps:
   pip install --upgrade pip
@@ -43,6 +50,10 @@ alias c := _connect_lynx_db
 # HELPERS
 # -------
 
+# WARNING sometimes works, other times it doesn't
+reldoc host driver:
+  schemaspy -t pgsql11 -host {{host}} -port $(just s 'PORT') -db $(just s 'NAME') -s public -u $(just s 'USER') -o . -dp {{driver}}
+
 _django_manage +sub_commands:
   python lynx/manage.py {{sub_commands}}
 
@@ -54,7 +65,7 @@ _connect_lynx_db *flags:
   psql                        \
   --host=$PGDATA              \
   --port=$(just s "PORT")     \
-  --username=$(just s "USER") \
+  --username=$(whoami)        \
   --dbname=$(just s "NAME")   \
   {{flags}}
 

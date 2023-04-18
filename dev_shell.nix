@@ -45,6 +45,9 @@ in
       cairo
       gobject-introspection
       icu
+
+      # debug
+      schemaspy
     ];
 
     shellHook =

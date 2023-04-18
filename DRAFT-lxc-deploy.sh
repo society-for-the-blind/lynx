@@ -7,7 +7,7 @@ lxc image list ubuntu: | ag x86_64 | ag CONTAINER | sort -t '|' -k4 | less
 # To avoid having to set up a storage pool and network manually. It has a lot of questions I'm not sure of though, but the defaults worked out well so far.
 # https://chat.openai.com/chat/f8d2c4e1-85d4-494b-a500-325b9547661e
 # !!!
-# NOTE I don't think this will be needed
+# TODO I don't think this will be needed
 # https://discuss.linuxcontainers.org/t/how-do-i-know-if-lxd-is-initialized/15473/2
 # instead, all needed resources will be created and invoked implicitly.
 lxd init
