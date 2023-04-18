@@ -1,5 +1,6 @@
 venv/
 lynx/venv/
+lynx/static/
 lynx/mysite/__pycache__/
 lynx/lynx/__pycache__/
 lynx/lynx/migrations/__pycache__/
