@@ -1,3 +1,18 @@
+### SchemaSpy
+
+Get the latest [SchemaSpy release](https://github.com/schemaspy/schemaspy/releases) and [PostgreSQL JDBC driver](https://jdbc.postgresql.org/).
+
+```text
+schemaspy -t pgsql11 -host 1.2.3.4 -port $(just s "PORT") -db $(just s "NAME") -s public -u $(just s "USER") -o output/directory/ -dp postgresql-42.6.0.jar
+```
+
+Use SSH tunneling to connect to a remote database:
+
+1. `ssh -i <cert> -L 5432:localhost:5432 user@1.2.3.4`
+2. Change `-host` above to `localhost`
+
+---
+
 > NOTE
 > Legacy build steps can be found in [`build-steps-Django-2.2.md`](./build-steps-Django-2.2.md)
 
