@@ -27,7 +27,7 @@ let
 in
   pkgs.mkShell {
     buildInputs = with pkgs; [
-      postgresql
+      postgresql_15
       python3
       just
 
@@ -89,6 +89,30 @@ in
                  ''
             else ""
           )
+
+          # NOTE Why not make this a `just` recipe? {{-
+          #      ----------------------------------
+          # Because recipes  cannot be used in  global variables
+          # and  couldn't  figure  out  how to  define  a  shell
+          # function in  a `just` variable  that can be  used in
+          # subsequent variable definitions.
+          #
+          # For the  record, there  was a  `just s`  recipe, but
+          # these  would get  evaluated every  time, instead  of
+          # simply  once  per  just invocation  (e.g.,  for  the
+          # `add_schema` recipe this meant  that both 'USER' and
+          # 'SCHEMA' would  have been extracted 4  times each in
+          # one call.
+
+          # }}-
+        + ''
+            get_db_settings () {
+              sops --decrypt secrets/lynx_settings.sops.json \
+              | jq -r ".[\"DATABASE\"][\"$1\"]"
+            }
+
+            export -f get_db_settings
+          ''
 
         + snFetchContents "postgres/shell-hook.sh"
 

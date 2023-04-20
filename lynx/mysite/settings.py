@@ -107,7 +107,19 @@ WSGI_APPLICATION = 'mysite.wsgi.application'
 # WARNING
 # https://www.enterprisedb.com/blog/how-safely-change-postgres-user-password-psql
 
-DATABASES = config['DATABASES']
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME':      config['DATABASE']['NAME'],
+        'USER':      config['DATABASE']['USER'],
+        'PASSWORD':  config['DATABASE']['PASSWORD'],
+        'HOST':      config['DATABASE']['HOST'],
+        'PORT':      config['DATABASE']['PORT'],
+        'OPTIONS': {
+            'options': '-c search_path=' +  config['DATABASE']['SCHEMA']
+        }
+    }
+}
 
 # After upgrading from Django 2.2 to 4.1, got this warning (times the number of all existing models):
 #
