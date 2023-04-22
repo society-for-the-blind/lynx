@@ -1,10 +1,10 @@
 # VARIABLES
 # ---------
 
-db_user     := `get_db_settings 'USER'`
-db_port     := `get_db_settings 'PORT'`
-db_schema   := `get_db_settings 'SCHEMA'`
-db_name     := `get_db_settings 'NAME'`
+db_user   := `get_db_settings 'USER'`
+db_port   := `get_db_settings 'PORT'`
+db_schema := `get_db_settings 'SCHEMA'`
+db_name   := `get_db_settings 'NAME'`
 
 # NOTE `psql` username
 #      ===============
@@ -29,12 +29,18 @@ psql_flags := (
 # COMPOSITE RECIPES
 # -----------------
 
-default: db deps migrate prep serve
-
-db: create_db add_role add_schema
+default: first_migration pre_serve
+db: create_db add_role grant_schema
+first_migration: db deps migrate
+pre_serve: prep super serve
 
 # RECIPES
 # -------
+
+dump *extra:
+  pg_dump \
+  {{psql_flags}} \
+  {{extra}}
 
 # TODO Add ICU? (postgres15)
 create_db:
@@ -43,7 +49,8 @@ create_db:
     --host=$PGDATA \
     --port={{db_port}}
 
-# NOTE
+# NOTE Why doesn't this use `just c`? (or merged with `grant_schema`)
+#      ------------------------------
 # This recipe is very resistant to refactoring, and my
 # every attempt failed thus far. One of the reasons is
 # that `PASSWORD`  changes often, and if  a particular
@@ -55,9 +62,17 @@ add_role:
   {{psql_flags}} \
   --command="CREATE ROLE {{db_user}} WITH LOGIN PASSWORD '$(get_db_settings 'PASSWORD')'"
 
-add_schema:
+# NOTE Why is this not a Django migration?
+#      -----------------------------------
+# Because this is necessary for Django to even be able
+# to touch  the database. From PostgreSQL  15, no user
+# has access to the `public`  schema and it is treated
+# just like any other.  Therefore, unless someone is a
+# superuser, extra  privileges have  to be  granted to
+# touch anything inside it.
+
+grant_schema:
   echo " \
-    CREATE SCHEMA {{db_schema}};                                                  \
     GRANT USAGE, CREATE ON SCHEMA {{db_schema}} TO {{db_user}};                   \
     GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA {{db_schema}} TO {{db_user}};    \
     GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA {{db_schema}} TO {{db_user}}; \
@@ -67,13 +82,31 @@ deps:
   pip install --upgrade pip
   pip install lynx/.
 
-migrate:
+migrate *flag:
   just m showmigrations
   just m makemigrations
-  just m migrate
+  just m migrate {{flag}}
+
+# NOTE Apply Django migrations when database is **not** empty
+#      ------------------------------------------------------
+# This may not be used much after getting the upgraded
+# version  of  Lynx  into   production,  but  for  now
+# it  is  needed  when the  production  database  gets
+# `pg_dump`-ed, replayed  it to  a fresh  cluster, and
+# this  recipe will  apply  only  the migrations  that
+# are  necessery (e.g.,  production Lynx  only has  81
+# migrations, but  development Lynx  has 82  after all
+# the dependency upgrades).
+#
+# https://docs.djangoproject.com/en/4.2/topics/migrations/#adding-migrations-to-apps
+
+fake:
+  just migrate --fake-initial
+
+super:
+  just m createsuperuser
 
 prep:
-  just m createsuperuser
   just m collectstatic
   just m check --deploy
 
@@ -85,6 +118,7 @@ serve:
 
 alias m := _django_manage
 alias c := _connect_lynx_db
+alias n := _shell_nixes
 
 # HELPERS
 # -------
@@ -96,6 +130,9 @@ reldoc host driver:
 
 _django_manage +sub_commands:
   python lynx/manage.py {{sub_commands}}
+
+_shell_nixes:
+  source <(curl https://raw.githubusercontent.com/toraritte/shell.nixes/main/run.sh) -n 22.11
 
 # CAVEAT `extra_flags` variadic parameter
 #        ================================
