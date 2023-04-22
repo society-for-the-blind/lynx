@@ -1,24 +1,22 @@
-## 1. Migrations
+## 1. Migrate from prod to dev
 
-The topic is still fuzzy for me, but I think it is that:
+PROD:
 
-1. models are created / altered
-2. migrations are calculated from step 1.
+```
+pg_dump $(get_db_settings 'NAME') > dump.sql
+```
 
-At the moment, there are 82 migrations in [`lynx/lynx/migrations`](./lynx/lynx/migrations), but then I
+DEV:
 
-1. deleted that directory
-2. `python lynx/manage.py makemigrations lynx` (or `just m makemigrations`)
+0. `scp` the `dump.sql` file from PROD to DEV
+1. `just db`
+2. `just c -f dump.sql`
+3. `just deps`
+4. `just m migrate` (or `just m migrate --fake-initial`)
+5. `just c --command="analyze"`
 
-and there was a new initial Lynx migration (check with `just m showmigrations`), that seemed to be identical to the end result of applying the previous 82 migrations.
+6. TODO: https://forum.djangoproject.com/t/upgrading-from-2-2-to-4-2-yields-relatedobjectdoesnotexist-user-has-no-account-error/20437
 
-> QUESTION Is there a way to compare whether the end results are really identical? My current method was to scan the second initial migration and comparing its size (i.e., number of lines) to the previous batch, and it looked ok.
-
-### 1.1 How to consolidate PostgreSQL backup methods with existing migrations?
-
-#### 1.1.2 Logical backups (i.e., `pg_dump` and `pg_dumpall`)
-
-Dumps produce SQL commands that will get replayed on the target database.
-
-select * from account_account as a join auth_user as u on a.user_id = u.id;
-
+   ```sql
+   select * from account_account as a join auth_user as u on a.user_id = u.id;
+   ```
