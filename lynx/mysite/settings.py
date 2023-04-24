@@ -34,14 +34,6 @@ DEBUG = True
 #ALLOWED_HOSTS = ['192.168.1.82', 'localhost', '127.0.0.1', '35.231.66.229', '192.168.1.76', '51.141.168.67']
 ALLOWED_HOSTS = config['ALLOWED_HOSTS'] + ['192.168.64.4']
 
-# Application definition
-
-# Needed to add `django.contrib.sites` because of an error
-# https://stackoverflow.com/questions/35388637/runtimeerror-model-class-django-contrib-sites-models-site-doesnt-declare-an-ex
-#
-# Another addition is `account` because of the error:
-# https://github.com/pinax/pinax-notifications/issues/90
-#
 INSTALLED_APPS = [
     'lynx.apps.LynxConfig',
     'django.contrib.admin',
@@ -57,7 +49,6 @@ INSTALLED_APPS = [
     'django_filters',
     'django_pgviews',
     'simple_history',
-    'account',
     'django_crontab'
 ]
 
@@ -72,9 +63,6 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'simple_history.middleware.HistoryRequestMiddleware',
-    "account.middleware.LocaleMiddleware",
-    "account.middleware.TimezoneMiddleware",
-    "account.middleware.ExpiredPasswordMiddleware",
     # 'debug_toolbar.middleware.DebugToolbarMiddleware'
 ]
 
@@ -92,7 +80,6 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-                'account.context_processors.account',
             ],
         },
     },
@@ -178,9 +165,6 @@ EMAIL_USE_SSL = False
 #SERVER_EMAIL = EMAIL_HOST_USER
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
-ACCOUNT_PASSWORD_EXPIRY = 60*60*24*14  # seconds until pw expires, this example shows 14 days
-ACCOUNT_PASSWORD_USE_HISTORY = True
-
 # Password validation
 # https://docs.djangoproject.com/en/2.1/ref/settings/#auth-password-validators
 
@@ -205,13 +189,9 @@ CRISPY_TEMPLATE_PACK = 'bootstrap4'
 # https://docs.djangoproject.com/en/2.1/topics/i18n/
 
 LANGUAGE_CODE = 'en-us'
-
 TIME_ZONE = 'America/Los_Angeles'
-
 USE_I18N = True
-
 USE_L10N = True
-
 USE_TZ = True
 
 

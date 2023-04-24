@@ -70,6 +70,32 @@ Use SSH tunneling to connect to a remote database:
 
 1. Fetch Python packages from Nixpkgs (or create a new package collection)
 
+1. (QUESTION) How does the `django-user-accounts` package integrate with `django-auth`?
+
+   Decided to remove `django-user-accounts` because it was not used (the corresponding `account_*` tables were virtually empty; see backup) and it caused extra work after updating everything (see this [Django forum thread](https://forum.djangoproject.com/t/upgrading-from-2-2-to-4-2-yields-relatedobjectdoesnotexist-user-has-no-account-error/20437)).
+
+   Nonetheless, I wonder how this package was shown on the admin page, in its own section?
+
+   Also, a couple of notes regarding removed `django-user-accounts` settings:
+
+   + `ACCOUNT_PASSWORD_EXPIRY = 60*60*24*14  # seconds until pw expires, this example shows 14 days`
+
+     Found [this thread](https://stackoverflow.com/questions/15571046/django-force-password-expiration) while doing research on how to implement this, and, as it turns out, this practice is recommended against (see articles by the [NCSC](https://www.ncsc.gov.uk/blog-post/problems-forcing-regular-password-expiry) and the [FTC](https://www.ftc.gov/news-events/blogs/techftc/2016/03/time-rethink-mandatory-password-changes)).
+
+     See more at the next item.
+
+   + `ACCOUNT_PASSWORD_USE_HISTORY = True`
+
+     This sounds like a good idea on the surface, but this will be abused the same way as the previous option, if it is used to disallow previous passwords (or what else is this used for?).
+
+   Will have to do more reading on thi, but instead of using these options, a better strategy would be to
+
+   1. (periodically) scan existing password hashes in known compromised password databases, and report it to user and supervisor
+
+   1. immediately compare the credentials of new users and report it (this is an internal website, so users will be added by administrators) => better yet, suggest non-compromised passwords automatically
+
+     **Potentional issues**: It is a challenge to educate everyday users, even people in higher positions, to adopt common sense security practices (as it affects convenience, comfort zone, etc.), but the majority of Lynx users are legally blind, and some commonly used tools may be completely inaccessible (e.g., password managers).
+
 ### Done TODOs (or considered done, at least)
 
 1. Avoid stacking subshells -> Package properly with Nix (or, at least, do it in a single `shell.nix`)

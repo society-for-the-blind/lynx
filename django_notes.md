@@ -3,20 +3,24 @@
 PROD:
 
 ```
-pg_dump $(get_db_settings 'NAME') > dump.sql
+pg_dump --exclude-table="account_*" $(get_db_settings 'NAME') > dump.sql
 ```
+(Why the `--exclude` flag? See README's TODOs about `django-user-accounts`.)
 
 DEV:
 
-0. `scp` the `dump.sql` file from PROD to DEV
+1. `scp` the `dump.sql` file from PROD to DEV
 1. `just db`
-2. `just c -f dump.sql`
-3. `just deps`
-4. `just m migrate` (or `just m migrate --fake-initial`)
-5. `just c --command="analyze"`
+1. `just c -f dump.sql`
+1. `just c --command="ANALYZE"`
+1. `just deps`
+1. `just m migrate` (or `just m migrate --fake-initial`)
+1. `just prep`
+1. `just serve`
 
-6. TODO: https://forum.djangoproject.com/t/upgrading-from-2-2-to-4-2-yields-relatedobjectdoesnotexist-user-has-no-account-error/20437
+One-liner:
 
-   ```sql
-   select * from account_account as a join auth_user as u on a.user_id = u.id;
-   ```
+```
+just db && just c  -f dump.sql && just c --command="ANALYZE" && just deps && just migrate && just prep && just serve
+```
+

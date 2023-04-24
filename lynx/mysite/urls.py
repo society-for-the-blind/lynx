@@ -22,7 +22,6 @@ urlpatterns = [
     path("lynx/", include('lynx.urls')),
     path('admin/', admin.site.urls),
     path('accounts/', include('django.contrib.auth.urls')),
-    path('account', include("account.urls")),
 ]
 
 if settings.DEBUG:
