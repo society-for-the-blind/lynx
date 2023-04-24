@@ -116,8 +116,18 @@ serve:
 # ALIASES
 # -------
 
-alias m := _django_manage
+# NOTE Double quote `extra_flags` with special chars
+#      ---------------------------------------------
+# For example,  to run  "backslash commands"  from the
+# terminal, 2 quotes are needed:
+#
+#     just c -c "'\dt'"
+#
+# Sometimes it  is not possible  at all (or  not worth
+# the effort); see note at `add_role` recipe.
+
 alias c := _connect_lynx_db
+alias m := _django_manage
 alias n := _shell_nixes
 
 # HELPERS

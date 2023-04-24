@@ -48,8 +48,10 @@ in
 
       # debug
       schemaspy
+      tmux
     ];
 
+    # TODO fail if not in the `slate-2` project directory
     shellHook =
 
       let
