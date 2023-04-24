@@ -35,7 +35,7 @@
             <img src="{% static 'lynx/images/logo.jpg' %}" alt="" style="width:170px;">
             <a href="/lynx/" title="Home">Home</a>
             {% if user.is_authenticated %}
-                <a href="/lynx/clients/" title="Clients">Clients</a>
+                <a href="{% url 'contact_list' %}" title="Clients">Clients</a>
                 <a href="/lynx/instructors/" title="SIP Assignment">SIP Assignment</a>
                 <a href="/lynx/add-sip-note-bulk/" title="Bulk SIP Notes">Bulk SIP Notes</a>
                 <a href="/lynx/volunteers/" title="Volunteers">Volunteers</a>

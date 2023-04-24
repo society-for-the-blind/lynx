@@ -31,6 +31,12 @@ Use SSH tunneling to connect to a remote database:
 
 ## TODOs
 
+1. The removal of the `/lynx/` path prefix
+
+   It is practically solved (see `breaking` branch) by updating the `(mysite|lynx)/urls.py`s, so there is no need for `<lynx-url>/lynx/` to get to the login page, and Django views can be reached via `<lynx-url>/<view>` (e.g., `<lynx-url>/clients`), but there is a twist: The templates are hard-coded with the `/lynx/` prefix.
+
+   The quick and dirty solution is to remove this prefix from every link that has it, but the **long-term** solution would be to use `url` (or `reverse`?...) to calculate the path to a view given the settings at any given time. The problem: The helper functions refuse to work, and it is hard to figure out the issue from the ca. 2300-line `views.py` module.
+
 1. !!! https://docs.djangoproject.com/en/4.1/intro/tutorial01/
 
 1. Rename the current production PostgreSQL user. (Just do `\du` in the `psql` shell and you'll see why.)

@@ -19,6 +19,7 @@ from django.conf import settings
 # from django.conf.urls import url
 
 urlpatterns = [
+    # path('', include(('lynx.urls', 'lynx'), namespace='lynx')),
     path('', include('lynx.urls')),
     path('admin/', admin.site.urls),
     path('accounts/', include('django.contrib.auth.urls')),
