@@ -3,6 +3,7 @@
 { nixpkgs_commit ? "ea96b4af6148114421fda90df33cf236ff5ecf1d"
 , deploy ? false
 ,  debug ? false
+, deployment_environment ? "dev"
 }:
 
 # EXAMPLE CALLS
@@ -26,10 +27,15 @@ let
 
 in
   pkgs.mkShell {
+
+    # Environment variable declaration
+    DEPLOY_ENV = deployment_environment;
+
     buildInputs = with pkgs; [
       postgresql_15
       python3
       just
+      openssl # to generate SECRET_KEY on each serving
 
       # `sops` is  needed to  decrypt `secrets.json`  and to
       # export  its  contents as  environment variables; the
@@ -40,6 +46,7 @@ in
       azure-cli
 
       # external dependencies for Python packages
+      # TODO package Python packages and their deps with Nix
       systemd
       pkg-config
       cairo
@@ -49,6 +56,8 @@ in
       # debug
       schemaspy
       tmux
+      mtr  # modern traceroute
+      busybox # sed, tr, ...
     ];
 
     # TODO fail if not in the `slate-2` project directory
@@ -110,12 +119,13 @@ in
         + ''
             get_db_settings () {
               sops --decrypt secrets/lynx_settings.sops.json \
-              | jq -r ".[\"DATABASE\"][\"$1\"]"
+              | jq -r ".[\"${deployment_environment}\"][\"DATABASE\"][\"$1\"]"
             }
 
             export -f get_db_settings
           ''
 
+          # TODO This should probably in this repo and not fetched remotely
         + snFetchContents "postgres/shell-hook.sh"
 
       # + cleanUp {{-

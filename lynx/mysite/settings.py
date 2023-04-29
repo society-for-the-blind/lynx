@@ -16,20 +16,20 @@ import subprocess
 # `AZURE_*` environment variables `export`ed
 # from `./secrect/sp.kdbx`.
 decrypted = subprocess.run(["sops", "--decrypt", "secrets/lynx_settings.sops.json"], capture_output=True)
-config = json.loads(decrypted.stdout)
+deployment_environment = os.environ['DEPLOY_ENV']
+config = json.loads(decrypted.stdout)[deployment_environment]
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = config['SECRET_KEY']
+SECRET_KEY = str((subprocess.run(["openssl", "rand", "-hex", "52"], capture_output=True)).stdout, 'utf-8').strip()
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = True if (deployment_environment == 'dev') else False
 
 #ALLOWED_HOSTS = ['192.168.1.82', 'localhost', '127.0.0.1', '35.231.66.229', '192.168.1.76', '51.141.168.67']
 ALLOWED_HOSTS = config['ALLOWED_HOSTS'] + ['192.168.64.4']
