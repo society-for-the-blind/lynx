@@ -1,9 +1,10 @@
 # nixos-22.11 channel
 # Apr 9, 2023, 9:59 PM EDT
 { nixpkgs_commit ? "ea96b4af6148114421fda90df33cf236ff5ecf1d"
-, deploy ? false
-,  debug ? false
-, deployment_environment ? "dev"
+, deploy ? false # --arg
+,  debug ? false # --arg
+# Possible values: top-level keys of `secrets/lynx_settings.sops.json`
+, deployment_environment ? "dev" # --argstr
 }:
 
 # EXAMPLE CALLS

@@ -6,7 +6,7 @@ db_port   := `get_db_settings 'PORT'`
 db_schema := `get_db_settings 'SCHEMA'`
 db_name   := `get_db_settings 'NAME'`
 
-# NOTE `psql` username
+# NOTE `psql` username {{-
 #      ===============
 # The  username is  hard-coded, but  it can  be easily
 # overridden  by adding  `-U` or  `--username` again.
@@ -18,6 +18,7 @@ db_name   := `get_db_settings 'NAME'`
 #      lynx=> \conninfo
 #      ...as user "postgres"...
 
+# }}-
 psql_flags := (
   " --host=$PGDATA" +
   " --port="        + db_port  +
@@ -29,10 +30,13 @@ psql_flags := (
 # COMPOSITE RECIPES
 # -----------------
 
-default: first_migration pre_serve
+serve_empty: db deps migrate prep add_django_superuser serve
+
+serve_from dumpfile: db && deps migrate prep serve
+  just c  -f {{dumpfile}}
+  just c --command="ANALYZE"
+
 db: create_db add_role grant_schema
-first_migration: db deps migrate
-pre_serve: prep super serve
 
 # RECIPES
 # -------
@@ -49,7 +53,7 @@ create_db:
     --host=$PGDATA \
     --port={{db_port}}
 
-# NOTE Why doesn't this use `just c`? (or merged with `grant_schema`)
+# NOTE Why doesn't this use `just c`? (or merged with `grant_schema`) {{-
 #      ------------------------------
 # This recipe is very resistant to refactoring, and my
 # every attempt failed thus far. One of the reasons is
@@ -57,12 +61,13 @@ create_db:
 # instance has  dollar sign(s) in it,  then this seems
 # to be the only way to do it.
 
+# }}-
 add_role:
   psql           \
   {{psql_flags}} \
   --command="CREATE ROLE {{db_user}} WITH LOGIN PASSWORD '$(get_db_settings 'PASSWORD')'"
 
-# NOTE Why is this not a Django migration?
+# NOTE Why is this not a Django migration? {{-
 #      -----------------------------------
 # Because this is necessary for Django to even be able
 # to touch  the database. From PostgreSQL  15, no user
@@ -71,6 +76,7 @@ add_role:
 # superuser, extra  privileges have  to be  granted to
 # touch anything inside it.
 
+# }}-
 grant_schema:
   echo " \
     GRANT USAGE, CREATE ON SCHEMA {{db_schema}} TO {{db_user}};                   \
@@ -87,7 +93,7 @@ migrate *flag:
   just m makemigrations
   just m migrate {{flag}}
 
-# NOTE Apply Django migrations when database is **not** empty
+# NOTE Apply Django migrations when database is **not** empty {{-
 #      ------------------------------------------------------
 # This may not be used much after getting the upgraded
 # version  of  Lynx  into   production,  but  for  now
@@ -100,10 +106,11 @@ migrate *flag:
 #
 # https://docs.djangoproject.com/en/4.2/topics/migrations/#adding-migrations-to-apps
 
+# }}-
 fake:
   just migrate --fake-initial
 
-super:
+add_django_superuser:
   just m createsuperuser
 
 prep:
@@ -116,7 +123,7 @@ serve:
 # ALIASES
 # -------
 
-# NOTE Double quote `extra_flags` with special chars
+# NOTE Double quote `extra_flags` with special chars {{-
 #      ---------------------------------------------
 # For example,  to run  "backslash commands"  from the
 # terminal, 2 quotes are needed:
@@ -126,6 +133,7 @@ serve:
 # Sometimes it  is not possible  at all (or  not worth
 # the effort); see note at `add_role` recipe.
 
+# }}-
 alias c := _connect_lynx_db
 alias m := _django_manage
 alias n := _shell_nixes
@@ -144,7 +152,7 @@ _django_manage +sub_commands:
 _shell_nixes:
   source <(curl https://raw.githubusercontent.com/toraritte/shell.nixes/main/run.sh) -n 22.11
 
-# CAVEAT `extra_flags` variadic parameter
+# CAVEAT `extra_flags` variadic parameter {{-
 #        ================================
 # is  almost   useless,  unless  very   simple  `psql`
 # `extra_flags`  are  provided  (e.g.,  `-U  postgres`
@@ -154,6 +162,7 @@ _shell_nixes:
 # is better  off using workarounds (such  as the shell
 # function `get_db_settings`in `dev_shell.nix`).
 
+# }}-
 _connect_lynx_db *extra_flags:
   psql           \
   {{psql_flags}} \
@@ -162,7 +171,7 @@ _connect_lynx_db *extra_flags:
 # NOTES FOR FUTURE SELF
 # ---------------------
 
-# 1. SPACES IN VARIADIC ARGUMENTS
+# 1. SPACES IN VARIADIC ARGUMENTS {{-
 # ===============================
 #
 # WRONG: just aaa 'not simply' dev_shell.nix
@@ -180,5 +189,7 @@ _connect_lynx_db *extra_flags:
 
 aaa *params:
   grep {{params}}
+
+# }}-
 
 # vim: set foldmethod=marker foldmarker={{-,}}- foldlevelstart=0 tabstop=2 shiftwidth=2 expandtab:

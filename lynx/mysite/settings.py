@@ -25,14 +25,16 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.1/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
+# NOTE Removed hard-coded secret {{-
+# + pros: More secure.
+# + cons: New value on every re-start, thus users existing
+#         sessions will be dropped on those occasions.
+# }}-
 SECRET_KEY = str((subprocess.run(["openssl", "rand", "-hex", "52"], capture_output=True)).stdout, 'utf-8').strip()
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True if (deployment_environment == 'dev') else False
 
-#ALLOWED_HOSTS = ['192.168.1.82', 'localhost', '127.0.0.1', '35.231.66.229', '192.168.1.76', '51.141.168.67']
-ALLOWED_HOSTS = config['ALLOWED_HOSTS'] + ['192.168.64.4']
 
 INSTALLED_APPS = [
     'lynx.apps.LynxConfig',
@@ -63,7 +65,6 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'simple_history.middleware.HistoryRequestMiddleware',
-    # 'debug_toolbar.middleware.DebugToolbarMiddleware'
 ]
 
 ROOT_URLCONF = 'mysite.urls'
