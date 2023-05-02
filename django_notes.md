@@ -24,3 +24,41 @@ One-liner:
 just db && just c  -f dump.sql && just c --command="ANALYZE" && just deps && just migrate && just prep && just serve
 ```
 
+Serving with gunicorn:
+```
+(cd lynx && gunicorn --bind 0.0.0.0:8000 --workers 3 mysite.wsgi:application --log-level 'debug' --preload)
+```
+
+```
+# /etc/systemd/system/gunicorn.socket
+
+[Unit]
+Description=gunicorn socket
+
+[Socket]
+ListenStream=/run/gunicorn.sock
+
+[Install]
+WantedBy=sockets.target
+
+# /etc/systemd/system/gunicorn.service 
+
+[Unit]
+Description=gunicorn daemon
+Requires=gunicorn.socket
+After=network.target
+
+[Service]
+User=www-data
+Group=www-data
+WorkingDirectory=/var/www/lynx/slate-2/lynx
+ExecStart=/home/mjtolentino/.local/bin/gunicorn \
+          --access-logfile - \
+          --workers 3 \
+          --bind unix:/run/gunicorn.sock \
+	  --log-level debug \
+          mysite.wsgi:application
+
+[Install]
+WantedBy=multi-user.target
+```
