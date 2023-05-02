@@ -117,6 +117,9 @@ in
           # one call.
 
           # }}-
+
+          # TODO Hard-coded path! This  blew  up  `settings.py`,
+          #      but it doesn't seem to be an issue here.
         + ''
             get_db_settings () {
               sops --decrypt secrets/lynx_settings.sops.json \

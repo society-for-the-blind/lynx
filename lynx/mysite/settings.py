@@ -11,11 +11,16 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 import os
 import json
 import subprocess
+import pathlib
 
-# The  `sops`  command   depends  on  the  3
-# `AZURE_*` environment variables `export`ed
-# from `./secrect/sp.kdbx`.
-decrypted = subprocess.run(["sops", "--decrypt", "secrets/lynx_settings.sops.json"], capture_output=True)
+# NOTE The  `sops`  command   depends  on  the  3
+#      `AZURE_*` environment variables `export`ed
+#      from `./secrect/sp.kdbx`.
+
+project_dir =  pathlib.Path(__file__).parent.parent.parent
+# This will promptly blow up if the file doesn't exist
+secrets_file = (project_dir / 'secrets' / 'lynx_settings.sops.json').resolve(strict=True)
+decrypted = subprocess.run(["sops", "--decrypt", str(secrets_file)], capture_output=True)
 deployment_environment = os.environ['DEPLOY_ENV']
 config = json.loads(decrypted.stdout)[deployment_environment]
 
@@ -33,6 +38,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = str((subprocess.run(["openssl", "rand", "-hex", "52"], capture_output=True)).stdout, 'utf-8').strip()
 
 # SECURITY WARNING: don't run with debug turned on in production!
+# NOTE If `False` then static files won't get served automatically.
 DEBUG = True if (deployment_environment == 'dev') else False
 
 
