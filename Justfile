@@ -120,6 +120,20 @@ prep:
 serve:
   just m runserver 0:8000
 
+gunicorn *extra_flags:
+  cd {{justfile_directory()}}/lynx && \
+  gunicorn             \
+  --bind 0.0.0.0:8000  \
+  --workers 3          \
+  --log-level 'debug'  \
+  --preload            \
+  --capture-output     \
+  --pid "{{justfile_directory()}}/gunicorn.pid" \
+  --access-logfile "{{justfile_directory()}}/gunicorn.log" \
+  --error-logfile  "{{justfile_directory()}}/gunicorn.log" \
+    mysite.wsgi:application
+
+
 # ALIASES
 # -------
 

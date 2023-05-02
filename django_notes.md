@@ -26,7 +26,12 @@ just db && just c  -f dump.sql && just c --command="ANALYZE" && just deps && jus
 
 Serving with gunicorn:
 ```
-(cd lynx && gunicorn --bind 0.0.0.0:8000 --workers 3 mysite.wsgi:application --log-level 'debug' --preload)
+just gunicorn
+```
+
+Use `--reload` when developing:
+```
+just gunicorn --reload
 ```
 
 ```

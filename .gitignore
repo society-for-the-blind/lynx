@@ -11,3 +11,4 @@ lynx/lynx-debug.log
 .idea/slate-2.iml
 lynx/media/documents/*
 *egg-info
+gunicorn.*
