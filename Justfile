@@ -1,10 +1,22 @@
+# TODOs
+# + cut this file up into multiple justfiles
+#   reasons: no lazy loading (and those vars are only needed by a few recipes)
+#            some recipes are just useful by themselves without any dependency (i.e., without in the nix-shell
+#   A solution is using `just -f` and/or justfiles in different dirs (https://just.systems/man/en/chapter_51.html)
+
+
+
 # VARIABLES
 # ---------
 
+# WARNING **Not lazy!**
+#         https://github.com/casey/just/issues/953 (open@5/4/2023)
 db_user   := `get_db_settings 'USER'`
 db_port   := `get_db_settings 'PORT'`
 db_schema := `get_db_settings 'SCHEMA'`
 db_name   := `get_db_settings 'NAME'`
+
+timestamp := `date "+%Y-%m-%d_%H-%M-%S"`
 
 # NOTE `psql` username {{-
 #      ===============
@@ -128,11 +140,22 @@ gunicorn *extra_flags:
   --log-level 'debug'  \
   --preload            \
   --capture-output     \
-  --pid "{{justfile_directory()}}/gunicorn.pid" \
-  --access-logfile "{{justfile_directory()}}/gunicorn.log" \
-  --error-logfile  "{{justfile_directory()}}/gunicorn.log" \
+  --pid "${GUNICORN_DIR}/gunicorn_{{timestamp}}.pid" \
+  --access-logfile "${GUNICORN_DIR}/gunicorn-access_{{timestamp}}.log" \
+  --error-logfile  "${GUNICORN_DIR}/gunicorn-error_{{timestamp}}.log"  \
     mysite.wsgi:application
 
+# DEBUG
+# =====
+
+alias p := my_process_tree
+
+# A better alternative to
+#
+#    watch -n 1 "ps xf"
+
+my_process_tree:
+  htop --user $(whoami) --tree
 
 # ALIASES
 # -------

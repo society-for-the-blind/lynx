@@ -29,7 +29,7 @@ let
 in
   pkgs.mkShell {
 
-    # Environment variable declaration
+    # ENVIRONMENT VARIABLE DECLARATIONS
     DEPLOY_ENV = deployment_environment;
 
     buildInputs = with pkgs; [
@@ -37,6 +37,7 @@ in
       python3
       just
       openssl # to generate SECRET_KEY on each serving
+      nginx
 
       # `sops` is  needed to  decrypt `secrets.json`  and to
       # export  its  contents as  environment variables; the
@@ -46,7 +47,7 @@ in
       keepassxc
       azure-cli
 
-      # external dependencies for Python packages
+      # EXTERNAL DEPENDENCIES FOR PYTHON PACKAGES
       # TODO package Python packages and their deps with Nix
       systemd
       pkg-config
@@ -76,11 +77,11 @@ in
 
         # }}-
         cleanUp = # {{-
-          shell_scripts:
+          shell_commands:
             ''
               trap \
               "
-              ${ builtins.concatStringsSep "" shell_scripts }
+              ${ builtins.concatStringsSep "" shell_commands }
               " \
               EXIT
             ''
@@ -88,6 +89,15 @@ in
 
         # }}-
       in
+          ''
+            # Already done in `postgres/shell-hook.sh`, but it doesn't hurt
+            export NIX_SHELL_DIR="''${PWD}/_nix-shell"
+            export GUNICORN_DIR="''${NIX_SHELL_DIR}/gunicorn"
+            export DJANGO_DIR="''${NIX_SHELL_DIR}/django"
+
+            mkdir -p $GUNICORN_DIR
+            mkdir -p $DJANGO_DIR
+          ''
 
           # NOTE Why the `debug` flag?
           #      ---------------------
@@ -95,7 +105,7 @@ in
           # variables as  well, thus it  feels safer to  make it
           # optional.
 
-          ( if (debug)
+        + ( if (debug)
             then ''
                   set -x
                  ''
@@ -118,8 +128,10 @@ in
 
           # }}-
 
-          # TODO Hard-coded path! This  blew  up  `settings.py`,
+          # NOTE Hard-coded path! This  blew  up  `settings.py`,
           #      but it doesn't seem to be an issue here.
+          # QUESTION Why? I presume that relative paths are resolved to the location of `shell.nix`, and not where it is invoked. (What about when an `mkShell` Nix expression is invoked via `nix-shell -E`?)
+          # TODO See TODO in `Justfile`; this could be placed in the new justfile that is dedicated to database operations.
         + ''
             get_db_settings () {
               sops --decrypt secrets/lynx_settings.sops.json \
@@ -135,12 +147,16 @@ in
       # + cleanUp {{-
         + cleanUp
             [
+              # NOTE creates "_shell-nix/db" directory
+              # TODO This should probably in this repo and not fetched remotely
               ( snFetchContents "postgres/clean-up.sh" )
 
-              ''
-                echo -n 'deleting .venv/ static/ ... '
-                rm -rf .venv
-              ''
+              # NOTE One can always just delete this from NIX_SHELL_DIR
+              # TODO Add a switch? E.g., postgres/clean-up.sh also deletes the db but that shouldn't be the case every time.
+              # ''
+              #   echo -n 'deleting .venv/ static/ ... '
+              #   rm -rf .venv
+              # ''
 
               # NOTE static assets
               #      -------------
@@ -149,7 +165,8 @@ in
               # `settings.py` controls  the destination;  search for
               # `STATIC`.
               ''
-                rm -rf lynx/static
+                echo -n '... deleting ''${DJANGO_DIR}/static'
+                rm -rf $DJANGO_DIR/static
                 echo 'done'
               ''
             ]
@@ -204,8 +221,9 @@ in
 
           # }}-
         + ''
-            python -m venv .venv
-            source .venv/bin/activate
+            VENV_DIR="''${DJANGO_DIR}/venv"
+            python -m venv $VENV_DIR
+            source "''${VENV_DIR}/bin/activate"
           ''
 
         + ( if (deploy)
