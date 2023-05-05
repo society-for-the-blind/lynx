@@ -132,18 +132,19 @@ prep:
 serve:
   just m runserver 0:8000
 
-gunicorn *extra_flags:
+gunicorn port *extra_flags:
   cd {{justfile_directory()}}/lynx && \
-  gunicorn             \
-  --bind 0.0.0.0:8000  \
-  --workers 3          \
-  --log-level 'debug'  \
-  --preload            \
-  --capture-output     \
+  gunicorn                \
+  --bind 0.0.0.0:{{port}} \
+  --workers 3             \
+  --log-level 'debug'     \
+  --preload               \
+  --capture-output        \
   --pid "${GUNICORN_DIR}/gunicorn_{{timestamp}}.pid" \
   --access-logfile "${GUNICORN_DIR}/gunicorn-access_{{timestamp}}.log" \
   --error-logfile  "${GUNICORN_DIR}/gunicorn-error_{{timestamp}}.log"  \
-    mysite.wsgi:application
+    mysite.wsgi:application \
+    {{extra_flags}}
 
 # DEBUG
 # =====
