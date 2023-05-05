@@ -165,7 +165,7 @@ in
               # `settings.py` controls  the destination;  search for
               # `STATIC`.
               ''
-                echo -n '... deleting ''${DJANGO_DIR}/static'
+                echo '... deleting ''${DJANGO_DIR}/static'
                 rm -rf $DJANGO_DIR/static
                 echo 'done'
               ''
