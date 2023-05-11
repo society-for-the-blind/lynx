@@ -41,6 +41,7 @@ SECRET_KEY = str((subprocess.run(["openssl", "rand", "-hex", "52"], capture_outp
 # NOTE If `False` then static files won't get served automatically.
 DEBUG = True if (deployment_environment == 'dev') else False
 
+ALLOWED_HOSTS = config['ALLOWED_HOSTS']
 
 INSTALLED_APPS = [
     'lynx.apps.LynxConfig',
