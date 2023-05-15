@@ -26,12 +26,12 @@ just db && just c  -f dump.sql && just c --command="ANALYZE" && just deps && jus
 
 Serving with gunicorn:
 ```
-just gunicorn
+just gunicorn 8000
 ```
 
 Use `--reload` when developing:
 ```
-just gunicorn --reload
+just gunicorn 8000 --reload
 ```
 
 ```

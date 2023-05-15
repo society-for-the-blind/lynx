@@ -13,6 +13,7 @@
 # nix-shell dev_shell.nix
 # nix-shell dev_shell.nix --arg "deploy" "true" --arg "debug" "true"
 # nix-shell dev_shell.nix --arg "debug"  "true" -v
+# nix-shell dev_shell.nix --argstr "deployment_environment"  "dev" -v
 
 let
 

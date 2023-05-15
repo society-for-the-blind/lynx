@@ -21,6 +21,7 @@ from django.conf import settings
 urlpatterns = [
     path("lynx/", include('lynx.urls')),
     path('admin/', admin.site.urls),
+    # TODO I don't think this is needed anymore. It doesn't even work in prod
     path('accounts/', include('django.contrib.auth.urls')),
 ]
 

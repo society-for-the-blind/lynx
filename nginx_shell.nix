@@ -13,16 +13,29 @@
 #
 #     nix-shell --argstr "nix_shell_dir" "${NIX_SHELL_DIR}" --argstr "timestamp" "$(date '+%Y-%m-%d_%H-%M-%S')" --argstr "port" "8000" nginx_shell.nix
 
-# NOTE errors on first run
+# TODO look into `nginx` package in Nixpkgs
+# NOTE ERRORS ON FIRST RUN {{-
 #      ===================
 # There will probably be a lot of errors along the lines of:
 #
 #     2023/05/05 15:55:03 [emerg] 3106282#3106282: mkdir() "/var/cache/nginx/proxy" failed (13: Permission denied)
 #
-# This is because (as far as I was able to figure it out) the NGINX Nix package has been compiled with these hard paths that HAVE TO exist, even though they won't be touched (and some of them could be over-riddent; e.g., error.log - see below).`
+# This is because (as far as I was able to figure it out) the NGINX Nix package has been compiled with these hard paths that HAVE TO exist, even though they won't be touched (and some of them could be over-ridden; e.g., error.log - see below).`
 #
-#     sudo mkdir /var/cache/nginx
-#     sudo touch /var/cache/nginx/<file>
+# These have done the trick thus far:
+#
+#     sudo mkdir -p /var/log/nginx/
+#     sudo touch /var/log/nginx/error.log
+#     sudo mkdir -p /var/cache/nginx/proxy
+#     sudo mkdir -p /var/cache/nginx/uwsgi
+#     sudo mkdir -p /var/cache/nginx/scgi
+#     sudo mkdir -p /var/cache/nginx/fastcgi
+#     sudo mkdir -p /var/cache/nginx/client_body
+#
+# As a one-liner:
+#
+#     sudo mkdir -p /var/log/nginx/ && sudo touch /var/log/nginx/error.log && sudo mkdir -p /var/cache/nginx/proxy && sudo mkdir -p /var/cache/nginx/uwsgi && sudo mkdir -p /var/cache/nginx/scgi && sudo mkdir -p /var/cache/nginx/fastcgi && sudo mkdir -p /var/cache/nginx/client_body
+# }}-
 
 # NOTE https://discourse.nixos.org/t/how-to-add-local-files-into-nginx-derivation-for-nix-shell/6603
 # Opted to keep `nginx.conf` out of the store, because
