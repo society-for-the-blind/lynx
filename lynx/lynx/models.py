@@ -183,7 +183,7 @@ class Email (models.Model):
     history = HistoricalRecords()
 
     def get_absolute_url(self):
-        return "/lynx/clients/"
+        return "/lynx/client/%i" % self.contact_id
 
     def __str__(self):
         return self.email
@@ -203,8 +203,13 @@ class Phone (models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET(get_sentinel_user))
     history = HistoricalRecords()
 
+    # TODO How to generalize this pattern?
+    # The commit with this TODO will also show the typo fix below, and that the Email model also needed to be amended, because the convention of returning to the specific client's page was omitted (instead the app loaded /lynx/clients/).
+    # TODO Look into this method
+    # When is it called? And why in the model?...
+    # TODO Why is the path hard-coded instead of being derived with path() or url()?
     def get_absolute_url(self):
-        return "/lynx/clients"
+        return "/lynx/client/%i" % self.contact_id
 
     def __str__(self):
         return self.phone
