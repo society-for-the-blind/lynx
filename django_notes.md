@@ -1,4 +1,25 @@
-## 1. Migrate from prod to dev
+## 1. Debug template from `views.py`
+
+```python
+import web_pdb;
+
+class SipNoteUpdateView(LoginRequiredMixin, UpdateView):
+    model = SipNote
+    fields = ['note', 'note_date', 'at_devices',  'independent_living', 'orientation', 'communications', 'dls',
+              'support', 'advocacy', 'counseling', 'information', 'services', 'retreat', 'in_home', 'seminar',
+              'modesto', 'group', 'community', 'class_hours', 'sip_plan', 'instructor']
+    template_name_suffix = '_edit'
+
+    def dispatch(self, request, *args, **kwargs):
+        # web_pdb.set_trace()  # Add this line to trigger the debugger
+        return super().dispatch(request, *args, **kwargs)
+
+    def get(self, request, *args, **kwargs):
+        # web_pdb.set_trace()  # Add this line to trigger the debugger
+        return super().get(request, *args, **kwargs)
+```
+
+## 2. Migrate from prod to dev
 
 PROD:
 

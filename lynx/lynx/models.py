@@ -520,7 +520,6 @@ class LessonNote(models.Model):
     #
     #     super().save(*args, **kwargs)
 
-
 class SipNote(models.Model):
     contact = models.ForeignKey('Contact', on_delete=models.CASCADE)
     sip_plan = models.ForeignKey('SipPlan', on_delete=models.CASCADE, blank=True, null=True)
@@ -557,6 +556,10 @@ class SipNote(models.Model):
 
     def get_absolute_url(self):
         return "/lynx/client/%i" % self.contact_id
+
+    # TODO Add string representation methods to other models as well.
+    def __str__(self):
+        return str(self.note_date)
 
 
 class Volunteer(models.Model):
