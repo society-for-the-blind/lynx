@@ -11,7 +11,9 @@
 # repo  after  the  main  shell.nix  already  exported
 # `NIX_SHELL_DIR` so:
 #
-#     nix-shell --argstr "nix_shell_dir" "${NIX_SHELL_DIR}" --argstr "timestamp" "$(date '+%Y-%m-%d_%H-%M-%S')" --argstr "port" "8000" nginx_shell.nix
+#     # TODO See issue #23
+#     just gunicorn_local 8000 &
+#     nix-shell --argstr "nix_shell_dir" "${NIX_SHELL_DIR}" --argstr "timestamp" "$(date '+%Y-%m-%d_%H-%M-%S')" --argstr "port" "8001" nginx_shell.nix
 
 # TODO look into `nginx` package in Nixpkgs
 # NOTE ERRORS ON FIRST RUN {{-
@@ -32,9 +34,13 @@
 #     sudo mkdir -p /var/cache/nginx/fastcgi
 #     sudo mkdir -p /var/cache/nginx/client_body
 #
+#     # https://serverfault.com/questions/235154
+#     # (The user should be whoever starts NGINX.)
+#     sudo chown -R $(whoami):$(whoami) /var/{log,cache}/nginx
+#
 # As a one-liner:
 #
-#     sudo mkdir -p /var/log/nginx/ && sudo touch /var/log/nginx/error.log && sudo mkdir -p /var/cache/nginx/proxy && sudo mkdir -p /var/cache/nginx/uwsgi && sudo mkdir -p /var/cache/nginx/scgi && sudo mkdir -p /var/cache/nginx/fastcgi && sudo mkdir -p /var/cache/nginx/client_body
+#     sudo mkdir -p /var/log/nginx/ && sudo touch /var/log/nginx/error.log && sudo mkdir -p /var/cache/nginx/proxy && sudo mkdir -p /var/cache/nginx/uwsgi && sudo mkdir -p /var/cache/nginx/scgi && sudo mkdir -p /var/cache/nginx/fastcgi && sudo mkdir -p /var/cache/nginx/client_body & sudo chown -R $(whoami):$(whoami) /var/{log,cache}/nginx
 # }}-
 
 # NOTE https://discourse.nixos.org/t/how-to-add-local-files-into-nginx-derivation-for-nix-shell/6603
@@ -98,6 +104,11 @@ let
         # then `nginx` will simply blow up for some reason. Go
         # figure.
 
+        # EDIT: `nginx_main_error.log` and error logs in lower
+        # block levels don't  seem to be the  same: The former
+        # is for the entire NGINX  runtime, and the others are
+        # for the specific block.
+
         # }}-
         ''
           error_log ${nginx_dir}/nginx_main_error.log debug;
@@ -123,8 +134,11 @@ let
                   location / {
                       # your website configuration goes here
                       # for example:
-                      root ${nix_shell_dir}/..;
-                      index ${nix_shell_dir}/../README.md;
+                      # root ${nix_shell_dir}/..;
+                      # index ${nix_shell_dir}/../README.md;
+
+                      proxy_pass       http://localhost:8000;
+                      proxy_set_header Host $host;
                   }
               }
           }

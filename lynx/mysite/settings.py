@@ -43,6 +43,9 @@ DEBUG = True if (deployment_environment == 'dev') else False
 
 ALLOWED_HOSTS = config['ALLOWED_HOSTS']
 
+# https://stackoverflow.com/a/38842030/1498178
+CSRF_TRUSTED_ORIGINS = ['https://lynx.societyfortheblind.org']
+
 INSTALLED_APPS = [
     'lynx.apps.LynxConfig',
     'django.contrib.admin',
