@@ -60,7 +60,8 @@ in
       schemaspy
       tmux
       mtr  # modern traceroute
-      busybox # sed, tr, ...
+      # TODO Is there an alternative? busybox will also pull in `ps`, and it seems to be an inferior alterntive to the regular one.
+      # busybox # sed, tr, ...
     ];
 
     # TODO fail if not in the `slate-2` project directory
