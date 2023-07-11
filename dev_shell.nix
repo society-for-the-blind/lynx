@@ -7,13 +7,27 @@
 , deployment_environment ? "dev" # --argstr
 }:
 
-# EXAMPLE CALLS
-# -------------
+# USAGE EXAMPLES
+# ==============
 #
 # nix-shell dev_shell.nix
 # nix-shell dev_shell.nix --arg "deploy" "true" --arg "debug" "true"
 # nix-shell dev_shell.nix --arg "debug"  "true" -v
 # nix-shell dev_shell.nix --argstr "deployment_environment"  "dev" -v
+
+# THE `_nix-shell` TEMPORARY WORKING DIRECTORY {{-
+# ============================================
+#
+# Used to save runtime  files (config, logs, pidfiles,
+# etc.) during operation in one place instead of being
+# scattered all over the system.
+#
+# Sub-directories    are   created    in   `shellHook`
+# using    `mkdir`,    with     the    exception    of
+# `_nix-shell/postgres`,   which   is  created   using
+# `pg_ctl initdb`  (both the setup and  clean-up shell
+# commands are fetched remotely in this case).
+# }}-
 
 let
 
@@ -33,7 +47,7 @@ in
     # ENVIRONMENT VARIABLE DECLARATIONS
     DEPLOY_ENV = deployment_environment;
 
-    buildInputs = with pkgs; [
+    buildInputs = with pkgs; [ # {{-
       postgresql_15
       python3
       just
@@ -62,7 +76,7 @@ in
       mtr  # modern traceroute
       # TODO Is there an alternative? busybox will also pull in `ps`, and it seems to be an inferior alterntive to the regular one.
       # busybox # sed, tr, ...
-    ];
+    ]; # }}-
 
     # TODO fail if not in the `slate-2` project directory
     shellHook =
@@ -149,29 +163,8 @@ in
       # + cleanUp {{-
         + cleanUp
             [
-              # NOTE creates "_shell-nix/db" directory
               # TODO This should probably in this repo and not fetched remotely
               ( snFetchContents "postgres/clean-up.sh" )
-
-              # NOTE One can always just delete this from NIX_SHELL_DIR
-              # TODO Add a switch? E.g., postgres/clean-up.sh also deletes the db but that shouldn't be the case every time.
-              # ''
-              #   echo -n 'deleting .venv/ static/ ... '
-              #   rm -rf .venv
-              # ''
-
-              # NOTE static assets
-              #      -------------
-              # `lynx/lynx/static`  has the  static assets  for this
-              # project  that will  get copied  via `collectstatic`!
-              # `settings.py` controls  the destination;  search for
-              # `STATIC`.
-              # NOTE commented it out, because it was a pain to call `collectstatic` each time when testing the Nix shells and Python or Just decided to take 10 minutes to run...
-              # ''
-              #   echo '... deleting ''${DJANGO_DIR}/static'
-              #   rm -rf $DJANGO_DIR/static
-              #   echo 'done'
-              # ''
             ]
           # }}-
           # NOTE Why KeePassXC + SOPS? {{-
