@@ -1,16 +1,18 @@
-# TODOs
-# + cut this file up into multiple justfiles
+# TODOs {{-
+#
+# + **cut this file up into multiple justfiles**
 #   reasons: no lazy loading (and those vars are only needed by a few recipes)
 #            some recipes are just useful by themselves without any dependency (i.e., without in the nix-shell
 #   A solution is using `just -f` and/or justfiles in different dirs (https://just.systems/man/en/chapter_51.html)
-
-
+#
+# + **Replace `just`?** (It's super slow...)
+# }}-
 
 # VARIABLES
-# ---------
-
+# =========
 # WARNING **Not lazy!**
 #         https://github.com/casey/just/issues/953 (open@5/4/2023)
+
 db_user   := `get_db_settings 'USER'`
 db_port   := `get_db_settings 'PORT'`
 db_schema := `get_db_settings 'SCHEMA'`
@@ -18,8 +20,8 @@ db_name   := `get_db_settings 'NAME'`
 
 timestamp := `date "+%Y-%m-%d_%H-%M-%S"`
 
-# NOTE `psql` username {{-
-#      ===============
+# NOTE override `psql` username {{-
+#
 # The  username is  hard-coded, but  it can  be easily
 # overridden  by adding  `-U` or  `--username` again.
 #
@@ -40,32 +42,42 @@ psql_flags := (
 )
 
 # COMPOSITE RECIPES
-# -----------------
-
+# =================
 serve_empty: db deps migrate prep add_django_superuser serve
 
+# USAGE NOTES {{- {{-
+#
+# For example:
+#
+#     just serve_from backup/lynx_2023_07_04-exclude_account-fix_sipplan_17615.sql
+#
+# Once the a database has  been set up, simply use one
+# of the `serve` recipes (e.g., `just serve`).
+# }}- }}-
 serve_from dumpfile: db && deps migrate prep serve
   just c  -f {{dumpfile}}
   just c --command="ANALYZE"
 
 db: create_db add_role grant_schema
 
-# RECIPES
-# -------
+# RECIPES {{-
+# =======
 
-dump *extra:
+dump *extra:                           # {{-
   pg_dump \
   {{psql_flags}} \
   {{extra}}
+# }}-
 
 # TODO Add ICU? (postgres15)
-create_db:
+create_db:                             # {{-
   createdb         \
     {{db_name}}    \
     --host=$PGDATA \
     --port={{db_port}}
+# }}-
 
-# NOTE Why doesn't this use `just c`? (or merged with `grant_schema`) {{-
+# NOTE Why doesn't this use `just c`? (or merged with `grant_schema`) {{- {{-
 #      ------------------------------
 # This recipe is very resistant to refactoring, and my
 # every attempt failed thus far. One of the reasons is
@@ -73,13 +85,14 @@ create_db:
 # instance has  dollar sign(s) in it,  then this seems
 # to be the only way to do it.
 
-# }}-
-add_role:
+# }}- }}-
+add_role:                              # {{-
   psql           \
   {{psql_flags}} \
   --command="CREATE ROLE {{db_user}} WITH LOGIN PASSWORD '$(get_db_settings 'PASSWORD')'"
+# }}-
 
-# NOTE Why is this not a Django migration? {{-
+# NOTE Why is this not a Django migration? {{- {{-
 #      -----------------------------------
 # Because this is necessary for Django to even be able
 # to touch  the database. From PostgreSQL  15, no user
@@ -88,24 +101,27 @@ add_role:
 # superuser, extra  privileges have  to be  granted to
 # touch anything inside it.
 
-# }}-
-grant_schema:
+# }}- }}-
+grant_schema:                          # {{-
   echo " \
     GRANT USAGE, CREATE ON SCHEMA {{db_schema}} TO {{db_user}};                   \
     GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA {{db_schema}} TO {{db_user}};    \
     GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA {{db_schema}} TO {{db_user}}; \
   " | just c
+# }}-
 
-deps:
+deps:                                  # {{-
   pip install --upgrade pip
   pip install lynx/.
+# }}-
 
-migrate *flag:
+migrate *flag:                         # {{-
   just m showmigrations
   just m makemigrations
   just m migrate {{flag}}
+# }}-
 
-# NOTE Apply Django migrations when database is **not** empty {{-
+# NOTE Apply Django migrations when database is **not** empty {{- {{-
 #      ------------------------------------------------------
 # This may not be used much after getting the upgraded
 # version  of  Lynx  into   production,  but  for  now
@@ -118,21 +134,40 @@ migrate *flag:
 #
 # https://docs.djangoproject.com/en/4.2/topics/migrations/#adding-migrations-to-apps
 
-# }}-
-fake:
+# }}- }}-
+fake:                                  # {{-
   just migrate --fake-initial
+# }}-
 
-add_django_superuser:
+add_django_superuser:                  # {{-
   just m createsuperuser
+# }}-
 
-prep:
+prep:                                  # {{-
   just m collectstatic
   just m check --deploy
+# }}-
 
-serve:
+serve:                                 # {{-
   just m runserver 0:8000
+# }}-
 
-gunicorn ip_address port *extra_flags:
+# NOTE Sockets (UDS vs TCP) {{- {{-
+#      ====================
+# Decided to use Unix  Domain Sockets (UDS) instead of
+# internet (TCP) sockets when implementing the systemd
+# unit files, because UDS is faster and also wanted to
+# get  familiar with them. Leaving these Just  recipes
+# here in case a quick test in dev is necessary.
+
+# Good resources:
+# + https://www.baeldung.com/linux/unix-vs-tcp-ip-sockets
+# + https://serverfault.com/questions/124517/what-is-the-difference-between-unix-sockets-and-tcp-ip-sockets
+# + https://stackoverflow.com/questions/14973942/tcp-loopback-connection-vs-unix-domain-socket-performance
+# + https://lists.freebsd.org/pipermail/freebsd-performance/2005-February/001143.html
+
+# }}- }}-
+gunicorn ip_address port *extra_flags: # {{-
   cd {{justfile_directory()}}/lynx && \
   gunicorn                       \
   --bind {{ip_address}}:{{port}} \
@@ -145,6 +180,7 @@ gunicorn ip_address port *extra_flags:
   --error-logfile  "${GUNICORN_DIR}/gunicorn-error_{{timestamp}}.log"  \
     mysite.wsgi:application \
     {{extra_flags}}
+# }}-
 
 gunicorn_zeros port *extra_flags:
   just gunicorn 0.0.0.0 {{port}} {{extra_flags}}
@@ -152,25 +188,16 @@ gunicorn_zeros port *extra_flags:
 gunicorn_local port *extra_flags:
   just gunicorn 127.0.0.1 {{port}} {{extra_flags}}
 
-# DEBUG
-# =====
+# }}-
+# ALIASES {{-
+# =======
 
-alias p := my_process_tree
-
-# A better alternative to
-#
-#    watch -n 1 "ps xf"
-
-my_process_tree:
-  htop --user $(whoami) --tree
-
-# ALIASES
-# -------
-
-# NOTE Double quote `extra_flags` with special chars {{-
+# USAGE NOTE "Stack quote" `extra_flags` with special chars {{-
 #      ---------------------------------------------
-# For example,  to run  "backslash commands"  from the
-# terminal, 2 quotes are needed:
+#
+# For  example,  to  invoke  "backslash  commands"  in
+# `psql` from  the terminal,  two distinct  quotes are
+# needed:
 #
 #     just c -c "'\dt'"
 #
@@ -181,9 +208,11 @@ my_process_tree:
 alias c := _connect_lynx_db
 alias m := _django_manage
 alias n := _shell_nixes
+#     p := my_process_tree  (defined in DEBUG)
 
-# HELPERS
-# -------
+# }}-
+# HELPERS {{-
+# =======
 
 # WARNING sometimes works, other times it doesn't
 
@@ -211,9 +240,23 @@ _connect_lynx_db *extra_flags:
   psql           \
   {{psql_flags}} \
   {{extra_flags}}
+# }}-
+# DEBUG {{-
+# =====
+
+alias p := my_process_tree
+
+# A better alternative to
+#
+#    watch -n 1 "ps xf"
+
+my_process_tree:
+  htop --user $(whoami) --tree
+
+# }}-
 
 # NOTES FOR FUTURE SELF
-# ---------------------
+# =====================
 
 # 1. SPACES IN VARIADIC ARGUMENTS {{-
 # ===============================

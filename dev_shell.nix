@@ -166,11 +166,12 @@ in
               # project  that will  get copied  via `collectstatic`!
               # `settings.py` controls  the destination;  search for
               # `STATIC`.
-              ''
-                echo '... deleting ''${DJANGO_DIR}/static'
-                rm -rf $DJANGO_DIR/static
-                echo 'done'
-              ''
+              # NOTE commented it out, because it was a pain to call `collectstatic` each time when testing the Nix shells and Python or Just decided to take 10 minutes to run...
+              # ''
+              #   echo '... deleting ''${DJANGO_DIR}/static'
+              #   rm -rf $DJANGO_DIR/static
+              #   echo 'done'
+              # ''
             ]
           # }}-
           # NOTE Why KeePassXC + SOPS? {{-

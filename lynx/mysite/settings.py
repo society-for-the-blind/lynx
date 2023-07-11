@@ -223,7 +223,6 @@ if DEBUG:
 
 DJANGO_DIR = os.environ['DJANGO_DIR']
 STATIC_URL = '/static/'
-# STATIC_ROOT = '/var/www/lynx/slate-2/lynx/lynx/static'
 STATIC_ROOT = os.path.join(DJANGO_DIR, 'static')
 
 MEDIA_URL = '/media/'
