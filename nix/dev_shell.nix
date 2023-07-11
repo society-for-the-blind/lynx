@@ -1,9 +1,12 @@
 # nixos-22.11 channel
 # Apr 9, 2023, 9:59 PM EDT
-{ nixpkgs_commit ? "ea96b4af6148114421fda90df33cf236ff5ecf1d"
-, deploy ? false # --arg
-,  debug ? false # --arg
-# Possible values: top-level keys of `secrets/lynx_settings.sops.json`
+{ nixpkgs_commit ? "ea96b4af6148114421fda90df33cf236ff5ecf1d" # --argstr
+,    project_dir ? builtins.toString ./..
+,         deploy ? false # --arg
+,          debug ? false # --arg
+,      sops_file ? "${project_dir}/secrets/lynx_settings.sops.json" # --argstr
+,        sp_kdbx ? "${project_dir}/secrets/sp.kdbx"
+# NOTE Possible values: top-level keys of `sops_file`
 , deployment_environment ? "dev" # --argstr
 }:
 
@@ -107,7 +110,7 @@ in
       in
           ''
             # Already done in `postgres/shell-hook.sh`, but it doesn't hurt
-            export NIX_SHELL_DIR="''${PWD}/_nix-shell"
+            export NIX_SHELL_DIR="${project_dir}/_nix-shell"
             export GUNICORN_DIR="''${NIX_SHELL_DIR}/gunicorn"
             export DJANGO_DIR="''${NIX_SHELL_DIR}/django"
 
@@ -115,18 +118,34 @@ in
             mkdir -p $DJANGO_DIR
           ''
 
-          # NOTE Why the `debug` flag?
+          # NOTE Why not simply use a `just venv` recipe? {{-
+          #      ----------------------------------------
+          # Because the  first command creates a  virtual Python
+          # environment, and the second one  enters into it in a
+          # new  sub-shell. `just`  commands  run  in their  own
+          # sub-shell so  any other recipe that  depends on this
+          # `venv` will fail.
+          #
+          # Plus, as noted above:
+          #
+          # > Also, the whole point of  a `shell.nix` is to set up
+          # > (and tear down) a shell environment after all.
+
+          # }}-
+        + ''
+            VENV_DIR="''${DJANGO_DIR}/venv"
+            python -m venv $VENV_DIR
+            source "''${VENV_DIR}/bin/activate"
+          ''
+
+          # NOTE Why the `debug` flag? {{-
           #      ---------------------
           # Because it will output secrets stored in environment
           # variables as  well, thus it  feels safer to  make it
           # optional.
 
-        + ( if (debug)
-            then ''
-                  set -x
-                 ''
-            else ""
-          )
+          # }}-
+        + ( if (debug) then "set -x" else "")
 
           # NOTE Why not make this a `just` recipe? {{-
           #      ----------------------------------
@@ -143,14 +162,10 @@ in
           # one call.
 
           # }}-
-
-          # NOTE Hard-coded path! This  blew  up  `settings.py`,
-          #      but it doesn't seem to be an issue here.
-          # QUESTION Why? I presume that relative paths are resolved to the location of `shell.nix`, and not where it is invoked. (What about when an `mkShell` Nix expression is invoked via `nix-shell -E`?)
-          # TODO See TODO in `Justfile`; this could be placed in the new justfile that is dedicated to database operations.
         + ''
+            echo ${project_dir}
             get_db_settings () {
-              sops --decrypt secrets/lynx_settings.sops.json \
+              sops --decrypt ${sops_file} \
               | jq -r ".[\"${deployment_environment}\"][\"DATABASE\"][\"$1\"]"
             }
 
@@ -199,35 +214,10 @@ in
 
           # }}-
         + ''
-            source <(keepassxc-cli attachment-export secrets/sp.kdbx az_sp_creds export.sh --stdout)
+            source <(keepassxc-cli attachment-export ${sp_kdbx} az_sp_creds export.sh --stdout)
           ''
 
-          # NOTE Why not simply use a `just venv` recipe? {{-
-          #      ----------------------------------------
-          # Because the  first command creates a  virtual Python
-          # environment, and the second one  enters into it in a
-          # new  sub-shell. `just`  commands  run  in their  own
-          # sub-shell so  any other recipe that  depends on this
-          # `venv` will fail.
-          #
-          # Plus, as noted above:
-          #
-          # > Also, the whole point of  a `shell.nix` is to set up
-          # > (and tear down) a shell environment after all.
-
-          # }}-
-        + ''
-            VENV_DIR="''${DJANGO_DIR}/venv"
-            python -m venv $VENV_DIR
-            source "''${VENV_DIR}/bin/activate"
-          ''
-
-        + ( if (deploy)
-            then ''
-                  just
-                 ''
-            else ""
-          )
+        + ( if (deploy) then "just" else "")
     ;
 
     ######################################################################
