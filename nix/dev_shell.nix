@@ -108,7 +108,21 @@ in
 
         # }}-
       in
-          ''
+          # NOTE Why the `debug` flag? {{-
+          #      ---------------------
+          # Because it will output secrets stored in environment
+          # variables as  well, thus it  feels safer to  make it
+          # optional.
+
+          # }}-
+          ( if (debug)
+            then ''
+                   set -x
+                 ''
+            else ""
+          )
+
+        + ''
             # Already done in `postgres/shell-hook.sh`, but it doesn't hurt
             export NIX_SHELL_DIR="${project_dir}/_nix-shell"
             export GUNICORN_DIR="''${NIX_SHELL_DIR}/gunicorn"
@@ -138,15 +152,6 @@ in
             source "''${VENV_DIR}/bin/activate"
           ''
 
-          # NOTE Why the `debug` flag? {{-
-          #      ---------------------
-          # Because it will output secrets stored in environment
-          # variables as  well, thus it  feels safer to  make it
-          # optional.
-
-          # }}-
-        + ( if (debug) then "set -x" else "")
-
           # NOTE Why not make this a `just` recipe? {{-
           #      ----------------------------------
           # Because recipes  cannot be used in  global variables
@@ -163,7 +168,6 @@ in
 
           # }}-
         + ''
-            echo ${project_dir}
             get_db_settings () {
               sops --decrypt ${sops_file} \
               | jq -r ".[\"${deployment_environment}\"][\"DATABASE\"][\"$1\"]"
@@ -175,13 +179,12 @@ in
           # TODO This should probably in this repo and not fetched remotely
         + snFetchContents "postgres/shell-hook.sh"
 
-      # + cleanUp {{-
         + cleanUp
             [
               # TODO This should probably in this repo and not fetched remotely
               ( snFetchContents "postgres/clean-up.sh" )
             ]
-          # }}-
+
           # NOTE Why KeePassXC + SOPS? {{-
           #      ---------------------
           # The dance  with KeePassXC is needed  beforehand as I
@@ -217,7 +220,12 @@ in
             source <(keepassxc-cli attachment-export ${sp_kdbx} az_sp_creds export.sh --stdout)
           ''
 
-        + ( if (deploy) then "just" else "")
+        + ( if (deploy)
+            then ''
+                   just
+                 ''
+            else ""
+          )
     ;
 
     ######################################################################
