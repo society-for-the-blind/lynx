@@ -1,13 +1,20 @@
 # nixos-22.11 channel
 # Apr 9, 2023, 9:59 PM EDT
-{ nixpkgs_commit ? "ea96b4af6148114421fda90df33cf236ff5ecf1d" # --argstr
-,    project_dir ? builtins.toString ./..
-,         deploy ? false # --arg
-,          debug ? false # --arg
-,      sops_file ? "${project_dir}/secrets/lynx_settings.sops.json" # --argstr
-,        sp_kdbx ? "${project_dir}/secrets/sp.kdbx"
+{         nixpkgs_commit ? "ea96b4af6148114421fda90df33cf236ff5ecf1d"
+
+,            project_dir ? builtins.toString ./..
+,          nix_shell_dir ? "${project_dir}/_nix-shell"
+,           gunicorn_dir ? "${nix_shell_dir}/gunicorn"
+,             django_dir ? "${nix_shell_dir}/django"
+,              nginx_dir ? "${nix_shell_dir}/nginx"
+
+# TODO This is little more than a stub
+,                 deploy ? false
+,                  debug ? false
+,              sops_file ? "${project_dir}/secrets/lynx_settings.sops.json"
+,                sp_kdbx ? "${project_dir}/secrets/sp.kdbx"
 # NOTE Possible values: top-level keys of `sops_file`
-, deployment_environment ? "dev" # --argstr
+, deployment_environment ? "dev"
 }:
 
 # USAGE EXAMPLES
@@ -32,10 +39,26 @@
 # commands are fetched remotely in this case).
 # }}-
 
+# NOTE / TODO Incorporate NGINX or not?
+#
+# Still deliberating whether full deployment should be
+# available from this script  (i.e., setup -> gunicorn
+# -> nginx).
+#
+# QUESTION Maybe just re-use the Nix shell expression
+#          by  calling  it   from  here  using  `exec
+#          nix-shell`?
+#
+#               exec nix-shell -p vim --run "sleep 7"
+#
+#          does exactly one would think it does so it
+#          seems to be a viable option.
+#
+# assert start_nginx ->
+
 let
 
-  nixpkgs_url = "https://github.com/nixos/nixpkgs/tarball/${nixpkgs_commit}";
-  pkgs =
+  pkgs = # {{-
     import
       # The downloaded archive will be (temporarily?) housed in the Nix store
       # e.g., "/nix/store/gk9x7syd0ic6hjrf0fs6y4bsd16zgscg-source"
@@ -43,6 +66,9 @@ let
       #  will print out the path.)
       ( builtins.fetchTarball nixpkgs_url) { config = {}; overlays = []; }
   ;
+  nixpkgs_url = "https://github.com/nixos/nixpkgs/tarball/${nixpkgs_commit}";
+
+  # }}-
 
 in
   pkgs.mkShell {
@@ -55,7 +81,6 @@ in
       python3
       just
       openssl # to generate SECRET_KEY on each serving
-      nginx
 
       # `sops` is  needed to  decrypt `secrets.json`  and to
       # export  its  contents as  environment variables; the
@@ -85,16 +110,28 @@ in
     shellHook =
 
       let
-        # sn =:= shell.nixes
-        sn_dir = "https://github.com/toraritte/shell.nixes/raw/main/";
+        # NOTE Same as  the snippets below, but  might be {{- {{-
+        #      more readable in certain cases.
+        #
+        #      See also https://elixirforum.com/t/nix-the-package-manager/23231/3
+        #
+        #      shellHook =        shellHook =  
+        #        ''                 ''         
+        #          trap \             trap \   
+        #          "                  "        
+        #        ''                   echo lofa
+        #      + ''                   sleep 2  
+        #          echo lofa          echo miez  
+        #          sleep 2            " \      
+        #          echo miez          EXIT     
+        #        ''                 ''         
+        #      + ''               ;            
+        #          " \
+        #          EXIT
+        #        ''
+        #      ;
 
-        snFetchContents = # {{-
-          rel_path:
-          builtins.readFile
-            ( builtins.fetchurl (sn_dir + rel_path) )
-        ;
-
-        # }}-
+        # }}- }}-
         cleanUp = # {{-
           shell_commands:
             ''
@@ -124,12 +161,14 @@ in
 
         + ''
             # Already done in `postgres/shell-hook.sh`, but it doesn't hurt
-            export NIX_SHELL_DIR="${project_dir}/_nix-shell"
-            export GUNICORN_DIR="''${NIX_SHELL_DIR}/gunicorn"
-            export DJANGO_DIR="''${NIX_SHELL_DIR}/django"
+            export NIX_SHELL_DIR="${nix_shell_dir}"
+            export  GUNICORN_DIR="${gunicorn_dir}"
+            export    DJANGO_DIR="${django_dir}"
+            export     NGINX_DIR="${nginx_dir}"
 
             mkdir -p $GUNICORN_DIR
             mkdir -p $DJANGO_DIR
+            mkdir -p $NGINX_DIR
           ''
 
           # NOTE Why not simply use a `just venv` recipe? {{-
@@ -176,13 +215,11 @@ in
             export -f get_db_settings
           ''
 
-          # TODO This should probably in this repo and not fetched remotely
-        + snFetchContents "postgres/shell-hook.sh"
+        + builtins.readFile ./postgres/shell-hook.sh
 
         + cleanUp
             [
-              # TODO This should probably in this repo and not fetched remotely
-              ( snFetchContents "postgres/clean-up.sh" )
+              ( builtins.readFile ./postgres/clean-up.sh )
             ]
 
           # NOTE Why KeePassXC + SOPS? {{-

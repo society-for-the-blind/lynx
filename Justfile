@@ -176,8 +176,8 @@ gunicorn ip_address port *extra_flags: # {{-
   --preload                      \
   --capture-output               \
   --pid "${GUNICORN_DIR}/gunicorn_{{timestamp}}.pid" \
-  --access-logfile "${GUNICORN_DIR}/gunicorn-access_{{timestamp}}.log" \
-  --error-logfile  "${GUNICORN_DIR}/gunicorn-error_{{timestamp}}.log"  \
+  --access-logfile "${GUNICORN_DIR}/gunicorn_access_{{timestamp}}.log" \
+  --error-logfile  "${GUNICORN_DIR}/gunicorn_error_{{timestamp}}.log"  \
     mysite.wsgi:application \
     {{extra_flags}}
 # }}-
