@@ -151,7 +151,11 @@ in
 
         ''
           set -x
+        ''
 
+        # TODO Convert to systemd service instead?
+        #      See note above `inotifywait` below.
+      + ''
           ( cd ${project_dir}/lynx && \
             gunicorn                  \
             --bind 127.0.0.1:8000     \
@@ -172,8 +176,8 @@ in
         #      register the  proper command to  shut down
         #      Gunicorn  (the  `cat` is  evaluated  right
         #      away,  not  lazily,   so  if  the  pidfile
-        #      doesn't exist,  the command will  be `kill
-        #      -s SIGTERM` only).
+        #      doesn't exist,  the command will fail with
+        #      `kill -s SIGTERM`).
       + ''
           inotifywait --event create,moved_to,attrib --include '${timestamp}.pid$' ${gunicorn_dir}
         ''

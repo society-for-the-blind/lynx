@@ -20,10 +20,10 @@
 # USAGE EXAMPLES
 # ==============
 #
-# nix-shell dev_shell.nix
-# nix-shell dev_shell.nix --arg "deploy" "true" --arg "debug" "true"
-# nix-shell dev_shell.nix --arg "debug"  "true" -v
-# nix-shell dev_shell.nix --argstr "deployment_environment"  "dev" -v
+# nix-shell nix/dev_shell.nix
+# nix-shell nix/dev_shell.nix --arg "deploy" "true" --arg "debug" "true"
+# nix-shell nix/dev_shell.nix --arg "debug"  "true" -v
+# nix-shell nix/dev_shell.nix --argstr "deployment_environment"  "dev" -v
 
 # THE `_nix-shell` TEMPORARY WORKING DIRECTORY {{-
 # ============================================
