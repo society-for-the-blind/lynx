@@ -1,4 +1,67 @@
-### SchemaSpy
+> NOTE
+> Legacy build steps can be found in [`build-steps-Django-2.2.md`](./build-steps-Django-2.2.md)
+
+1. Install Nix (see [download page](https://nixos.org/download.html) for more):
+
+        sh <(curl -L https://nixos.org/nix/install) --daemon
+
+   > NOTE
+   > The [Determinate Systems' Nix installer](https://determinate.systems/posts/determinate-nix-installer) works like a charm, and should switch to that:
+   >
+   > ```text
+   > curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix | sh -s -- install
+   > source '/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh' # or restart the shell
+   > ```
+
+2. (OPTIONAL) Enter a Nix shell with the most common tools
+
+        source <(curl https://raw.githubusercontent.com/toraritte/shell.nixes/main/run.sh) -n "22.11"
+
+   <sup>Read more [here](https://github.com/toraritte/shell.nixes/blob/main/baseline/baseline_config.nix).</sup>
+
+3. Clone this repo & enter the clone
+
+        git clone https://github.com/society-for-the-blind/slate-2.git
+        cd slate-2
+
+   If the `dev` branch is needed, then use:
+
+        git clone -b dev https://github.com/society-for-the-blind/slate-2.git
+        cd slate-2
+
+4. Enter [`./nix/dev_shell.nix`](./nix/dev_shell.nix). (See comments there or use the command below.)
+
+        nix-shell nix/dev_shell.nix --argstr "deployment_environment"  "dev"
+
+5. See [`Justfile`](./Justfile) on how to build (and toy-serve) the project.
+
+   The needed command will probably be one of the following:
+
+       just # shor for `just serve_empty`
+       just serve_from <path-to-postgresql-dumpfile>
+
+    Or build (and toy-serve) right away with:
+
+       nix-shell nix/dev_shell.nix --arg "deploy" "true"
+
+6. To serve with NGINX, enter [`./nix/nginx_shell.nix`](./nix/nginx_shell.nix). (See comments there.)
+
+## Notes <!-- {{- -->
+
+### Logs
+
+Logs are saved in `_nix-shell/`.
+
+### Python / Django errors
+
+The very first error I got with this app:
+
+      `ImportError: bad magic number in 'mysite.settings': b'\x03\xf3\r\n'`
+
+ The solution provided in the [Stackoverflow thread](https://stackoverflow.com/questions/52477683/importerror-bad-magic-number-in-time-b-x03-xf3-r-n-in-django) (i.e., deleting `*.pyc` files) worked.
+
+<!-- }}- -->
+## SchemaSpy  <!-- {{- -->
 
 Get the latest [SchemaSpy release](https://github.com/schemaspy/schemaspy/releases) and [PostgreSQL JDBC driver](https://jdbc.postgresql.org/).
 
@@ -9,27 +72,74 @@ schemaspy -t pgsql11 -host 1.2.3.4 -port $(just s "PORT") -db $(just s "NAME") -
 Use SSH tunneling to connect to a remote database:
 
 1. `ssh -i <cert> -L 5432:localhost:5432 user@1.2.3.4`
-2. Change `-host` above to `localhost`
+2. Change `-host` in the `schemaspy` conmmand above to `localhost`.
 
----
+<!-- }}- -->
+## QUESTIONS <!-- {{- -->
 
-> NOTE
-> Legacy build steps can be found in [`build-steps-Django-2.2.md`](./build-steps-Django-2.2.md)
+1. Do migration  files need to be  checked into version
+   control or should they be generated from scratch via
+   `makemigration`? <!-- {{- -->
 
-> QUESTIONS
->
-> 1. Where are the logs save right now?
->
-> 2. Do migration files need to be checked into version control or should they be generated from scratch via `makemigration`?
->
->    ANSWER: See the relevant docs below, but the concensus is that they should be checked in. There are alternatives to it, but that is not a version control problem, but a management / methodology one. See [this SO thread and links in the comments](https://stackoverflow.com/questions/30195699/should-django-migrations-live-in-source-control).
->
->    + https://docs.djangoproject.com/en/4.1/topics/migrations/
->    + https://docs.djangoproject.com/en/4.1/topics/db/models/
->    + https://realpython.com/django-migrations-a-primer/
->    + https://docs.djangoproject.com/en/4.1/intro/overview/
+   ANSWER: See the relevant docs below, but the concensus is that they should be checked in. There are alternatives to it, but that is not a version control problem, but a management / methodology one. See [this SO thread and links in the comments](https://stackoverflow.com/questions/30195699/should-django-migrations-live-in-source-control).
 
-## TODOs
+   + https://docs.djangoproject.com/en/4.1/topics/migrations/
+   + https://docs.djangoproject.com/en/4.1/topics/db/models/
+   + https://realpython.com/django-migrations-a-primer/
+   + https://docs.djangoproject.com/en/4.1/intro/overview/
+<!-- }}- -->
+
+1. How   does    the   `django-user-accounts`   package
+   integrate with `django-auth`? <!-- {{- -->
+
+   Decided to remove `django-user-accounts` because it was not used (the corresponding `account_*` tables were virtually empty; see backup) and it caused extra work after updating everything (see this [Django forum thread](https://forum.djangoproject.com/t/upgrading-from-2-2-to-4-2-yields-relatedobjectdoesnotexist-user-has-no-account-error/20437)).
+
+   Nonetheless, I wonder how this package was shown on the admin page, in its own section?
+
+   Also, a couple of notes regarding removed `django-user-accounts` settings:
+
+   + `ACCOUNT_PASSWORD_EXPIRY = 60*60*24*14  # seconds until pw expires, this example shows 14 days`
+
+     Found [this thread](https://stackoverflow.com/questions/15571046/django-force-password-expiration) while doing research on how to implement this, and, as it turns out, this practice is recommended against (see articles by the [NCSC](https://www.ncsc.gov.uk/blog-post/problems-forcing-regular-password-expiry) and the [FTC](https://www.ftc.gov/news-events/blogs/techftc/2016/03/time-rethink-mandatory-password-changes)).
+
+     See more at the next item.
+
+   + `ACCOUNT_PASSWORD_USE_HISTORY = True`
+
+     This sounds like a good idea on the surface, but this will be abused the same way as the previous option, if it is used to disallow previous passwords (or what else is this used for?).
+
+   Will have to do more reading on thi, but instead of using these options, a better strategy would be to
+
+   1. (periodically) scan existing password hashes in known compromised password databases, and report it to user and supervisor
+
+   1. immediately compare the credentials of new users and report it (this is an internal website, so users will be added by administrators) => better yet, suggest non-compromised passwords automatically
+
+     **Potentional issues**: It is a challenge to educate everyday users, even people in higher positions, to adopt common sense security practices (as it affects convenience, comfort zone, etc.), but the majority of Lynx users are legally blind, and some commonly used tools may be completely inaccessible (e.g., password managers).
+
+  <!-- }}- -->
+<!-- }}- -->
+## TODOs <!-- {{- -->
+
+### Done (or considered done, at least) <!-- {{- -->
+
+1. Avoid stacking subshells -> Package properly with Nix (or, at least, do it in a single `shell.nix`)
+
+   (case in point: https://stackoverflow.com/questions/21976606/why-avoid-subshells)
+
+   > **RESOLUTION**: see `dev_shell.nix`.
+
+1. Figure out how to add `settings.py` to version control in a safe manner.
+
+   Just spent ca. 3 hours solving runtime errors that were resolved by (1) adjusting version numbers in `requirements.txt` and (2) adding missing entries to `INSTALLED_APPS` in `settings.py`. Adding `dummy_settings.py` as a workaround for now.
+
+   > **RESOLUTION**: Use KeePassXC and SOPS. See commands in `dev_shell.nix` and [this Stackoverlow answer](https://stackoverflow.com/a/75972492/1498178).
+
+<!-- }}- -->
+### Active <!-- {{- -->
+
+1. Audit `pg_hba.conf`
+
+   ... as it is quite rudimentary (and may even be insecure) at the moment. For example, the current settings won't ask for a password when logging in (see [Postgresql does not prompt for password](https://stackoverflow.com/questions/1335503/postgresql-does-not-prompt-for-password)), but it is probably prudent to set it up.
 
 1. !!! https://docs.djangoproject.com/en/4.1/intro/tutorial01/
 
@@ -69,214 +179,7 @@ Use SSH tunneling to connect to a remote database:
    The [`DRAFT-lxc-deploy.sh`](./DRAFT-lxc-deploy.sh) script is an attempt at using LXD/LXC containers, but it also adds extra complexity (see file). The current approach with Nix seems highly reproducible already, but could be wrong and there may be other benefits.
 
 1. Fetch Python packages from Nixpkgs (or create a new package collection)
-
-1. (QUESTION) How does the `django-user-accounts` package integrate with `django-auth`?
-
-   Decided to remove `django-user-accounts` because it was not used (the corresponding `account_*` tables were virtually empty; see backup) and it caused extra work after updating everything (see this [Django forum thread](https://forum.djangoproject.com/t/upgrading-from-2-2-to-4-2-yields-relatedobjectdoesnotexist-user-has-no-account-error/20437)).
-
-   Nonetheless, I wonder how this package was shown on the admin page, in its own section?
-
-   Also, a couple of notes regarding removed `django-user-accounts` settings:
-
-   + `ACCOUNT_PASSWORD_EXPIRY = 60*60*24*14  # seconds until pw expires, this example shows 14 days`
-
-     Found [this thread](https://stackoverflow.com/questions/15571046/django-force-password-expiration) while doing research on how to implement this, and, as it turns out, this practice is recommended against (see articles by the [NCSC](https://www.ncsc.gov.uk/blog-post/problems-forcing-regular-password-expiry) and the [FTC](https://www.ftc.gov/news-events/blogs/techftc/2016/03/time-rethink-mandatory-password-changes)).
-
-     See more at the next item.
-
-   + `ACCOUNT_PASSWORD_USE_HISTORY = True`
-
-     This sounds like a good idea on the surface, but this will be abused the same way as the previous option, if it is used to disallow previous passwords (or what else is this used for?).
-
-   Will have to do more reading on thi, but instead of using these options, a better strategy would be to
-
-   1. (periodically) scan existing password hashes in known compromised password databases, and report it to user and supervisor
-
-   1. immediately compare the credentials of new users and report it (this is an internal website, so users will be added by administrators) => better yet, suggest non-compromised passwords automatically
-
-     **Potentional issues**: It is a challenge to educate everyday users, even people in higher positions, to adopt common sense security practices (as it affects convenience, comfort zone, etc.), but the majority of Lynx users are legally blind, and some commonly used tools may be completely inaccessible (e.g., password managers).
-
-### Done TODOs (or considered done, at least)
-
-1. Avoid stacking subshells -> Package properly with Nix (or, at least, do it in a single `shell.nix`)
-
-   (case in point: https://stackoverflow.com/questions/21976606/why-avoid-subshells)
-
-   > **RESOLUTION**: see `dev_shell.nix`.
-
-1. Figure out how to add `settings.py` to version control in a safe manner.
-
-   Just spent ca. 3 hours solving runtime errors that were resolved by (1) adjusting version numbers in `requirements.txt` and (2) adding missing entries to `INSTALLED_APPS` in `settings.py`. Adding `dummy_settings.py` as a workaround for now.
-
-   > **RESOLUTION**: Use KeePassXC and SOPS. See commands in `dev_shell.nix` and [this Stackoverlow answer](https://stackoverflow.com/a/75972492/1498178).
-
-
-## Reproducible build steps after upgrading Django to 4.1
-
-> WARNING Only for development!
->
-> See TODO item 4. above.
-
-1. Install Nix (see [download page](https://nixos.org/download.html) for more):
-
-        sh <(curl -L https://nixos.org/nix/install) --daemon
-
-   > TODO
-   > The [Determinate Systems' Nix installer](https://determinate.systems/posts/determinate-nix-installer) works like a charm, and should switch to that:
-   > ```text
-   > curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix | sh -s -- install
-   > ```
-
-   (... and then issue `source '/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh'` if you don't want to restart your shell.)
-
-2. (OPTIONAL) Enter shell with most common tools
-
-        source <(curl https://raw.githubusercontent.com/toraritte/shell.nixes/main/run.sh) -n "22.11"
-
-   <sup>Read more [here](https://github.com/toraritte/shell.nixes/blob/main/baseline/baseline_config.nix).</sup>
-
-3. Clone this repo & enter the clone
-
-        git clone https://github.com/society-for-the-blind/slate-2.git
-        cd slate-2
-
-   If the `dev` branch is needed, then use:
-
-        git clone -b dev https://github.com/society-for-the-blind/slate-2.git
-        cd slate-2
-
-   > NOTE - The rest of the steps are / will be part of [`dev_shell.nix`](./dev_shell.nix) so run that instead (e.g., via `nix-shell -v --argstr "nixpkgs_commit" "22.11" dev_shell.nix` or simply `nix-shell -v dev_shell.nix`)
-
-4. Make Python3 available (deliberately avoiding the word "install"), and add external dependencies for packages in [`lynx/requirements.txt`](./lynx/requirements.txt):
-
-        nix-shell -p systemd pkg-config cairo gobject-introspection icu python3
-
-   > **NOTE** `.venv`
-   > Setting  up a Python virtual environment is deferred until step 11. as some of the PostgreSQL header files are needed during `pip install`, and didn't want to take any chances.
-
-5. Copy `settings.py` into `<repo_root>/lynx/mysite` directory
-
-        scp -i <private_key> <path_to>/settings.py <user>@<vm_ip_address>:<path>
-
-   <sup>`-i` can be omitted if using `ssh-agent` or similar tool that has the private key added to it.</sup>
-
-6. Apply updates in `dummy_settings.py` to `settings.py`.
-
-7. Start PostgreSQL instance
-
-        source <(curl https://raw.githubusercontent.com/toraritte/shell.nixes/main/postgres/postgres.sh)
-
-   > NOTES
-   > + The `nixpkgs_commit` part may need to be updated.
-   > + WARNING `pg_hba.conf` is set up with the least security possible for development!
-
-8. (NOT NEEDED) Make `libpq.so.5` available for the `psycopg2` Python package
-
-        sudo find / -name libpq.so.5
-        sudo ln -s <the-found-path> /usr/lib/libpq.so.5
-        sudo ln -s <the-found-path> /usr/lib64/libpq.so.5
-
-9. Create database
-
-        createdb <settings.py_DATABASES_NAME> --host=$PGDATA --port=<settings.py_DATABASES_PORT>
-
-10. Create user (i.e., login role)
-
-    Connect to the PostgreSQL instance via `psql` ( `--username` is probably superfluous: when PostgreSQL is started via the `shell.nix` in **step 7.**, then the active system user  will be the superuser, and `psql` uses it to log in.)
-
-          psql --host=$PGDATA --username=$(whoami) --port=<settings.py_DATABASES_PORT> --dbname=<settings.py_DATABASES_NAME>
-
-    On the `psql` prompt:
-
-          CREATE ROLE <settings.py_DATABASES_USER> WITH LOGIN PASSWORD <settings.py_DATABASES_PASSWORD>;
-
-    > WARNING / TODO
-    > This is related to the `pg_hba.conf` WARNING above: the current settings won't ask for a password when logging in (see [Postgresql does not prompt for password](https://stackoverflow.com/questions/1335503/postgresql-does-not-prompt-for-password)), but it is probably prudent to set it up.
-    >
-    > Especially because production settings will be tightened up anyway.
-
-    > NOTE
-    > Decided against using `createuser`, because the password will probably be saved in the shell's history. Otherwise it would have looked like this:
-    >
-    >      createuser --host=$PGDATA --port=<settings.py_DATABASES_PORT> <settings.py_DATABASES_USER>
-
-    > MORE TODO
-    > Set the password using its hash when it comes to deploying in production.
-    > + [PostgreSQL: Documentation: 15: CREATE ROLE](https://www.postgresql.org/docs/current/sql-createrole.html)
-    > + [PostgreSQL: Documentation: 15: 21.5. Password Authentication](https://www.postgresql.org/docs/current/auth-password.html)
-    > + [c# - How to Generate SCRAM-SHA-256 to Create Postgres 13 User - Stack Overflow](https://stackoverflow.com/questions/68400120/how-to-generate-scram-sha-256-to-create-postgres-13-user)
-    > + [Generating an SHA-256 Hash From the Command Line | Baeldung on Linux](https://www.baeldung.com/linux/sha-256-from-command-line)
-    > + [Creating user with encrypted password in PostgreSQL - Stack Overflow](https://stackoverflow.com/questions/17429040/creating-user-with-encrypted-password-in-postgresql)
-    > + [PostgreSQL: Documentation: 15: 20.3. Connections and Authentication](https://www.postgresql.org/docs/current/runtime-config-connection.html#GUC-PASSWORD-ENCRYPTION)
-
-
-11. Set up virtual Python environment
-
-          python -m venv .venv
-
-    > NOTE
-    > If there is already a `.venv` directory, then this step is not necessary. (I think.)
-
-12. Activate virtual Python environment
-
-          source .venv/bin/activate
-
-          pip install --upgrade pip
-
-13. Install packages
-
-          pip install lynx/.
-
-    > NOTE
-    > The install target is the directory where `pyproject.toml` is (and right now it is in the `lynx/` directory).
-
-14. Apply database migrations
-
-    First, test with
-
-          python lynx/manage.py showmigrations
-
-    Second, to accomodate included applications (and to apply existing migrations):
-
-          python lynx/manage.py makemigrations
-
-    Finally, go ahead with applying the migrations:
-
-          python lynx/manage.py migrate
-
-15. Check for issues
-
-          python lynx/manage.py check --deploy
-
-16. Start the app with
-
-          python lynx/manage.py runserver 0:8000
-
-## Notes
-
-+ The very first error I got with this app:
-
-        `ImportError: bad magic number in 'mysite.settings': b'\x03\xf3\r\n'`
-
-   The solution provided in the [Stackoverflow thread](https://stackoverflow.com/questions/52477683/importerror-bad-magic-number-in-time-b-x03-xf3-r-n-in-django) (i.e., deleting `*.pyc` files) worked.
-
-   > TODO
-   > `*.pyc` files are "_byte cache files_" generated when a Django project is "built", so these should be in `.gitignore`.
-   >
-   > UPDATE Hm, `.pyc` files are specified in `.gitignore`, so these have probably been commited by accident.
-
-   The next error when running `python manage.py runserver`:
-
-+ `ModuleNotFoundError: No module named 'mysite.settings'`
-
-   `mysite/settings.py` file was missing. Given that it contains all of the project's secrets, it is understandable that it is not in version control.
-
-   > TODO
-   > Read up about this, especially about how to switch between environrments (e.g., prod, dev).
-   > + https://docs.djangoproject.com/en/2.1/topics/settings/#envvar-DJANGO_SETTINGS_MODULE
-   > + https://stackoverflow.com/questions/10664244/django-how-to-manage-development-and-production-settings
-   > + https://www.digitalocean.com/community/tutorials/how-to-harden-your-production-django-project
-
-3. The next exception is database-related, so figure out how to configure a PostgreSQL instance with a Django project.
+  <!-- }}- -->
+<!-- }}- -->
 
 vim: set foldmethod=marker foldmarker={{-,}}- foldlevelstart=0 tabstop=2 shiftwidth=2 expandtab:

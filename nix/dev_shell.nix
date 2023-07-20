@@ -17,8 +17,8 @@
 , deployment_environment ? "dev"
 }:
 
-# USAGE EXAMPLES
-# ==============
+# HOW TO CALL
+# ===========
 #
 # nix-shell nix/dev_shell.nix
 # nix-shell nix/dev_shell.nix --arg "deploy" "true" --arg "debug" "true"
@@ -39,7 +39,7 @@
 # commands are fetched remotely in this case).
 # }}-
 
-# NOTE / TODO Incorporate NGINX or not?
+# NOTE / TODO Incorporate NGINX or not? {{-
 #
 # Still deliberating whether full deployment should be
 # available from this script  (i.e., setup -> gunicorn
@@ -55,6 +55,7 @@
 #          seems to be a viable option.
 #
 # assert start_nginx ->
+# }}-
 
 let
 
@@ -78,7 +79,6 @@ in
 
     buildInputs = with pkgs; [ # {{-
       postgresql_15
-      python3
       just
       openssl # to generate SECRET_KEY on each serving
 
@@ -97,6 +97,7 @@ in
       cairo
       gobject-introspection
       icu
+      python3
 
       # debug
       schemaspy
