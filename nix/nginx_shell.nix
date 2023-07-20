@@ -8,6 +8,7 @@
 ,     django_dir ? "${nix_shell_dir}/django"
 ,      nginx_dir ? "${nix_shell_dir}/nginx"
 
+,           sudo ? false
 ,           port ? "80"
 }:
 
@@ -27,7 +28,35 @@
 #     # NOTE Is it ok to run NGINX as root?
 #     #      Yes: https://unix.stackexchange.com/questions/134301/
 #
-#     sudo $(which nix-shell)  nix/nginx_shell.nix
+#     nix-shell --arg "sudo" "true" nix/nginx_shell.nix
+#
+# > NOTE STATIC ASSETS NOT SERVED WHEN USING "sudo"
+# >
+# >      Permissions. The whole project is probably
+# >      served from a  home directory, and NGINX's
+# >      `nobody`  user  does  not have  access  to
+# >      it.  For  example, files  and  directories
+# >      in  the "slate-2"  repo have  644 and  755
+# >      permissions,  respectively,  but the  home
+# >      directory has 750,  meanning that `nobody`
+# >      either  has to  be the  owner of  the home
+# >      directory  or it  has to  be in  the group
+# >      that has read rights on the home dir.
+# >
+# >      The following should help:
+# >
+# >          sudo -a -G <home-dir-allowed-group> nobody
+#
+#   TODO Perhaps moving out  the static assets from
+#        the home directory would be more secure.`
+#
+# }}- }}-
+# HOW TO MONITOR? {{- {{-
+# ====================================================
+#
+#    watch -n 1 "{ ls -l _nix-shell/*/*pid ; echo ; sudo ps axf | egrep 'gunicorn|nginx' ; }"
+#
+# From this thread: https://unix.stackexchange.com/q/64736/85131
 #
 # }}- }}-
 
@@ -146,6 +175,7 @@ in
       let
 
         gunicorn_pidfile = "${gunicorn_dir}/${timestamp}.pid";
+        sudo_string = "${ if sudo then "sudo" else "" }";
 
       in
 
@@ -189,7 +219,7 @@ in
         #       versa.
       + ''
           mkdir -p ${nginx_dir}
-          nginx_lynx
+          ${sudo_string} $(which nginx_lynx)
         ''
 
         # NOTE It may  take some  time for NGINX  to shut
@@ -202,7 +232,7 @@ in
       + ''
           trap \
             "
-              nginx_lynx -s quit
+              ${sudo_string} $(which nginx_lynx) -s quit
               kill -s SIGTERM $( cat ${gunicorn_pidfile} )
             " \
             EXIT
