@@ -152,7 +152,10 @@ let
   ;
   # }}-
 
-  # NOTE Why `*Bin`? Because it will be added to PATH automatically.
+  # NOTE See https://discourse.nixos.org/t/how-to-add-local-files-into-nginx-derivation-for-nix-shell/6603
+  # QUESTION Why use the `*Bin` version?
+  # ANSWER Because the NGINX  executable will then be
+  #        added to PATH automatically.
   nginx_with_config =
     pkgs.writeShellScriptBin
       "nginx_lynx"

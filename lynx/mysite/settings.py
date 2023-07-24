@@ -42,9 +42,11 @@ SECRET_KEY = str((subprocess.run(["openssl", "rand", "-hex", "52"], capture_outp
 DEBUG = True if (deployment_environment == 'dev') else False
 
 ALLOWED_HOSTS = config['ALLOWED_HOSTS']
+# ALLOWED_HOSTS = config['ALLOWED_HOSTS'] + ['192.168.64.4']
 
 # https://stackoverflow.com/a/38842030/1498178
 CSRF_TRUSTED_ORIGINS = ['https://lynx.societyfortheblind.org']
+# CSRF_TRUSTED_ORIGINS = ['https://lynx.societyfortheblind.org'] + ['http://192.168.64.4:8001']
 
 INSTALLED_APPS = [
     'lynx.apps.LynxConfig',
