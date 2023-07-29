@@ -8,7 +8,6 @@
 ,     django_dir ? "${nix_shell_dir}/django"
 ,      nginx_dir ? "${nix_shell_dir}/nginx"
 
-,           sudo ? false
 ,           port
 }:
 
@@ -16,11 +15,11 @@
 # ====================================================
 # This Nix shell expression depends on `nix/dev_shell.nix`.
 #
-#     nix-shell --argstr "port" "8001" nix/nginx_shell.nix
+#     nix-shell --arg "port" "8001" nix/nginx_shell.nix
 #
 #  or, to replace the calling shell:
 #
-#     exec nix-shell --argstr "port" "8001" nix/nginx_shell.nix
+#     exec nix-shell --arg "port" "8001" nix/nginx_shell.nix
 #
 #  or, when serving from a privileged port (e.g., 80):
 #
@@ -28,11 +27,11 @@
 #     # NOTE Is it ok to run NGINX as root?
 #     #      Yes: https://unix.stackexchange.com/questions/134301/
 #
-#     nix-shell --arg "sudo" "true" --argstr "port" "80" nix/nginx_shell.nix
+#     nix-shell --arg "port" "80" nix/nginx_shell.nix
 #
 #  For production, use:
 #
-#     nix-shell --arg "sudo" "true" --argstr "port" "80" nix/nginx_shell.nix
+#     nix-shell --arg "port" "443" nix/nginx_shell.nix
 #
 # > NOTE STATIC ASSETS NOT SERVED WHEN USING "sudo"
 # >
@@ -182,7 +181,7 @@ in
       let
 
         gunicorn_pidfile = "${gunicorn_dir}/${timestamp}.pid";
-        sudo_string = "${ if sudo then "sudo" else "" }";
+        sudo_string = "${ if ( port < 1024 ) then "sudo" else "" }";
 
       in
 

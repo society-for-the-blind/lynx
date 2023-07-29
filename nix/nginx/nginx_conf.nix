@@ -5,7 +5,7 @@
 , nginx_dir
 
 , timestamp
-, port
+, port # INTEGER
 }:
 
 pkgs.writeTextFile {
@@ -250,7 +250,7 @@ pkgs.writeTextFile {
           # server block (port 443) {{-
   + ''
           server {
-              listen ${port};
+              listen ${builtins.toString port};
     ''
     # TODO Test this:
     #      Based on https://nginx.org/en/docs/http/request_processing.html

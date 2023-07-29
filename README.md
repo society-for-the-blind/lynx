@@ -48,11 +48,11 @@
 
    To test a privileged port in **development**:
 
-       nix-shell --arg "sudo" "true" --argstr "port" "80" nix/nginx_shell.nix
+       nix-shell --arg "port" "80" nix/nginx_shell.nix
 
    For **production**::
 
-       nix-shell --arg "sudo" "true" --argstr "port" "443" nix/nginx_shell.nix
+       nix-shell --arg "port" "443" nix/nginx_shell.nix
 
    (See comments there.)
 
