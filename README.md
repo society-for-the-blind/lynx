@@ -44,7 +44,17 @@
 
        nix-shell nix/dev_shell.nix --arg "deploy" "true"
 
-6. To serve with NGINX, enter [`./nix/nginx_shell.nix`](./nix/nginx_shell.nix). (See comments there.)
+6. To serve with NGINX, enter [`./nix/nginx_shell.nix`](./nix/nginx_shell.nix).
+
+   To test a privileged port in **development**:
+
+       nix-shell --arg "sudo" "true" --argstr "port" "80" nix/nginx_shell.nix
+
+   For **production**::
+
+       nix-shell --arg "sudo" "true" --argstr "port" "443" nix/nginx_shell.nix
+
+   (See comments there.)
 
 ## Notes <!-- {{- -->
 

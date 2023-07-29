@@ -9,7 +9,7 @@
 ,      nginx_dir ? "${nix_shell_dir}/nginx"
 
 ,           sudo ? false
-,           port ? "80"
+,           port
 }:
 
 # HOW TO CALL? {{- {{-
@@ -28,7 +28,11 @@
 #     # NOTE Is it ok to run NGINX as root?
 #     #      Yes: https://unix.stackexchange.com/questions/134301/
 #
-#     nix-shell --arg "sudo" "true" nix/nginx_shell.nix
+#     nix-shell --arg "sudo" "true" --argstr "port" "80" nix/nginx_shell.nix
+#
+#  For production, use:
+#
+#     nix-shell --arg "sudo" "true" --argstr "port" "80" nix/nginx_shell.nix
 #
 # > NOTE STATIC ASSETS NOT SERVED WHEN USING "sudo"
 # >
