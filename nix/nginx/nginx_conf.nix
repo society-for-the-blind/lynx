@@ -246,21 +246,33 @@ pkgs.writeTextFile {
           # QUESTION / TODO: The systemd unit file(s) distributed with the repo will need to be saved in the Nix store to make nginx work, right?
 
           # }}- }}-
-          # DEFAULT: if no Host match, close the connection to prevent host spoofing {{-
-  + ''
-          # server {
-          #   listen 80 default_server;
-          #   return 444;
-          # }
-    '' # }}-
+
+          # server block (port 443) {{-
   + ''
           server {
               listen ${port};
     ''
-    # TODO test this. Based on https://nginx.org/en/docs/http/request_processing.html if the request's Host header does not match any of the `server` blocks, the default one will handle it. Thus, the production settings can be used in a dev environment as well.
+    # TODO Test this:
+    #      Based on https://nginx.org/en/docs/http/request_processing.html
+    #      if  the  request's  Host header  does  not
+    #      match  any  of  the `server`  blocks,  the
+    #      default  one  will  handle it.  Thus,  the
+    #      production settings  can be used in  a dev
+    #      environment as well.
   + ''
               server_name lynx.societyfortheblind.org;
-
+    ''
+    # TODO Move certs from production to the repo's secrets (i.e., the sops.json)
+  + ''
+              # ssl_certificate ...
+              # ssl_certificate_key ...
+    ''
+    # TODO Why are these rewrite rules needed?!
+  + ''
+              # rewrite ^/lynx$ https://$host/lynx/ permanent;
+              # rewrite ^/$ https://$host/lynx/ permanent;
+    ''
+  + ''
               location / {
                   # your website configuration goes here
                   # for example:
@@ -279,10 +291,41 @@ pkgs.writeTextFile {
                 root ${django_dir};
               }
           }
+    ''
+
+          # }}- END server block 443
+          # fallback server block (port 80) {{-
+  + ''
+
+          server {
+    ''
+    # NOTE https://community.letsencrypt.org/t/security-issue-with-redirects-added-by-certbots-nginx-plugin/51493
+  + ''
+              if ($host = lynx.societyfortheblind.org) {
+                  return 301 https://$host$request_uri;
+              } # managed by Certbot
+
+
+              listen 80;
+              server_name lynx.societyfortheblind.org;
+              return 404; # managed by Certbot
+          }
+    ''
+          # Alternative would have been this, where if
+          # no  Host match,  close  the connection  to
+          # prevent host spoofing.
+          #
+          #     server {
+          #       listen 80 default_server;
+          #       return 444;
+          #     }
+
+          # }}- END fallback server block 80
+  + ''
       }
     ''
-    # }}-
-  # }}-
+    # }}- END virtual host configs
+  # }}- END http directive
   ;
 }
 
