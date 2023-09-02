@@ -33,11 +33,13 @@
 
         nix-shell nix/dev_shell.nix --argstr "deployment_environment"  "dev"
 
+   > NOTE Which deployment environment? See note at the top of `dev_shell.nix`.
+
 5. See [`Justfile`](./Justfile) on how to build (and toy-serve) the project.
 
    The needed command will probably be one of the following:
 
-       just # shor for `just serve_empty`
+       just # short for `just serve_empty`
        just serve_from <path-to-postgresql-dumpfile>
 
     Or build (and toy-serve) right away with:
@@ -46,15 +48,7 @@
 
 6. To serve with NGINX, enter [`./nix/nginx_shell.nix`](./nix/nginx_shell.nix).
 
-   To test a privileged port in **development**:
-
-       nix-shell --arg "port" "80" nix/nginx_shell.nix
-
-   For **production**::
-
-       nix-shell --arg "port" "443" nix/nginx_shell.nix
-
-   (See comments there.)
+       nix-shell nix/nginx_shell.nix
 
 ## Notes <!-- {{- -->
 

@@ -8,32 +8,39 @@
 ,     django_dir ? "${nix_shell_dir}/django"
 ,      nginx_dir ? "${nix_shell_dir}/nginx"
 
-,           port
+, domain ? "lynx.societyfortheblind.org"
+, ssl_cert
+, private_key # that belongs to the public key in `ssl_cert`
 }:
+
+# > IMPORTANT
+# >
+# >   1. This Nix shell expression needs  to be run
+# >      inside `nix/dev_shell.nix` Nix shell.
+# >
+# >   2.  NGINX will be run  as `sudo` as only HTTPS
+# >       is enabled (i.e., port 443).
+# >
+# >       COROLLARY:
+# >       Testing on localhost  will require jumping
+# >       all  the  necessary hoops  (i.e,  creating
+# >       self-signed  certs,  edit `/etc/hosts`  or
+# >       local DNS, etc.).
+# >
+# >       NOTE Is it ok to run NGINX as root?
+# >            Yes: https://unix.stackexchange.com/questions/134301/
 
 # HOW TO CALL? {{- {{-
 # ====================================================
-# This Nix shell expression depends on `nix/dev_shell.nix`.
 #
-#     nix-shell --arg "port" "8001" nix/nginx_shell.nix
+#     nix-shell nix/nginx_shell.nix
 #
 #  or, to replace the calling shell:
 #
-#     exec nix-shell --arg "port" "8001" nix/nginx_shell.nix
-#
-#  or, when serving from a privileged port (e.g., 80):
-#
-#     # TODO See issue #24
-#     # NOTE Is it ok to run NGINX as root?
-#     #      Yes: https://unix.stackexchange.com/questions/134301/
-#
-#     nix-shell --arg "port" "80" nix/nginx_shell.nix
-#
-#  For production, use:
-#
-#     nix-shell --arg "port" "443" nix/nginx_shell.nix
-#
+#     exec nix-shell nix/nginx_shell.nix
+
 # > NOTE STATIC ASSETS NOT SERVED WHEN USING "sudo"
+# >      see TODO below
 # >
 # >      Permissions. The whole project is probably
 # >      served from a  home directory, and NGINX's
@@ -50,14 +57,14 @@
 # >
 # >          sudo -a -G <home-dir-allowed-group> nobody
 #
-#   TODO Perhaps moving out  the static assets from
-#        the home directory would be more secure.`
+# TODO Create system users for nginx, gunicorn, postgresql, and login user (lynx), all of them with their own primary groupgs of the same name. There will be a secondary group (e.g., lynx-services) where these would also be included. The main directory for a lynx deployment will be "lynx-repo" with 750 permissions (owner: lynx, group: lynx-services - this means that service accounts (i.e., system users) will only have read permissions!). Specific service files will be owned the corresponding system user. (Once inside "lynx-repo", most dirs and files have 755/775 and 644, respectively, so this is not strictly necessary - especially in dev - but probably a good idea.)
 #
+
 # }}- }}-
 # HOW TO MONITOR? {{- {{-
 # ====================================================
 #
-#    watch -n 1 "{ ls -l _nix-shell/*/*pid ; echo ; sudo ps axf | egrep 'gunicorn|nginx' ; }"
+#    watch -n 1 "{ ls -l _nix-shell/*/*pid ; echo ; sudo ps axf -o  user,pid,tty,etime,cmd | egrep 'gunicorn|nginx' ; }"
 #
 # From this thread: https://unix.stackexchange.com/q/64736/85131
 #
@@ -141,15 +148,23 @@ let
   # https://discourse.nixos.org/t/how-to-create-a-timestamp-in-a-nix-expression/30329
 
   # }}-
+
+  # See NOTE 20230827 below
+  ssl_dummy_crt_path = "${nginx_dir}/dummy.crt";
+  ssl_dummy_key_path = "${nginx_dir}/dummy.key";
+
   nginx_conf = # {{-
     import
       ./nginx/nginx_conf.nix
       { inherit pkgs
-                nix_shell_dir
                 django_dir
                 nginx_dir
+                ssl_dummy_key_path
+                ssl_dummy_crt_path
+                domain
+                ssl_cert
+                private_key
                 timestamp
-                port
         ;
       }
   ;
@@ -171,6 +186,9 @@ in
 
   pkgs.mkShell {
 
+    # See `nginx-https-live-and-testing.md`
+    HTTPS_TEST_DOMAIN = domain;
+
     buildInputs =
       [ pkgs.inotify-tools
         nginx_with_config
@@ -181,7 +199,6 @@ in
       let
 
         gunicorn_pidfile = "${gunicorn_dir}/${timestamp}.pid";
-        sudo_string = "${ if ( port < 1024 ) then "sudo" else "" }";
 
       in
 
@@ -218,14 +235,46 @@ in
           inotifywait --event create,moved_to,attrib --include '${timestamp}.pid$' ${gunicorn_dir}
         ''
 
-        # NOTE `gunicorn_dir`      is     created      in
-        #       `dev_shell.nix`  because  Gunicorn can  be
-        #       tested with simple  Just recipe, and NGINX
-        #       is  what depends  on Gunicorn  - not  vice
-        #       versa.
+        # NOTE Why no `mkdir ${gunicorn_dir}`? {{-
+
+        #      Because    `gunicorn_dir`    is    already
+        #      created    in    `dev_shell.nix`,    which
+        #      `nginx_shell.nix` currently depends on.
+        #
+        #      ( There   is   a   NOTE   close   to   the
+        #        top  of   `dev_shell.nix`  contemplating
+        #        whether  the  2  should be  merged.  For
+        #        now,  Gunicorn  can  be  tested  with  a
+        #        simple   Just   recipe   after   running
+        #        `dev_shell.nix`.
+        #      )
+        # }}-
       + ''
           mkdir -p ${nginx_dir}
-          ${sudo_string} $(which nginx_lynx)
+        ''
+
+        # NOTE Why the dummy private key and SSL certificate? (20230827) {{-
+        #
+        #      For  the   CATCH-ALL  `server`   block  in
+        #      `nginx_conf.nix`.   In   order  to   match
+        #      on  HTTPS  requests  for  domains  **not**
+        #      configured   in   this   NGINX   instance,
+        #      a   server   block  dealing   with   HTTPS
+        #      requests has to  have valid configuration,
+        #      which   requires   `ssl_certificate`   and
+        #      `ssl_certificate_key` parameters set up.
+        #
+        #      Anyway, requests  ending up in  that block
+        #      will  get   ignored,  and   no  meaningful
+        #      private key  and SSL certificate  will get
+        #      exposed.
+        #
+        #      See also https://serverfault.com/questions/1141304/
+        # }}-
+      + ''
+          openssl req -nodes -new -x509 -subj "/CN=localhost" -keyout ${ssl_dummy_key_path} -out ${ssl_dummy_crt_path}
+
+          sudo $(which nginx_lynx)
         ''
 
         # NOTE It may  take some  time for NGINX  to shut
@@ -238,7 +287,7 @@ in
       + ''
           trap \
             "
-              ${sudo_string} $(which nginx_lynx) -s quit
+              sudo $(which nginx_lynx) -s quit
               kill -s SIGTERM $( cat ${gunicorn_pidfile} )
             " \
             EXIT

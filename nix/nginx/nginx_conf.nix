@@ -1,11 +1,15 @@
 { pkgs
 
-, nix_shell_dir
 , django_dir
 , nginx_dir
+, ssl_dummy_key_path
+, ssl_dummy_crt_path
+
+, domain
+, ssl_cert
+, private_key
 
 , timestamp
-, port # INTEGER
 }:
 
 pkgs.writeTextFile {
@@ -81,8 +85,6 @@ pkgs.writeTextFile {
     ''
 
   # `http` DIRECTIVE {{-
-
-    # (https://nginx.org/en/docs/http/ngx_http_core_module.html)
   + ''
       http {
     ''
@@ -216,34 +218,99 @@ pkgs.writeTextFile {
     # }}-
   ### `http`: Virtual Host Configs {{-
 
-  ##### `server` blocks for HTTP  requests (port 80) {{-
+  ### Heavily relied on
+  ###
+  ### + the Mozilla SSL Configuration Generator
+  ###
+  ###   (Specifically, on
+  ###    https://ssl-config.mozilla.org/#server=nginx&version=1.22.1&config=intermediate&openssl=3.0.2&guideline=5.7
+  ###   )
+  ### + http://nginx.org/en/docs/http/configuring_https_servers.html
+  ### + https://serverfault.com/questions/1141063 (!!!)
+  ### + https://serverfault.com/questions/1141066
 
-          # NOTE If enabled,  it will close  the connection  {{-
-          #       for  any  request  on port  80  without  a
-          #       `Host` HTTP header.
-  + ''
-          # server {
-          #   listen 80 default_server;
-          #   return 444;
-          # }
-    '' # }}-
+  ##### `server` block: catch-all {{-
 
-          # NOTE Many flavors of HTTP-to-HTTPS redirect, but
-          #      chose this one - and this was in the legacy
-          #      NGINX config, so felt prudent to keep it.
-          #
-          #      See this thread for more:
-          #
-          #      https://serverfault.com/questions/1141066
+  #####     See the Server Fault thread "Should there
+  #####     be an explicit  catch-all  NGINX `server`
+  #####     block to dismiss  HTTPS  requests for the
+  #####     domains **not** served by the server?" at
+  #####
+  #####     https://serverfault.com/questions/1141304/
+
+      # NOTE Why  not  drop  unwanted  HTTP  and  HTTPS
+      #      connections  with a  conditional in  their
+      #      respective `server` blocks?
+      #
+      #      Personal preference. I like that the logic
+      #      to deal  with unwanted  (i.e., unintended,
+      #      malicious,  etc.) traffic  is  all in  one
+      #      place.
+
   + ''
+          ############################
+          # CATCH-ALL (http & https) #
+          ############################
+
           server {
-              if ( $host = lynx.societyfortheblind.org ) {
-                  return 301 https://$host$request_uri;
-              }
+              listen      80  default_server;
+              listen [::]:80  default_server;
+              listen      443 default_server ssl;
+              listen [::]:443 default_server ssl;
 
-              listen 80;
-              server_name lynx.societyfortheblind.org;
-              return 404;
+    ''
+
+              # See NOTE 20230827 in `nginx_shell.nix`.
+  + ''
+              ssl_certificate     ${ssl_dummy_crt_path};
+              ssl_certificate_key ${ssl_dummy_key_path};
+
+              # silently drop the connection
+              return 444;
+          }
+      ''
+
+  ##### }}- END server block catch-all
+  ##### `server` blocks for HTTP requests (port 80) {{-
+
+  #####     There  are many  flavors to  redirect HTTP
+  #####     traffic to HTTPS for  a site, but I prefer
+  #####     this  one over  the legacy  redirect which
+  #####     was  an  `if`  embedded  in  the  `server`
+  #####     block.
+  #####
+  #####     See links  for  the rationale  and general
+  #####     info on how  NGINX processes  are request,
+  #####     how the catch-all block works, etc.:
+  #####
+  #####     + https://serverfault.com/questions/1141063 (!!!)
+  #####     + https://serverfault.com/questions/1141066
+
+      # NOTE Don't have to worry about 'www' sub-domain
+      #      because  this  whole  project is  for  the
+      #      'lynx' sub-domain.
+
+      # NOTE https://serverfault.com/a/1141240/322755
+    + ''
+          ##########################
+          # HTTP-to-HTTPS redirect #
+          ##########################
+
+          server {
+              listen      80;
+              listen [::]:80;
+
+              server_name ${domain};
+    ''
+
+      # NOTE Not heeding the advice in the answer to
+      #      https://serverfault.com/questions/1141066
+      #      (i.e.,  redirect  bare   domains  to  www)
+      #      because lynx is a  subdomain, and the main
+      #      SFTB domain's  site is handled  by another
+      #      vendor.
+  + ''
+             return 301 https://${domain}$request_uri;
           }
     ''
 
@@ -252,49 +319,30 @@ pkgs.writeTextFile {
   + ''
           server {
 
-              listen ${builtins.toString port};
+              listen      443 ssl;
+              listen [::]:443 ssl;
     ''
 
-              # TODO/GUESTION: Should `server_name` be variable? Test it.
+              # NOTE On `server_name`s {{- {{-
               #
-              # The ServerFault thread is relevant:
+              #      Relevant threads:
               #
-              #     https://serverfault.com/questions/1141063
-              #
-              # My  problem  is  that  `lynx.societyfortheblind.org`
-              # is  ok  for  production,  but  would  it  also  work
-              # when  testing  HTTPS  in   dev  with  a  self-signed
-              # cert  and  local  root  CA? If  this  is  an  issue,
-              # should  I  issue  the   leaf  cert  to  common  name
-              # `lynx.societyfortheblind.org` or to something else?
-              #
-              # See the InfoSec thread
-              #
-              #    https://security.stackexchange.com/questions/271534/
-              #
-              # but especially the 2 links in the last paragraph on
-              # how to test HTTPS in a dev environment.
-              #
-              # My current assumption (based on
-              # https://nginx.org/en/docs/http/request_processing.html):
-              # if the request's  Host header does not  match any of
-              # the `server` blocks, the default one will handle it.
-              # Thus, the production  settings can be used  in a dev
-              # environment as well.
+              #        + https://serverfault.com/questions/1141063
+              #        + https://security.stackexchange.com/questions/271534/
+              # }}- }}-
   + ''
-              server_name lynx.societyfortheblind.org;
+              server_name ${domain};
     ''
 
   ####### HTTPS `server`: SSL Settings {{-
-        #
-        # Heavily relied on
-        #
-        #   https://ssl-config.mozilla.org/#server=nginx&version=1.22.1&config=intermediate&openssl=3.0.2&guideline=5.7
 
               # TODO Move certs from production to the repo's secrets (i.e., the sops.json)
   + ''
-              # ssl_certificate ...
-              # ssl_certificate_key ...
+              ssl_certificate     ${ssl_cert};
+              ssl_certificate_key ${private_key};
+
+              # ssl_certificate     ${nginx_dir}/lynx-localhost-text-bundle.crt;
+              # ssl_certificate_key ${nginx_dir}/server.key;
     ''
 
               # https://www.ssl.com/guide/disable-tls-1-0-and-1-1-apache-nginx/

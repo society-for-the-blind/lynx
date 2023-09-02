@@ -41,8 +41,7 @@ SECRET_KEY = str((subprocess.run(["openssl", "rand", "-hex", "52"], capture_outp
 # NOTE If `False` then static files won't get served automatically.
 DEBUG = True if (deployment_environment == 'dev') else False
 
-ALLOWED_HOSTS = config['ALLOWED_HOSTS']
-# ALLOWED_HOSTS = config['ALLOWED_HOSTS'] + ['192.168.64.4']
+ALLOWED_HOSTS = ['lynx.societyfortheblind.org', os.environ.get('HTTPS_TEST_DOMAIN', '')]
 
 # https://stackoverflow.com/a/38842030/1498178
 CSRF_TRUSTED_ORIGINS = ['https://lynx.societyfortheblind.org']

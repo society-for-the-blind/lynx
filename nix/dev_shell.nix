@@ -8,12 +8,21 @@
 ,             django_dir ? "${nix_shell_dir}/django"
 ,              nginx_dir ? "${nix_shell_dir}/nginx"
 
-# TODO This is little more than a stub
 ,                 deploy ? false
 ,                  debug ? false
 ,              sops_file ? "${project_dir}/secrets/lynx_settings.sops.json"
 ,                sp_kdbx ? "${project_dir}/secrets/sp.kdbx"
-# NOTE Possible values: top-level keys of `sops_file`
+
+# NOTE Deployment environment: `dev` vs `prod` {{- {{-
+#
+#      It affects
+#
+#        1. which credentials are used
+#
+#        2. `dev` enables `DEBUG` in the Django configuration
+# }}- }}-
+
+# Possible values: top-level keys of `sops_file`.
 , deployment_environment ? "dev"
 }:
 
@@ -77,6 +86,7 @@ in
     # ENVIRONMENT VARIABLE DECLARATIONS
     DEPLOY_ENV = deployment_environment;
 
+    # TODO pin to specific version (and migrate to flakes)
     buildInputs = with pkgs; [ # {{-
       postgresql_15
       just
@@ -116,17 +126,17 @@ in
         #
         #      See also https://elixirforum.com/t/nix-the-package-manager/23231/3
         #
-        #      shellHook =        shellHook =  
-        #        ''                 ''         
-        #          trap \             trap \   
-        #          "                  "        
+        #      shellHook =        shellHook =
+        #        ''                 ''
+        #          trap \             trap \
+        #          "                  "
         #        ''                   echo lofa
-        #      + ''                   sleep 2  
-        #          echo lofa          echo miez  
-        #          sleep 2            " \      
-        #          echo miez          EXIT     
-        #        ''                 ''         
-        #      + ''               ;            
+        #      + ''                   sleep 2
+        #          echo lofa          echo miez
+        #          sleep 2            " \
+        #          echo miez          EXIT
+        #        ''                 ''
+        #      + ''               ;
         #          " \
         #          EXIT
         #        ''
