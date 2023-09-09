@@ -1,11 +1,15 @@
 { pkgs
 
-, nix_shell_dir
 , django_dir
 , nginx_dir
+, ssl_dummy_key_path
+, ssl_dummy_crt_path
+
+, domain
+, ssl_cert
+, private_key
 
 , timestamp
-, port
 }:
 
 pkgs.writeTextFile {
@@ -13,8 +17,10 @@ pkgs.writeTextFile {
   name = "nginx.conf";
 
   text =
+    # TODO verify the claims of the NOTE below
     # NOTE no `user` directive {{- {{-
-    # The default for `user` is
+    #
+    # The default for the `user` directive is:
     #
     #     user nobody nobody;
     #
@@ -35,6 +41,7 @@ pkgs.writeTextFile {
     #         keep it that way.
 
     # }}- }}-
+
     # WARNING `error_log` here is a must {{- {{-
     #         ==========================
     # This directive can be  over-ridden in lower levels /
@@ -43,13 +50,13 @@ pkgs.writeTextFile {
     # An  `error_log`  directive  **must** stand  here  in
     # either   case,  otherwise   NGINX  will   check  for
     # `/var/log/nginx/error.log`, as  this value  has been
-    # compiled into it. From the
+    # compiled into it (at least, this is the case for the
+    # Nix package). From the
     # [docs](http://nginx.org/en/docs/ngx_core_module.html#error_log):
     #
     # > If  on the  main configuration  level (i.e.,  `main`
     # > context) writing a  log to a file  is not explicitly
     # > defined, the default file will be used.
-    #
     #
     # The file in the main `error_log` declaration doesn't
     # have  to  exist  (unlike  `/var/log/nginx/error.log`
@@ -65,13 +72,12 @@ pkgs.writeTextFile {
 
     # }}- }}-
     ''
-      error_log ${nginx_dir}/nginx_main_error.log debug;
+      error_log ${nginx_dir}/nginx_main_error.log warn;
       pid ${nginx_dir}/nginx_${timestamp}.pid;
       worker_processes auto;
     ''
 
-    # COPIED VERBATIM FROM OLD PROD
-    # (Also, `nginx` won't run without this block being present.)
+    # NOTE `nginx` won't run without this block being present.
   + ''
       events {
           worker_connections 1024; # OLD: 768; DEFAULT: 512
@@ -79,34 +85,38 @@ pkgs.writeTextFile {
     ''
 
   # `http` DIRECTIVE {{-
-  # (https://nginx.org/en/docs/http/ngx_http_core_module.html)
   + ''
       http {
     ''
 
-    # Logging Settings {{-
+  ### `http`: Logging Settings {{-
 
-          # TODO r?syslog
   + ''
           access_log ${nginx_dir}/access_${timestamp}.log;
-          error_log ${nginx_dir}/error_${timestamp}.log debug;
+          error_log ${nginx_dir}/error_${timestamp}.log warn;
     ''
 
-    # }}-
-    # Basic Settings {{-
+  ### }}-
+  ### `http`: Basic Settings {{-
 
           # https://stackoverflow.com/questions/58066785/
   + ''
           sendfile on;
-    ''
-
-  + ''
           sendfile_max_chunk 2m; # DEFAULT
           tcp_nopush on;
           tcp_nodelay on;        # DEFAULT
           keepalive_timeout 75s; # DEFAULT
     ''
+          # NOTE Keep in mind though:
+          #      https://stackoverflow.com/questions/20247184/
+  + ''
+          server_tokens off;
+    ''
           # https://stackoverflow.com/questions/71880042/
+  + ''
+          default_type application/octet-stream; # DEFAULT: text/plain
+    ''
+          # COPIED VERBATIM FROM OLD PROD
   + ''
           types { # {{-
               text/html                             html htm shtml;
@@ -196,76 +206,175 @@ pkgs.writeTextFile {
               video/x-ms-wmv                        wmv;
               video/x-msvideo                       avi;
           } # }}-
-          default_type application/octet-stream; # DEFAULT: text/plain
-    ''
-
-          # COPIED VERBATIM FROM OLD PROD
-  + ''
           types_hash_max_size 2048; # DEFAULT: 1024
     ''
 
     # }}-
-    #  TODO: put in `server`
-    # SSL Settings {{-
-    #
-    # https://ssl-config.mozilla.org/#server=nginx&version=1.22.1&config=intermediate&openssl=3.0.2&guideline=5.7
-
-          # https://www.ssl.com/guide/disable-tls-1-0-and-1-1-apache-nginx/
-  + ''
-          ssl_protocols TLSv1.2 TLSv1.3;
-    ''
-
-          # https://serverfault.com/a/997685/322755
-  + ''
-          ssl_prefer_server_ciphers off;
-          ssl_ciphers ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384:DHE-RSA-CHACHA20-POLY1305;
-
-    ''
-
-    # }}-
-    # Compression Settings {{-
+  ### `http`: Compression Settings {{-
   + ''
       gzip on;
     ''
 
     # }}-
-    # Virtual Host Configs {{-
+  ### `http`: Virtual Host Configs {{-
 
-          # TODO Make server blocks configurable / dev compatible {{- {{-
-          #
-          # These server configs cannot be used in dev because they require TLS:
+  ### Heavily relied on
+  ###
+  ### + the Mozilla SSL Configuration Generator
+  ###
+  ###   (Specifically, on
+  ###    https://ssl-config.mozilla.org/#server=nginx&version=1.22.1&config=intermediate&openssl=3.0.2&guideline=5.7
+  ###   )
+  ### + http://nginx.org/en/docs/http/configuring_https_servers.html
+  ### + https://serverfault.com/questions/1141063 (!!!)
+  ### + https://serverfault.com/questions/1141066
 
-          # 1. The 1st `server` block (i.e., the default) shuts down any incoming HTTP request if the Host header value of the HTTP request (i.e., `$host`) is not present, not matched subsequent `server` blocks, etc.
-          # 2. The 2nd one redirects to the HTTPS version.
-          # 3. The 3rd handles the request.
+  ##### `server` block: catch-all {{-
 
-          # A solution would be simply to enable a server block that matches the the dev server and either port 80 or an unprivileged port, but this will be a systemd unit.
+  #####     See the Server Fault thread "Should there
+  #####     be an explicit  catch-all  NGINX `server`
+  #####     block to dismiss  HTTPS  requests for the
+  #####     domains **not** served by the server?" at
+  #####
+  #####     https://serverfault.com/questions/1141304/
 
-          # Maybe this is not even an issue: the systemd unit(s) will be a file in the repo, and the "prod" flag simply link this (these) to `/etc/systemd/system` (or wherever it is needed), while a "dev" flag could use a conf file generated in the shell.nix.
+      # NOTE Why  not  drop  unwanted  HTTP  and  HTTPS
+      #      connections  with a  conditional in  their
+      #      respective `server` blocks?
+      #
+      #      Personal preference. I like that the logic
+      #      to deal  with unwanted  (i.e., unintended,
+      #      malicious,  etc.) traffic  is  all in  one
+      #      place.
 
-          # QUESTION / TODO: The systemd unit file(s) distributed with the repo will need to be saved in the Nix store to make nginx work, right?
-
-          # }}- }}-
-          # DEFAULT: if no Host match, close the connection to prevent host spoofing {{-
   + ''
-          # server {
-          #   listen 80 default_server;
-          #   return 444;
-          # }
-    '' # }}-
+          ############################
+          # CATCH-ALL (http & https) #
+          ############################
+
+          server {
+              listen      80  default_server;
+              listen [::]:80  default_server;
+              listen      443 default_server ssl;
+              listen [::]:443 default_server ssl;
+
+    ''
+
+              # See NOTE 20230827 in `nginx_shell.nix`.
+  + ''
+              ssl_certificate     ${ssl_dummy_crt_path};
+              ssl_certificate_key ${ssl_dummy_key_path};
+
+              # silently drop the connection
+              return 444;
+          }
+      ''
+
+  ##### }}- END server block catch-all
+  ##### `server` blocks for HTTP requests (port 80) {{-
+
+  #####     There  are many  flavors to  redirect HTTP
+  #####     traffic to HTTPS for  a site, but I prefer
+  #####     this  one over  the legacy  redirect which
+  #####     was  an  `if`  embedded  in  the  `server`
+  #####     block.
+  #####
+  #####     See links  for  the rationale  and general
+  #####     info on how  NGINX processes  are request,
+  #####     how the catch-all block works, etc.:
+  #####
+  #####     + https://serverfault.com/questions/1141063 (!!!)
+  #####     + https://serverfault.com/questions/1141066
+
+      # NOTE Don't have to worry about 'www' sub-domain
+      #      because  this  whole  project is  for  the
+      #      'lynx' sub-domain.
+
+      # NOTE https://serverfault.com/a/1141240/322755
+    + ''
+          ##########################
+          # HTTP-to-HTTPS redirect #
+          ##########################
+
+          server {
+              listen      80;
+              listen [::]:80;
+
+              server_name ${domain};
+    ''
+
+      # NOTE Not heeding the advice in the answer to
+      #      https://serverfault.com/questions/1141066
+      #      (i.e.,  redirect  bare   domains  to  www)
+      #      because lynx is a  subdomain, and the main
+      #      SFTB domain's  site is handled  by another
+      #      vendor.
+  + ''
+             return 301 https://${domain}$request_uri;
+          }
+    ''
+
+  ##### }}- END server block http
+  ##### `server` blocks for HTTPS requests (port 443) {{-
   + ''
           server {
-              listen ${port};
+
+              listen      443 ssl;
+              listen [::]:443 ssl;
     ''
-    # TODO test this. Based on https://nginx.org/en/docs/http/request_processing.html if the request's Host header does not match any of the `server` blocks, the default one will handle it. Thus, the production settings can be used in a dev environment as well.
+
+              # NOTE On `server_name`s {{- {{-
+              #
+              #      Relevant threads:
+              #
+              #        + https://serverfault.com/questions/1141063
+              #        + https://security.stackexchange.com/questions/271534/
+              # }}- }}-
   + ''
-              server_name lynx.societyfortheblind.org;
+              server_name ${domain};
+    ''
+
+  ####### HTTPS `server`: SSL Settings {{-
+
+              # TODO Move certs from production to the repo's secrets (i.e., the sops.json)
+  + ''
+              ssl_certificate     ${ssl_cert};
+              ssl_certificate_key ${private_key};
+
+              # ssl_certificate     ${nginx_dir}/lynx-localhost-text-bundle.crt;
+              # ssl_certificate_key ${nginx_dir}/server.key;
+    ''
+
+              # https://www.ssl.com/guide/disable-tls-1-0-and-1-1-apache-nginx/
+  + ''
+              ssl_protocols TLSv1.2 TLSv1.3;
+    ''
+
+              # https://serverfault.com/a/997685/322755
+  + ''
+              ssl_prefer_server_ciphers off;
+              ssl_ciphers ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384:DHE-RSA-CHACHA20-POLY1305;
+
+    ''
+
+  ####### }}- END ssl settings
+
+              # NOTE `rewrite` rules explanation: {{- {{-
+              #
+              #      ...blind.org/lynx -> ...blind.org/lynx/
+              #      ...blind.org/     -> ...blind.org/lynx/
+              #
+              #     For  some reason,  it also  works for  `..blind.org`
+              #     as   well...  Maybe   browsers  append   a  trailing
+              #     forward-slash by default?
+
+              # }}- }}-
+  + ''
+              rewrite ^/lynx$ https://$host/lynx/ permanent;
+              rewrite ^/$ https://$host/lynx/ permanent;
+
 
               location / {
-                  # your website configuration goes here
-                  # for example:
-                  # root ${nix_shell_dir}/..;
-                  # index ${nix_shell_dir}/../README.md;
 
                   proxy_set_header Host $host;
                   proxy_set_header X-Real-IP $remote_addr;
@@ -281,8 +390,9 @@ pkgs.writeTextFile {
           }
       }
     ''
-    # }}-
-  # }}-
+  ##### }}- END server block https
+  ### }}- END virtual host configs
+  # }}- END http directive
   ;
 }
 

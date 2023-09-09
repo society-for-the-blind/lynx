@@ -46,7 +46,19 @@
 
        nix-shell nix/dev_shell.nix --arg "deploy" "true"
 
-6. To serve with NGINX, enter [`./nix/nginx_shell.nix`](./nix/nginx_shell.nix). (See comments there.)
+6. To serve with NGINX, enter [`./nix/nginx_shell.nix`](./nix/nginx_shell.nix).
+
+   > NOTE: **HTTPS only, both for testing and in production.**
+
+   From the project root:
+
+       nix-shell                                                       \
+         --argstr "ssl_cert"    "$( readlink -f lynx-dev-server.crt )" \
+         --argstr "private_key" "$( readlink -f lynx-dev-server.key )" \
+         --argstr "domain"      "lynx.dev"                             \
+         nix/nginx_shell.nix
+
+   (See [HTTPS notes](./https-notes.md) on how to create the keys and SSL certificates for testing.)
 
 ## Notes <!-- {{- -->
 
