@@ -170,6 +170,78 @@ in
             else ""
           )
 
+          # TODO groups & (system) users
+          #
+          # The goal is to  have each participating service have
+          # their eponymous system users, and an extra user with
+          # `sudo` rights to kick things off:
+          #
+          #     group: lynx_app
+          #     ├── user: (privileged user; e.g., lynx, toraritte)
+          #     ├── user: gunicorn
+          #     ├── user: nginx
+          #     └── user: postgres
+          #
+          #     sudo usermod -a -G lynx_app <privileged-user>
+          #     sudo usermod -a -G lynx_app gunicorn
+          #     sudo usermod -a -G lynx_app nginx
+          #     sudo usermod -a -G lynx_app postgres
+          #
+          # The  permissions will  be 750  (group: `lynx_app`;
+          # user: privileged user) throughout the project dir.
+          #
+          #     sudo chown -R <privileged-user> <project_dir>
+          #     sudo chgrp -R lynx_app <project_dir>
+          #     sudo chmod -R 750 <project_dir>
+          #
+          #     # Otherwise system users won't be able to create files...
+          #     sudo find <project_dir> -type d -exec chmod 770 {} +
+          #
+          # Use `tree -pug` to check the ownerships and permissions.
+
+          # TODO 750 permissions: This might need some tweaking, as system users may have to write into files. (Although, the services started with their eponymous system users would create files using their own permissions, so this shouldn't be a problem, right? Also, static files should only need read permissions, given that they are, well, static.)
+
+          # TODO There should be a deployment script (or `shell.nix`) to clone the repo, set up group and users, etc.
+          # QUESTION: Will dir and file ownership be a problem? The plan is to have 750 applied recursively, where the owner system group will be `lynx_app` and the owner user will be the privileged user.
+#
+          # TODO (note from previous commit; couldn't decide if it can be tossed)
+          # Create system users for nginx, gunicorn, postgresql, and login user (lynx), all of them with their own primary groupgs of the same name. There will be a secondary group (e.g., lynx-services) where these would also be included. The main directory for a lynx deployment will be "lynx-repo" with 750 permissions (owner: lynx, group: lynx-services - this means that service accounts (i.e., system users) will only have read permissions!). Specific service files will be owned the corresponding system user. (Once inside "lynx-repo", most dirs and files have 755/775 and 644, respectively, so this is not strictly necessary - especially in dev - but probably a good idea.)
+#
+
+        + ''
+            # https://stackoverflow.com/a/14811915/1498178
+            create_system_user_if_none() {
+
+              # Only needed to set exit code.
+              id "$1" &>/dev/null
+
+              if [ $? -ne 0 ]
+              then
+                sudo adduser --system --no-create-home --disabled-login --disabled-password --group "$1"
+              fi
+            }
+
+          ''
+
+          # The privileged user will be created on VM / container creation
+        + ''
+            # create_system_user_if_none postgres
+            # create_system_user_if_none gunicorn
+            # create_system_user_if_none nginx
+
+            create_system_group_if_none() {
+
+              # Only needed to set exit code.
+              getent group "$1" &>/dev/null
+
+              if [ $? -ne 0 ]
+              then
+                sudo groupadd --system "$1"
+              fi
+            }
+
+            # create_system_group_if_none lynx_app
+          ''
         + ''
             # Already done in `postgres/shell-hook.sh`, but it doesn't hurt
             export NIX_SHELL_DIR="${nix_shell_dir}"

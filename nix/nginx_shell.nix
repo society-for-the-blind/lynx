@@ -46,7 +46,11 @@
 # To replace  the calling shell,  prefix the
 # above  command  with `exec`  (i.e.,  `exec
 # nix-shell ...`).
+
 # > NOTE STATIC ASSETS NOT SERVED WHEN USING "sudo"
+# >
+# >      See TODO "groups & (system) users" in
+# >      `dev_shell.nix`.
 # >
 # >      Permissions. The whole project is probably
 # >      served from a  home directory, and NGINX's
@@ -62,10 +66,7 @@
 # >      The following should help:
 # >
 # >          sudo -a -G <home-dir-allowed-group> nobody
-#
-#   TODO Perhaps moving out  the static assets from
-#        the home directory would be more secure.`
-#
+
 # }}- }}-
 # HOW TO MONITOR? {{- {{-
 # ====================================================
