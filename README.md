@@ -33,11 +33,13 @@
 
         nix-shell nix/dev_shell.nix --argstr "deployment_environment"  "dev"
 
+   > NOTE Which deployment environment? See note at the top of `dev_shell.nix`.
+
 5. See [`Justfile`](./Justfile) on how to build (and toy-serve) the project.
 
    The needed command will probably be one of the following:
 
-       just # shor for `just serve_empty`
+       just # short for `just serve_empty`
        just serve_from <path-to-postgresql-dumpfile>
 
     Or build (and toy-serve) right away with:
