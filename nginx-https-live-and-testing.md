@@ -1,23 +1,37 @@
 ## 1. All in one go (won't work in Firefox)
 
+```
+openssl req -x509 -new -nodes                                      \
+  -newkey RSA:2048                                                 \
+  -days 365                                                        \
+  -subj '/C=US/ST=Denial/L=Earth/O=Dis/CN=anything_but_whitespace' \
+  -addext 'subjectAltName = DNS:lynx.dev'                          \
+  -addext 'authorityKeyIdentifier = keyid,issuer'                  \
+  -addext 'basicConstraints = CA:FALSE'                            \
+  -addext 'keyUsage = digitalSignature, keyEncipherment'           \
+  -addext 'extendedKeyUsage=serverAuth'                            \
+  -out self-signed-server-and-root-ca.crt                          \
+  -keyout server-and-root-ca-private.key
+```
+
 ## 2. Create private CA and sign server CSR (works everywhere)
 
 1. Create root CA private key and self-signed cert
 
-    openssl req -x509 -nodes \
-      -newkey RSA:2048       \
-      -keyout test-root-ca.key    \
-      -days 365              \
-      -out test-root-ca.crt       \
-      -subj '/C=US/ST=Denial/L=Earth/O=LynxTest/CN=test-test-root-ca'
+    openssl req -x509 -nodes   \
+      -newkey RSA:2048         \
+      -keyout test-root-ca.key \
+      -days 365                \
+      -out test-root-ca.crt    \
+      -subj '/C=US/ST=Denial/L=Earth/O=LynxTest/CN=test-root-ca'
 
 2. Create server's private key and CSR in one go.
 
    > NOTE
    > No mention of a domain here yet.
 
-    openssl req -nodes   \
-      -newkey rsa:2048   \
+    openssl req -nodes            \
+      -newkey rsa:2048            \
       -keyout lynx-dev-server.key \
       -out lynx-dev-server.csr    \
       -subj '/C=US/ST=Denial/L=Earth/O=Dis/CN=lynx.dev-https-test'
@@ -27,13 +41,13 @@
    > NOTE
    > The domain is mentioned at the bottom in `-extfire` (see `subjectAltName`).
 
-    openssl x509 -req    \
-      -CA test-root-ca.crt    \
-      -CAkey test-root-ca.key \
-      -in lynx-dev-server.csr     \
-      -out lynx-dev-server.crt    \
-      -days 365          \
-      -CAcreateserial    \
+    openssl x509 -req          \
+      -CA test-root-ca.crt     \
+      -CAkey test-root-ca.key  \
+      -in lynx-dev-server.csr  \
+      -out lynx-dev-server.crt \
+      -days 365                \
+      -CAcreateserial          \
       -extfile <(printf "subjectAltName = DNS:lynx.dev\nauthorityKeyIdentifier = keyid,issuer\nbasicConstraints = CA:FALSE\nkeyUsage = digitalSignature, keyEncipherment\nextendedKeyUsage=serverAuth")
 
 4. Associate domain to local server (or even localhost) in `/etc/hosts`
@@ -42,9 +56,9 @@
 
    On Mac (Ventura 13.4):
 
-    sudo security add-trusted-cert \
-      -d \
-      -r trustRoot \
+    sudo security add-trusted-cert          \
+      -d                                    \
+      -r trustRoot                          \
       -k /Library/Keychains/System.keychain \
     test-root-ca.crt
 
