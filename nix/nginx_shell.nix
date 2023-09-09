@@ -99,7 +99,7 @@
 #
 # As a one-liner:
 #
-#     sudo mkdir -p /var/log/nginx/ && sudo touch /var/log/nginx/error.log && sudo mkdir -p /var/cache/nginx/proxy && sudo mkdir -p /var/cache/nginx/uwsgi && sudo mkdir -p /var/cache/nginx/scgi && sudo mkdir -p /var/cache/nginx/fastcgi && sudo mkdir -p /var/cache/nginx/client_body & sudo chown -R $(whoami):$(whoami) /var/{log,cache}/nginx
+#     sudo mkdir -p /var/log/nginx/ && sudo touch /var/log/nginx/error.log && sudo mkdir -p /var/cache/nginx/proxy && sudo mkdir -p /var/cache/nginx/uwsgi && sudo mkdir -p /var/cache/nginx/scgi && sudo mkdir -p /var/cache/nginx/fastcgi && sudo mkdir -p /var/cache/nginx/client_body && sudo chown -R $(whoami):$(whoami) /var/{log,cache}/nginx
 # }}- }}-
 
 # OUTDATED NOTE? (2023-07-08) {{- {{-

@@ -38,7 +38,6 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = str((subprocess.run(["openssl", "rand", "-hex", "52"], capture_output=True)).stdout, 'utf-8').strip()
 
 # SECURITY WARNING: don't run with debug turned on in production!
-# NOTE If `False` then static files won't get served automatically.
 DEBUG = True if (deployment_environment == 'dev') else False
 
 ALLOWED_HOSTS = ['lynx.societyfortheblind.org', os.environ.get('HTTPS_TEST_DOMAIN', '')]
