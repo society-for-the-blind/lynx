@@ -71,7 +71,7 @@
 # HOW TO MONITOR? {{- {{-
 # ====================================================
 #
-#    watch -n 1 "{ ls -l _nix-shell/*/*pid ; echo ; sudo ps axf -o  user,pid,tty,etime,cmd | egrep 'gunicorn|nginx' ; }"
+#    watch -n 1 "{ ls -l _nix-shell/*/*pid ; echo ; sudo ps axf -o  user,pid,tty,etime,cmd | egrep 'gunicorn|nginx|postgres' ; }"
 #
 # From this thread: https://unix.stackexchange.com/q/64736/85131
 #
