@@ -58,16 +58,24 @@ serve_from dumpfile: db && deps migrate prep serve
   just c  -f {{dumpfile}}
   just c --command="ANALYZE"
 
+db_from dumpfile: db
+  just c  -f {{dumpfile}}
+  just c --command="ANALYZE"
+
+# alias: d
+django_prep: deps migrate prep
+
+# alias: s
+setup_from dumpfile:
+  just db_from {{dumpfile}}
+  just django_prep
+
 db: create_db add_role grant_schema
 
-# RECIPES {{-
-# =======
+# BASE RECIPES {{-
+# ============
 
-dump *extra:                           # {{-
-  pg_dump \
-  {{psql_flags}} \
-  {{extra}}
-# }}-
+# == `db` PARTS: `create_db`, `add_role`, `grant_schema` == {{-
 
 # TODO Add ICU? (postgres15)
 create_db:                             # {{-
@@ -108,7 +116,11 @@ grant_schema:                          # {{-
     GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA {{db_schema}} TO {{db_user}};    \
     GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA {{db_schema}} TO {{db_user}}; \
   " | just c
+
 # }}-
+
+# }}-
+# == `django` == {{-
 
 deps:                                  # {{-
   pip install --upgrade pip
@@ -152,6 +164,9 @@ serve:                                 # {{-
   just m runserver 0:8000
 # }}-
 
+# }}-
+# == gunicorn == {{-
+
 # NOTE Sockets (UDS vs TCP) {{- {{-
 #      ====================
 # Decided to use Unix  Domain Sockets (UDS) instead of
@@ -189,6 +204,7 @@ gunicorn_local port *extra_flags:
   just gunicorn 127.0.0.1 {{port}} {{extra_flags}}
 
 # }}-
+# }}-
 # ALIASES {{-
 # =======
 
@@ -208,22 +224,25 @@ gunicorn_local port *extra_flags:
 alias c := _connect_lynx_db
 alias m := _django_manage
 alias n := _shell_nixes
-#     p := my_process_tree  (defined in DEBUG)
+alias p := my_process_tree
+alias d := django_prep
+alias s := setup_from
 
 # }}-
-# HELPERS {{-
-# =======
+# UTILITIES {{-
+# =========
 
 # WARNING sometimes works, other times it doesn't
-
 reldoc host driver:
   schemaspy -t pgsql11 -host {{host}} -port {{db_port}} -db {{db_name}} -s public -u {{db_user}} -o . -dp {{driver}}
 
+# alias: m
 _django_manage +sub_commands:
   python lynx/manage.py {{sub_commands}}
 
+# alias: n
 _shell_nixes:
-  source <(curl https://raw.githubusercontent.com/toraritte/shell.nixes/main/run.sh) -n 22.11
+  source <(curl https://raw.githubusercontent.com/toraritte/shell.nixes/main/run.sh) -n 23.05
 
 # CAVEAT `extra_flags` variadic parameter {{-
 #        ================================
@@ -236,20 +255,27 @@ _shell_nixes:
 # function `get_db_settings`in `dev_shell.nix`).
 
 # }}-
+# alias: c
 _connect_lynx_db *extra_flags:
   psql           \
   {{psql_flags}} \
   {{extra_flags}}
+
+# TODO try it out (literally forgot that this is in here)
+dump *extra:
+  pg_dump \
+  {{psql_flags}} \
+  {{extra}}
+
 # }}-
 # DEBUG {{-
 # =====
-
-alias p := my_process_tree
 
 # A better alternative to
 #
 #    watch -n 1 "ps xf"
 
+# alias: p
 my_process_tree:
   htop --user $(whoami) --tree
 
