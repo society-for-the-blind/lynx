@@ -261,7 +261,18 @@ _connect_lynx_db *extra_flags:
   {{psql_flags}} \
   {{extra_flags}}
 
-# TODO try it out (literally forgot that this is in here)
+# Examples:
+#
+#     just dump -Fd -f <dump_name>
+#     just dump -Fc    <dump_name>
+#
+# (The database name is not needed because it is
+#  already provided by `just c`.)
+#
+# To restore:
+#
+#     pg_restore -h localhost -d <dn_name> <dump_name>
+#     pg_restore -h localhost -d <db_name> -t <table_name> <dump_name>
 dump *extra:
   pg_dump \
   {{psql_flags}} \
