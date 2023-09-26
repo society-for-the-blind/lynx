@@ -556,17 +556,17 @@ def volunteers_report_month(request):
             data = request.POST.copy()
             start = data.get('start_date')
             end = data.get('end_date')
-            volunteers = Volunteer.objects.raw("""SELECT lc.id, CONCAT(lc.last_name, ', ', lc.first_name) as name, 
-                                                        SUM(volunteer_hours) as hours, 
-                                                        EXTRACT(MONTH FROM volunteer_date) as month, 
+            volunteers = Volunteer.objects.raw("""SELECT lc.id, CONCAT(lc.last_name, ', ', lc.first_name) as name,
+                                                        SUM(volunteer_hours) as hours,
+                                                        EXTRACT(MONTH FROM volunteer_date) as month,
                                                         EXTRACT(YEAR FROM volunteer_date) as year
                                                     FROM lynx_volunteer lv
                                                     JOIN lynx_contact lc ON lv.contact_id = lc.id
                                                     WHERE lc.volunteer_check is TRUE
                                                         AND volunteer_date >= %s::date
                                                         AND volunteer_date <= %s::date
-                                                    GROUP BY lc.id, 
-                                                             EXTRACT(MONTH FROM volunteer_date), 
+                                                    GROUP BY lc.id,
+                                                             EXTRACT(MONTH FROM volunteer_date),
                                                              EXTRACT(YEAR FROM volunteer_date)""", [start, end])
 
             filename = "Volunteer Report - " + start + " - " + end
@@ -1353,9 +1353,9 @@ def billing_report(request):
 
             if month == 'all':
                 with connection.cursor() as cursor:
-                    cursor.execute("""SELECT CONCAT(c.first_name, ' ', c.last_name) as name, sa.agency as service_area, 
+                    cursor.execute("""SELECT CONCAT(c.first_name, ' ', c.last_name) as name, sa.agency as service_area,
                                         auth.authorization_type, auth.authorization_number, auth.id as authorization_id,
-                                        ln.billed_units, auth.billing_rate, CONCAT(oa.first_name, ' ', oa.last_name, ' - ', 
+                                        ln.billed_units, auth.billing_rate, CONCAT(oa.first_name, ' ', oa.last_name, ' - ',
                                         oa.company) as outside_agency
                                         FROM lynx_authorization as auth
                                         LEFT JOIN lynx_contact as c on c.id = auth.contact_id
@@ -1367,9 +1367,9 @@ def billing_report(request):
                     auth_set = dictfetchall(cursor)
             else:
                 with connection.cursor() as cursor:
-                    cursor.execute("""SELECT CONCAT(c.first_name, ' ', c.last_name) as name, sa.agency as service_area, 
+                    cursor.execute("""SELECT CONCAT(c.first_name, ' ', c.last_name) as name, sa.agency as service_area,
                                         auth.authorization_type, auth.authorization_number, auth.id as authorization_id,
-                                        ln.billed_units, auth.billing_rate, CONCAT(oa.first_name, ' ', oa.last_name, ' - ', 
+                                        ln.billed_units, auth.billing_rate, CONCAT(oa.first_name, ' ', oa.last_name, ' - ',
                                         oa.company) as outside_agency
                                         FROM lynx_authorization as auth
                                         LEFT JOIN lynx_contact as c on c.id = auth.contact_id
@@ -1490,8 +1490,8 @@ def sip_demographic_report(request):
                     break
                 else:
                     if first:
-                        month_string = """SELECT client.id FROM lynx_sipnote AS sip 
-                        LEFT JOIN lynx_contact AS client ON client.id = sip.contact_id 
+                        month_string = """SELECT client.id FROM lynx_sipnote AS sip
+                        LEFT JOIN lynx_contact AS client ON client.id = sip.contact_id
                         WHERE fiscal_year  = '%s' and (extract(month FROM sip.note_date) = %s""" % (fiscal_year, month_no)
                         first = False
                     else:
@@ -1606,18 +1606,18 @@ def sip_csf_services_report(request):
             fiscal_year = get_fiscal_year(year)
 
             with connection.cursor() as cursor:
-                query = """SELECT CONCAT(c.last_name, ', ', c.first_name) as name, c.id as id, ls.fiscal_year, 
-                ls.vision_screening, ls.treatment, ls.at_devices, ls.at_services, ls.orientation, ls.communications, 
+                query = """SELECT CONCAT(c.last_name, ', ', c.first_name) as name, c.id as id, ls.fiscal_year,
+                ls.vision_screening, ls.treatment, ls.at_devices, ls.at_services, ls.orientation, ls.communications,
                 ls.dls, ls.support, ls.advocacy, ls.counseling, ls.information, ls.services, addr.county, ls.note_date,
-                ls.independent_living, sp.living_plan_progress, sp.community_plan_progress, sp.ila_outcomes, 
+                ls.independent_living, sp.living_plan_progress, sp.community_plan_progress, sp.ila_outcomes,
                 sp.at_outcomes, ls.class_hours
                     FROM lynx_sipnote as ls
                     left JOIN lynx_contact as c on c.id = ls.contact_id
                     inner join lynx_address as addr on c.id= addr.contact_id
                     left JOIN lynx_sipplan as sp on sp.id = ls.sip_plan_id
-                    where  fiscal_year = '%s' 
-                    and quarter <= %d 
-                    and c.sip_client is true 
+                    where  fiscal_year = '%s'
+                    and quarter <= %d
+                    and c.sip_client is true
                     order by c.last_name, c.first_name;""" % (fiscal_year, int(quarter))
                                                                                       #, int(quarter), fiscal_year)
                 # and c.id not in (SELECT contact_id FROM lynx_sipnote AS sip WHERE quarter < %d and fiscal_year = '%s')
@@ -1762,20 +1762,20 @@ def sip_csf_demographic_report(request):
             fiscal_year = get_fiscal_year(year)
 
             with connection.cursor() as cursor:
-                cursor.execute("""SELECT CONCAT(c.last_name, ', ', c.first_name) as name, c.id as id, int.age_group, 
-                int.gender, int.ethnicity, int.degree, int.eye_condition, int.eye_condition_date, int.education, 
-                int.living_arrangement, int.residence_type, addr.county, int.dialysis, int.stroke, int.seizure, 
-                int.heart, int.arthritis, int.high_bp, int.neuropathy, int.pain, int.asthma, int.cancer, 
-                int.musculoskeletal, int.alzheimers, int.allergies, int.mental_health, int.substance_abuse, 
-                int.memory_loss, int.learning_disability, int.geriatric, int.dexterity, int.migraine, int.hearing_loss, 
+                cursor.execute("""SELECT CONCAT(c.last_name, ', ', c.first_name) as name, c.id as id, int.age_group,
+                int.gender, int.ethnicity, int.degree, int.eye_condition, int.eye_condition_date, int.education,
+                int.living_arrangement, int.residence_type, addr.county, int.dialysis, int.stroke, int.seizure,
+                int.heart, int.arthritis, int.high_bp, int.neuropathy, int.pain, int.asthma, int.cancer,
+                int.musculoskeletal, int.alzheimers, int.allergies, int.mental_health, int.substance_abuse,
+                int.memory_loss, int.learning_disability, int.geriatric, int.dexterity, int.migraine, int.hearing_loss,
                 int.referred_by, ls.note_date, int.communication, int.other_ethnicity
                     FROM lynx_sipnote as ls
                     left JOIN lynx_contact as c on c.id = ls.contact_id
                     left JOIN lynx_intake as int on int.contact_id = c.id
                     inner join lynx_address as addr on c.id= addr.contact_id
-                    where  fiscal_year = '%s' 
-                    and quarter = %d 
-                    and c.sip_client is true 
+                    where  fiscal_year = '%s'
+                    and quarter = %d
+                    and c.sip_client is true
                     and c.id not in (SELECT contact_id FROM lynx_sipnote AS sip WHERE quarter < %d and fiscal_year = '%s')
                     order by c.last_name, c.first_name;""" % (fiscal_year, int(quarter), int(quarter), fiscal_year))
 
