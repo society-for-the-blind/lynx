@@ -81,6 +81,11 @@ Get the latest [SchemaSpy release](https://github.com/schemaspy/schemaspy/releas
 
 ```text
 schemaspy -t pgsql11 -host 1.2.3.4 -port $(just s "PORT") -db $(just s "NAME") -s public -u $(just s "USER") -o output/directory/ -dp postgresql-42.6.0.jar
+
+schemaspy -t pgsql11 -host localhost -port 5432 -db lynx -s public -u postgres -hq -dp postgresql-42.6.0.jar -imageformat svg  -I "(django|auth)_.*" -o 07
+                                                                                                                               ^^^^^^^^^^^^^^^^^^^^^
+                                                                                                                               this part may be necessary
+                                                                                                                               for debugging
 ```
 
 Use SSH tunneling to connect to a remote database:
