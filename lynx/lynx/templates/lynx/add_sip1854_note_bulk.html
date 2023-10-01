@@ -1,0 +1,123 @@
+{% extends 'lynx/base.html' %}
+{% load crispy_forms_tags %}
+
+{% block javascript %}
+    <script>
+        $(document).ready(function() {
+            var thisYear = new Date().getFullYear();
+            $("#id_note_date_year").val(thisYear);
+
+            //THis javascript function uses an array of 0-11
+            var thisMonth = new Date().getMonth() + 1;
+            $("#id_note_date_month").val(thisMonth);
+
+            var thisDay = new Date().getDate();
+            $("#id_note_date_day").val(thisDay);
+        });
+
+        function showPlan(selectObject, planIdNo) {
+            var value = selectObject.value;
+
+            $.ajax({                       // initialize an AJAX request
+                url: "/lynx/get-sip1854-plans/",                    // set the url of the request
+                data: {
+                  'client_id': value
+                },
+                success: function (data) {   // `data` is the return of the `get_sip_plans` view function
+                  $("#plan_id_"+planIdNo).html(data);  // replace the contents of the plan input with the data that came from the server
+                  $("#plan_id_"+planIdNo).attr('required', '');  // make this required
+                }
+            });
+        }
+
+    // function setDate(selectObject, planIdNo) {
+    //     document.getElementById('id_note_date'+planIdNo).value = new Date().toISOString().slice(0, 10);
+    // }
+    </script>
+{% endblock %}
+
+{% block content %}
+<h1>Add New 18-54 Note</h1>
+<br>
+<form method="post"> {% csrf_token %}
+    <div class="container-fluid">
+        <h2>Select Clients</h2>
+            <div class="row">
+                <div class="col-12">
+                    <label for="client_0">Select a Client</label>
+                    <select name="client_0" id="client_0" onchange="showPlan(this, 0)" aria-required="true">
+                        <option value="">----------</option>
+                        {% for client in client_list %}
+                            <option value="{{ client.id }}">{{ client.last_name }}, {{ client.first_name }}</option>
+                        {% endfor %}
+                    </select>
+                    <label for="plan_id_0">Select a Plan</label>
+                    <select name="plan_0" id="plan_id_0" aria-required="true" >
+                        <option value="">---------</option>
+                    </select>
+                </div>
+            </div>
+            {%for i in range %}
+                <div class="row" >
+                    <div class="col-12">
+                        <label for="client_{{i}}">Select a Client</label>
+                        <select id="client_{{i}}" name="client_{{i}}" onchange="showPlan(this, {{i}})" aria-required="true" >
+                            <option value="">----------</option>
+                            {% for client in client_list %}
+                                <option value="{{ client.id }}">{{ client.last_name }}, {{ client.first_name }}</option>
+                            {% endfor %}
+                        </select>
+                        <label for="plan_id_{{i}}">Select a Plan</label>
+                        <select name="plan_{{i}}" id="plan_id_{{i}}" aria-required="true" >
+                            <option value="">---------</option>
+                        </select>
+                    </div>
+                </div>
+            {% endfor %}
+        <h2>Information</h2>
+            <div class="row">
+              <div class="col-12">{{ form.note_date|as_crispy_field }}</div>
+            </div>
+            <div class="row">
+              <div class="col-12">{{ form.class_hours|as_crispy_field }}</div>
+            </div>
+        <h2>Services (check all that apply):</h2>
+            <div class="row">
+              <div class="col-6">{{ form.at_devices|as_crispy_field }}</div>
+            </div>
+        <h3>Independent Living and Adjustment Services</h3>
+            <div class="row">
+              <div class="col-6">{{ form.orientation|as_crispy_field }}</div>
+            </div>
+            <div class="row">
+              <div class="col-6">{{ form.communications|as_crispy_field }}</div>
+            </div>
+            <div class="row">
+              <div class="col-6">{{ form.dls|as_crispy_field }}</div>
+            </div>
+            <div class="row">
+              <div class="col-6">{{ form.advocacy|as_crispy_field }}</div>
+            </div>
+            <div class="row">
+              <div class="col-6">{{ form.counseling|as_crispy_field }}</div>
+            </div>
+            <div class="row">
+              <div class="col-6">{{ form.information|as_crispy_field }}</div>
+            </div>
+            <div class="row">
+              <div class="col-6">{{ form.services|as_crispy_field }}</div>
+            </div>
+            <div class="row">
+              <div class="col-6">{{ form.support|as_crispy_field }}</div>
+            </div>
+        <h2>Notes</h2>
+            <div class="row">
+              <div class="col-12">{{ form.note|as_crispy_field }}</div>
+            </div>
+        {{ form.errors }}
+    </div>
+    <input type="submit" value="Submit">
+</form>
+{% endblock %}
+
+

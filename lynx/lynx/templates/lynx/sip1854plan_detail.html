@@ -1,0 +1,86 @@
+{% extends 'lynx/base.html' %}
+
+{% block title %}18-54 Plan{% endblock %}
+
+{% block content %}
+    <h1>18-54 Plan: {{ object.plan_name}}</h1>
+    <form>
+      <button class="btn btn-success" formaction="/lynx/client/{{ object.contact_id }}">Return to {{ object.contact.first_name }} {{ object.contact.last_name }}'s Information </button>
+    </form>
+    <h2>18-54 Plan Information</h2>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-1"></div>
+            <div class="col-11"><strong>Client Name: </strong>{{ object.contact.first_name}} {{ object.contact.last_name}}</div>
+        </div>
+        <div class="row">
+            <div class="col-1"></div>
+            <div class="col-11"><strong>Plan Services: </strong>
+                {% if object.at_services or object.at_devices %}Assistive Technology Devices and Services, {% endif %}
+                {% if object.independent_living %}IL/A Services, {% endif %}
+                {% if object.orientation %}O&M Skills, {% endif %}
+                {% if object.communications %}Communication skills, {% endif %}
+                {% if object.dls %}Daily Living Skills, {% endif %}
+                {% if object.advocacy %}Advocacy Training, {% endif %}
+                {% if object.counseling %}Adjustment Counseling, {% endif %}
+                {% if object.information %}I&R (Information & Referral), {% endif %}
+                {% if object.services %}Other Services{% endif %}</div>
+        </div>
+        <div class="row">
+            <div class="col-1"></div>
+            <div class="col-11"><strong>AT Goal Outcomes: </strong>{{ object.at_outcomes}}</div>
+        </div>
+        <div class="row">
+            <div class="col-1"></div>
+            <div class="col-11"><strong>IL/A Service Goal Outcomes: </strong>{{ object.ila_outcomes}}</div>
+        </div>
+        <div class="row">
+            <div class="col-1"></div>
+            <div class="col-11"><strong>Living Situation Outcomes: </strong>{{ object.living_plan_progress}}</div>
+        </div>
+        <div class="row">
+            <div class="col-1"></div>
+            <div class="col-11"><strong>Home and Community involvement Outcomes: </strong>{{ object.community_plan_progress}}</div>
+        </div>
+        <div class="row">
+            <div class="col-1"></div>
+            <div class="col-11"><strong>Comments: </strong>{{ object.note}}</div>
+        </div>
+    </div>
+<br>
+    <h2>18-54 Plan Notes</h2>
+   <div class="container-fluid">
+    {% for sip in sip1854_note_list %}
+       <div class="row">
+            <div class="col-1"></div>
+            <div class="col-12"><a href='/lynx/sip1854-note-edit/{{ sip.id }}?contact_id={{ sip.contact_id }}&plan_id={{ sip.sip_plan_id }}'>Edit {{ sip.note_date|date:'F j, Y' }}</a></div>
+        </div>
+        <div class="row">
+            <div class="col-1"></div>
+            <div class="col-11">
+                <h3>{{ sip.note_date|date:'F j, Y' }}:</h3> {{ sip.note|linebreaks }}
+                Instructor: {{ sip.instructor }}
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-1"></div>
+            <div class="col-11"><strong>Services: </strong>
+                {% if sip.at_services or sip.at_devices %}Assistive Technology Devices and Services, {% endif %}
+                {% if sip.independent_living %}Independent Living and Adjustment Services, {% endif %}
+                {% if sip.orientation %}Orientation & Mobility Training, {% endif %}
+                {% if sip.communications %}Communication Skills Training, {% endif %}
+                {% if sip.dls %}Daily Living Skills Training, {% endif %}
+                {% if sip.advocacy %}Advocacy Training, {% endif %}
+                {% if sip.counseling %}Adjustment Counseling, {% endif %}
+                {% if sip.information %}Information and Referral, {% endif %}
+                {% if sip.other_services %}Other IL/A services, {% endif %}
+                {% if sip.support_services or sip.support %}Supportive Services {% endif %}</div>
+        </div>
+        {% empty %}
+        <div class="row">
+            <div class="col-1"></div>
+            <div class="col-11">Sorry, no 18-54 Notes have been entered for this plan</div>
+        </div>
+    {% endfor %}
+    </div>
+{% endblock %}

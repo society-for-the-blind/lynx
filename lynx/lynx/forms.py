@@ -1,8 +1,8 @@
 from django import forms
 from django.db.models.functions import Lower
 
-from .models import Contact, Address, Intake, Email, Phone, SipPlan, IntakeNote, EmergencyContact, Authorization, \
-    ProgressReport, LessonNote, SipNote, Volunteer, UNITS, Document, Vaccine, Assignment
+from .models import Contact, Address, Intake, Email, Phone, SipPlan, Sip1854Plan, IntakeNote, EmergencyContact, Authorization, \
+    ProgressReport, LessonNote, SipNote, Sip1854Note, Volunteer, UNITS, Document, Vaccine, Assignment, Sip1854Assignment
 
 from datetime import datetime
 
@@ -197,6 +197,40 @@ class SipNoteForm(forms.ModelForm):
         self.fields['sip_plan'].label = "SIP Plan"
 
 
+class Sip1854NoteForm(forms.ModelForm):
+    client_list = Contact.objects.filter(sip_client=1).order_by('last_name')
+    clients = forms.ModelMultipleChoiceField(queryset=client_list, required=False)
+    # note_date = forms.CharField(widget=forms.TextInput(attrs={"onCLick": 'setDate(this)'}))
+
+    class Meta:
+        model = Sip1854Note
+        exclude = ('created', 'modified', 'user', 'contact', 'modesto')
+
+    def __init__(self, *args, **kwargs):
+        contact_id = kwargs.pop('contact_id')
+        super(Sip1854NoteForm, self).__init__(*args, **kwargs)
+        # self.fields['sip_plan'].queryset = SipPlan.objects.filter(contact_id=contact_id).order_by('-created')
+        self.fields['sip_plan'].queryset = Sip1854Plan.objects.filter(contact_id=contact_id).order_by('-plan_date')
+        self.fields['sip_plan'].required = True
+        self.fields['at_devices'].label = "Assistive Technology Devices and Services"
+        self.fields['independent_living'].label = "Independent Living and Adjustment Services"
+        self.fields['orientation'].label = "Orientation & Mobility Training"
+        self.fields['communications'].label = "Communication Skills Training"
+        self.fields['dls'].label = "Daily Living Skills Training"
+        self.fields['support'].label = "Supportive Services"
+        self.fields['advocacy'].label = "Advocacy Training"
+        self.fields['information'].label = "Information and Referral"
+        self.fields['services'].label = "Other IL/A Services"
+        self.fields['in_home'].label = "In-home training"
+        self.fields['seminar'].label = "Training Seminar"
+        self.fields['counseling'].label = "Adjustment Counseling"
+        self.fields['group'].label = "Support group(s)"
+        self.fields['community'].label = "Community Integration"
+        self.fields['class_hours'].label = "Class Length"
+        self.fields['instructor'].label = "Instructor"
+        self.fields['sip_plan'].label = "18-54 Plan"
+
+
 class SipNoteBulkForm(forms.ModelForm):
     client_list = Contact.objects.filter(sip_client=1).order_by('last_name')
     clients = forms.ModelMultipleChoiceField(queryset=client_list, required=False)
@@ -207,6 +241,35 @@ class SipNoteBulkForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(SipNoteBulkForm, self).__init__(*args, **kwargs)
+        self.fields['at_devices'].label = "Assistive Technology Devices and Services"
+        self.fields['independent_living'].label = "Independent Living and Adjustment Services"
+        self.fields['orientation'].label = "Orientation & Mobility Training"
+        self.fields['communications'].label = "Communication Skills Training"
+        self.fields['dls'].label = "Daily Living Skills Training"
+        self.fields['support'].label = "Supportive Services"
+        self.fields['advocacy'].label = "Advocacy Training"
+        self.fields['information'].label = "Information and Referral"
+        self.fields['services'].label = "Other IL/A Services"
+        self.fields['in_home'].label = "In-home training"
+        self.fields['seminar'].label = "Training Seminar"
+        self.fields['counseling'].label = "Adjustment Counseling"
+        self.fields['group'].label = "Support group(s)"
+        self.fields['community'].label = "Community Integration"
+        self.fields['class_hours'].label = "Class Length"
+        self.fields['instructor'].label = "Instructor"
+        self.fields['sip_plan'].label = "SIP Plan"
+
+
+class Sip1854NoteBulkForm(forms.ModelForm):
+    client_list = Contact.objects.filter(sip_client=1).order_by('last_name')
+    clients = forms.ModelMultipleChoiceField(queryset=client_list, required=False)
+
+    class Meta:
+        model = Sip1854Note
+        exclude = ('created', 'modified', 'user', 'contact', 'modesto')
+
+    def __init__(self, *args, **kwargs):
+        super(Sip1854NoteBulkForm, self).__init__(*args, **kwargs)
         self.fields['at_devices'].label = "Assistive Technology Devices and Services"
         self.fields['independent_living'].label = "Independent Living and Adjustment Services"
         self.fields['orientation'].label = "Orientation & Mobility Training"
@@ -240,6 +303,37 @@ class SipPlanForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(SipPlanForm, self).__init__(*args, **kwargs)
+        self.fields['at_services'].label = "Assistive Technology Devices and Services"
+        self.fields['independent_living'].label = "Independent Living and Adjustment Services"
+        self.fields['orientation'].label = "Orientation & Mobility Training"
+        self.fields['communications'].label = "Communication Skills Training"
+        self.fields['dls'].label = "Daily Living Skills Training"
+        self.fields['plan_date'].label = "Start Date"
+        self.fields['advocacy'].label = "Advocacy Training"
+        self.fields['information'].label = "Information and Referral"
+        self.fields['counseling'].label = "Adjustment Counseling"
+        self.fields['support_services'].label = "Supportive Services"
+        self.fields['other_services'].label = "Other IL/A Services"
+        self.fields['living_plan_progress'].label = "Living Situation Outcome"
+        self.fields['community_plan_progress'].label = "Home and Community Involvement Outcome"
+        self.fields['at_outcomes'].label = "AT Goal Outcomes"
+        self.fields['ila_outcomes'].label = "IL/A Service Goal Outcome"
+
+
+class Sip1854PlanForm(forms.ModelForm):
+    types = (("Retreat", "Retreat"), ("In-home", "In-home"), ("Support Group", "Support Group"),
+              ("Training Seminar", "Training Seminar"), ("Workshop", "Workshop"),
+             ("Community Integration", "Community Integration"))
+    instructor = forms.CharField(required=False)
+    plan_type = forms.ChoiceField(choices=types)
+    # start_date = forms.CharField(widget=forms.TextInput(attrs={'aria-required': 'true'}))
+
+    class Meta:
+        model = Sip1854Plan
+        exclude = ('created', 'modified', 'user', 'contact')
+
+    def __init__(self, *args, **kwargs):
+        super(Sip1854PlanForm, self).__init__(*args, **kwargs)
         self.fields['at_services'].label = "Assistive Technology Devices and Services"
         self.fields['independent_living'].label = "Independent Living and Adjustment Services"
         self.fields['orientation'].label = "Orientation & Mobility Training"
@@ -366,6 +460,13 @@ class AssignmentForm(forms.ModelForm):
 
     class Meta:
         model = Assignment
+        exclude = ('created', 'modified', 'user', 'assignment_date')
+
+
+class Assignment1854Form(forms.ModelForm):
+
+    class Meta:
+        model = Sip1854Assignment
         exclude = ('created', 'modified', 'user', 'assignment_date')
 
 
