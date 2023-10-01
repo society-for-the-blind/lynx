@@ -987,6 +987,7 @@ class VolunteerDetailView(LoginRequiredMixin, DetailView):
         return context
 
 
+"""
 class InstructorDetailView(LoginRequiredMixin, DetailView):
     model = User
     template_name = 'lynx/instructor_detail.html'
@@ -996,6 +997,7 @@ class InstructorDetailView(LoginRequiredMixin, DetailView):
         context = super(InstructorDetailView, self).get_context_data(**kwargs)
         context['assignment_list'] = Assignment.objects.filter(instructor_id=self.kwargs['pk']).order_by('-assignment_date')
         return context
+"""
 
 
 class ClientUpdateView(LoginRequiredMixin, UpdateView):
