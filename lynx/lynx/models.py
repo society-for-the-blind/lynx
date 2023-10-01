@@ -715,3 +715,18 @@ class Assignment(models.Model):
 
     def get_absolute_url(self):
         return "/lynx/assignments/%i" % self.contact_id
+
+
+class Sip1854Assignment(models.Model):
+    contact = models.ForeignKey('Contact', on_delete=models.CASCADE)
+    instructor = models.ForeignKey(User, on_delete=models.CASCADE, related_name='sip1854instructors')
+    assignment_date = models.DateField(auto_now_add=True, null=True)
+    note = models.TextField(blank=True, null=True)
+    assignment_status = models.CharField(max_length=25, blank=True, null=True, choices=STATUSES, default='Assigned', )
+    created = models.DateTimeField(auto_now_add=True, null=True)
+    modified = models.DateTimeField(auto_now=True, null=True)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET(get_sentinel_user))
+    history = HistoricalRecords()
+
+    def get_absolute_url(self):
+        return "/lynx/assignments/%i" % self.contact_id
