@@ -1,0 +1,41 @@
+{% extends 'lynx/base.html' %}
+{% load time_convert %}
+
+{% block title %}18-54 Plans{% endblock %}
+
+{% block content %}
+    <h2>18-54 Plans for {{ client.first_name }} {{ client.last_name }}</h2>
+    {% if not request.GET.print %}
+<input type="button" class="btn btn-success" aria-label="Add New 18-54 Plan" onclick="location.href='/lynx/add-sip1854-plan/{{ client.id }}/';" value="Add New 18-54 Plan" />
+<input type="button" class="btn btn-success" aria-label="Back to Client" onclick="location.href='/lynx/client/{{ client.id }}';" value="Return to {{ client.first_name }} {{ client.last_name }}'s Information" />
+    {% endif %}
+    <div class="container-fluid">
+    {% for sip1854 in plans %}
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-12"><strong>Plan Name: </strong>{% if sip1854.plan_name %}<a href='/lynx/sip1854-plan/{{ sip1854.id }}'>{{ sip1854.plan_name }}</a>{% else %}<a href='/lynx/sip1854-plan/{{ sip1854.id }}'>Unnamed Plan</a>{% endif %}</div>
+            </div>
+            <div class="row">
+                <div class="col-12"><strong>Plan Services: </strong>{% if sip1854.at_services or sip1854.at_devices %}Assistive Technology Devices and Services, {% endif %}{% if sip1854.independent_living %}IL/A Services, {% endif %}{% if sip1854.orientation %}O&M Skills, {% endif %}{% if sip1854.communications %}Communication skills, {% endif %}{% if sip1854.dls %}Daily Living Skills, {% endif %}{% if sip1854.advocacy %}Advocacy Training, {% endif %}{% if sip1854.counseling %}Adjustment Counseling, {% endif %}{% if sip1854.information %}I&R (Information & Referral), {% endif %}{% if sip1854.services %}Other Services{% endif %}{% if sip1854.support_services %}Supportive Services {% endif %}</div>
+            </div>
+            <div class="row">
+                <div class="col-12"><strong>Plan Status: </strong>Living Situation Outcome: {{ sip1854.living_plan_progress}}, Community Involvement Outcome: {{ sip1854.community_plan_progress}}</div>
+            </div>
+            <div class="row">
+                <div class="col-12"><strong>Assessment Status: </strong>AT Outcome: {{ sip1854.at_outcomes}}, IL/A Outcome: {{ sip1854.ila_outcomes}}</div>
+            </div>
+            <div class="row">
+                <div class="col-12"><a href='/lynx/sip1854-plan-edit/{{ sip1854.id }}'>Edit</a> | <a href='/lynx/sip1854-plan-confirm/{{ sip1854.id }}/{{ client.id }}'>Delete</a></div>
+            </div>
+        </div>
+        <br>
+        {% empty %}
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-11">Sorry, no 18-54 Plans have been created for this client</div>
+            </div>
+        </div>
+    {% endfor %}
+    </div>
+    <br>
+{% endblock %}

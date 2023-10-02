@@ -1,0 +1,46 @@
+{% extends 'lynx/base.html' %}
+{% load time_convert %}
+
+{% block title %}18-54 Notes{% endblock %}
+
+{% block content %}
+    <h2>18-54 Notes for {{ client.first_name }} {{ client.last_name }}</h2>
+    {% if not request.GET.print %}<input type="button" class="btn btn-success" aria-label="Add New 18-54 Note" onclick="location.href='/lynx/add-sip1854-note/{{ client.id }}/';" value="Add New 18-54 Note" />  <input type="button" class="btn btn-success" aria-label="Back to Client" onclick="location.href='/lynx/client/{{ client.id }}';" value="Return to {{ client.first_name }} {{ client.last_name }}'s Information" />
+{% endif %}
+
+    {% for sip1854 in notes %}
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-12"><h3>{{ sip1854.note_date|date:'F j, Y' }}</h3> {{ sip1854.note|linebreaks }}</div>
+            </div>
+            <div class="row">
+                <div class="col-12"><a href='/lynx/sip1854-note-edit/{{ sip1854.id }}?contact_id={{ client.id }}&plan_id={{ sip1854.sip_plan_id }}'>Edit {{ sip1854.note_date|date:'F j, Y' }}</a></div>
+            </div>
+            <div class="row">
+                <div class="col-12"><strong>Instructor: </strong>{{ sip1854.instructor }}</div>
+            </div>
+            <div class="row">
+                <div class="col-12"><strong>Hours: </strong>{{ sip1854.class_hours|convert_fractions }}</div>
+            </div>
+            <div class="row">
+                <div class="col-12"><strong>Services: </strong>{% if sip1854.at_services or sip1854.at_devices %}Assistive Technology Devices and Training, {% endif %} {% if sip1854.independent_living %}Independent Living and Adjustment Services, {% endif %}{% if sip1854.orientation %}Orientation & Mobility Training, {% endif %} {% if sip1854.communications %}Communication Skills Training, {% endif %} {% if sip1854.dls %}Daily Living Skills Training, {% endif %} {% if sip1854.advocacy %}Advocacy Training, {% endif %} {% if sip1854.counseling %}Adjustment Counseling, {% endif %} {% if sip1854.information %}Information and Referral, {% endif %} {% if sip1854.services %}Other IL/A services, {% endif %} {% if sip1854.support_services %}Supportive Services{% endif %}
+                </div>
+            </div>
+<!--            <div class="row">-->
+<!--                <div class="col-12"><strong>Service Delivery: </strong>{% if sip1854.retreat %}Retreat, {% endif %}{% if sip1854.in_home %}In-home Training, {% endif %}{% if sip1854.seminar %}Training Seminar, {% endif %}{% if sip1854.modesto %}Modesto training site, {% endif %}{% if sip1854.group %}Support group(s), {% endif %}{% if sip1854.community %}Community Integration{% endif %}</div>-->
+<!--            </div>-->
+            <div class="row">
+                <div class="col-12"><a href='/lynx/sip1854-note-confirm/{{ sip1854.id }}/{{ client.id }}'>Delete {{ sip1854.note_date|date:'F j, Y' }}</a></div>
+            </div>
+        </div>
+        <hr>
+        {% empty %}
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-12">Sorry, no 18-54 Notes have been entered for this client</div>
+            </div>
+        </div>
+    {% endfor %}
+    </div>
+
+{% endblock %}
