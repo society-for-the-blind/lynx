@@ -30,7 +30,6 @@ urlpatterns = [
     path('add-sip-note-bulk/', views.add_sip_note_bulk, name='add_sip_note_bulk'),
     path('add-volunteer-hours/', views.add_volunteer_hours, name='add_volunteer_hours'),
     path('get-sip-plans/', views.get_sip_plans, name='get_sip_plans'),
-    path('add-assignment/<int:contact_id>', views.add_assignments, name='add_assignment'),
     path('add-progress-report/<int:authorization_id>/', views.add_progress_report, name='add_progress_report'),
     path('add-volunteer/', views.add_volunteer, name='add_volunteer'),
     path('billing-report/', views.billing_report, name='billing_report'),
@@ -47,7 +46,6 @@ urlpatterns = [
     path('lesson-note/<int:pk>/', views.LessonNoteDetailView.as_view(), name='lesson_note'),
     path('billing-review/<int:pk>/', views.BillingReviewDetailView.as_view(), name='billing_review'),
     path('volunteer/<int:pk>/', views.VolunteerDetailView.as_view(), name='volunteer'),
-    path('assignments/<int:contact_id>', views.assignment_detail, name='assignment'),
     path('contact-edit/<int:pk>', views.ClientUpdateView.as_view(), name='contact-edit'),
     path('address-edit/<int:pk>', views.AddressUpdateView.as_view(), name='address-edit'),
     path('phone-edit/<int:pk>', views.PhoneUpdateView.as_view(), name='phone-edit'),
@@ -62,7 +60,6 @@ urlpatterns = [
     path('authorization-edit/<int:pk>', views.AuthorizationUpdateView.as_view(), name='authorization-edit'),
     path('volunteer-hour-edit/<int:pk>', views.VolunteerHourUpdateView.as_view(), name='volunteer-edit'),
     path('vaccine-edit/<int:pk>', views.VaccineUpdateView.as_view(), name='vaccine-edit'),
-    path('assignment-edit/<int:pk>', views.AssignmentUpdateView.as_view(), name='assignment-edit'),
     path('sip-plan-confirm/<int:pk>/<int:client_id>', views.SipPlanDeleteView.as_view(), name='sip-plan-delete'),
     path('sip-note-confirm/<int:pk>/<int:client_id>', views.SipNoteDeleteView.as_view(), name='sip-note-delete'),
     path('intake-note-confirm/<int:pk>/<int:client_id>', views.IntakeNoteDeleteView.as_view(), name='intake-note-delete'),
@@ -73,7 +70,6 @@ urlpatterns = [
     path('lesson-note-confirm/<int:pk>/<int:auth_id>', views.LessonNoteDeleteView.as_view(), name='ln-delete'),
     path('contact-confirm/<int:pk>', views.ContactDeleteView.as_view(), name='contact-delete'),
     path('volunteer-hour-confirm/<int:pk>', views.VolunteerHourDeleteView.as_view(), name='contact-delete'),
-    path('assignment-confirm/<int:pk>/<int:client_id>', views.AssignmentDeleteView.as_view(), name='assignment-delete'),
     path('document-confirm/<int:pk>/<int:client_id>', views.DocumentDeleteView.as_view(), name='document-delete'),
     path('client-search', views.client_result_view, name='client_search'),
     path('client-advanced-search', views.client_advanced_result_view, name='client_advanced_search'),
@@ -83,9 +79,27 @@ urlpatterns = [
     path('manual', views.ManualView.as_view(), name='manual'),
     path('email', views.email_update, name='email'),
     path('reports/', views.reports, name='reports'),
+    ###############
+    # ASSIGNMENTS #
+    ###############
     # path('instructor/<int:pk>', views.InstructorDetailView.as_view(), name='instructor'),
+    path('assignments/<int:contact_id>', views.assignment_detail, name='assignment'),
+    path('add-assignment/<int:contact_id>', views.add_assignments, name='add_assignment'),
+    path('assignment-edit/<int:pk>', views.AssignmentUpdateView.as_view(), name='assignment-edit'),
+    path('assignment-confirm/<int:pk>/<int:client_id>', views.AssignmentDeleteView.as_view(), name='assignment-delete'),
+    # NOTE This should be named `assignments`
     path('instructors/', views.assignment_advanced_result_view, name='instructors'),
     # path('instructors/assignment-status-change/<int:assignment_id>/<str:status>', views.change_assignment_status, name='assignment-change'),
     # path('test/', cron.address_changes, name='address'),
+    #####################
+    # 18-54 ASSIGNMENTS #
+    #####################
+    path('assignments1854/<int:contact_id>', views.assignment1854_detail, name='assignment1854'),
+    path('add-assignment1854/<int:contact_id>', views.add_assignments1854, name='add_assignment1854'),
+    path('assignment1854-edit/<int:pk>', views.Assignment1854UpdateView.as_view(), name='assignment1854-edit'),
+    path('assignment1854-confirm/<int:pk>/<int:client_id>', views.Assignment1854DeleteView.as_view(), name='assignment1854-delete'),
+    # NOTE This should be named `assignments`
+    path('instructors1854/', views.assignment1854_advanced_result_view, name='instructors1854'),
+    # --- END ASSGNMENTS ---
     path("", views.index, name='index')
 ]

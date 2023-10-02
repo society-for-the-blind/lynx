@@ -141,6 +141,7 @@ class Contact(models.Model):
     active = models.BooleanField(blank=True, default=True)
     sip_client = models.BooleanField(blank=True, default=False)
     core_client = models.BooleanField(blank=True, default=False)
+    sip1854_client = models.BooleanField(blank=True, default=False)
     careers_plus = models.BooleanField(blank=True, default=False)
     careers_plus_youth = models.BooleanField(blank=True, default=False)
     volunteer_check = models.BooleanField(blank=True, default=False)
@@ -644,7 +645,7 @@ class ContactInfoView(pg.View):
          REPLACE (REPLACE(REPLACE(REPLACE(p.phone, ' ', ''), '-', ''), ')', ''), '(', '') as phone, e.email,
          i.intake_date, i.age_group, a.address_one, a.address_two, a.suite, a.city, a.state, a.bad_address,
          c.do_not_contact, c.deceased, c.remove_mailing, a.region, phone as full_phone, c.active, c.sip_client,
-         c.core_client
+         c.core_client, c.sip1854_client
         FROM lynx_contact AS c
         LEFT JOIN lynx_intake AS i ON c.id = i.contact_id
         LEFT JOIN lynx_address AS a ON a.contact_id = c.id
@@ -672,6 +673,7 @@ class ContactInfoView(pg.View):
     active = models.BooleanField(blank=True, default=False)
     sip_client = models.BooleanField(blank=True, default=False)
     core_client = models.BooleanField(blank=True, default=False)
+    sip1854_client = models.BooleanField(blank=True, default=False)
     region = models.CharField(max_length=255, null=True)
     full_phone = models.CharField(max_length=255, null=True)
     history = HistoricalRecords()
@@ -826,4 +828,4 @@ class Sip1854Assignment(models.Model):
     history = HistoricalRecords()
 
     def get_absolute_url(self):
-        return "/lynx/assignments/%i" % self.contact_id
+        return "/lynx/assignments1854/%i" % self.contact_id

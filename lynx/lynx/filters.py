@@ -1,6 +1,6 @@
 import django_filters
 
-from .models import Assignment, ContactInfoView, AGES, COUNTIES, STATUSES
+from .models import Sip1854Assignment, Assignment, ContactInfoView, AGES, COUNTIES, STATUSES
 from django.contrib.auth.models import User
 from django.db.models.functions import Lower
 
@@ -11,6 +11,7 @@ class ContactFilter(django_filters.FilterSet):
     active = django_filters.BooleanFilter(field_name='active')
     sip_client = django_filters.BooleanFilter(field_name='sip_client')
     core_client = django_filters.BooleanFilter(field_name='core_client')
+    sip1854_client = django_filters.BooleanFilter(field_name='sip1854_client')
 
     class Meta:
         model = ContactInfoView
@@ -25,6 +26,7 @@ class ContactFilter(django_filters.FilterSet):
                   'active': ['exact'],
                   'sip_client': ['exact'],
                   'core_client': ['exact'],
+                  'sip1854_client': ['exact'],
                   }
 
     def __init__(self, *args, **kwargs):

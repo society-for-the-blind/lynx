@@ -2,7 +2,7 @@ from django import forms
 from django.db.models.functions import Lower
 
 from .models import Contact, Address, Intake, Email, Phone, SipPlan, IntakeNote, EmergencyContact, Authorization, \
-    ProgressReport, LessonNote, SipNote, Volunteer, UNITS, Document, Vaccine, Assignment
+    ProgressReport, LessonNote, SipNote, Volunteer, UNITS, Document, Vaccine, Assignment, Sip1854Assignment
 
 from datetime import datetime
 
@@ -366,6 +366,13 @@ class AssignmentForm(forms.ModelForm):
 
     class Meta:
         model = Assignment
+        exclude = ('created', 'modified', 'user', 'assignment_date')
+
+
+class Assignment1854Form(forms.ModelForm):
+
+    class Meta:
+        model = Sip1854Assignment
         exclude = ('created', 'modified', 'user', 'assignment_date')
 
 

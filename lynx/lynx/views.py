@@ -21,11 +21,11 @@ import logging
 
 from .models import Contact, Address, Phone, Email, Intake, IntakeNote, EmergencyContact, Authorization, \
     ProgressReport, LessonNote, SipNote, Volunteer, SipPlan, ContactInfoView, UNITS, Document, Vaccine, \
-    Assignment
+    Assignment, Sip1854Assignment
 from .forms import ContactForm, IntakeForm, IntakeNoteForm, EmergencyForm, AddressForm, EmailForm, PhoneForm, \
     AuthorizationForm, ProgressReportForm, LessonNoteForm, SipNoteForm, BillingReportForm, SipDemographicReportForm, \
     VolunteerForm, SipCSFReportForm, SipPlanForm, SipNoteBulkForm, DocumentForm, VolunteerHoursForm, \
-    VolunteerReportForm, VaccineForm, AssignmentForm
+    VolunteerReportForm, VaccineForm, AssignmentForm, Assignment1854Form
 from .filters import AssignmentFilter, ContactFilter
 
 logger = logging.getLogger(__name__)
@@ -273,6 +273,35 @@ def add_assignments(request, contact_id):
 
             return HttpResponseRedirect(reverse('lynx:assignment', args=(contact_id,)))
     return render(request, 'lynx/add_assignments.html', {'form': form, 'instructors': instructors, 'contact_id': contact_id})
+
+
+@login_required
+def add_assignments1854(request, contact_id):
+    form = Assignment1854Form()
+    instructors = User.objects.filter(groups__name='SIP').order_by(Lower('last_name'))
+    if request.method == 'POST':
+        form = Assignment1854Form(request.POST)
+        if form.is_valid():
+            form = form.save(commit=False)
+            form.contact_id = contact_id
+            form.user_id = request.user.id
+            form.save()
+
+            username = '18-54 Assignments <' + settings.EMAIL_HOST_USER + '>'
+            message = "You have a new 18-54 Assignment by " + request.user.first_name + " with the following note: " + form.note
+            instructor = User.objects.filter(pk=form.instructor_id).values('email')
+            inst_email = instructor[0]['email']
+            client_name = form.contact.first_name + " " + form.contact.last_name
+
+            send_mail(client_name, #subject
+                      message, #message
+                      username,#from email
+                      [inst_email], #recipient list
+                      fail_silently=False,
+                      )
+
+            return HttpResponseRedirect(reverse('lynx:assignment1854', args=(contact_id,)))
+    return render(request, 'lynx/add_assignments1854.html', {'form': form, 'instructors': instructors, 'contact_id': contact_id})
 
 
 def get_sip_plans(request):
@@ -720,6 +749,12 @@ def assignment_detail(request, contact_id):
     contact = Contact.objects.filter(pk=contact_id)
     return render(request, 'lynx/assignment_detail.html', {'instructor_list': instructor_list, "contact_id": contact_id, 'contact': contact})
 
+@login_required
+def assignment1854_detail(request, contact_id):
+    instructor_list = Sip1854Assignment.objects.filter(contact_id=contact_id).order_by('-assignment_date')
+    contact = Contact.objects.filter(pk=contact_id)
+    return render(request, 'lynx/assignment1854_detail.html', {'instructor_list': instructor_list, "contact_id": contact_id, 'contact': contact})
+
 
 class ContactDetailView(LoginRequiredMixin, DetailView):
     model = Contact
@@ -1003,13 +1038,14 @@ class InstructorDetailView(LoginRequiredMixin, DetailView):
 class ClientUpdateView(LoginRequiredMixin, UpdateView):
     model = Contact
     fields = ['first_name', 'middle_name', 'last_name', 'company', 'do_not_contact', 'donor', 'deceased',
-              'remove_mailing', 'active', 'contact_notes', 'sip_client', 'core_client', 'careers_plus',
+              'remove_mailing', 'active', 'contact_notes', 'sip_client', 'core_client', 'sip1854_client', 'careers_plus',
               'careers_plus_youth', 'volunteer_check', 'access_news', 'other_services']
     template_name_suffix = '_edit'
 
     def get_form(self, form_class=None):
         form = super().get_form(form_class=form_class)
         form.fields["volunteer_check"].label = "Volunteer"
+        form.fields["sip1854_client"].label = "18-54 client"
         return form
 
 
@@ -1240,6 +1276,12 @@ class AssignmentUpdateView(LoginRequiredMixin, UpdateView):
     template_name_suffix = '_edit'
 
 
+class Assignment1854UpdateView(LoginRequiredMixin, UpdateView):
+    model = Sip1854Assignment
+    fields = ['note', 'assignment_status']
+    template_name_suffix = '_edit'
+
+
 class SipPlanDeleteView(LoginRequiredMixin, DeleteView):
     model = SipPlan
 
@@ -1329,6 +1371,14 @@ class VaccineDeleteView(LoginRequiredMixin, DeleteView):
 
 class AssignmentDeleteView(LoginRequiredMixin, DeleteView):
     model = Assignment
+
+    def get_success_url(self):
+        client_id = self.kwargs['client_id']
+        return reverse_lazy('lynx:client', kwargs={'pk': client_id})
+
+
+class Assignment1854DeleteView(LoginRequiredMixin, DeleteView):
+    model = Sip1854Assignment
 
     def get_success_url(self):
         client_id = self.kwargs['client_id']
@@ -2090,6 +2140,7 @@ def contact_list(request):
                 client_condensed[client.id]['active'] = str(client.active) if client.active is not None else ''
                 client_condensed[client.id]['sip_client'] = str(client.sip_client) if client.sip_client is not None else ''
                 client_condensed[client.id]['core_client'] = str(client.core_client) if client.core_client is not None else ''
+                client_condensed[client.id]['sip1854_client'] = str(client.sip1854_client) if client.sip1854_client is not None else ''
 
         if excel == 'true':
             filename = "Lynx Search Results"
@@ -2108,6 +2159,7 @@ def contact_list(request):
                 client['active'] = "Active" if client['active'] is not None else ''
                 client['sip_client'] = "SIP Client" if client['sip_client'] is not None else ''
                 client['core_client'] = "Core Client" if client['core_client'] is not None else ''
+                client['sip1854_client'] = "18-54 Client" if client['sip1854_client'] is not None else ''
                 client['remove_mailing'] = "Remove from Mailing List" if client['remove_mailing'] is not None else ''
 
                 writer.writerow(
@@ -2116,7 +2168,7 @@ def contact_list(request):
                      client['address_one'], client['address_two'], client['suite'], client['city'], client['state'],
                      client['zip_code'], client['region'], client['bad_address'], client['do_not_contact'],
                      client['deceased'], client['remove_mailing'], client['active'], client['sip_client'],
-                     client['core_client']])
+                     client['core_client'], client['sip1854_client']])
             return response
 
     else:
@@ -2233,6 +2285,34 @@ def assignment_advanced_result_view(request):
         assignment_condensed = {}
 
     return render(request, 'lynx/instructor_search.html', {'filter': f, 'assignment_list': assignment_condensed})
+
+
+@login_required
+def assignment1854_advanced_result_view(request):
+    if request.method == 'GET':
+        strict = True
+        # f = AssignmentFilter(request.GET, queryset=Assignment.objects.all())
+        f = AssignmentFilter(request.GET, queryset=Sip1854Assignment.objects.all().order_by('-assignment_date'))
+        assignment_condensed = {}
+        for assignment in f.qs:
+            assignment_condensed[assignment.id] = {}
+            assignment_condensed[assignment.id]['assignment_date'] = assignment.assignment_date if assignment.assignment_date is not None else ''
+            assignment_condensed[assignment.id]['client_id'] = assignment.contact_id if assignment.contact_id is not None else ''
+            assignment_condensed[assignment.id]['client_first_name'] = assignment.contact.first_name if assignment.contact.first_name is not None else ''
+            assignment_condensed[assignment.id]['client_last_name'] = assignment.contact.last_name if assignment.contact.last_name is not None else ''
+            assignment_condensed[assignment.id]['note'] = assignment.note if assignment.note is not None else ''
+            assignment_condensed[assignment.id]['assigned_by_first_name'] = assignment.user.first_name if assignment.user.first_name is not None else ''
+            assignment_condensed[assignment.id]['assigned_by_last_name'] = assignment.user.last_name if assignment.user.last_name is not None else ''
+            assignment_condensed[assignment.id]['assignment_status'] = assignment.assignment_status if assignment.assignment_status is not None else ''
+            assignment_condensed[assignment.id]['instructor_first_name'] = assignment.instructor.first_name if assignment.instructor.first_name is not None else ''
+            assignment_condensed[assignment.id]['instructor_last_name'] = assignment.instructor.last_name if assignment.instructor.last_name is not None else ''
+
+    else:
+        f = AssignmentFilter()
+        assignment_condensed = {}
+
+    return render(request, 'lynx/instructor1854_search.html', {'filter': f, 'assignment_list': assignment_condensed})
+
 
 #
 # @login_required

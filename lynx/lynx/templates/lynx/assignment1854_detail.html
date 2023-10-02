@@ -1,0 +1,34 @@
+{% extends 'lynx/base.html' %}
+
+{% block content %}
+
+<h1>18-54 Assignments</h1>
+<input type="button" class="btn btn-success" aria-label="Assign Instructor" onclick="location.href='/lynx/add-assignment1854/{{ contact_id }}';" value="Add Assignment" /> <input type="button" class="btn btn-success" aria-label="Back to Client" onclick="location.href='/lynx/client/{{ contact_id }}';" value="Return to Client" />
+    <table class="table">
+        <tr>
+            <th>Assignment Date</th>
+            <th>Instructor</th>
+            <th>Notes</th>
+            <th>Assigned By</th>
+            {% if user.is_superuser %}
+                <th>Actions</th>
+            {% endif %}
+        </tr>
+        {% for instructor in instructor_list %}
+            <tr>
+                <td>{{ instructor.assignment_date|date:'F j, Y' }}</td>
+                <td>{{ instructor.instructor.first_name }} {{ instructor.instructor.last_name }}</td>
+                <td>{{ instructor.note|linebreaksbr }}</td>
+                <td>{{ instructor.user.first_name }} {{ instructor.user.last_name }}</td>
+                {% if user.is_superuser %}
+                    <td>
+                        <form>
+                          <button class="btn btn-primary" formaction="/lynx/assignment1854-edit/{{ instructor.id }}">Edit</button>
+                          <button class="btn btn-danger" formaction="/lynx/assignment1854-confirm/{{ instructor.id }}/{{ contact_id }}">Delete</button>
+                        </form>
+                    </td>
+                {% endif %}
+            </tr>
+        {% endfor %}
+    </table>
+{% endblock %}
