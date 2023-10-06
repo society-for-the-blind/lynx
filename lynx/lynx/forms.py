@@ -257,6 +257,9 @@ class SipNoteBulkForm(forms.ModelForm):
     class Meta:
         model = SipNote
         exclude = ('created', 'modified', 'user', 'contact', 'modesto')
+        widgets = {
+            "note_date": forms.DateInput(attrs={'type': 'date'})
+        };
 
     def __init__(self, *args, **kwargs):
         super(SipNoteBulkForm, self).__init__(*args, **kwargs)
@@ -286,6 +289,9 @@ class Sip1854NoteBulkForm(forms.ModelForm):
     class Meta:
         model = Sip1854Note
         exclude = ('created', 'modified', 'user', 'contact', 'modesto')
+        widgets = {
+            "note_date": forms.DateInput(attrs={'type': 'date'})
+        };
 
     def __init__(self, *args, **kwargs):
         super(Sip1854NoteBulkForm, self).__init__(*args, **kwargs)
