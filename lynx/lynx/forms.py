@@ -33,6 +33,12 @@ class IntakeForm(forms.ModelForm):
     class Meta:
         model = Intake
         exclude = ('contact', 'created', 'modified', 'user')
+        widgets = {
+            "intake_date": forms.DateInput(attrs={'type': 'date'}),
+            "birth_date":  forms.DateInput(attrs={'type': 'date'}),
+            "eye_condition_date":  forms.DateInput(attrs={'type': 'date'}),
+            "hire_date":  forms.DateInput(attrs={'type': 'date'})
+        };
 
     def __init__(self, *args, **kwargs):
         super(IntakeForm, self).__init__(*args, **kwargs)
@@ -119,6 +125,10 @@ class AuthorizationForm(forms.ModelForm):
 
         model = Authorization
         exclude = ('created', 'modified', 'user', 'contact')
+        widgets = {
+            "start_date": forms.DateInput(attrs={'type': 'date'}),
+            "end_date": forms.DateInput(attrs={'type': 'date'})
+        };
 
     def __init__(self, *args, **kwargs):
         super(AuthorizationForm, self).__init__(*args, **kwargs)
@@ -151,12 +161,15 @@ class LessonNoteForm(forms.ModelForm):
     total_time = forms.CharField(required=False)
     total_used = forms.CharField(required=False)
     billed_units = forms.ChoiceField(choices=UNITS, widget=forms.Select(attrs={"onChange": 'checkHours(this)'}))
-    date = forms.CharField(widget=forms.TextInput(attrs={"onChange": 'checkDate(this)'}))
+    # date = forms.CharField(widget=forms.TextInput(attrs={"onChange": 'checkDate(this)'}))
     # date = forms.CharField(widget=forms.TextInput(attrs={"onChange": 'checkDate(this)', "onCLick": 'setDate(this)'}))
 
     class Meta:
         model = LessonNote
         exclude = ('created', 'modified', 'user')
+        widgets = {
+            "date": forms.DateInput(attrs={'type': 'date'})
+        };
 
     def __init__(self, *args, **kwargs):
         super(LessonNoteForm, self).__init__(*args, **kwargs)
@@ -171,6 +184,9 @@ class SipNoteForm(forms.ModelForm):
     class Meta:
         model = SipNote
         exclude = ('created', 'modified', 'user', 'contact', 'modesto')
+        widgets = {
+            "note_date": forms.DateInput(attrs={'type': 'date'})
+        };
 
     def __init__(self, *args, **kwargs):
         contact_id = kwargs.pop('contact_id')
@@ -205,6 +221,9 @@ class Sip1854NoteForm(forms.ModelForm):
     class Meta:
         model = Sip1854Note
         exclude = ('created', 'modified', 'user', 'contact', 'modesto')
+        widgets = {
+            "note_date": forms.DateInput(attrs={'type': 'date'})
+        };
 
     def __init__(self, *args, **kwargs):
         contact_id = kwargs.pop('contact_id')
@@ -300,6 +319,9 @@ class SipPlanForm(forms.ModelForm):
     class Meta:
         model = SipPlan
         exclude = ('created', 'modified', 'user', 'contact')
+        widgets = {
+            "plan_date": forms.DateInput(attrs={'type': 'date'})
+        };
 
     def __init__(self, *args, **kwargs):
         super(SipPlanForm, self).__init__(*args, **kwargs)
@@ -331,6 +353,9 @@ class Sip1854PlanForm(forms.ModelForm):
     class Meta:
         model = Sip1854Plan
         exclude = ('created', 'modified', 'user', 'contact')
+        widgets = {
+            "plan_date": forms.DateInput(attrs={'type': 'date'})
+        };
 
     def __init__(self, *args, **kwargs):
         super(Sip1854PlanForm, self).__init__(*args, **kwargs)
@@ -448,6 +473,9 @@ class VaccineForm(forms.ModelForm):
     class Meta:
         model = Vaccine
         exclude = ('created', 'modified', 'user', 'contact')
+        widgets = {
+            "vaccination_date": forms.DateInput(attrs={'type': 'date'})
+        };
 
     def __init__(self, *args, **kwargs):
         super(VaccineForm, self).__init__(*args, **kwargs)
@@ -461,6 +489,9 @@ class AssignmentForm(forms.ModelForm):
     class Meta:
         model = Assignment
         exclude = ('created', 'modified', 'user', 'assignment_date')
+        widgets = {
+            "assignment_date": forms.DateInput(attrs={'type': 'date'})
+        };
 
 
 class Assignment1854Form(forms.ModelForm):
