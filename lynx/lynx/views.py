@@ -1214,10 +1214,10 @@ class IntakeUpdateView(LoginRequiredMixin, UpdateView):
 
     def get_form(self, form_class=None):
         form = super().get_form(form_class=form_class)
-        form.fields["intake_date"].widget = forms.DateInput(attrs={'type': 'date'})
-        form.fields["birth_date"].widget = forms.DateInput(attrs={'type': 'date'})
-        form.fields["eye_condition_date"].widget = forms.DateInput(attrs={'type': 'date'})
-        form.fields["hire_date"].widget = forms.DateInput(attrs={'type': 'date'})
+        form.fields["intake_date"].widget = forms.SelectDateWidget(years=list(range(1900, 2100)))
+        form.fields["birth_date"].widget = forms.SelectDateWidget(years=list(range(1900, 2100)))
+        form.fields["eye_condition_date"].widget = forms.SelectDateWidget(years=list(range(1900, 2100)))
+        form.fields["hire_date"].widget = forms.SelectDateWidget(years=list(range(1900, 2100)))
         form.fields["other_languages"].label = "Other Language(s)"
         form.fields["other_ethnicity"].label = "Ethnicity (if other)"
         form.fields['payment_source'].queryset = Contact.objects.filter(payment_source=1).order_by(Lower('last_name'))
@@ -1306,7 +1306,7 @@ class SipNoteUpdateView(LoginRequiredMixin, UpdateView):
 
     def get_form(self, form_class=None):
         form = super().get_form(form_class=form_class)
-        form.fields['note_date'].widget = forms.DateInput(attrs={'type': 'date'})
+        form.fields['note_date'].widget = forms.SelectDateWidget(years=list(range(1900, 2100)))
         form.fields['at_devices'].label = "Assistive Technology Devices and Services"
         form.fields['independent_living'].label = "Independent Living and Adjustment Services"
         form.fields['orientation'].label = "Orientation & Mobility Training"
@@ -1347,7 +1347,7 @@ class Sip1854NoteUpdateView(LoginRequiredMixin, UpdateView):
 
     def get_form(self, form_class=None):
         form = super().get_form(form_class=form_class)
-        form.fields['note_date'].widget = forms.DateInput(attrs={'type': 'date'})
+        form.fields['note_date'].widget = forms.SelectDateWidget(years=list(range(1900, 2100)))
         form.fields['at_devices'].label = "Assistive Technology Devices and Services"
         form.fields['independent_living'].label = "Independent Living and Adjustment Services"
         form.fields['orientation'].label = "Orientation & Mobility Training"
@@ -1382,7 +1382,7 @@ class SipPlanUpdateView(LoginRequiredMixin, UpdateView):
         if not ils or not ats:
             outcomes = False
         form = super().get_form(form_class=form_class)
-        form.fields['plan_date'].widget = forms.DateInput(attrs={'type': 'date'})
+        form.fields['plan_date'].widget = forms.SelectDateWidget(years=list(range(1900, 2100)))
         form.fields['at_services'].label = "Assistive Technology Devices and Services"
         form.fields['independent_living'].label = "Independent Living and Adjustment Services"
         form.fields['orientation'].label = "Orientation & Mobility Training"
@@ -1427,7 +1427,7 @@ class Sip1854PlanUpdateView(LoginRequiredMixin, UpdateView):
         if not ils or not ats:
             outcomes = False
         form = super().get_form(form_class=form_class)
-        form.fields['plan_date'].widget = forms.DateInput(attrs={'type': 'date'})
+        form.fields['plan_date'].widget = forms.SelectDateWidget(years=list(range(1900, 2100)))
         form.fields['at_services'].label = "Assistive Technology Devices and Services"
         form.fields['independent_living'].label = "Independent Living and Adjustment Services"
         form.fields['orientation'].label = "Orientation & Mobility Training"
@@ -1459,8 +1459,8 @@ class AuthorizationUpdateView(LoginRequiredMixin, UpdateView):
 
     def get_form(self, form_class=None):
         form = super().get_form(form_class=form_class)
-        form.fields['start_date'].widget = forms.DateInput(attrs={'type': 'date'})
-        form.fields['end_date'].widget = forms.DateInput(attrs={'type': 'date'})
+        form.fields['start_date'].widget = forms.SelectDateWidget(years=list(range(1900, 2100)))
+        form.fields['end_date'].widget = forms.SelectDateWidget(years=list(range(1900, 2100)))
         form.fields['outside_agency'].queryset = Contact.objects.filter(payment_source=1).order_by(Lower('last_name'))
         form.fields['outside_agency'].label = "Payment Sources"
         form.fields['start_date'].label = "Start Date (YYYY-MM-DD)"
@@ -1481,7 +1481,7 @@ class VaccineUpdateView(LoginRequiredMixin, UpdateView):
 
     def get_form(self, form_class=None):
         form = super().get_form(form_class=form_class)
-        form.fields['vaccination_date'].widget = forms.DateInput(attrs={'type': 'date'})
+        form.fields['vaccination_date'].widget = forms.SelectDateWidget(years=list(range(1900, 2100)))
         form.fields['vaccine'].label = "Type"
         form.fields['vaccine_note'].label = "Notes"
         form.fields['vaccination_date'].label = "Date"

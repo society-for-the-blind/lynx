@@ -1,5 +1,6 @@
 from django import forms
 from django.db.models.functions import Lower
+from django.utils import timezone
 
 from .models import Contact, Address, Intake, Email, Phone, SipPlan, Sip1854Plan, IntakeNote, EmergencyContact, Authorization, \
     ProgressReport, LessonNote, SipNote, Sip1854Note, Volunteer, UNITS, Document, Vaccine, Assignment, Sip1854Assignment
@@ -28,10 +29,10 @@ class ContactForm(forms.ModelForm):
 
 
 class IntakeForm(forms.ModelForm):
-    intake_date = forms.DateField( widget=forms.SelectDateWidget())
-    birth_date = forms.DateField( widget=forms.SelectDateWidget())
-    eye_condition_date = forms.DateField( widget=forms.SelectDateWidget())
-    hire_date = forms.DateField( widget=forms.SelectDateWidget())
+    intake_date = forms.DateField( widget=forms.SelectDateWidget(years=list(range(1900, 2100))), label='Intake Date', initial=timezone.now())
+    birth_date = forms.DateField( widget=forms.SelectDateWidget(years=list(range(1900, 2100))), label='Birth Date', initial=timezone.now())
+    eye_condition_date = forms.DateField( widget=forms.SelectDateWidget(years=list(range(1900, 2100))), label='Onset date of eye condition', initial=timezone.now())
+    hire_date = forms.DateField( widget=forms.SelectDateWidget(years=list(range(1900, 2100))), label='Hire Date', initial=timezone.now())
 
 
     class Meta:
@@ -124,14 +125,16 @@ class IntakeNoteForm(forms.ModelForm):
 
 
 class AuthorizationForm(forms.ModelForm):
+    start_date = forms.DateField( widget=forms.SelectDateWidget(years=list(range(1900, 2100))), label='Start Date', initial=timezone.now())
+    end_date   = forms.DateField( widget=forms.SelectDateWidget(years=list(range(1900, 2100))), label='End Date', initial=timezone.now())
 
     class Meta:
 
         model = Authorization
         exclude = ('created', 'modified', 'user', 'contact')
         widgets = {
-            "start_date": forms.DateInput(attrs={'type': 'date'}),
-            "end_date": forms.DateInput(attrs={'type': 'date'})
+            # "start_date": forms.DateInput(attrs={'type': 'date'}),
+            # "end_date": forms.DateInput(attrs={'type': 'date'})
         };
 
     def __init__(self, *args, **kwargs):
@@ -165,14 +168,13 @@ class LessonNoteForm(forms.ModelForm):
     total_time = forms.CharField(required=False)
     total_used = forms.CharField(required=False)
     billed_units = forms.ChoiceField(choices=UNITS, widget=forms.Select(attrs={"onChange": 'checkHours(this)'}))
-    # date = forms.CharField(widget=forms.TextInput(attrs={"onChange": 'checkDate(this)'}))
-    # date = forms.CharField(widget=forms.TextInput(attrs={"onChange": 'checkDate(this)', "onCLick": 'setDate(this)'}))
+    date = forms.DateField( widget=forms.SelectDateWidget(years=list(range(1900, 2100))), label='Lesson date', initial=timezone.now())
 
     class Meta:
         model = LessonNote
         exclude = ('created', 'modified', 'user')
         widgets = {
-            "date": forms.DateInput(attrs={'type': 'date'})
+            # "date": forms.DateInput(attrs={'type': 'date'})
         };
 
     def __init__(self, *args, **kwargs):
@@ -183,13 +185,13 @@ class LessonNoteForm(forms.ModelForm):
 class SipNoteForm(forms.ModelForm):
     client_list = Contact.objects.filter(sip_client=1).order_by('last_name')
     clients = forms.ModelMultipleChoiceField(queryset=client_list, required=False)
-    # note_date = forms.CharField(widget=forms.TextInput(attrs={"onCLick": 'setDate(this)'}))
+    note_date = forms.DateField( widget=forms.SelectDateWidget(years=list(range(1900, 2100))), label='Note Date', initial=timezone.now())
 
     class Meta:
         model = SipNote
         exclude = ('created', 'modified', 'user', 'contact', 'modesto')
         widgets = {
-            "note_date": forms.DateInput(attrs={'type': 'date'})
+            # "note_date": forms.DateInput(attrs={'type': 'date'})
         };
 
     def __init__(self, *args, **kwargs):
@@ -220,13 +222,13 @@ class SipNoteForm(forms.ModelForm):
 class Sip1854NoteForm(forms.ModelForm):
     client_list = Contact.objects.filter(sip_client=1).order_by('last_name')
     clients = forms.ModelMultipleChoiceField(queryset=client_list, required=False)
-    # note_date = forms.CharField(widget=forms.TextInput(attrs={"onCLick": 'setDate(this)'}))
+    note_date = forms.DateField( widget=forms.SelectDateWidget(years=list(range(1900, 2100))), label='Note Date', initial=timezone.now())
 
     class Meta:
         model = Sip1854Note
         exclude = ('created', 'modified', 'user', 'contact', 'modesto')
         widgets = {
-            "note_date": forms.DateInput(attrs={'type': 'date'})
+            # "note_date": forms.DateInput(attrs={'type': 'date'})
         };
 
     def __init__(self, *args, **kwargs):
@@ -257,12 +259,13 @@ class Sip1854NoteForm(forms.ModelForm):
 class SipNoteBulkForm(forms.ModelForm):
     client_list = Contact.objects.filter(sip_client=1).order_by('last_name')
     clients = forms.ModelMultipleChoiceField(queryset=client_list, required=False)
+    note_date = forms.DateField( widget=forms.SelectDateWidget(years=list(range(1900, 2100))), label='Note Date', initial=timezone.now())
 
     class Meta:
         model = SipNote
         exclude = ('created', 'modified', 'user', 'contact', 'modesto')
         widgets = {
-            "note_date": forms.DateInput(attrs={'type': 'date'})
+            # "note_date": forms.DateInput(attrs={'type': 'date'})
         };
 
     def __init__(self, *args, **kwargs):
@@ -289,12 +292,13 @@ class SipNoteBulkForm(forms.ModelForm):
 class Sip1854NoteBulkForm(forms.ModelForm):
     client_list = Contact.objects.filter(sip_client=1).order_by('last_name')
     clients = forms.ModelMultipleChoiceField(queryset=client_list, required=False)
+    note_date = forms.DateField( widget=forms.SelectDateWidget(years=list(range(1900, 2100))), label='Note Date', initial=timezone.now())
 
     class Meta:
         model = Sip1854Note
         exclude = ('created', 'modified', 'user', 'contact', 'modesto')
         widgets = {
-            "note_date": forms.DateInput(attrs={'type': 'date'})
+            # "note_date": forms.DateInput(attrs={'type': 'date'})
         };
 
     def __init__(self, *args, **kwargs):
@@ -324,13 +328,13 @@ class SipPlanForm(forms.ModelForm):
              ("Community Integration", "Community Integration"))
     instructor = forms.CharField(required=False)
     plan_type = forms.ChoiceField(choices=types)
-    # start_date = forms.CharField(widget=forms.TextInput(attrs={'aria-required': 'true'}))
+    plan_date = forms.DateField( widget=forms.SelectDateWidget(years=list(range(1900, 2100))), label='Plan Date', initial=timezone.now())
 
     class Meta:
         model = SipPlan
         exclude = ('created', 'modified', 'user', 'contact')
         widgets = {
-            "plan_date": forms.DateInput(attrs={'type': 'date'})
+            # "plan_date": forms.DateInput(attrs={'type': 'date'})
         };
 
     def __init__(self, *args, **kwargs):
@@ -358,13 +362,13 @@ class Sip1854PlanForm(forms.ModelForm):
              ("Community Integration", "Community Integration"))
     instructor = forms.CharField(required=False)
     plan_type = forms.ChoiceField(choices=types)
-    # start_date = forms.CharField(widget=forms.TextInput(attrs={'aria-required': 'true'}))
+    plan_date = forms.DateField( widget=forms.SelectDateWidget(years=list(range(1900, 2100))), label='Plan Date', initial=timezone.now())
 
     class Meta:
         model = Sip1854Plan
         exclude = ('created', 'modified', 'user', 'contact')
         widgets = {
-            "plan_date": forms.DateInput(attrs={'type': 'date'})
+            # "plan_date": forms.DateInput(attrs={'type': 'date'})
         };
 
     def __init__(self, *args, **kwargs):
@@ -479,12 +483,13 @@ class DocumentForm(forms.ModelForm):
 
 
 class VaccineForm(forms.ModelForm):
+    vaccination_date = forms.DateField( widget=forms.SelectDateWidget(years=list(range(1900, 2100))), label='Vaccination Date', initial=timezone.now())
 
     class Meta:
         model = Vaccine
         exclude = ('created', 'modified', 'user', 'contact')
         widgets = {
-            "vaccination_date": forms.DateInput(attrs={'type': 'date'})
+            # "vaccination_date": forms.DateInput(attrs={'type': 'date'})
         };
 
     def __init__(self, *args, **kwargs):
@@ -495,16 +500,18 @@ class VaccineForm(forms.ModelForm):
 
 
 class AssignmentForm(forms.ModelForm):
+    assignment_date = forms.DateField( widget=forms.SelectDateWidget(years=list(range(1900, 2100))), label='Assignment Date', initial=timezone.now())
 
     class Meta:
         model = Assignment
         exclude = ('created', 'modified', 'user', 'assignment_date')
         widgets = {
-            "assignment_date": forms.DateInput(attrs={'type': 'date'})
+            # "assignment_date": forms.DateInput(attrs={'type': 'date'})
         };
 
 
 class Assignment1854Form(forms.ModelForm):
+    assignment_date = forms.DateField( widget=forms.SelectDateWidget(years=list(range(1900, 2100))), label='Assignment Date', initial=timezone.now())
 
     class Meta:
         model = Sip1854Assignment
