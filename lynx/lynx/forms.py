@@ -28,16 +28,20 @@ class ContactForm(forms.ModelForm):
 
 
 class IntakeForm(forms.ModelForm):
-    # intake_date = forms.DateField(widget=forms.DateInput(format='%m/%d/%Y'))
+    intake_date = forms.DateField( widget=forms.SelectDateWidget())
+    birth_date = forms.DateField( widget=forms.SelectDateWidget())
+    eye_condition_date = forms.DateField( widget=forms.SelectDateWidget())
+    hire_date = forms.DateField( widget=forms.SelectDateWidget())
+
 
     class Meta:
         model = Intake
         exclude = ('contact', 'created', 'modified', 'user')
         widgets = {
-            "intake_date": forms.DateInput(attrs={'type': 'date'}),
-            "birth_date":  forms.DateInput(attrs={'type': 'date'}),
-            "eye_condition_date":  forms.DateInput(attrs={'type': 'date'}),
-            "hire_date":  forms.DateInput(attrs={'type': 'date'})
+            # "intake_date": forms.DateInput(attrs={'type': 'date'}),
+            # "birth_date":  forms.DateInput(attrs={'type': 'date'}),
+            # "eye_condition_date":  forms.DateInput(attrs={'type': 'date'}),
+            # "hire_date":  forms.DateInput(attrs={'type': 'date'})
         };
 
     def __init__(self, *args, **kwargs):
