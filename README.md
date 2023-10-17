@@ -74,6 +74,14 @@ The very first error I got with this app:
 
  The solution provided in the [Stackoverflow thread](https://stackoverflow.com/questions/52477683/importerror-bad-magic-number-in-time-b-x03-xf3-r-n-in-django) (i.e., deleting `*.pyc` files) worked.
 
+### `rsync`
+
+`rsync` sometimes hangs on one server, but not on the other, so I use it on the "good" side to push / pull files when `scp` is not enough:
+
+```
+rsync -avze "ssh -i <PATH-TO-PRIVATE-KEY>" --rsync-path=/nix/store/...-rsync-3.2.7/bin/rsync --progress --partial --backup prod_user@1.2.3,4:<SOURCE-PATH> <DEST-PATH>
+```
+
 <!-- }}- -->
 ## SchemaSpy  <!-- {{- -->
 
