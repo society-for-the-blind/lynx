@@ -238,7 +238,7 @@ def add_sip_plan(request, contact_id):
         if form.is_valid():
             form = form.save(commit=False)
             form.instructor = request.user.first_name + request.user.last_name
-            form.plan_name = request.POST.get('plan_date') + ' - ' + request.POST.get('plan_type') + ' - ' + form.instructor
+            form.plan_name = request.POST.get('plan_date_month') + '/' + request.POST.get('plan_date_day') + '/' + request.POST.get('plan_date_year') + ' - ' + request.POST.get('plan_type') + ' - ' + form.instructor
             # form.plan_date = request.POST.get('start_date')
             form.contact_id = contact_id
             form.user_id = request.user.id
@@ -256,7 +256,7 @@ def add_sip1854_plan(request, contact_id):
         if form.is_valid():
             form = form.save(commit=False)
             form.instructor = request.user.first_name + request.user.last_name
-            form.plan_name = request.POST.get('plan_date') + ' - ' + request.POST.get('plan_type') + ' - ' + form.instructor
+            form.plan_name = request.POST.get('plan_date_month') + '/' + request.POST.get('plan_date_day') + '/' + request.POST.get('plan_date_year') + ' - ' + request.POST.get('plan_type') + ' - ' + form.instructor
             # form.plan_date = request.POST.get('start_date')
             form.contact_id = contact_id
             form.user_id = request.user.id
