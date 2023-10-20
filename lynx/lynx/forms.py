@@ -500,7 +500,7 @@ class VaccineForm(forms.ModelForm):
 
 
 class AssignmentForm(forms.ModelForm):
-    assignment_date = forms.DateField( widget=forms.SelectDateWidget(years=list(range(1900, 2100))), label='Assignment Date', initial=timezone.now())
+    # assignment_date = forms.DateField( widget=forms.SelectDateWidget(years=list(range(1900, 2100))), label='Assignment Date', initial=timezone.now())
 
     class Meta:
         model = Assignment
@@ -511,7 +511,7 @@ class AssignmentForm(forms.ModelForm):
 
 
 class Assignment1854Form(forms.ModelForm):
-    assignment_date = forms.DateField( widget=forms.SelectDateWidget(years=list(range(1900, 2100))), label='Assignment Date', initial=timezone.now())
+    # assignment_date = forms.DateField( widget=forms.SelectDateWidget(years=list(range(1900, 2100))), label='Assignment Date', initial=timezone.now())
 
     class Meta:
         model = Sip1854Assignment
