@@ -1,5 +1,37 @@
 {% extends 'lynx/base.html' %}
 
+{% block javascript %}
+<script>
+
+    $(document).ready(function() {
+        var thisYear = new Date().getFullYear();
+        $("#id_start_date_year").val(thisYear);
+
+        //THis javascript function uses an array of 0-11
+        var thisMonth = new Date().getMonth() + 1;
+        $("#id_start_date_month").val(thisMonth);
+
+        var thisDay = new Date().getDate();
+        $("#id_start_date_day").val(thisDay);
+
+        var thisYear = new Date().getFullYear();
+        $("#id_end_date_year").val(thisYear);
+
+        //THis javascript function uses an array of 0-11
+        var thisMonth = new Date().getMonth() + 1;
+        $("#id_end_date_month").val(thisMonth);
+
+        var thisDay = new Date().getDate();
+        $("#id_end_date_day").val(thisDay);
+    });
+
+    // function setDate(selectObject) {
+    //     document.getElementById('id_note_date').value = new Date().toISOString().slice(0, 10);
+    // }
+
+</script>
+{% endblock %}
+
 {% block content %}
 <h1>Add Authorization</h1>
 <br>

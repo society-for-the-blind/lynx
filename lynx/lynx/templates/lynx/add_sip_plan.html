@@ -1,6 +1,28 @@
 {% extends 'lynx/base.html' %}
 {% load crispy_forms_tags %}
 
+{% block javascript %}
+<script>
+
+    $(document).ready(function() {
+        var thisYear = new Date().getFullYear();
+        $("#id_plan_date_year").val(thisYear);
+
+        //THis javascript function uses an array of 0-11
+        var thisMonth = new Date().getMonth() + 1;
+        $("#id_plan_date_month").val(thisMonth);
+
+        var thisDay = new Date().getDate();
+        $("#id_plan_date_day").val(thisDay);
+    });
+
+    // function setDate(selectObject) {
+    //     document.getElementById('id_note_date').value = new Date().toISOString().slice(0, 10);
+    // }
+
+</script>
+{% endblock %}
+
 {% block content %}
 <h1>Add New SIP Plan</h1>
 <br>
