@@ -7,7 +7,8 @@ from django.views.generic.edit import UpdateView
 from django.urls import reverse_lazy
 from django.db.models import Q, F
 from django.db.models import Value as V
-from django.db.models.functions import Concat, Replace, Lower
+from django.db.models import DateField
+from django.db.models.functions import Concat, Replace, Lower, Substr, StrIndex, Cast
 from django.db import connection
 from django.core.paginator import Paginator
 from django.conf import settings
@@ -70,7 +71,7 @@ def authorization_list_view(request, client_id):
 
 @login_required
 def sipplan_list_view(request, client_id):
-    plans = SipPlan.objects.filter(contact_id=client_id).order_by('-plan_date')
+    plans = SipPlan.objects.filter(contact_id=client_id).annotate( date_substring=Cast(Substr('plan_name', 1, StrIndex('plan_name', V(' '))), DateField()) ).order_by('-date_substring')
     client = Contact.objects.get(id=client_id)
     return render(request, 'lynx/sipplan_list.html', {'plans': plans, 'client': client})
 
