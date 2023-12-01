@@ -1400,6 +1400,7 @@ class SipPlanUpdateView(LoginRequiredMixin, UpdateView):
         form.fields['at_outcomes'].label = "AT Goal Outcomes"
         form.fields['ila_outcomes'].label = "IL/A Service Goal Outcomes"
 
+        form.fields['plan_name'].disabled = True
         form.fields['at_outcomes'].disabled = ats
         form.fields['ila_outcomes'].disabled = ils
         form.fields['living_plan_progress'].disabled = outcomes
