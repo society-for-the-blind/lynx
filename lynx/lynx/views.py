@@ -1220,7 +1220,8 @@ class IntakeUpdateView(LoginRequiredMixin, UpdateView):
         form.fields["eye_condition_date"].widget = forms.SelectDateWidget(years=list(range(1900, 2100)))
         form.fields["hire_date"].widget = forms.SelectDateWidget(years=list(range(1900, 2100)))
         form.fields["other_languages"].label = "Other Language(s)"
-        form.fields["other_ethnicity"].label = "Ethnicity (if other)"
+        form.fields["ethnicity"].label = "Race"
+        form.fields["other_ethnicity"].label = "Ethnicity"
         form.fields['payment_source'].queryset = Contact.objects.filter(payment_source=1).order_by(Lower('last_name'))
         form.fields['payment_source'].label = "Payment Sources"
         form.fields["crime"].label = "Have you been convicted of a crime?"

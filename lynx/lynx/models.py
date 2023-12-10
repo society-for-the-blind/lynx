@@ -52,10 +52,12 @@ GENDERS = (("Female", "Female"), ("Male", "Male"), ("Non-Binary", "Non-Binary"),
            ("Prefer Not to Say", "Prefer Not to Say"), )
 
 ETHNICITIES = (("American Indian or Alaska Native", "American Indian or Alaska Native"), ("Asian", "Asian"),
-               ("Black or African American", "Black or African American"), ("Hispanic or Latino", "Hispanic or Latino"),
+               ("Black or African American", "Black or African American"), 
                ("Native Hawaiian or Pacific Islander", "Native Hawaiian or Pacific Islander"), ("White", "White"),
                ("Other", "Other"), ("Did not self identify Race", "Did not self identify Race"),
                ("Two or More Races", "Two or More Races"))
+
+OTHER_ETHNICITIES = (("Hispanic or Latino", "Hispanic or Latino"),)
 
 MAILINGS = (("N/A", "N/A"), ("Print", "Print"), ("Large Print", "Large Print"), ("Braille", "Braille"),
             ("E-Mail", "E-Mail"), ("Cassette", "Cassette"))
@@ -280,7 +282,7 @@ class Intake(models.Model):
     pronouns = models.CharField(max_length=150, blank=True, choices=PRONOUNS, null=True)
     birth_date = models.DateField(blank=True, null=True)
     ethnicity = models.CharField(max_length=50, blank=True, choices=ETHNICITIES, null=True)
-    other_ethnicity = models.CharField(max_length=50, blank=True, null=True)
+    other_ethnicity = models.CharField(max_length=50, blank=True, choices=OTHER_ETHNICITIES, null=True)
     income = models.CharField(max_length=25, choices=INCOMES, blank=True, null=True)
     first_language = models.CharField(max_length=50, blank=True, choices=LANGUAGES, null=True)
     second_language = models.CharField(max_length=50, blank=True, choices=LANGUAGES, null=True)
