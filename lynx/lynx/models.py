@@ -54,7 +54,7 @@ GENDERS = (("Female", "Female"), ("Male", "Male"), ("Non-Binary", "Non-Binary"),
 ETHNICITIES = (("American Indian or Alaska Native", "American Indian or Alaska Native"), ("Asian", "Asian"),
                ("Black or African American", "Black or African American"), 
                ("Native Hawaiian or Pacific Islander", "Native Hawaiian or Pacific Islander"), ("White", "White"),
-               ("Other", "Other"), ("Did not self identify Race", "Did not self identify Race"),
+               ("Did not self identify Race", "Did not self identify Race"),
                ("Two or More Races", "Two or More Races"))
 
 OTHER_ETHNICITIES = (("Hispanic or Latino", "Hispanic or Latino"),)
