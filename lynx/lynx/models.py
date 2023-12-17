@@ -112,14 +112,17 @@ SIP_UNITS = ((.25, "15 Minutes"), (.5, "30 Minutes"), (.75, "45 Minutes"), (1, "
 SALUTATIONS = (("Mr.", "Mr."), ("Mrs.", "Mrs."), ("Miss", "Miss"), ("Ms.", "Ms."), ("Dr.", "Dr."), ("Prof.", "Prof."),
                ("Rev.", "Rev."))
 
-AGES = (("Less than 54", "Less than 54"), ("55-64", "55-64"), ("65-74", "65-74"), ("75-84", "75-84"),
-        ("85 and older", "85 and older"))
+
+AGES = (("younger than 18", "younger than 18"),
+        ("18-24", "18-24"), ("25-34", "25-34"), ("35-44", "35-44"),
+        ("45-54", "45-54"), ("55-64", "55-64"), ("65-74", "65-74"),
+        ("75-84", "75-84"), ("85 and older", "85 and older"))
 
 TASKS = (('Visually', 'Visually'), ('Non-Visually', 'Non-Visually'),
          ('Both Visually and Non-Visually', 'Both Visually and Non-Visually'))
 
-CONDITIONS = (('Cataracts', 'Cataracts'), ('Diabetic Retinopathy', 'Diabetic Retinopathy'), ('Glaucoma', 'Glaucoma'),
-              ('Macular Degeneration', 'Macular Degeneration'),
+CONDITIONS = (('Cataracts', 'Cataracts'), ('Diabetic Retinopathy', 'Diabetic Retinopathy'),
+              ('Glaucoma', 'Glaucoma'), ('Macular Degeneration', 'Macular Degeneration'),
               ('Other causes of visual impairment', 'Other causes of visual impairment'))
 
 STATUSES = (("Assigned", "Assigned"), ("In Progress", "In Progress"), ("Completed", "Completed"))
@@ -257,15 +260,15 @@ class Intake(models.Model):
     LIVING = (("Live Alone", "Live Alone"), ("Live With Spouse or Family", "Live With Spouse or Family"),
               ("Live With Other", "Live With Other"), ("Homeless", "Homeless"))
 
-    RESIDENCE = (("Private Residence", "Private Residence"), ("Community Residential", "Community Residential"),
-                 ("Assisted Living", "Assisted Living"), ("Skilled Nursing Care", "Skilled Nursing Care"),
-                 ("Senior Living", "Senior Living"), ("Homeless", "Homeless"))
+    RESIDENCE = (("Private Residence", "Private Residence"),
+                 ("Assisted Living Facility", "Assisted Living Facility"), ("Nursing Home", "Nursing Home"),
+                 ("Senior Independent Living", "Senior Independent Living"), ("Homeless", "Homeless"))
 
     PROGNOSIS = (("Stable", "Stable"), ("Diminishing", "Diminishing"))
 
-    DEGREE = (("Totally Blind (NP or NLP)", "Totally Blind (NP or NLP)"), ("Legally Blind", "Legally Blind"),
-              ("Severe Vision Impairment", "Severe Vision Impairment"), ("Light Perception Only", "Light Perception Only"),
-              ("Low Vision", "Low Vision"))
+    DEGREE = (("Totally Blind", "Totally Blind"),
+              ("Legally Blind", "Legally Blind"),
+              ("Severe Vision Impairment", "Severe Vision Impairment"))
 
     REFERER = (("DOR", "DOR"), ("Alta", "Alta"), ("Veterans Administration", "Veterans Administration"),
                ("Family or Friend", "Family or Friend"), ("Senior Program", "Senior Program"),
