@@ -1,6 +1,10 @@
 from django import forms
 from django.db.models.functions import Lower
 from django.utils import timezone
+from django.db.models import Q, F
+from django.db.models import Value as V
+from django.db.models import DateField
+from django.db.models.functions import Concat, Replace, Lower, Substr, StrIndex, Cast
 
 from .models import Contact, Address, Intake, Email, Phone, SipPlan, Sip1854Plan, IntakeNote, EmergencyContact, Authorization, \
     ProgressReport, LessonNote, SipNote, Sip1854Note, Volunteer, UNITS, Document, Vaccine, Assignment, Sip1854Assignment
@@ -199,7 +203,8 @@ class SipNoteForm(forms.ModelForm):
         contact_id = kwargs.pop('contact_id')
         super(SipNoteForm, self).__init__(*args, **kwargs)
         # self.fields['sip_plan'].queryset = SipPlan.objects.filter(contact_id=contact_id).order_by('-created')
-        self.fields['sip_plan'].queryset = SipPlan.objects.filter(contact_id=contact_id).order_by('-plan_date')
+        # self.fields['sip_plan'].queryset = SipPlan.objects.filter(contact_id=contact_id).order_by('-plan_date')
+        self.fields['sip_plan'].queryset = SipPlan.objects.filter(contact_id=contact_id).annotate( date_substring=Cast(Substr('plan_name', 1, StrIndex('plan_name', V(' '))), DateField()) ).order_by('-date_substring')
         self.fields['sip_plan'].required = True
         self.fields['at_devices'].label = "Assistive Technology Devices and Services"
         self.fields['independent_living'].label = "Independent Living and Adjustment Services"
@@ -236,7 +241,8 @@ class Sip1854NoteForm(forms.ModelForm):
         contact_id = kwargs.pop('contact_id')
         super(Sip1854NoteForm, self).__init__(*args, **kwargs)
         # self.fields['sip_plan'].queryset = SipPlan.objects.filter(contact_id=contact_id).order_by('-created')
-        self.fields['sip_plan'].queryset = Sip1854Plan.objects.filter(contact_id=contact_id).order_by('-plan_date')
+        # self.fields['sip_plan'].queryset = Sip1854Plan.objects.filter(contact_id=contact_id).order_by('-plan_date')
+        self.fields['sip_plan'].queryset = Sip1854Plan.objects.filter(contact_id=contact_id).annotate( date_substring=Cast(Substr('plan_name', 1, StrIndex('plan_name', V(' '))), DateField()) ).order_by('-date_substring')
         self.fields['sip_plan'].required = True
         self.fields['at_devices'].label = "Assistive Technology Devices and Services"
         self.fields['independent_living'].label = "Independent Living and Adjustment Services"
