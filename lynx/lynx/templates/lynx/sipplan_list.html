@@ -16,7 +16,6 @@
                 <div class="col-12"><strong>Plan Name: </strong>{% if sip.plan_name %}<a href='/lynx/sip-plan/{{ sip.id }}'>{{ sip.plan_name }}</a>{% else %}<a href='/lynx/sip-plan/{{ sip.id }}'>Unnamed Plan</a>{% endif %}</div>
             </div>
             <div class="row">
-                <div class="col-12"><strong>Plan Services: </strong>{% if sip.at_services or sip.at_devices %}Assistive Technology Devices and Services, {% endif %}{% if sip.independent_living %}IL/A Services, {% endif %}{% if sip.orientation %}O&M Skills, {% endif %}{% if sip.communications %}Communication skills, {% endif %}{% if sip.dls %}Daily Living Skills, {% endif %}{% if sip.advocacy %}Advocacy Training, {% endif %}{% if sip.counseling %}Adjustment Counseling, {% endif %}{% if sip.information %}I&R (Information & Referral), {% endif %}{% if sip.services %}Other Services{% endif %}{% if sip.support_services %}Supportive Services {% endif %}</div>
             </div>
             <div class="row">
                 <div class="col-12"><strong>Plan Status: </strong>Living Situation Outcome: {{ sip.living_plan_progress}}, Community Involvement Outcome: {{ sip.community_plan_progress}}</div>
