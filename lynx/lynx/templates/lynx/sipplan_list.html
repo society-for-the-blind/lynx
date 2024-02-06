@@ -16,12 +16,17 @@
                 <div class="col-12"><strong>Plan Name: </strong>{% if sip.plan_name %}<a href='/lynx/sip-plan/{{ sip.id }}'>{{ sip.plan_name }}</a>{% else %}<a href='/lynx/sip-plan/{{ sip.id }}'>Unnamed Plan</a>{% endif %}</div>
             </div>
             <div class="row">
+                <div class="col-12"><strong>AT Outcome: </strong>{{ sip.at_outcomes}}</div>
             </div>
             <div class="row">
-                <div class="col-12"><strong>Plan Status: </strong>Living Situation Outcome: {{ sip.living_plan_progress}}, Community Involvement Outcome: {{ sip.community_plan_progress}}</div>
+                <div class="col-12"><strong>IL/A Outcome: </strong>{{ sip.ila_outcomes}}</div>
             </div>
             <div class="row">
-                <div class="col-12"><strong>Assessment Status: </strong>AT Outcome: {{ sip.at_outcomes}}, IL/A Outcome: {{ sip.ila_outcomes}}</div>
+                <div class="col-12"><strong>Living Situation Outcome: </strong>{{ sip.living_plan_progress}}</div>
+            </div>
+            <div class="row">
+                <div class="col-12"><strong>Community Involvement Outcome: </strong>{{ sip.community_plan_progress}}</div>
+            </div>
             </div>
             <div class="row">
                 <div class="col-12"><a href='/lynx/sip-plan-edit/{{ sip.id }}'>Edit</a> | <a href='/lynx/sip-plan-confirm/{{ sip.id }}/{{ client.id }}'>Delete</a></div>
