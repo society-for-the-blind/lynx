@@ -78,7 +78,7 @@ def sipplan_list_view(request, client_id):
 
 @login_required
 def sip1854plan_list_view(request, client_id):
-    plans = Sip1854Plan.objects.filter(contact_id=client_id).order_by('-plan_date')
+    plans = Sip1854Plan.objects.filter(contact_id=client_id).annotate( date_substring=Cast(Substr('plan_name', 1, StrIndex('plan_name', V(' '))), DateField()) ).order_by('-date_substring')
     client = Contact.objects.get(id=client_id)
     return render(request, 'lynx/sip1854plan_list.html', {'plans': plans, 'client': client})
 
@@ -1367,7 +1367,7 @@ class SipPlanUpdateView(LoginRequiredMixin, UpdateView):
     model = SipPlan
     fields = ['note', 'at_services', 'independent_living', 'orientation', 'communications', 'dls', 'advocacy',
               'counseling', 'information', 'other_services', 'plan_name', 'living_plan_progress', 'at_outcomes',
-              'community_plan_progress', 'ila_outcomes', 'support_services', 'plan_date']
+              'employment_outcomes', 'community_plan_progress', 'ila_outcomes', 'support_services', 'plan_date']
     template_name_suffix = '_edit'
 
     def get_form(self, form_class=None):
@@ -1404,8 +1404,10 @@ class SipPlanUpdateView(LoginRequiredMixin, UpdateView):
         form.fields['plan_name'].disabled = True
         form.fields['at_outcomes'].disabled = ats
         form.fields['ila_outcomes'].disabled = ils
+        # Need to ask DOR
         form.fields['living_plan_progress'].disabled = outcomes
         form.fields['community_plan_progress'].disabled = outcomes
+        form.fields['employment_outcomes'].disabled = outcomes
         return form
 
 
@@ -1413,7 +1415,7 @@ class Sip1854PlanUpdateView(LoginRequiredMixin, UpdateView):
     model = Sip1854Plan
     fields = ['note', 'at_services', 'independent_living', 'orientation', 'communications', 'dls', 'advocacy',
               'counseling', 'information', 'other_services', 'plan_name', 'living_plan_progress', 'at_outcomes',
-              'community_plan_progress', 'ila_outcomes', 'support_services', 'plan_date']
+              'employment_outcomes', 'community_plan_progress', 'ila_outcomes', 'support_services', 'plan_date']
     template_name_suffix = '_edit'
 
     def get_form(self, form_class=None):
@@ -1449,8 +1451,10 @@ class Sip1854PlanUpdateView(LoginRequiredMixin, UpdateView):
 
         form.fields['at_outcomes'].disabled = ats
         form.fields['ila_outcomes'].disabled = ils
+        # Need to ask DOR
         form.fields['living_plan_progress'].disabled = outcomes
         form.fields['community_plan_progress'].disabled = outcomes
+        form.fields['employment_outcomes'].disabled = outcomes
         return form
 
 

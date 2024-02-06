@@ -603,6 +603,10 @@ class SipPlan(models.Model):
                                                       "Assessed with improved independence"),
                    ("Assessed and maintained independence", "Assessed and maintained independence"),
                    ("Assessed with decreased independence", "Assessed with decreased independence"))
+    EMPLOYMENT = (("Not Interested in Employment", "Not Interested in Employment"),
+                  ("Less Likely to Seek Employment", "Less Likely to Seek Employment"),
+                  ("Unsure about Seeking Employment", "Unsure about Seeking Employment"),
+                  ("More Likely to Seek Employment", "More Likely to Seek Employment"))
     contact = models.ForeignKey('Contact', on_delete=models.CASCADE)
     note = models.TextField(null=True, blank=True)
     at_services = models.BooleanField(blank=True, default=False)
@@ -631,6 +635,7 @@ class SipPlan(models.Model):
         null=True,
         default="Plan not complete"
     )
+    employment_outcomes = models.CharField(max_length=150, choices=EMPLOYMENT, blank=True, null=True, default="Not Interested in Employment")
     at_outcomes = models.CharField(max_length=150, choices=ASSESSMENTS, blank=True, null=True, default="Not assessed")
     ila_outcomes = models.CharField(max_length=150, choices=ASSESSMENTS, blank=True, null=True, default="Not assessed")
     created = models.DateTimeField(auto_now_add=True, null=True)
@@ -779,6 +784,10 @@ class Sip1854Plan(models.Model):
                                                       "Assessed with improved independence"),
                    ("Assessed and maintained independence", "Assessed and maintained independence"),
                    ("Assessed with decreased independence", "Assessed with decreased independence"))
+    EMPLOYMENT = (("Not Interested in Employment", "Not Interested in Employment"),
+                  ("Less Likely to Seek Employment", "Less Likely to Seek Employment"),
+                  ("Unsure about Seeking Employment", "Unsure about Seeking Employment"),
+                  ("More Likely to Seek Employment", "More Likely to Seek Employment"))
     contact = models.ForeignKey('Contact', on_delete=models.CASCADE)
     note = models.TextField(null=True, blank=True)
     at_services = models.BooleanField(blank=True, default=False)
@@ -807,6 +816,7 @@ class Sip1854Plan(models.Model):
         null=True,
         default="Plan not complete"
     )
+    employment_outcomes = models.CharField(max_length=150, choices=EMPLOYMENT, blank=True, null=True, default="Not Interested in Employment")
     at_outcomes = models.CharField(max_length=150, choices=ASSESSMENTS, blank=True, null=True, default="Not assessed")
     ila_outcomes = models.CharField(max_length=150, choices=ASSESSMENTS, blank=True, null=True, default="Not assessed")
     created = models.DateTimeField(auto_now_add=True, null=True)
