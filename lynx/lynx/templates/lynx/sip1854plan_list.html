@@ -31,6 +31,9 @@
                 <div class="col-12"><strong>Employment Outcome: </strong>{{ sip1854.employment_outcomes}}</div>
             </div>
             <div class="row">
+                <div class="col-12"><strong>Plan Services: </strong>{% if sip1854.at_services or sip1854.at_devices %}Assistive Technology Devices and Services, {% endif %}{% if sip1854.independent_living %}IL/A Services, {% endif %}{% if sip1854.orientation %}O&M Skills, {% endif %}{% if sip1854.communications %}Communication skills, {% endif %}{% if sip1854.dls %}Daily Living Skills, {% endif %}{% if sip1854.advocacy %}Advocacy Training, {% endif %}{% if sip1854.counseling %}Adjustment Counseling, {% endif %}{% if sip1854.information %}I&R (Information & Referral), {% endif %}{% if sip1854.services %}Other Services{% endif %}{% if sip1854.support_services %}Supportive Services {% endif %}</div>
+            </div>
+            <div class="row">
                 <div class="col-12"><a href='/lynx/sip1854-plan-edit/{{ sip1854.id }}'>Edit</a> | <a href='/lynx/sip1854-plan-confirm/{{ sip1854.id }}/{{ client.id }}'>Delete</a></div>
             </div>
         </div>
