@@ -35,10 +35,19 @@ class ContactFilter(django_filters.FilterSet):
             self.queryset = self.queryset.none()
 
 
+from django import forms
+
+class FullNameUserChoiceField(forms.ModelChoiceField):
+    def label_from_instance(self, obj):
+        return f"{obj.last_name}, {obj.first_name}"
+
+class FullNameUserChoiceFilter(django_filters.ModelChoiceFilter):
+    field_class = FullNameUserChoiceField
+
 class AssignmentFilter(django_filters.FilterSet):
     assignment_status = django_filters.ChoiceFilter(choices=STATUSES)
     instructors = User.objects.filter(groups__name='SIP').order_by(Lower('last_name'))
-    instructor = django_filters.ModelChoiceFilter(queryset=instructors)
+    instructor = FullNameUserChoiceFilter(queryset=instructors)
 
     class Meta:
         model = Assignment
