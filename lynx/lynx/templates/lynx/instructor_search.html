@@ -4,10 +4,12 @@
 {% block title %}Assignments by Instructor{% endblock %}
 
 {% block content %}
-    <form method="get">
+
+    <form id="get-assignments" method="get">
         {{ filter.form|crispy }}
         <input class="btn btn-success" type="submit" />
     </form>
+
 <br>
 <hr>
 <br>
@@ -21,9 +23,9 @@
             <th scope="col">Status</th>
         </tr>
         {% for key, assignment in assignment_list.items %}
-            <tr>
-                <td>{{ assignment.assignment_date }}</td>
-                <td><a href="/lynx/client/{{ assignment.client_id }}">{{ assignment.client_last_name }}, {{ assignment.client_first_name }}</a></td>
+            <tr id="{{ assignment.assignment_id }}">
+                <td><a href="#{{ assignment.assignment_id }}">{{ assignment.assignment_date }}</a></td>
+                <td><a class="client-link" href="/lynx/client/{{ assignment.client_id }}">{{ assignment.client_last_name }}, {{ assignment.client_first_name }}</a></td>
 <!--                <td>{{ assignment }}</td>-->
                 <td>{{ assignment.note }}</td>
                 <td>{{ assignment.instructor_first_name }} {{ assignment.instructor_last_name }}</td>
@@ -32,4 +34,58 @@
             </tr>
         {% endfor %}
     </table>
+
+    <script type="text/javascript">
+      document.addEventListener('DOMContentLoaded', function() {
+
+        /*
+          Each assignment row  has an id and  the first column
+          (the  date)  is  turned  into a  link  to  that  id.
+          The event  listener below  makes sure  that clicking
+          the  submit  button  will clear  that  URL  fragment
+          (otherwise the browser will retain it).
+        */
+        document.getElementById('get-assignments').addEventListener('submit', function() {
+            if (window.location.hash) {
+                history.replaceState(null, null, ' ');
+            }
+        });
+
+        /*
+          WHAT THIS DOES:
+            When clicking on a  client link, this event listener
+            will add the assignment row's id to the URL and save
+            it in the history (then it the click will resume its
+            natural course  of bringing  the user to  the client
+            page). When hitting the back button, the URL will be
+            pointing to the row ...
+
+          WHAT IT WAS SUPPOSED TO BE DOING:
+            ... but not the focus (that remains on the `<body>`;
+            see Chromium bug
+            https://issues.chromium.org/issues/334275634
+            ). Not sure  if this actually helpful  or just makes
+            things worse, but leaving it here for now.
+        */
+        var table = document.querySelector('table');
+        table.addEventListener('click', function(event) {
+            if (event.target.classList.contains('client-link')) {
+                // event.preventDefault();
+                var nearestElementId = event.target.closest('[id]').id;
+                // debugger;
+                history.replaceState(null, null, '#' + nearestElementId);
+            }
+        });
+
+        /*
+        var links = document.getElementsByClassName('client-link');
+        for (var i = 0; i < links.length; i++) {
+            links[i].addEventListener('click', function(event) {
+                var nearestElementId = this.closest('tr').id;
+                history.replaceState(null, null, '#' + nearestElementId);
+            });
+        }
+        */
+    });
+    </script>
 {% endblock %}
