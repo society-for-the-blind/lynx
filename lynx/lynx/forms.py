@@ -7,7 +7,7 @@ from django.db.models import DateField
 from django.db.models.functions import Concat, Replace, Lower, Substr, StrIndex, Cast
 
 from .models import Contact, Address, Intake, Email, Phone, SipPlan, Sip1854Plan, IntakeNote, EmergencyContact, Authorization, \
-    ProgressReport, LessonNote, SipNote, Sip1854Note, Volunteer, UNITS, Document, Vaccine, Assignment, Sip1854Assignment
+    ProgressReport, LessonNote, SipNote, Sip1854Note, Volunteer, UNITS, Document, Vaccine, Assignment
 
 from datetime import datetime
 
@@ -515,14 +515,6 @@ class AssignmentForm(forms.ModelForm):
         widgets = {
             # "assignment_date": forms.DateInput(attrs={'type': 'date'})
         };
-
-
-class Assignment1854Form(forms.ModelForm):
-    # assignment_date = forms.DateField( widget=forms.SelectDateWidget(years=list(range(1900, 2100))), label='Assignment Date', initial=timezone.now())
-
-    class Meta:
-        model = Sip1854Assignment
-        exclude = ('created', 'modified', 'user', 'assignment_date')
 
 
 # This will not work past 2099 ;)

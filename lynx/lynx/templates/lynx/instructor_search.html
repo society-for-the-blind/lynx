@@ -15,22 +15,35 @@
 <br>
     <table class="table">
         <tr>
+            <th scope="col">Program</th>
             <th scope="col">Assignment Date</th>
+            <th scope="col">Priority</th>
             <th scope="col">Client</th>
             <th scope="col">Notes</th>
             <th scope="col">Instructor</th>
             <th scope="col">Assigned By</th>
-            <th scope="col">Status</th>
         </tr>
         {% for key, assignment in assignment_list.items %}
             <tr id="{{ assignment.assignment_id }}">
+                <td>{{ assignment.program }}</td>
                 <td><a href="#{{ assignment.assignment_id }}">{{ assignment.assignment_date }}</a></td>
+                <td><a href="#{{ assignment.assignment_id }}">{{ assignment.assignment_priority }}</a></td>
                 <td><a class="client-link" href="/lynx/client/{{ assignment.client_id }}">{{ assignment.client_last_name }}, {{ assignment.client_first_name }}</a></td>
 <!--                <td>{{ assignment }}</td>-->
                 <td>{{ assignment.note }}</td>
                 <td>{{ assignment.instructor_first_name }} {{ assignment.instructor_last_name }}</td>
                 <td>{{ assignment.assigned_by_first_name }} {{ assignment.assigned_by_last_name }}</td>
-                <td><a href="/lynx/assignment-edit/{{ key }}">{{ assignment.assignment_status }}</a></td>
+                {% if user.is_superuser %}
+                    <td>
+                        <form>
+                          {% csrf_token %}
+                          <input type="hidden" name="next" value="{{ request.get_full_path }}">
+                          <button class="btn btn-primary" formaction="/lynx/assignment-edit/{{ assignment.assignment_id }}">Edit</button>
+                          <button class="btn btn-danger" formaction="/lynx/assignment-confirm/{{ assignment.assignment_id }}/{{ assignment.client_id }}">Delete</button>
+                        </form>
+                    </td>
+                {% endif %}
+                <!-- <td><a href="/lynx/assignment-edit/{{ key }}">{{ assignment.assignment_status }}</a></td> -->
             </tr>
         {% endfor %}
     </table>

@@ -127,6 +127,9 @@ CONDITIONS = (('Cataracts', 'Cataracts'), ('Diabetic Retinopathy', 'Diabetic Ret
 
 STATUSES = (("Assigned", "Assigned"), ("In Progress", "In Progress"), ("Completed", "Completed"))
 
+PROGRAM = (("SIP", "SIP"), ("1854", "1854"))
+
+ASSIGNMENT_PRIORITY = (("New", "New"), ("Returning", "Returning"))
 
 def get_sentinel_user():
     return get_user_model().objects.get_or_create(username='deleted')[0]
@@ -718,6 +721,8 @@ class Vaccine(models.Model):
 
 
 class Assignment(models.Model):
+    program = models.CharField(max_length=25, null=True, blank=True, default='SIP', choices=PROGRAM)
+    priority = models.CharField(max_length=25, null=True, blank=True, default='New', choices=ASSIGNMENT_PRIORITY)
     contact = models.ForeignKey('Contact', on_delete=models.CASCADE)
     instructor = models.ForeignKey(User, on_delete=models.CASCADE, related_name='instructors')
     assignment_date = models.DateField(auto_now_add=True, null=True)
@@ -832,6 +837,8 @@ class Sip1854Plan(models.Model):
 
 
 class Sip1854Assignment(models.Model):
+    program = models.CharField(max_length=25, null=True, blank=True, default='1854', choices=PROGRAM)
+    priority = models.CharField(max_length=25, null=True, blank=True, default='New', choices=ASSIGNMENT_PRIORITY)
     contact = models.ForeignKey('Contact', on_delete=models.CASCADE)
     instructor = models.ForeignKey(User, on_delete=models.CASCADE, related_name='sip1854instructors')
     assignment_date = models.DateField(auto_now_add=True, null=True)

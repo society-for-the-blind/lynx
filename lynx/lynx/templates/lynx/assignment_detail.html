@@ -2,11 +2,13 @@
 
 {% block content %}
 
-<h1>SIP Assignments</h1>
+<h1>Assignments for {{contact.first_name}} {{contact.last_name}}</h1>
 <input type="button" class="btn btn-success" aria-label="Assign Instructor" onclick="location.href='/lynx/add-assignment/{{ contact_id }}';" value="Add Assignment" /> <input type="button" class="btn btn-success" aria-label="Back to Client" onclick="location.href='/lynx/client/{{ contact_id }}';" value="Return to Client" />
     <table class="table">
         <tr>
+            <th>Program</th>
             <th>Assignment Date</th>
+            <th>Priority</th>
             <th>Instructor</th>
             <th>Notes</th>
             <th>Assigned By</th>
@@ -16,13 +18,17 @@
         </tr>
         {% for instructor in instructor_list %}
             <tr>
+                <td>{{ instructor.program }}</td>
                 <td>{{ instructor.assignment_date|date:'F j, Y' }}</td>
+                <td>{{ instructor.priority }}</td>
                 <td>{{ instructor.instructor.first_name }} {{ instructor.instructor.last_name }}</td>
                 <td>{{ instructor.note|linebreaksbr }}</td>
                 <td>{{ instructor.user.first_name }} {{ instructor.user.last_name }}</td>
                 {% if user.is_superuser %}
                     <td>
                         <form>
+                          {% csrf_token %}
+                          <input type="hidden" name="next" value="{{ request.path }}">
                           <button class="btn btn-primary" formaction="/lynx/assignment-edit/{{ instructor.id }}">Edit</button>
                           <button class="btn btn-danger" formaction="/lynx/assignment-confirm/{{ instructor.id }}/{{ contact_id }}">Delete</button>
                         </form>

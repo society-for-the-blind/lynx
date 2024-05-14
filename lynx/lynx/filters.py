@@ -1,6 +1,6 @@
 import django_filters
 
-from .models import Sip1854Assignment, Assignment, ContactInfoView, AGES, COUNTIES, STATUSES
+from .models import Assignment, ContactInfoView, AGES, COUNTIES, PROGRAM
 from django.contrib.auth.models import User
 from django.db.models.functions import Lower
 
@@ -45,7 +45,7 @@ class FullNameUserChoiceFilter(django_filters.ModelChoiceFilter):
     field_class = FullNameUserChoiceField
 
 class AssignmentFilter(django_filters.FilterSet):
-    assignment_status = django_filters.ChoiceFilter(choices=STATUSES)
+    program = django_filters.ChoiceFilter(choices=PROGRAM)
     instructors = User.objects.filter(groups__name='SIP').order_by(Lower('last_name'))
     instructor = FullNameUserChoiceFilter(queryset=instructors)
 
@@ -53,7 +53,7 @@ class AssignmentFilter(django_filters.FilterSet):
         model = Assignment
         fields = {
             'assignment_date': ['gt', 'lt'],
-            'assignment_status': ['exact'],
+            'program': ['exact'],
             'instructor': ['exact']
         }
 

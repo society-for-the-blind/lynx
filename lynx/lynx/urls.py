@@ -114,15 +114,6 @@ urlpatterns = [
     path('instructors/', views.assignment_advanced_result_view, name='instructors'),
     # path('instructors/assignment-status-change/<int:assignment_id>/<str:status>', views.change_assignment_status, name='assignment-change'),
     # path('test/', cron.address_changes, name='address'),
-    #####################
-    # 18-54 ASSIGNMENTS #
-    #####################
-    path('assignments1854/<int:contact_id>', views.assignment1854_detail, name='assignment1854'),
-    path('add-assignment1854/<int:contact_id>', views.add_assignments1854, name='add_assignment1854'),
-    path('assignment1854-edit/<int:pk>', views.Assignment1854UpdateView.as_view(), name='assignment1854-edit'),
-    path('assignment1854-confirm/<int:pk>/<int:client_id>', views.Assignment1854DeleteView.as_view(), name='assignment1854-delete'),
-    # NOTE This should be named `assignments`
-    path('instructors1854/', views.assignment1854_advanced_result_view, name='instructors1854'),
     # --- END ASSGNMENTS ---
     path("", views.index, name='index')
 ]
