@@ -17,7 +17,7 @@
         <tr>
             <th scope="col">Program</th>
             <th scope="col">Assignment Date</th>
-            <th scope="col">Date of most recent SIP note</th>
+            <th scope="col">Date of most recent SIP/1854 note</th>
             <th scope="col">Most recent SIP/1854 note</th>
             <th scope="col">Date of most recent intake note</th>
             <th scope="col">Most recent intake note</th>
@@ -31,9 +31,9 @@
             <tr id="{{ assignment.assignment_id }}">
                 <td>{{ assignment.program }}</td>
                 <td><a href="#{{ assignment.assignment_id }}">{{ assignment.assignment_date }}</a></td>
-                <td>{{ assignment.program_note_date }}</td>
+                <td> <a href="/lynx/{% if assignment.program == 'SIP' %}sip{% else %}sip1854{% endif %}notes/{{ assignment.client_id }}">{{ assignment.program_note_date }}</a></td>
                 <td>{{ assignment.program_note }}</td>
-                <td>{{ assignment.intakenote_date }}</td>
+                <td><a class="client-link" href="/lynx/client/{{ assignment.client_id }}#notes">{{ assignment.intakenote_date }}</a></td>
                 <td>{{ assignment.intakenote }}</td>
                 <td>{{ assignment.assignment_priority }}</td>
                 <td><a class="client-link" href="/lynx/client/{{ assignment.client_id }}">{{ assignment.client_last_name }}, {{ assignment.client_first_name }}</a></td>
