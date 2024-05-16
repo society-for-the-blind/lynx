@@ -18,7 +18,7 @@
             <th scope="col">Program</th>
             <th scope="col">Assignment Date</th>
             <th scope="col">Date of most recent SIP note</th>
-            <th scope="col">Most recent SIP note</th>
+            <th scope="col">Most recent SIP/1854 note</th>
             <th scope="col">Date of most recent intake note</th>
             <th scope="col">Most recent intake note</th>
             <th scope="col">Priority</th>
@@ -31,8 +31,8 @@
             <tr id="{{ assignment.assignment_id }}">
                 <td>{{ assignment.program }}</td>
                 <td><a href="#{{ assignment.assignment_id }}">{{ assignment.assignment_date }}</a></td>
-                <td>{{ assignment.sip_note_date }}</td>
-                <td>{{ assignment.sip_note }}</td>
+                <td>{{ assignment.program_note_date }}</td>
+                <td>{{ assignment.program_note }}</td>
                 <td>{{ assignment.intakenote_date }}</td>
                 <td>{{ assignment.intakenote }}</td>
                 <td>{{ assignment.assignment_priority }}</td>

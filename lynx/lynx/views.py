@@ -2483,16 +2483,21 @@ def assignment_advanced_result_view(request):
             assignment_condensed[assignment.id]['instructor_first_name'] = assignment.instructor.first_name if assignment.instructor.first_name is not None else ''
             assignment_condensed[assignment.id]['instructor_last_name'] = assignment.instructor.last_name if assignment.instructor.last_name is not None else ''
 
-            notes = assignment.contact.related_sipnotes
+            match assignment_condensed[assignment.id]['program']:
+                case "SIP":
+                    notes = assignment.contact.related_sipnotes
+                case "1854":
+                    notes = assignment.contact.related_sip1854notes
+
             if notes:
                 # If there are any notes, add the date and note of the most recent one
                 latest_note = max(notes, key=lambda note: note.note_date)
-                assignment_condensed[assignment.id]['sip_note_date'] = latest_note.note_date
-                assignment_condensed[assignment.id]['sip_note'] = latest_note.note
+                assignment_condensed[assignment.id]['program_note_date'] = latest_note.note_date
+                assignment_condensed[assignment.id]['program_note'] = latest_note.note
             else:
                 # If there are no notes, add empty values
-                assignment_condensed[assignment.id]['sip_note_date'] = ''
-                assignment_condensed[assignment.id]['sip_note'] = ''
+                assignment_condensed[assignment.id]['program_note_date'] = ''
+                assignment_condensed[assignment.id]['program_note'] = ''
 
             intakenotes = assignment.contact.related_intakenotes
             if intakenotes:
