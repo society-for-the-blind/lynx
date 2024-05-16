@@ -1,8 +1,9 @@
 import django_filters
 
-from .models import Assignment, ContactInfoView, AGES, COUNTIES, PROGRAM
+from .models import IntakeNote, SipNote, Assignment, ContactInfoView, AGES, COUNTIES, PROGRAM
 from django.contrib.auth.models import User
 from django.db.models.functions import Lower
+from django.db.models import Prefetch
 
 
 class ContactFilter(django_filters.FilterSet):
@@ -61,3 +62,8 @@ class AssignmentFilter(django_filters.FilterSet):
         super(AssignmentFilter, self).__init__(*args, **kwargs)
         if self.data == {}:
             self.queryset = self.queryset.none()
+        else:
+            # Prefetch the related SipNote objects through the Contact model
+            sipnotes_prefetch = Prefetch('contact__sipnote_set', queryset=SipNote.objects.all(), to_attr='related_sipnotes')
+            intakenotes_prefetch = Prefetch('contact__intakenote_set', queryset=IntakeNote.objects.all(), to_attr='related_intakenotes')
+            self.queryset = self.queryset.prefetch_related(sipnotes_prefetch, intakenotes_prefetch)

@@ -2465,6 +2465,7 @@ def assignment_advanced_result_view(request):
         strict = True
         # f = AssignmentFilter(request.GET, queryset=Assignment.objects.all())
         f = AssignmentFilter(request.GET, queryset=Assignment.objects.all().order_by('-assignment_date'))
+        # notes = SipNote.objects.all()
         assignment_condensed = {}
         for assignment in f.qs:
             assignment_condensed[assignment.id] = {}
@@ -2481,6 +2482,28 @@ def assignment_advanced_result_view(request):
             # assignment_condensed[assignment.id]['assignment_status'] = assignment.assignment_status if assignment.assignment_status is not None else ''
             assignment_condensed[assignment.id]['instructor_first_name'] = assignment.instructor.first_name if assignment.instructor.first_name is not None else ''
             assignment_condensed[assignment.id]['instructor_last_name'] = assignment.instructor.last_name if assignment.instructor.last_name is not None else ''
+
+            notes = assignment.contact.related_sipnotes
+            if notes:
+                # If there are any notes, add the date and note of the most recent one
+                latest_note = max(notes, key=lambda note: note.note_date)
+                assignment_condensed[assignment.id]['sip_note_date'] = latest_note.note_date
+                assignment_condensed[assignment.id]['sip_note'] = latest_note.note
+            else:
+                # If there are no notes, add empty values
+                assignment_condensed[assignment.id]['sip_note_date'] = ''
+                assignment_condensed[assignment.id]['sip_note'] = ''
+
+            intakenotes = assignment.contact.related_intakenotes
+            if intakenotes:
+                # If there are any intake notes, add the date and note of the most recent one
+                latest_intakenote = max(intakenotes, key=lambda note: note.modified)
+                assignment_condensed[assignment.id]['intakenote_date'] = latest_intakenote.modified
+                assignment_condensed[assignment.id]['intakenote'] = latest_intakenote.note
+            else:
+                # If there are no intake notes, add empty values
+                assignment_condensed[assignment.id]['intakenote_date'] = ''
+                assignment_condensed[assignment.id]['intakenote'] = ''
 
     else:
         f = AssignmentFilter()
