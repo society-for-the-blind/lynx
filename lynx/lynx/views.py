@@ -2492,12 +2492,20 @@ def assignment_advanced_result_view(request):
             if notes:
                 # If there are any notes, add the date and note of the most recent one
                 latest_note = max(notes, key=lambda note: note.note_date)
+                # import pdb; pdb.set_trace()
                 assignment_condensed[assignment.id]['program_note_date'] = latest_note.note_date
                 assignment_condensed[assignment.id]['program_note'] = latest_note.note
+
+                if latest_note.user:
+                    assignment_condensed[assignment.id]['program_note_instructor'] = f'{latest_note.user.first_name} {latest_note.user.last_name}'
+                else:
+                    assignment_condensed[assignment.id]['program_note_instructor'] = latest_note.instructor
+
             else:
                 # If there are no notes, add empty values
                 assignment_condensed[assignment.id]['program_note_date'] = ''
                 assignment_condensed[assignment.id]['program_note'] = ''
+                assignment_condensed[assignment.id]['program_note_instructor'] = ''
 
             intakenotes = assignment.contact.related_intakenotes
             if intakenotes:
@@ -2505,6 +2513,12 @@ def assignment_advanced_result_view(request):
                 latest_intakenote = max(intakenotes, key=lambda note: note.modified)
                 assignment_condensed[assignment.id]['intakenote_date'] = latest_intakenote.modified
                 assignment_condensed[assignment.id]['intakenote'] = latest_intakenote.note
+
+                if latest_intakenote.user:
+                    assignment_condensed[assignment.id]['intakenote_instructor'] = f'{latest_intakenote.user.first_name} {latest_intakenote.user.last_name}'
+                else:
+                    assignment_condensed[assignment.id]['intakenote_instructor'] = 'n/a'
+
             else:
                 # If there are no intake notes, add empty values
                 assignment_condensed[assignment.id]['intakenote_date'] = ''

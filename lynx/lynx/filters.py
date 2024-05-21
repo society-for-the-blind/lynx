@@ -64,7 +64,7 @@ class AssignmentFilter(django_filters.FilterSet):
             self.queryset = self.queryset.none()
         else:
             # Prefetch the related SipNote objects through the Contact model
-            sipnotes_prefetch = Prefetch('contact__sipnote_set', queryset=SipNote.objects.all(), to_attr='related_sipnotes')
-            sip1854notes_prefetch = Prefetch('contact__sip1854note_set', queryset=Sip1854Note.objects.all(), to_attr='related_sip1854notes')
-            intakenotes_prefetch = Prefetch('contact__intakenote_set', queryset=IntakeNote.objects.all(), to_attr='related_intakenotes')
+            sipnotes_prefetch = Prefetch('contact__sipnote_set', queryset=SipNote.objects.select_related('user').all(), to_attr='related_sipnotes')
+            sip1854notes_prefetch = Prefetch('contact__sip1854note_set', queryset=Sip1854Note.objects.select_related('user').all(), to_attr='related_sip1854notes')
+            intakenotes_prefetch = Prefetch('contact__intakenote_set', queryset=IntakeNote.objects.select_related('user').all(), to_attr='related_intakenotes')
             self.queryset = self.queryset.prefetch_related(sipnotes_prefetch, intakenotes_prefetch, sip1854notes_prefetch)
