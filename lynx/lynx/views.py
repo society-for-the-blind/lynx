@@ -2492,7 +2492,6 @@ def assignment_advanced_result_view(request):
             if notes:
                 # If there are any notes, add the date and note of the most recent one
                 latest_note = max(notes, key=lambda note: note.note_date)
-                # import pdb; pdb.set_trace()
                 assignment_condensed[assignment.id]['program_note_date'] = latest_note.note_date
                 assignment_condensed[assignment.id]['program_note'] = latest_note.note
 
@@ -2511,7 +2510,8 @@ def assignment_advanced_result_view(request):
             if intakenotes:
                 # If there are any intake notes, add the date and note of the most recent one
                 latest_intakenote = max(intakenotes, key=lambda note: note.modified)
-                assignment_condensed[assignment.id]['intakenote_date'] = latest_intakenote.modified
+                # import pdb; pdb.set_trace()
+                assignment_condensed[assignment.id]['intakenote_date'] = latest_intakenote.modified.date()
                 assignment_condensed[assignment.id]['intakenote'] = latest_intakenote.note
 
                 if latest_intakenote.user:

@@ -19,9 +19,9 @@
             <th scope="col">Client</th>
             <th scope="col">Program</th>
             <th scope="col">Priority</th>
-            <th scope="col">Assignment Notes</th>
-            <th scope="col">Program notes</th>
-            <th scope="col">Client notes</th>
+            <th scope="col">Assignment Note</th>
+            <th scope="col">Most Recent Program Note</th>
+            <th scope="col">Most Recent Client Note</th>
             <th scope="col">Assigned By</th>
             <th scope="col">Instructor</th>
         </tr>
@@ -32,8 +32,8 @@
                 <td>{{ assignment.program }}</td>
                 <td>{{ assignment.assignment_priority }}</td>
                 <td>{{ assignment.note }}</td>
-                <td>{{ assignment.program_note_date }}, {{assignment.program_note_instructor}}, <a href="/lynx/{% if assignment.program == 'SIP' %}sip{% else %}sip1854{% endif %}notes/{{ assignment.client_id }}">{{assignment.program_note}}</a></td>
-                <td>{{ assignment.intakenote_date }}, {{assignment.intakenote_instructor}}, <a class="client-link" href="/lynx/client/{{ assignment.client_id }}#notes">{{assignment.intakenote}}</a></td>
+                <td><a href="/lynx/{% if assignment.program == 'SIP' %}sip{% else %}sip1854{% endif %}notes/{{ assignment.client_id }}">{% if assignment.program_note == '' %}None{% else %}{{ assignment.program_note_date }}, {{assignment.program_note_instructor}}, {{assignment.program_note}}{% endif %}</a></td>
+                <td><a class="client-link" href="/lynx/client/{{ assignment.client_id }}#notes">{% if assignment.intakenote == '' %}None{% else %}{{ assignment.intakenote_date }}, {{assignment.intakenote_instructor}}, {{assignment.intakenote}}{% endif %}</a></td>
 <!--                <td>{{ assignment }}</td>-->
                 <td>{{ assignment.assigned_by_first_name }} {{ assignment.assigned_by_last_name }}</td>
                 <td>{{ assignment.instructor_first_name }} {{ assignment.instructor_last_name }}</td>
