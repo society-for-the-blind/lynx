@@ -1,4 +1,30 @@
-/* official colors #006ca3, #5ca038
+/* official colors #006ca3, #5ca038 */
+
+.long-cells {
+    white-space: nowrap;
+    text-overflow:ellipsis;
+    overflow: hidden;
+    max-width:1px;
+    ">";
+}
+
+.short-cells {
+    white-space: nowrap;
+}
+
+tr > td:hover {
+    overflow: visible;
+    white-space: unset;
+}
+
+td, th {
+    padding: 0.5rem;
+    border: 0.1rem solid lightgray;
+}
+
+table {
+    width: 100%;
+}
 
 /* The sidebar menu */
 .sidenav {

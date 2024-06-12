@@ -17,7 +17,7 @@
             {% endif %}
         </tr>
         {% for instructor in instructor_list %}
-            <tr>
+            <tr id="assignment-{{ instructor.id }}">
                 <td>{{ instructor.program }}</td>
                 <td>{{ instructor.assignment_date|date:'F j, Y' }}</td>
                 <td>{{ instructor.priority }}</td>

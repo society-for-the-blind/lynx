@@ -13,32 +13,32 @@
 <br>
 <hr>
 <br>
-    <table class="table">
+    <table>
         <tr>
             <th scope="col">Assignment Date</th>
             <th scope="col">Client</th>
             <th scope="col">Program</th>
             <th scope="col">Priority</th>
             <th scope="col">Assignment Note</th>
-            <th scope="col">Most Recent Program Note</th>
+            <th scope="col">Most SIP/18-54 Program Note</th>
             <th scope="col">Most Recent Client Note</th>
             <th scope="col">Assigned By</th>
             <th scope="col">Instructor</th>
         </tr>
         {% for key, assignment in assignment_list.items %}
             <tr id="{{ assignment.assignment_id }}">
-                <td><a href="#{{ assignment.assignment_id }}">{{ assignment.assignment_date }}</a></td>
-                <td><a class="client-link" href="/lynx/client/{{ assignment.client_id }}">{{ assignment.client_last_name }}, {{ assignment.client_first_name }}</a></td>
-                <td>{{ assignment.program }}</td>
-                <td>{{ assignment.assignment_priority }}</td>
-                <td>{{ assignment.note }}</td>
-                <td><a href="/lynx/{% if assignment.program == 'SIP' %}sip{% else %}sip1854{% endif %}notes/{{ assignment.client_id }}">{% if assignment.program_note == '' %}None{% else %}{{ assignment.program_note_date }}, {{assignment.program_note_instructor}}, {{assignment.program_note}}{% endif %}</a></td>
-                <td><a class="client-link" href="/lynx/client/{{ assignment.client_id }}#notes">{% if assignment.intakenote == '' %}None{% else %}{{ assignment.intakenote_date }}, {{assignment.intakenote_instructor}}, {{assignment.intakenote}}{% endif %}</a></td>
+                <td class="short-cells"><a href="/lynx/assignments/{{ assignment.client_id }}#assignment-{{ assignment.assignment_id }}">{{ assignment.assignment_date }}</a></td>
+                <td class="short-cells"><a class="client-link" href="/lynx/client/{{ assignment.client_id }}">{{ assignment.client_last_name }}, {{ assignment.client_first_name }}</a></td>
+                <td class="short-cells">{{ assignment.program }}</td>
+                <td class="short-cells">{{ assignment.assignment_priority }}</td>
+                <td class="long-cells">{{ assignment.note }}</td>
+                <td class="long-cells"><a href="/lynx/{% if assignment.program == 'SIP' %}sip{% else %}sip1854{% endif %}notes/{{ assignment.client_id }}">{% if assignment.program_note == '' %}None{% else %}{{ assignment.program_note_date }}, {{assignment.program_note_instructor}}, {{assignment.program_note}}{% endif %}</a></td>
+                <td class="long-cells"><a class="client-link" href="/lynx/client/{{ assignment.client_id }}#notes">{% if assignment.intakenote == '' %}None{% else %}{{ assignment.intakenote_date }}, {{assignment.intakenote_instructor}}, {{assignment.intakenote}}{% endif %}</a></td>
 <!--                <td>{{ assignment }}</td>-->
-                <td>{{ assignment.assigned_by_first_name }} {{ assignment.assigned_by_last_name }}</td>
-                <td>{{ assignment.instructor_first_name }} {{ assignment.instructor_last_name }}</td>
+                <td class="short-cells">{{ assignment.assigned_by_first_name }} {{ assignment.assigned_by_last_name }}</td>
+                <td class="short-cells">{{ assignment.instructor_first_name }} {{ assignment.instructor_last_name }}</td>
                 {% if user.is_superuser %}
-                    <td>
+                    <td class="short-cells">
                         <form>
                           {% csrf_token %}
                           <input type="hidden" name="next" value="{{ request.get_full_path }}">
@@ -104,5 +104,10 @@
         }
         */
     });
+    </script>
+    <script>
+    function expandCell(cell) {
+        cell.classList.toggle('expanded');
+    }
     </script>
 {% endblock %}
