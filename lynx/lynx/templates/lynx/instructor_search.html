@@ -16,15 +16,15 @@
     <table>
         <thead>
             <tr>
-                <th scope="col">Assignment Date <span>&uarr;</span></th>
-                <th scope="col">Client <span>&uarr;</span></th>
-                <th scope="col">Program <span>&uarr;</span></th>
-                <th scope="col">Priority <span>&uarr;</span></th>
+                <th scope="col">Assignment Date <span aria-hidden="true">&uarr;</span></th>
+                <th scope="col">Client <span aria-hidden="true">&uarr;</span></th>
+                <th scope="col">Program <span aria-hidden="true">&uarr;</span></th>
+                <th scope="col">Priority <span aria-hidden="true">&uarr;</span></th>
                 <th scope="col">Assignment Note</th>
-                <th scope="col">Most SIP/18-54 Program Note</th>
+                <th scope="col">Most Recent SIP/18-54 Program Note</th>
                 <th scope="col">Most Recent Client Note</th>
-                <th scope="col">Assigned By <span>&uarr;</span></th>
-                <th scope="col">Instructor <span>&uarr;</span></th>
+                <th scope="col">Assigned By <span aria-hidden="true">&uarr;</span></th>
+                <th scope="col">Instructor <span aria-hidden="true">&uarr;</span></th>
             </tr>
         </thead>
         <tbody>
@@ -114,6 +114,7 @@
 
     <!-- credit: https://stackoverflow.com/a/72477957/1498178 -->
     <!-- TODO: memoize subsequent sorts -->
+    <!-- TODO: fix date ordering to take years into consideration -->
     <script>
     window.onload = function() {
         document.querySelectorAll('th').forEach((element) => { // Table headers
