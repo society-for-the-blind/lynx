@@ -38,6 +38,9 @@ class ContactFilter(django_filters.FilterSet):
 
 from django import forms
 
+class CustomDateTimeFilter(django_filters.Filter):
+    field_class = forms.DateTimeField
+
 class FullNameUserChoiceField(forms.ModelChoiceField):
     def label_from_instance(self, obj):
         return f"{obj.last_name}, {obj.first_name}"
@@ -49,14 +52,12 @@ class AssignmentFilter(django_filters.FilterSet):
     program = django_filters.ChoiceFilter(choices=PROGRAM)
     instructors = User.objects.filter(groups__name='SIP').order_by(Lower('last_name'))
     instructor = FullNameUserChoiceFilter(queryset=instructors)
+    assignment_date_gt = CustomDateTimeFilter(field_name='assignment_date', lookup_expr='gt', widget=forms.SelectDateWidget(years=list(range(1900, 2100))), label='Assignments after date')
+    assignment_date_lt = CustomDateTimeFilter(field_name='assignment_date', lookup_expr='lt', widget=forms.SelectDateWidget(years=list(range(1900, 2100))), label='Assignments before date')
 
     class Meta:
         model = Assignment
-        fields = {
-            'assignment_date': ['gt', 'lt'],
-            'program': ['exact'],
-            'instructor': ['exact']
-        }
+        fields = [ 'assignment_date_gt', 'assignment_date_lt', 'program', 'instructor' ]
 
     def __init__(self, *args, **kwargs):
         super(AssignmentFilter, self).__init__(*args, **kwargs)
