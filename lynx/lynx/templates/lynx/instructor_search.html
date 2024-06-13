@@ -21,10 +21,15 @@
                 <th scope="col">Program <span aria-hidden="true">&uarr;</span></th>
                 <th scope="col">Priority <span aria-hidden="true">&uarr;</span></th>
                 <th scope="col">Assignment Note</th>
-                <th scope="col">Most Recent SIP/18-54 Program Note</th>
+                <th scope="col">Most Recent SIP/18-54 Note</th>
                 <th scope="col">Most Recent Client Note</th>
                 <th scope="col">Assigned By <span aria-hidden="true">&uarr;</span></th>
-                <th scope="col">Instructor <span aria-hidden="true">&uarr;</span></th>
+                {% if not request.GET.instructor  %}
+                    <th scope="col">Instructor <span aria-hidden="true">&uarr;</span></th>
+                {% endif %}
+                {% if user.is_superuser %}
+                    <th scope="col"></th>
+                {% endif %}
             </tr>
         </thead>
         <tbody>
@@ -39,7 +44,9 @@
                 <td class="long-cells"><a class="client-link" href="/lynx/client/{{ assignment.client_id }}#notes">{% if assignment.intakenote == '' %}None{% else %}{{ assignment.intakenote_date }}, {{assignment.intakenote_instructor}}, {{assignment.intakenote}}{% endif %}</a></td>
 <!--                <td>{{ assignment }}</td>-->
                 <td class="short-cells">{{ assignment.assigned_by_first_name }} {{ assignment.assigned_by_last_name }}</td>
-                <td class="short-cells">{{ assignment.instructor_first_name }} {{ assignment.instructor_last_name }}</td>
+                {% if not request.GET.instructor  %}
+                    <td class="short-cells">{{ assignment.instructor_first_name }} {{ assignment.instructor_last_name }}</td>
+                {% endif %}
                 {% if user.is_superuser %}
                     <td class="short-cells">
                         <form>
