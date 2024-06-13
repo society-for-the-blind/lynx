@@ -42,6 +42,10 @@ class CustomDateTimeFilter(django_filters.Filter):
     field_class = forms.DateTimeField
 
 class FullNameUserChoiceField(forms.ModelChoiceField):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.empty_label = "All instructors"
+
     def label_from_instance(self, obj):
         return f"{obj.last_name}, {obj.first_name}"
 
@@ -49,7 +53,7 @@ class FullNameUserChoiceFilter(django_filters.ModelChoiceFilter):
     field_class = FullNameUserChoiceField
 
 class AssignmentFilter(django_filters.FilterSet):
-    program = django_filters.ChoiceFilter(choices=PROGRAM)
+    program = django_filters.ChoiceFilter(choices=PROGRAM, empty_label='All programs')
     instructors = User.objects.filter(groups__name='SIP').order_by(Lower('last_name'))
     instructor = FullNameUserChoiceFilter(queryset=instructors)
     assignment_date_gt = CustomDateTimeFilter(field_name='assignment_date', lookup_expr='gt', widget=forms.SelectDateWidget(years=list(range(1900, 2100))), label='Assignments after date')
