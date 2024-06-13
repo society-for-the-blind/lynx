@@ -19,6 +19,7 @@ from django import forms
 
 import os
 import csv
+import time
 from datetime import datetime
 import logging
 
@@ -2476,6 +2477,7 @@ def assignment_advanced_result_view(request):
             assignment_condensed[assignment.id]['program'] = assignment.program if assignment.program is not None else ''
             assignment_condensed[assignment.id]['assignment_id'] = assignment.id if assignment.id is not None else ''
             assignment_condensed[assignment.id]['assignment_date'] = assignment.assignment_date if assignment.assignment_date is not None else ''
+            assignment_condensed[assignment.id]['timestamp'] = timestamp = int(time.mktime(assignment.assignment_date.timetuple())) if assignment.assignment_date is not None else ''
             assignment_condensed[assignment.id]['assignment_priority'] = assignment.priority if assignment.priority is not None else ''
             assignment_condensed[assignment.id]['client_id'] = assignment.contact_id if assignment.contact_id is not None else ''
             assignment_condensed[assignment.id]['client_first_name'] = assignment.contact.first_name if assignment.contact.first_name is not None else ''
@@ -2532,6 +2534,7 @@ def assignment_advanced_result_view(request):
         f = AssignmentFilter()
         assignment_condensed = {}
 
+    # import pdb; pdb.set_trace()
     return render(request, 'lynx/instructor_search.html', {'filter': f, 'assignment_list': assignment_condensed})
 
 
