@@ -4,6 +4,7 @@ from django.utils import timezone
 from django.db.models import Q, F
 from django.db.models import Value as V
 from django.db.models import DateField
+from django.forms.models import ModelChoiceField
 from django.db.models.functions import Concat, Replace, Lower, Substr, StrIndex, Cast
 
 from .models import Contact, Address, Intake, Email, Phone, SipPlan, Sip1854Plan, IntakeNote, EmergencyContact, Authorization, \
@@ -187,6 +188,26 @@ class LessonNoteForm(forms.ModelForm):
         self.fields['date'].label = "Lesson Note Date (YYYY-MM-DD)"
 
 
+class CustomModelChoiceField(ModelChoiceField):
+    def __init__(self, *args, **kwargs):
+        # Define additional choices
+        self.additional_choices = [
+              ('Retreat',               'Add new Retreat plan')
+            , ('In-home',               'Add new In-home plan')
+            , ('Support Group',         'Add new Support Group plan')
+            , ('Training Seminar',      'Add new Training Seminar plan')
+            , ('Workshop',              'Add new Workshop plan')
+            , ('Community Integration', 'Add new Community Integration plan')
+            ]
+        super(CustomModelChoiceField, self).__init__(*args, **kwargs)
+        # Prepend additional choices to the field choices
+        self.choices = self.additional_choices + list(self.choices)
+
+    def label_from_instance(self, obj):
+        # Custom label formatting can be done here
+        return super(CustomModelChoiceField, self).label_from_instance(obj)
+
+
 class SipNoteForm(forms.ModelForm):
     client_list = Contact.objects.filter(sip_client=1).order_by('last_name')
     clients = forms.ModelMultipleChoiceField(queryset=client_list, required=False)
@@ -204,7 +225,8 @@ class SipNoteForm(forms.ModelForm):
         super(SipNoteForm, self).__init__(*args, **kwargs)
         # self.fields['sip_plan'].queryset = SipPlan.objects.filter(contact_id=contact_id).order_by('-created')
         # self.fields['sip_plan'].queryset = SipPlan.objects.filter(contact_id=contact_id).order_by('-plan_date')
-        self.fields['sip_plan'].queryset = SipPlan.objects.filter(contact_id=contact_id).annotate( date_substring=Cast(Substr('plan_name', 1, StrIndex('plan_name', V(' '))), DateField()) ).order_by('-date_substring')
+        self.fields['sip_plan'] = CustomModelChoiceField(queryset=SipPlan.objects.filter(contact_id=contact_id).annotate(date_substring=Cast(Substr('plan_name', 1, StrIndex('plan_name', V(' '))), DateField())).order_by('-date_substring'), required=True)
+        # self.fields['sip_plan'].queryset = SipPlan.objects.filter(contact_id=contact_id).annotate( date_substring=Cast(Substr('plan_name', 1, StrIndex('plan_name', V(' '))), DateField()) ).order_by('-date_substring')
         self.fields['sip_plan'].required = True
         self.fields['at_devices'].label = "Assistive Technology Devices and Services"
         self.fields['independent_living'].label = "Independent Living and Adjustment Services"

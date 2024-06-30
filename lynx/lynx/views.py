@@ -180,7 +180,29 @@ def add_sip_note(request, contact_id):
     form = SipNoteForm(**contact)
     # form = SipNoteForm(request, contact_id=contact_id)
     if request.method == 'POST':
-        form = SipNoteForm(request.POST, contact_id=contact_id)
+        if request.POST['sip_plan'].isnumeric():
+            post = request.POST
+        else:
+            post_with_new_plan = request.POST.copy()
+            post_with_new_plan['plan_type'] = post_with_new_plan['sip_plan']
+            post_with_new_plan['plan_date_month'] = post_with_new_plan['note_date_month']
+            post_with_new_plan['plan_date_day'] = post_with_new_plan['note_date_day']
+            post_with_new_plan['plan_date_year'] = post_with_new_plan['note_date_year']
+            if 'at_devices' in post_with_new_plan:
+                post_with_new_plan['at_services'] = post_with_new_plan['at_devices']
+            if 'support' in post_with_new_plan:
+                post_with_new_plan['support_services'] = post_with_new_plan['support']
+            if 'services' in post_with_new_plan:
+                post_with_new_plan['other_services']   = post_with_new_plan['services']
+            plan_form = SipPlanForm(post_with_new_plan)
+            # Not sure what happens if this fails, but then this should never fail.
+            if plan_form.is_valid():
+                # import pdb; pdb.set_trace()
+                new_plan_id = save_plan(plan_form, request.user, post_with_new_plan, contact_id)
+                post_with_new_plan['sip_plan'] = str(new_plan_id)
+                post = post_with_new_plan
+
+        form = SipNoteForm(post, contact_id=contact_id)
 
         if form.is_valid():
             form = form.save(commit=False)
@@ -231,6 +253,15 @@ def add_sip1854_note(request, contact_id):
             return HttpResponseRedirect(reverse('lynx:client', args=(contact_id,)))
     return render(request, 'lynx/add_sip1854_note.html', {'form': form, 'contact_id': contact_id})
 
+def save_plan(form, request_user, request_post, contact_id):
+    form = form.save(commit=False)
+    form.instructor = request_user.first_name + request_user.last_name
+    form.plan_name = request_post.get('plan_date_month') + '/' + request_post.get('plan_date_day') + '/' + request_post.get('plan_date_year') + ' - ' + request_post.get('plan_type') + ' - ' + form.instructor
+    # form.plan_date = request.POST.get('start_date')
+    form.contact_id = contact_id
+    form.user_id = request_user.id
+    form.save()
+    return form.pk
 
 @login_required
 def add_sip_plan(request, contact_id):
@@ -238,14 +269,7 @@ def add_sip_plan(request, contact_id):
     if request.method == 'POST':
         form = SipPlanForm(request.POST)
         if form.is_valid():
-            form = form.save(commit=False)
-            form.instructor = request.user.first_name + request.user.last_name
-            form.plan_name = request.POST.get('plan_date_month') + '/' + request.POST.get('plan_date_day') + '/' + request.POST.get('plan_date_year') + ' - ' + request.POST.get('plan_type') + ' - ' + form.instructor
-            # form.plan_date = request.POST.get('start_date')
-            form.contact_id = contact_id
-            form.user_id = request.user.id
-
-            form.save()
+            save_plan(form, request.user, request.POST, contact_id)
             return HttpResponseRedirect(reverse('lynx:client', args=(contact_id,)))
     return render(request, 'lynx/add_sip_plan.html', {'form': form})
 
