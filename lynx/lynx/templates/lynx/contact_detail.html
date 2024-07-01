@@ -232,10 +232,12 @@
 
 <h2 id="notes">Client Notes</h2>
 {% for note in note_list %}
-    <p class="tab">{{ note.created|date:'F j, Y' }}: {{ note.note|linebreaks }}<br>
-        -{{ note.user.first_name }} {{ note.user.last_name }}
-        {% if not request.GET.print %}<a href='/lynx/intake-note-edit/{{ note.id }}'>Edit</a> | <a href='/lynx/intake-note-confirm/{{ note.id }}/{{ object.id }}'>Delete</a>{% endif %}
-    <hr>
+<div id="client-note-{{ note.id }}">
+        <p class="tab">{{ note.created|date:'F j, Y' }}: {{ note.note|linebreaks }}<br>
+            -{{ note.user.first_name }} {{ note.user.last_name }}
+            {% if not request.GET.print %}<a href='/lynx/intake-note-edit/{{ note.id }}'>Edit</a> | <a href='/lynx/intake-note-confirm/{{ note.id }}/{{ object.id }}'>Delete</a>{% endif %}
+            <hr>
+    </div>
 {% endfor %}
 {% if object.contact_notes %}
     <p class="tab">{{ object.note_date|date:'F j, Y' }}: {{ object.contact_notes|linebreaks }}<br>

@@ -34,7 +34,7 @@
         </thead>
         <tbody>
         {% for key, assignment in assignment_list.items %}
-            <tr id="{{ assignment.assignment_id }}">
+            <tr id="assignment-{{ assignment.assignment_id }}">
                 <td class="short-cells" data-timestamp="{{ assignment.timestamp}}"><a href="/lynx/assignments/{{ assignment.client_id }}#assignment-{{ assignment.assignment_id }}">{{ assignment.assignment_date }}</a></td>
                 <td class="short-cells"><a class="client-link" href="/lynx/client/{{ assignment.client_id }}">{{ assignment.client_last_name }}, {{ assignment.client_first_name }}</a></td>
                 <td class="short-cells">{{ assignment.program }}</td>
