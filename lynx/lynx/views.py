@@ -14,6 +14,7 @@ from django.core.paginator import Paginator
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.mail import send_mail
+from django.forms.models import model_to_dict
 
 from django import forms
 
@@ -1361,7 +1362,7 @@ class SipNoteUpdateView(LoginRequiredMixin, UpdateView):
         post.quarter = quarter
         post.fiscal_year = fiscal_year
         post.save()
-        action = "/lynx/client/" + str(post.contact_id)
+        action = "/lynx/sipnotes/" + str(post.contact_id)
         return HttpResponseRedirect(action)
 
     def get_form(self, form_class=None):
@@ -1402,7 +1403,7 @@ class Sip1854NoteUpdateView(LoginRequiredMixin, UpdateView):
         post.quarter = quarter
         post.fiscal_year = fiscal_year
         post.save()
-        action = "/lynx/client/" + str(post.contact_id)
+        action = "/lynx/sip1854notes/" + str(post.contact_id)
         return HttpResponseRedirect(action)
 
     def get_form(self, form_class=None):
@@ -1574,7 +1575,7 @@ class SipPlanDeleteView(LoginRequiredMixin, DeleteView):
 
     def get_success_url(self):
         client_id = self.kwargs['client_id']
-        return reverse_lazy('lynx:client', kwargs={'pk': client_id})
+        return reverse_lazy('lynx:plan_list', kwargs={'client_id': client_id})
 
 
 class Sip1854PlanDeleteView(LoginRequiredMixin, DeleteView):
@@ -1582,7 +1583,7 @@ class Sip1854PlanDeleteView(LoginRequiredMixin, DeleteView):
 
     def get_success_url(self):
         client_id = self.kwargs['client_id']
-        return reverse_lazy('lynx:client', kwargs={'pk': client_id})
+        return reverse_lazy('lynx:plan1854_list', kwargs={'client_id': client_id})
 
 
 class SipNoteDeleteView(LoginRequiredMixin, DeleteView):
@@ -1590,7 +1591,7 @@ class SipNoteDeleteView(LoginRequiredMixin, DeleteView):
 
     def get_success_url(self):
         client_id = self.kwargs['client_id']
-        return reverse_lazy('lynx:client', kwargs={'pk': client_id})
+        return reverse_lazy('lynx:note_list', kwargs={'client_id': client_id})
 
 
 class Sip1854NoteDeleteView(LoginRequiredMixin, DeleteView):
@@ -1598,7 +1599,8 @@ class Sip1854NoteDeleteView(LoginRequiredMixin, DeleteView):
 
     def get_success_url(self):
         client_id = self.kwargs['client_id']
-        return reverse_lazy('lynx:client', kwargs={'pk': client_id})
+        # import pdb; pdb.set_trace()
+        return reverse_lazy('lynx:note1854_list', kwargs={'client_id': client_id})
 
 
 class IntakeNoteDeleteView(LoginRequiredMixin, DeleteView):
