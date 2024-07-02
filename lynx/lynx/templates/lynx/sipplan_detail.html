@@ -6,6 +6,9 @@
     <h1>SIP Plan: {{ object.plan_name}}</h1>
     <form>
       <button class="btn btn-success" formaction="/lynx/client/{{ object.contact_id }}">Return to {{ object.contact.first_name }} {{ object.contact.last_name }}'s Information </button>
+      <a class="btn btn-success" href="/lynx/add-sip-note/{{ object.contact_id }}/?sip_plan_id={{ object.id }}&next={{ request.path }}">
+            Add new note to SIP plan
+        </a>
     </form>
     <h2>SIP Plan Information</h2>
     <div class="container-fluid">

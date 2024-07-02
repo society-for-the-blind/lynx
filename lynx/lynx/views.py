@@ -177,7 +177,13 @@ def add_intake(request, contact_id):
 @login_required
 def add_sip_note(request, contact_id):
     contact = {'contact_id': contact_id}
-    form = SipNoteForm(**contact)
+    sip_plan_id = request.GET.get('sip_plan_id')
+    # import pdb; pdb.set_trace()
+    if sip_plan_id:
+        form = SipNoteForm(initial={'sip_plan': sip_plan_id}, **contact, sip_plan_id=sip_plan_id)
+    else:
+        form = SipNoteForm(**contact)
+
     # form = SipNoteForm(request, contact_id=contact_id)
     if request.method == 'POST':
         if request.POST['sip_plan'].isnumeric():
@@ -221,15 +227,28 @@ def add_sip_note(request, contact_id):
             form.instructor = request.user.first_name + request.user.last_name
             form.user_id = request.user.id
             form.save()
+
+        next_url = request.GET.get('next', '')  # Fallback to an empty string if 'next' is not present
+        if next_url:
+            # Optional: Validate next_url before redirecting
+            return HttpResponseRedirect(next_url)
+        else:
+            # If 'next' parameter isn't provided, redirect to a default location
             return HttpResponseRedirect(reverse('lynx:client', args=(contact_id,)))
+
     return render(request, 'lynx/add_sip_note.html', {'form': form, 'contact_id': contact_id})
 
 
 @login_required
 def add_sip1854_note(request, contact_id):
     contact = {'contact_id': contact_id}
-    form = Sip1854NoteForm(**contact)
-    # form = SipNoteForm(request, contact_id=contact_id)
+    sip1854_plan_id = request.GET.get('sip1854_plan_id')
+    # import pdb; pdb.set_trace()
+    if sip1854_plan_id:
+        form = Sip1854NoteForm(initial={'sip_plan': sip1854_plan_id}, **contact, sip1854_plan_id=sip1854_plan_id)
+    else:
+        form = Sip1854NoteForm(**contact)
+    # form = Sip1854NoteForm(request, contact_id=contact_id)
     if request.method == 'POST':
         form = Sip1854NoteForm(request.POST, contact_id=contact_id)
 
@@ -250,7 +269,15 @@ def add_sip1854_note(request, contact_id):
             form.instructor = request.user.first_name + request.user.last_name
             form.user_id = request.user.id
             form.save()
+
+        next_url = request.GET.get('next', '')  # Fallback to an empty string if 'next' is not present
+        if next_url:
+            # Optional: Validate next_url before redirecting
+            return HttpResponseRedirect(next_url)
+        else:
+            # If 'next' parameter isn't provided, redirect to a default location
             return HttpResponseRedirect(reverse('lynx:client', args=(contact_id,)))
+
     return render(request, 'lynx/add_sip1854_note.html', {'form': form, 'contact_id': contact_id})
 
 def save_plan(form, request_user, request_post, contact_id):
@@ -1114,6 +1141,7 @@ class SipPlanDetailView(LoginRequiredMixin, DetailView):
         # Call the base implementation first to get a context
         context = super(SipPlanDetailView, self).get_context_data(**kwargs)
         context['sip_note_list'] = SipNote.objects.filter(sip_plan_id=self.kwargs['pk']).order_by('-note_date')
+        # context['model_name'] = self.model.__name__
 
         return context
 
@@ -1125,6 +1153,7 @@ class Sip1854PlanDetailView(LoginRequiredMixin, DetailView):
         # Call the base implementation first to get a context
         context = super(Sip1854PlanDetailView, self).get_context_data(**kwargs)
         context['sip1854_note_list'] = Sip1854Note.objects.filter(sip_plan_id=self.kwargs['pk']).order_by('-note_date')
+        context['model_name'] = self.model.__name__
 
         return context
 

@@ -5,8 +5,11 @@
 
 {% block content %}
     <h2>18-54 Notes for {{ client.first_name }} {{ client.last_name }}</h2>
-    {% if not request.GET.print %}<input type="button" class="btn btn-success" aria-label="Add New 18-54 Note" onclick="location.href='/lynx/add-sip1854-note/{{ client.id }}/';" value="Add New 18-54 Note" />  <input type="button" class="btn btn-success" aria-label="Back to Client" onclick="location.href='/lynx/client/{{ client.id }}';" value="Return to {{ client.first_name }} {{ client.last_name }}'s Information" />
-{% endif %}
+    {% if not request.GET.print %}
+        <!-- <input type="button" class="btn btn-success" aria-label="Add New 18-54 Note" onclick="location.href='/lynx/add-sip1854-note/{{ client.id }}/';" value="Add New 18-54 Note" /> -->
+        <a class="btn btn-success" aria-label="Add New 18-54 Note" href='/lynx/add-sip1854-note/{{ client.id }}/?next={{ request.path }}'" />Add New 18-54 Note</a>
+        <input type="button" class="btn btn-success" aria-label="Back to Client" onclick="location.href='/lynx/client/{{ client.id }}';" value="Return to {{ client.first_name }} {{ client.last_name }}'s Information" />
+    {% endif %}
 
     {% for sip1854 in notes %}
         <div class="container-fluid">

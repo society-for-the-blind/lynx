@@ -222,6 +222,7 @@ class SipNoteForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         contact_id = kwargs.pop('contact_id')
+        sip_plan_id = kwargs.pop('sip_plan_id', None)
         super(SipNoteForm, self).__init__(*args, **kwargs)
         # self.fields['sip_plan'].queryset = SipPlan.objects.filter(contact_id=contact_id).order_by('-created')
         # self.fields['sip_plan'].queryset = SipPlan.objects.filter(contact_id=contact_id).order_by('-plan_date')
@@ -245,6 +246,8 @@ class SipNoteForm(forms.ModelForm):
         self.fields['class_hours'].label = "Class Length"
         self.fields['instructor'].label = "Instructor"
         self.fields['sip_plan'].label = "SIP Plan"
+        if sip_plan_id:
+            self.fields['sip_plan'].initial = sip_plan_id
 
 
 class Sip1854NoteForm(forms.ModelForm):
@@ -261,10 +264,13 @@ class Sip1854NoteForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         contact_id = kwargs.pop('contact_id')
+        sip1854_plan_id = kwargs.pop('sip1854_plan_id', None)
         super(Sip1854NoteForm, self).__init__(*args, **kwargs)
         # self.fields['sip_plan'].queryset = SipPlan.objects.filter(contact_id=contact_id).order_by('-created')
         # self.fields['sip_plan'].queryset = Sip1854Plan.objects.filter(contact_id=contact_id).order_by('-plan_date')
-        self.fields['sip_plan'].queryset = Sip1854Plan.objects.filter(contact_id=contact_id).annotate( date_substring=Cast(Substr('plan_name', 1, StrIndex('plan_name', V(' '))), DateField()) ).order_by('-date_substring')
+        self.fields['sip_plan'] = CustomModelChoiceField(queryset=Sip1854Plan.objects.filter(contact_id=contact_id).annotate(date_substring=Cast(Substr('plan_name', 1, StrIndex('plan_name', V(' '))), DateField())).order_by('-date_substring'), required=True)
+        # import pdb; pdb.set_trace()
+        # self.fields['sip_plan'].queryset = Sip1854Plan.objects.filter(contact_id=contact_id).annotate( date_substring=Cast(Substr('plan_name', 1, StrIndex('plan_name', V(' '))), DateField()) ).order_by('-date_substring')
         self.fields['sip_plan'].required = True
         self.fields['at_devices'].label = "Assistive Technology Devices and Services"
         self.fields['independent_living'].label = "Independent Living and Adjustment Services"
@@ -283,6 +289,8 @@ class Sip1854NoteForm(forms.ModelForm):
         self.fields['class_hours'].label = "Class Length"
         self.fields['instructor'].label = "Instructor"
         self.fields['sip_plan'].label = "18-54 Plan"
+        if sip1854_plan_id:
+            self.fields['sip_plan'].initial = sip1854_plan_id
 
 
 class SipNoteBulkForm(forms.ModelForm):

@@ -6,6 +6,9 @@
     <h1>18-54 Plan: {{ object.plan_name}}</h1>
     <form>
       <button class="btn btn-success" formaction="/lynx/client/{{ object.contact_id }}">Return to {{ object.contact.first_name }} {{ object.contact.last_name }}'s Information </button>
+      <a class="btn btn-success" href="/lynx/add-sip1854-note/{{ object.contact_id }}/?sip1854_plan_id={{ object.id }}&next={{ request.path }}">
+            Add new note to 18-54 plan
+        </a>
     </form>
     <h2>18-54 Plan Information</h2>
     <div class="container-fluid">
