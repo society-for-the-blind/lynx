@@ -194,6 +194,7 @@ def add_sip_note(request, contact_id):
             post_with_new_plan['plan_date_month'] = post_with_new_plan['note_date_month']
             post_with_new_plan['plan_date_day'] = post_with_new_plan['note_date_day']
             post_with_new_plan['plan_date_year'] = post_with_new_plan['note_date_year']
+            post_with_new_plan['note'] = ''
             if 'at_devices' in post_with_new_plan:
                 post_with_new_plan['at_services'] = post_with_new_plan['at_devices']
             if 'support' in post_with_new_plan:
@@ -206,6 +207,7 @@ def add_sip_note(request, contact_id):
                 # import pdb; pdb.set_trace()
                 new_plan_id = save_plan(plan_form, request.user, post_with_new_plan, contact_id)
                 post_with_new_plan['sip_plan'] = str(new_plan_id)
+                post_with_new_plan['note'] = request.POST['note']
                 post = post_with_new_plan
 
         form = SipNoteForm(post, contact_id=contact_id)
@@ -260,6 +262,7 @@ def add_sip1854_note(request, contact_id):
             post_with_new_plan['plan_date_month'] = post_with_new_plan['note_date_month']
             post_with_new_plan['plan_date_day'] = post_with_new_plan['note_date_day']
             post_with_new_plan['plan_date_year'] = post_with_new_plan['note_date_year']
+            post_with_new_plan['note'] = ''
             if 'at_devices' in post_with_new_plan:
                 post_with_new_plan['at_services'] = post_with_new_plan['at_devices']
             if 'support' in post_with_new_plan:
@@ -272,6 +275,7 @@ def add_sip1854_note(request, contact_id):
                 # import pdb; pdb.set_trace()
                 new_plan_id = save_plan(plan_form, request.user, post_with_new_plan, contact_id)
                 post_with_new_plan['sip_plan'] = str(new_plan_id)
+                post_with_new_plan['note'] = request.POST['note']
                 post = post_with_new_plan
 
         form = Sip1854NoteForm(post, contact_id=contact_id)
