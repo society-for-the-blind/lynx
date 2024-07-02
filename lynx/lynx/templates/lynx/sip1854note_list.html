@@ -1,7 +1,7 @@
 {% extends 'lynx/base.html' %}
 {% load time_convert %}
 
-{% block title %}18-54 Notes{% endblock %}
+{% block title %}18-54 Notes for {{ client.first_name }} {{ client.last_name }}{% endblock %}
 
 {% block content %}
     <h2>18-54 Notes for {{ client.first_name }} {{ client.last_name }}</h2>

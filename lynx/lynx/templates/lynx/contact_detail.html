@@ -1,6 +1,8 @@
 {% extends 'lynx/base.html' %}
 {% load time_convert %}
 
+{% block title %}Client info - {{ object.first_name }} {{ object.last_name }}{% endblock %}
+
 {% block content %}
 
 <h1>{{ object.first_name }} {{ object.last_name }}</h1>

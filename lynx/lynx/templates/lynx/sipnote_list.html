@@ -1,7 +1,7 @@
 {% extends 'lynx/base.html' %}
 {% load time_convert %}
 
-{% block title %}SIP Notes{% endblock %}
+{% block title %}SIP Notes for {{ client.first_name }} {{ client.last_name }}{% endblock %}
 
 {% block content %}
     <h2>SIP Notes for {{ client.first_name }} {{ client.last_name }}</h2>

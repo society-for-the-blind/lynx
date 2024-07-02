@@ -190,6 +190,7 @@ def add_intake(request, contact_id):
 @login_required
 def add_sip_note(request, contact_id):
     contact = {'contact_id': contact_id}
+    client = Contact.objects.get(id=contact_id)
     sip_plan_id = request.GET.get('sip_plan_id')
     # import pdb; pdb.set_trace()
     if sip_plan_id:
@@ -252,13 +253,14 @@ def add_sip_note(request, contact_id):
             # If 'next' parameter isn't provided, redirect to a default location
             return HttpResponseRedirect(reverse('lynx:client', args=(contact_id,)))
 
-    return render(request, 'lynx/add_sip_note.html', {'form': form, 'contact_id': contact_id})
+    return render(request, 'lynx/add_sip_note.html', {'form': form, 'contact_id': contact_id, 'client': client})
 
 
 # TODO `add_sip1854_note` and `add_sip_note` only differ in few places
 @login_required
 def add_sip1854_note(request, contact_id):
     contact = {'contact_id': contact_id}
+    client = Contact.objects.get(id=contact_id)
     sip1854_plan_id = request.GET.get('sip_plan_id')
     # import pdb; pdb.set_trace()
     if sip1854_plan_id:
@@ -322,7 +324,7 @@ def add_sip1854_note(request, contact_id):
             # If 'next' parameter isn't provided, redirect to a default location
             return HttpResponseRedirect(reverse('lynx:client', args=(contact_id,)))
 
-    return render(request, 'lynx/add_sip1854_note.html', {'form': form, 'contact_id': contact_id})
+    return render(request, 'lynx/add_sip1854_note.html', {'form': form, 'contact_id': contact_id, 'client': client})
 
 def save_plan(form, request_user, request_post, contact_id):
     form = form.save(commit=False)
