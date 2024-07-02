@@ -2575,16 +2575,27 @@ def assignment_advanced_result_view(request):
 
             # ==========================================================
 
-            intakenotes = assignment.contact.related_intakenotes
-            if intakenotes:
-                # If there are any intake notes, add the date and note of the most recent one
-                latest_intakenote = max(intakenotes, key=lambda note: note.modified)
-                # import pdb; pdb.set_trace()
-                assignment_condensed[assignment.id]['intakenote_date'] = latest_intakenote.modified.date()
-                assignment_condensed[assignment.id]['intakenote'] = latest_intakenote.note
+            intakenotes = getattr(assignment.contact, 'related_intakenotes', [])
+            # Again, same as above, but got burned by this form a couple times
+            # intakenotes = assignment.contact.related_intakenotes
 
-                if latest_intakenote.user:
-                    assignment_condensed[assignment.id]['intakenote_instructor'] = f'{latest_intakenote.user.first_name} {latest_intakenote.user.last_name}'
+            # Filter related_sipplans for "In-Home" where instructor_id matches SipPlan's user_id
+            client_notes_for_assignee = [
+                note for note in intakenotes
+                if      note.user_id == assignment.instructor_id
+                    and note.created.date() >= assignment.assignment_date
+            ]
+
+            if client_notes_for_assignee:
+                # If there are any intake notes, add the date and note of the most recent one
+                most_recent_client_note_by_assignee = max(client_notes_for_assignee, key=lambda note: note.modified)
+                cn = most_recent_client_note_by_assignee
+                # import pdb; pdb.set_trace()
+                assignment_condensed[assignment.id]['intakenote_date'] = cn.modified.date()
+                assignment_condensed[assignment.id]['intakenote'] = cn.note
+
+                if cn.user:
+                    assignment_condensed[assignment.id]['intakenote_instructor'] = f'{cn.user.first_name} {cn.user.last_name}'
                 else:
                     assignment_condensed[assignment.id]['intakenote_instructor'] = 'n/a'
 
