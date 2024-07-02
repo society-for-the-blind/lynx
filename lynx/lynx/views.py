@@ -86,7 +86,8 @@ def sip1854plan_list_view(request, client_id):
 
 @login_required
 def sipnote_list_view(request, client_id):
-    notes = SipNote.objects.filter(contact_id=client_id).order_by('-note_date')
+    # notes = SipNote.objects.filter(contact_id=client_id).order_by('-note_date')
+    notes = SipNote.objects.filter(contact_id=client_id).select_related('sip_plan').order_by('-note_date')
     client = Contact.objects.get(id=client_id)
     return render(request, 'lynx/sipnote_list.html', {'notes': notes, 'client': client})
 
@@ -94,8 +95,19 @@ def sipnote_list_view(request, client_id):
 @login_required
 def sip1854note_list_view(request, client_id):
     notes = Sip1854Note.objects.filter(contact_id=client_id).order_by('-note_date')
+    plans = Sip1854Plan.objects.filter(contact_id=client_id)
+
+    plans_dict = {plan.id: plan.plan_name for plan in plans}
+    notes_with_plan_name = []
+    for note in notes:
+        note_dict = model_to_dict(note)  # Convert the note instance to a dictionary
+        plan_name = plans_dict.get(note.sip_plan_id, 'Unknown Plan')  # Get the plan_name using sip_plan_id
+        note_dict['plan_name'] = plan_name  # Add plan_name to the note dictionary
+        notes_with_plan_name.append(note_dict)
+    # import pdb; pdb.set_trace()
+
     client = Contact.objects.get(id=client_id)
-    return render(request, 'lynx/sip1854note_list.html', {'notes': notes, 'client': client})
+    return render(request, 'lynx/sip1854note_list.html', {'notes_with_plan_name': notes_with_plan_name, 'plans': plans, 'notes': notes, 'client': client})
 
 
 @login_required

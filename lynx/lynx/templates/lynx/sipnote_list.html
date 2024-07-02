@@ -11,29 +11,32 @@
         <input type="button" class="btn btn-success" aria-label="Back to Client" onclick="location.href='/lynx/client/{{ client.id }}';" value="Return to {{ client.first_name }} {{ client.last_name }}'s Information" />
     {% endif %}
 
-    {% for sip in notes %}
+    {% for note in notes %}
         <div class="container-fluid">
             <div class="row">
-                <div class="col-12"><h3>{{ sip.note_date|date:'F j, Y' }}</h3> {{ sip.note|linebreaks }}</div>
+                <div class="col-12"><h3>{{ note.note_date|date:'F j, Y' }}</h3> {{ note.note|linebreaks }}</div>
             </div>
             <div class="row">
-                <div class="col-12"><a href='/lynx/sip-note-edit/{{ sip.id }}?contact_id={{ client.id }}&plan_id={{ sip.sip_plan_id }}'>Edit {{ sip.note_date|date:'F j, Y' }}</a></div>
+                <div class="col-12"><a href='/lynx/sip-note-edit/{{ note.id }}?contact_id={{ client.id }}&plan_id={{ note.sip_plan_id }}'>Edit {{ note.note_date|date:'F j, Y' }}</a></div>
             </div>
             <div class="row">
-                <div class="col-12"><strong>Instructor: </strong>{{ sip.instructor }}</div>
+                <div class="col-12"><strong>Instructor: </strong>{{ note.instructor }}</div>
             </div>
             <div class="row">
-                <div class="col-12"><strong>Hours: </strong>{{ sip.class_hours|convert_fractions }}</div>
+                <div class="col-12"><strong>Hours: </strong>{{ note.class_hours|convert_fractions }}</div>
             </div>
             <div class="row">
-                <div class="col-12"><strong>Services: </strong>{% if sip.at_services or sip.at_devices %}Assistive Technology Devices and Training, {% endif %} {% if sip.independent_living %}Independent Living and Adjustment Services, {% endif %}{% if sip.orientation %}Orientation & Mobility Training, {% endif %} {% if sip.communications %}Communication Skills Training, {% endif %} {% if sip.dls %}Daily Living Skills Training, {% endif %} {% if sip.advocacy %}Advocacy Training, {% endif %} {% if sip.counseling %}Adjustment Counseling, {% endif %} {% if sip.information %}Information and Referral, {% endif %} {% if sip.services %}Other IL/A services, {% endif %} {% if sip.support_services %}Supportive Services{% endif %}
+                <div class="col-12"><strong>Plan: </strong><a href="/lynx/sip-plan/{{ note.sip_plan_id }}">{{ note.sip_plan.plan_name }}</a></div>
+            </div>
+            <div class="row">
+                <div class="col-12"><strong>Services: </strong>{% if note.at_services or note.at_devices %}Assistive Technology Devices and Training, {% endif %} {% if note.independent_living %}Independent Living and Adjustment Services, {% endif %}{% if note.orientation %}Orientation & Mobility Training, {% endif %} {% if note.communications %}Communication Skills Training, {% endif %} {% if note.dls %}Daily Living Skills Training, {% endif %} {% if note.advocacy %}Advocacy Training, {% endif %} {% if note.counseling %}Adjustment Counseling, {% endif %} {% if note.information %}Information and Referral, {% endif %} {% if note.services %}Other IL/A services, {% endif %} {% if note.support_services %}Supportive Services{% endif %}
                 </div>
             </div>
 <!--            <div class="row">-->
-<!--                <div class="col-12"><strong>Service Delivery: </strong>{% if sip.retreat %}Retreat, {% endif %}{% if sip.in_home %}In-home Training, {% endif %}{% if sip.seminar %}Training Seminar, {% endif %}{% if sip.modesto %}Modesto training site, {% endif %}{% if sip.group %}Support group(s), {% endif %}{% if sip.community %}Community Integration{% endif %}</div>-->
+<!--                <div class="col-12"><strong>Service Delivery: </strong>{% if note.retreat %}Retreat, {% endif %}{% if note.in_home %}In-home Training, {% endif %}{% if note.seminar %}Training Seminar, {% endif %}{% if note.modesto %}Modesto training site, {% endif %}{% if note.group %}Support group(s), {% endif %}{% if note.community %}Community Integration{% endif %}</div>-->
 <!--            </div>-->
             <div class="row">
-                <div class="col-12"><a href='/lynx/sip-note-confirm/{{ sip.id }}/{{ client.id }}'>Delete {{ sip.note_date|date:'F j, Y' }}</a></div>
+                <div class="col-12"><a href='/lynx/sip-note-confirm/{{ note.id }}/{{ client.id }}'>Delete {{ note.note_date|date:'F j, Y' }}</a></div>
             </div>
         </div>
         <hr>
