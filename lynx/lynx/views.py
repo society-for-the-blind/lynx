@@ -244,6 +244,7 @@ def add_sip_note(request, contact_id):
             form.save()
 
         next_url = request.GET.get('next', '')  # Fallback to an empty string if 'next' is not present
+        # import pdb; pdb.set_trace()
         if next_url:
             # Optional: Validate next_url before redirecting
             return HttpResponseRedirect(next_url)
@@ -258,7 +259,7 @@ def add_sip_note(request, contact_id):
 @login_required
 def add_sip1854_note(request, contact_id):
     contact = {'contact_id': contact_id}
-    sip1854_plan_id = request.GET.get('sip1854_plan_id')
+    sip1854_plan_id = request.GET.get('sip_plan_id')
     # import pdb; pdb.set_trace()
     if sip1854_plan_id:
         form = Sip1854NoteForm(initial={'sip_plan': sip1854_plan_id}, **contact, sip1854_plan_id=sip1854_plan_id)
@@ -313,6 +314,7 @@ def add_sip1854_note(request, contact_id):
             form.save()
 
         next_url = request.GET.get('next', '')  # Fallback to an empty string if 'next' is not present
+        # import pdb; pdb.set_trace()
         if next_url:
             # Optional: Validate next_url before redirecting
             return HttpResponseRedirect(next_url)
@@ -2589,6 +2591,7 @@ def assignment_advanced_result_view(request):
                     # but the above form is safer when there are no results
                 case "1854":
                     plans = getattr(assignment.contact, 'related_sip1854plans', [])
+                    # import pdb; pdb.set_trace()
                     notes = getattr(assignment.contact, 'related_sip1854notes', [])
 
             # Filter related_sipplans for "In-Home" where instructor_id matches SipPlan's user_id
