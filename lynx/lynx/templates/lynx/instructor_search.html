@@ -21,7 +21,7 @@
                 <th scope="col">Program <span aria-hidden="true">&uarr;</span></th>
                 <th scope="col">Priority <span aria-hidden="true">&uarr;</span></th>
                 <th scope="col">Assignment Note</th>
-                <th scope="col">Most Recent SIP/18-54 Note</th>
+                <th scope="col">Most Recent SIP/18-54 In-home Note</th>
                 <th scope="col">Most Recent Client Note</th>
                 <th scope="col">Assigned By <span aria-hidden="true">&uarr;</span></th>
                 {% if not request.GET.instructor  %}
@@ -36,11 +36,35 @@
         {% for key, assignment in assignment_list.items %}
             <tr id="assignment-{{ assignment.assignment_id }}">
                 <td class="short-cells" data-timestamp="{{ assignment.timestamp}}"><a href="/lynx/assignments/{{ assignment.client_id }}#assignment-{{ assignment.assignment_id }}">{{ assignment.assignment_date }}</a></td>
+                    <!--
+                <td class="short-cells" data-timestamp="{{ assignment.timestamp}}">
+                    <a href="/lynx/assignments/{{ assignment.client_id }}#assignment-{{ assignment.assignment_id }}">{{ assignment.assignment_date }}</a>
+                    &nbsp;
+                    <a href="/lynx/sip-plan/{{ assignment.most_recent_in_home_plan_for_assignee_plan_id }}">{{ assignment.most_recent_in_home_plan_for_assignee_plan_name }}</a>
+                </td>
+                    -->
                 <td class="short-cells"><a class="client-link" href="/lynx/client/{{ assignment.client_id }}">{{ assignment.client_last_name }}, {{ assignment.client_first_name }}</a></td>
                 <td class="short-cells">{{ assignment.program }}</td>
                 <td class="short-cells">{{ assignment.assignment_priority }}</td>
                 <td class="long-cells">{{ assignment.note }}</td>
-                <td class="long-cells"><a href="/lynx/{% if assignment.program == 'SIP' %}sip{% else %}sip1854{% endif %}notes/{{ assignment.client_id }}">{% if assignment.program_note == '' %}None{% else %}{{ assignment.program_note_date }}, {{assignment.program_note_instructor}}, {{assignment.program_note}}{% endif %}</a></td>
+                <td class="long-cells">
+                    {% if assignment.most_recent_in_home_id == '' %} 
+                    <!-- If there is no In-home plan, there's no note, so create a new plan with a new note  -->
+                    <!-- TODO: add link to create new note with new in-home plan -->
+                        None
+                    {% elif assignment.most_recent_in_home_note == '' %} 
+                    <!-- There is an in-home plan, but it has no notes, so let the user create one in that plan -->
+                    <!-- TODO: add link to create new note into most_recent_in_home_note_plan_id -->
+                        None
+                    {% else %}
+                    <!-- TODO: link to most_recent_in_home_note_plan_id where the most recent note is on top -->
+                        <a href="/lynx/{% if assignment.program == 'SIP' %}sip{% else %}sip1854{% endif %}-plan/{{ assignment.most_recent_in_home_id }}">
+                            {{ assignment.most_recent_in_home_note_date }}
+                            , {{assignment.most_recent_in_home_note_instructor}}
+                            , {{assignment.most_recent_in_home_note}}
+                        </a>
+                    {% endif %}
+                </td>
                 <td class="long-cells"><a class="client-link" href="/lynx/client/{{ assignment.client_id }}#notes">{% if assignment.intakenote == '' %}None{% else %}{{ assignment.intakenote_date }}, {{assignment.intakenote_instructor}}, {{assignment.intakenote}}{% endif %}</a></td>
 <!--                <td>{{ assignment }}</td>-->
                 <td class="short-cells">{{ assignment.assigned_by_first_name }} {{ assignment.assigned_by_last_name }}</td>

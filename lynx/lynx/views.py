@@ -20,7 +20,7 @@ from django import forms
 import os
 import csv
 import time
-from datetime import datetime
+from datetime import datetime, date
 import logging
 
 from .models import Contact, Address, Phone, Email, Intake, IntakeNote, EmergencyContact, Authorization, \
@@ -2513,28 +2513,67 @@ def assignment_advanced_result_view(request):
             assignment_condensed[assignment.id]['instructor_first_name'] = assignment.instructor.first_name if assignment.instructor.first_name is not None else ''
             assignment_condensed[assignment.id]['instructor_last_name'] = assignment.instructor.last_name if assignment.instructor.last_name is not None else ''
 
+            # Get the most recent notes of the most recent in-home plans
+            # ==========================================================
             match assignment_condensed[assignment.id]['program']:
                 case "SIP":
-                    notes = assignment.contact.related_sipnotes
+                    plans = getattr(assignment.contact, 'related_sipplans', [])
+                    notes = getattr(assignment.contact, 'related_sipnotes', [])
+                    # same as
+                    # notes = assignment.contact.related_sipnotes
+                    # but the above form is safer when there are no results
                 case "1854":
-                    notes = assignment.contact.related_sip1854notes
+                    plans = getattr(assignment.contact, 'related_sip1854plans', [])
+                    notes = getattr(assignment.contact, 'related_sip1854notes', [])
 
-            if notes:
-                # If there are any notes, add the date and note of the most recent one
-                latest_note = max(notes, key=lambda note: note.note_date)
-                assignment_condensed[assignment.id]['program_note_date'] = latest_note.note_date
-                assignment_condensed[assignment.id]['program_note'] = latest_note.note
+            # Filter related_sipplans for "In-Home" where instructor_id matches SipPlan's user_id
+            in_home_plans_for_assignee = [
+                plan for plan in plans
+                if      "In-home" in plan.plan_name
+                    and plan.user_id == assignment.instructor_id
+                    # Every instructor has one in-home plan per grant year per client
+                    and plan.created.date() >= date(assignment.assignment_date.year - 1, 10, 1)
+                    and plan.created.date() <= date(assignment.assignment_date.year, 9, 30)
+                    # This won't work because of how different past plan names were...
+                    # and datetime.strptime(plan.plan_name.split(' - ')[0], '%m/%d/%Y').date() >= assignment.assignment_date
+            ]
 
-                if latest_note.user:
-                    assignment_condensed[assignment.id]['program_note_instructor'] = f'{latest_note.user.first_name} {latest_note.user.last_name}'
+            # import pdb; pdb.set_trace()
+
+            if in_home_plans_for_assignee:
+                # Find the most recent plan
+                most_recent_in_home_for_assignee = max(in_home_plans_for_assignee, key=lambda plan: plan.created)
+                assignment_condensed[assignment.id]['most_recent_in_home_id'] = most_recent_in_home_for_assignee.id
+
+                notes_of_most_recent_in_home = [
+                    note for note in notes
+                    if      note.sip_plan_id == most_recent_in_home_for_assignee.id
+                        and note.note_date   >= assignment.assignment_date
+                ]
+                if notes_of_most_recent_in_home:
+                    most_recent_in_home_note = max(notes_of_most_recent_in_home, key=lambda note: note.note_date)
+                    # import pdb; pdb.set_trace()
+                    # Add details from most_recent_in_home_for_assignee to assignment_condensed
+                    assignment_condensed[assignment.id]['most_recent_in_home_note_date'] = most_recent_in_home_note.note_date
+                    assignment_condensed[assignment.id]['most_recent_in_home_note'] = most_recent_in_home_note.note
+                    assignment_condensed[assignment.id]['most_recent_in_home_note_instructor'] = most_recent_in_home_note.instructor
+                    # If there is a most recent in-home plan note,
+                    # then its plan's id is the same as `most_recent_in_home_id`
+                    # above.
+                    # assignment_condensed[assignment.id]['most_recent_in_home_note_plan_id'] = most_recent_in_home_note.sip_plan_id
                 else:
-                    assignment_condensed[assignment.id]['program_note_instructor'] = latest_note.instructor
-
+                    assignment_condensed[assignment.id]['most_recent_in_home_note_date']       = ''
+                    assignment_condensed[assignment.id]['most_recent_in_home_note']            = ''
+                    assignment_condensed[assignment.id]['most_recent_in_home_note_instructor'] = ''
+                    # assignment_condensed[assignment.id]['most_recent_in_home_note_plan_id']    = ''
             else:
-                # If there are no notes, add empty values
-                assignment_condensed[assignment.id]['program_note_date'] = ''
-                assignment_condensed[assignment.id]['program_note'] = ''
-                assignment_condensed[assignment.id]['program_note_instructor'] = ''
+                assignment_condensed[assignment.id]['most_recent_in_home_note_date']       = ''
+                assignment_condensed[assignment.id]['most_recent_in_home_note']            = ''
+                assignment_condensed[assignment.id]['most_recent_in_home_note_instructor'] = ''
+                # assignment_condensed[assignment.id]['most_recent_in_home_note_plan_id']    = ''
+                assignment_condensed[assignment.id]['most_recent_in_home_id']              = ''
+
+            # ==========================================================
 
             intakenotes = assignment.contact.related_intakenotes
             if intakenotes:
