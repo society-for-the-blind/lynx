@@ -1,5 +1,15 @@
 /* official colors #006ca3, #5ca038 */
 
+div#signed_in_user {
+    color: white;
+    padding-left: 1ex;
+}
+
+div#signed_in_user span {
+    font-size: large;
+    font-weight: bolder;
+}
+
 .long-cells {
     white-space: nowrap;
     text-overflow:ellipsis;

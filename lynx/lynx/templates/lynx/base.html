@@ -46,6 +46,9 @@
                 <a href="/admin/">Admin</a>
                 <a href="/lynx/reports/">Reports</a>
                 <hr>
+                <div id="signed_in_user">
+                    Signed in as: </br> <span>{{ user.last_name }}, {{user.first_name}}</span>
+                </div>
                 <a href="/accounts/password_change/" title="Update Password">Update Password</a>
                 <a href="/accounts/logout/">Logout</a>
             {% endif %}
