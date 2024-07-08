@@ -2555,8 +2555,19 @@ def is_assessed(ila_outcomes, at_outcomes):
 
 # from django.utils import timezone
 
+def get_current_grant_year_startdate():
+    now = datetime.now()
+    grant_year_start = date(now.year, 10, 1)
+
+    if grant_year_start < now.date():
+        return grant_year_start
+    else:
+        return date(now.year - 1, 10, 1)
+
+
 @login_required
 def assignment_advanced_result_view(request):
+    # import pdb; pdb.set_trace()
     if request.method == 'GET':
         strict = True
 
@@ -2574,16 +2585,8 @@ def assignment_advanced_result_view(request):
             f = AssignmentFilter(request.GET, queryset=Assignment.objects.all().order_by('-assignment_date'))
             # notes = SipNote.objects.all()
         else:
-            now = datetime.now()
-            grant_year_start = date(now.year, 10, 1)
-
-            if grant_year_start < now.date():
-                current_grant_year_startdate = grant_year_start
-            else:
-                current_grant_year_startdate = date(now.year - 1, 10, 1)
-
             initial_data = {
-                'assignment_date_gt': current_grant_year_startdate
+                'assignment_date_gt': get_current_grant_year_startdate()
             ,   'instructor': request.user.id
             }
             f = AssignmentFilter(initial_data, queryset=Assignment.objects.all().order_by('-assignment_date'))
@@ -2625,10 +2628,16 @@ def assignment_advanced_result_view(request):
                 plan for plan in plans
                 if      "In-home" in plan.plan_name
                     and plan.user_id == assignment.instructor_id
-                    # Every instructor has one in-home plan per grant year per client
-                    and plan.created.date() >= date(assignment.assignment_date.year - 1, 10, 1)
-                    and plan.created.date() <= date(assignment.assignment_date.year, 9, 30)
-                    # This won't work because of how different past plan names were...
+                    # Every instructor has one in-home plan per grant year per client,
+                    # but sometimes more, so show the latest one in the current grant year
+                    and plan.created.date() >= get_current_grant_year_startdate()
+                    # FAILED ATTEMPS
+                    #
+                    # # 1. This will only pick plans for the grant year the assignment was created.
+                    # and plan.created.date() >= date(assignment.assignment_date.year - 1, 10, 1)
+                    # and plan.created.date() <= date(assignment.assignment_date.year, 9, 30)
+                    #
+                    # # 2. This won't work because of how different past plan names were...
                     # and datetime.strptime(plan.plan_name.split(' - ')[0], '%m/%d/%Y').date() >= assignment.assignment_date
             ]
 
