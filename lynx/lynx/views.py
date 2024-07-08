@@ -2559,11 +2559,35 @@ def is_assessed(ila_outcomes, at_outcomes):
 def assignment_advanced_result_view(request):
     if request.method == 'GET':
         strict = True
-        # initial_data = {'assignment_date_lt': timezone.now()}
-        # f = AssignmentFilter(request.GET, queryset=Assignment.objects.all())
-        # f = AssignmentFilter(request.GET or initial_data, queryset=Assignment.objects.all().order_by('-assignment_date'))
-        f = AssignmentFilter(request.GET, queryset=Assignment.objects.all().order_by('-assignment_date'))
-        # notes = SipNote.objects.all()
+
+        # The assignment  filter form  gets submitted  via GET
+        # method, but the first  assignments page load is also
+        # a  GET (naturally),  so to  set a  default date  for
+        # "Assignments  after date"  the  form submission  and
+        # initial page load have to  be discerned: if the page
+        # load input  (i.e., `requet.GET`) is empty,  then the
+        # page is being loaded the first time.
+        if request.GET:
+            # initial_data = {'assignment_date_lt': timezone.now()}
+            # f = AssignmentFilter(request.GET, queryset=Assignment.objects.all())
+            # f = AssignmentFilter(request.GET or initial_data, queryset=Assignment.objects.all().order_by('-assignment_date'))
+            f = AssignmentFilter(request.GET, queryset=Assignment.objects.all().order_by('-assignment_date'))
+            # notes = SipNote.objects.all()
+        else:
+            now = datetime.now()
+            grant_year_start = date(now.year, 10, 1)
+
+            if grant_year_start < now.date():
+                current_grant_year_startdate = grant_year_start
+            else:
+                current_grant_year_startdate = date(now.year - 1, 10, 1)
+
+            initial_data = {
+                'assignment_date_gt': current_grant_year_startdate
+            ,   'instructor': request.user.id
+            }
+            f = AssignmentFilter(initial_data, queryset=Assignment.objects.all().order_by('-assignment_date'))
+
         assignment_condensed = {}
         for assignment in f.qs:
             assignment_condensed[assignment.id] = {}
