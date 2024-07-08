@@ -21,7 +21,7 @@
                 <th scope="col">Program <span aria-hidden="true">&uarr;</span></th>
                 <th scope="col">Priority <span aria-hidden="true">&uarr;</span></th>
                 <th scope="col">Assignment Note</th>
-                <th scope="col">Most Recent SIP/18-54 In-home Note</th>
+                <th scope="col">Most Recent In-home Note</th>
                 <th scope="col">Most Recent Client Note</th>
                 <th scope="col">Assigned By <span aria-hidden="true">&uarr;</span></th>
                 {% if not request.GET.instructor  %}
@@ -51,19 +51,15 @@
                     {% if assignment.most_recent_in_home_id == '' %}
                     <!-- If there is no In-home plan, there's no note, so create a new plan with a new note  -->
                     <!-- TODO: add link to create new note with new in-home plan -->
-                        None (
                         <a class="btn btn-success" aria-label="Add New {% if assignment.program == 'SIP' %}SIP{% else %}18-54{% endif %} Note" href='/lynx/add-{% if assignment.program == 'SIP' %}sip{% else %}sip1854{% endif %}-note/{{ assignment.client_id }}/?sip_plan_id=In-home&next={{ request.get_full_path|urlencode }}'>
                             Add new {% if assignment.program == 'SIP' %}SIP{% else %}18-54{% endif %} in-home plan and note
                         </a>
-                        )
                     {% elif assignment.most_recent_in_home_note == '' %}
                     <!-- There is an in-home plan, but it has no notes, so let the user create one in that plan -->
                     <!-- TODO: add link to create new note into most_recent_in_home_note_plan_id -->
-                        None (
                         <a class="btn btn-success" aria-label="Add New {% if assignment.program == 'SIP' %}SIP{% else %}18-54{% endif %} Note" href='/lynx/add-{% if assignment.program == 'SIP' %}sip{% else %}sip1854{% endif %}-note/{{ assignment.client_id }}/?sip_plan_id={{ assignment.most_recent_in_home_id }}&next={{ request.get_full_path|urlencode }}'>
                             Add {% if assignment.program == 'SIP' %}SIP{% else %}18-54{% endif %} note
                         </a>
-                        )
                     {% else %}
                     <!-- TODO: link to most_recent_in_home_note_plan_id where the most recent note is on top -->
                         <a href="/lynx/{% if assignment.program == 'SIP' %}sip{% else %}sip1854{% endif %}-plan/{{ assignment.most_recent_in_home_id }}">
