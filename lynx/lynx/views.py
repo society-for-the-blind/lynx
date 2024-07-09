@@ -21,7 +21,7 @@ from django import forms
 import os
 import csv
 import time
-from datetime import datetime, date
+from datetime import datetime, date, timedelta
 import logging
 
 from .models import Contact, Address, Phone, Email, Intake, IntakeNote, EmergencyContact, Authorization, \
@@ -2651,7 +2651,12 @@ def assignment_advanced_result_view(request):
                 notes_of_most_recent_in_home = [
                     note for note in notes
                     if      note.sip_plan_id == most_recent_in_home_for_assignee.id
-                        and note.note_date   >= assignment.assignment_date
+                        # Subtracting  1 day  from  the assignment  date is  a
+                        # quick and dirty workaround  for the fact that adding
+                        # a new assignments sets the  assignment date 1 day in
+                        # the future, breaking this conditional...
+                        # TODO Figure out why assignment dates are saved 1 day ahead.
+                        and note.note_date   >= (assignment.assignment_date - timedelta(days=1))
                 ]
                 if notes_of_most_recent_in_home:
                     most_recent_in_home_note = max(notes_of_most_recent_in_home, key=lambda note: note.note_date)
