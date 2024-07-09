@@ -192,12 +192,12 @@ class CustomModelChoiceField(ModelChoiceField):
     def __init__(self, *args, **kwargs):
         # Define additional choices
         self.additional_choices = [
-              ('Retreat',               'Add new Retreat plan')
-            , ('In-home',               'Add new In-home plan')
+              ('In-home',               'Add new In-home plan')
             , ('Support Group',         'Add new Support Group plan')
             , ('Training Seminar',      'Add new Training Seminar plan')
-            , ('Workshop',              'Add new Workshop plan')
+          # , ('Workshop',              'Add new Workshop plan')
             , ('Community Integration', 'Add new Community Integration plan')
+            , ('Retreat',               'Add new Retreat plan')
             ]
         super(CustomModelChoiceField, self).__init__(*args, **kwargs)
         # Prepend additional choices to the field choices
