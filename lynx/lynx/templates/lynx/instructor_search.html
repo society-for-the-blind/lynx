@@ -46,22 +46,35 @@
                 <td class="short-cells"><a class="client-link" href="/lynx/client/{{ assignment.client_id }}">{{ assignment.client_last_name }}, {{ assignment.client_first_name }}</a></td>
                 <td class="short-cells">{{ assignment.program }}</td>
                 <td class="short-cells">{{ assignment.assignment_priority }}</td>
-                <td class="long-cells">{{ assignment.note }}</td>
-                <td class="long-cells">
+                <td class="long-cells expandable">{{ assignment.note }}</td>
+                <td class="long-cells expandable">
+                    <!-- NOTE
+                         This  was a  good idea,  but probably  confusing for
+                         many users, so deactivating  them and the ability to
+                         add new plan with a new note for now.
+                    -->
                     {% if assignment.most_recent_in_home_id == '' %}
+                        <a class="btn btn-success" aria-label="Go to SIP plans" href="/lynx/{% if assignment.program == 'SIP' %}sip{% else %}sip1854{% endif %}plans/{{ assignment.client_id }}">
+                          Go to {% if assignment.program == 'SIP' %}SIP{% else %}18-54{% endif %} plans
+                        </a>
                     <!-- If there is no In-home plan, there's no note, so create a new plan with a new note  -->
-                    <!-- TODO: add link to create new note with new in-home plan -->
+                    <!--
                         <a class="btn btn-success" aria-label="Add New {% if assignment.program == 'SIP' %}SIP{% else %}18-54{% endif %} Note" href='/lynx/add-{% if assignment.program == 'SIP' %}sip{% else %}sip1854{% endif %}-note/{{ assignment.client_id }}/?sip_plan_id=In-home&next={{ request.get_full_path|urlencode }}'>
                             Add new {% if assignment.program == 'SIP' %}SIP{% else %}18-54{% endif %} in-home plan and note
                         </a>
+                    -->
                     {% elif assignment.most_recent_in_home_note == '' %}
+                        <a class="btn btn-success" aria-label="Go to SIP plans" href="/lynx/{% if assignment.program == 'SIP' %}sip{% else %}sip1854{% endif %}plans/{{ assignment.client_id }}">
+                          Go to {% if assignment.program == 'SIP' %}SIP{% else %}18-54{% endif %} plans
+                        </a>
                     <!-- There is an in-home plan, but it has no notes, so let the user create one in that plan -->
-                    <!-- TODO: add link to create new note into most_recent_in_home_note_plan_id -->
+                    <!--
                         <a class="btn btn-success" aria-label="Add New {% if assignment.program == 'SIP' %}SIP{% else %}18-54{% endif %} Note" href='/lynx/add-{% if assignment.program == 'SIP' %}sip{% else %}sip1854{% endif %}-note/{{ assignment.client_id }}/?sip_plan_id={{ assignment.most_recent_in_home_id }}&next={{ request.get_full_path|urlencode }}'>
                             Add {% if assignment.program == 'SIP' %}SIP{% else %}18-54{% endif %} note
                         </a>
+                    -->
                     {% else %}
-                    <!-- TODO: link to most_recent_in_home_note_plan_id where the most recent note is on top -->
+                    <!-- link to most_recent_in_home_note_plan_id where the most recent note is on top -->
                         <a href="/lynx/{% if assignment.program == 'SIP' %}sip{% else %}sip1854{% endif %}-plan/{{ assignment.most_recent_in_home_id }}">
                             {{ assignment.most_recent_in_home_note_date }}
                             , {{assignment.most_recent_in_home_note_instructor}}
@@ -69,22 +82,23 @@
                         </a>
                     {% endif %}
                 </td>
-                <td class="long-cells"><a class="client-link" href="/lynx/client/{{ assignment.client_id }}#notes">{% if assignment.intakenote == '' %}None{% else %}{{ assignment.intakenote_date }}, {{assignment.intakenote_instructor}}, {{assignment.intakenote}}{% endif %}</a></td>
+                <td class="long-cells expandable"><a class="client-link" href="/lynx/client/{{ assignment.client_id }}#notes">{% if assignment.intakenote == '' %}None{% else %}{{ assignment.intakenote_date }}, {{assignment.intakenote_instructor}}, {{assignment.intakenote}}{% endif %}</a></td>
 <!--                <td>{{ assignment }}</td>-->
                 <td class="short-cells">{{ assignment.assigned_by_first_name }} {{ assignment.assigned_by_last_name }}</td>
                 {% if not request.GET.instructor  %}
                     <td class="short-cells">{{ assignment.instructor_first_name }} {{ assignment.instructor_last_name }}</td>
                 {% endif %}
-                {% if user.is_superuser %}
-                    <td class="short-cells">
-                        <form>
-                          {% csrf_token %}
-                          <input type="hidden" name="next" value="{{ request.get_full_path }}">
-                          <button class="btn btn-primary" formaction="/lynx/assignment-edit/{{ assignment.assignment_id }}">Edit</button>
-                          <button class="btn btn-danger" formaction="/lynx/assignment-confirm/{{ assignment.assignment_id }}/{{ assignment.client_id }}">Delete</button>
-                        </form>
-                    </td>
-                {% endif %}
+                <td class="short-cells">
+                  {% if user.is_superuser %}
+                    <form>
+                      {% csrf_token %}
+                      <input type="hidden" name="next" value="{{ request.get_full_path }}">
+                      <button class="btn btn-primary" formaction="/lynx/assignment-edit/{{ assignment.assignment_id }}">Edit</button>
+                      <button class="btn btn-danger" formaction="/lynx/assignment-confirm/{{ assignment.assignment_id }}/{{ assignment.client_id }}">Delete</button>
+                    </form>
+                  {% endif %}
+                  <span class="expand btn btn-success">Expand<span>
+                </td>
                 <!-- <td><a href="/lynx/assignment-edit/{{ key }}">{{ assignment.assignment_status }}</a></td> -->
             </tr>
         {% endfor %}
@@ -152,6 +166,21 @@
     <!-- TODO: fix date ordering to take years into consideration -->
     <script>
     window.onload = function() {
+
+        document.querySelectorAll('span.expand').forEach((element) => { // Table headers
+            element.addEventListener('click', function() {
+                let expandable_cells = this.parentElement.parentElement.querySelectorAll(".expandable");
+                if(expandable_cells[0].className.match('expand-cells')) {
+                    expandable_cells.forEach( c => c.className = 'long-cells expandable');
+                    this.textContent = 'Expand'
+                }
+                else {
+                    expandable_cells.forEach( c => c.className = 'expandable expand-cells');
+                    this.textContent = 'Shrink'
+                }
+            });
+        });
+
         document.querySelectorAll('th').forEach((element) => { // Table headers
             element.addEventListener('click', function() {
                 let table = this.closest('table');

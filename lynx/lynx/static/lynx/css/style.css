@@ -22,10 +22,16 @@ div#signed_in_user span {
     white-space: nowrap;
 }
 
-tr > td:hover {
+.expand-cells {
     overflow: visible;
     white-space: unset;
 }
+
+/* NOTE this would expand long texts on hover using CSS only, but it was a pretty bad user experience */
+/* tr > td:hover { */
+/*     overflow: visible; */
+/*     white-space: unset; */
+/* } */
 
 td, th {
     padding: 0.5rem;
