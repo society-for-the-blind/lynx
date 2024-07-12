@@ -342,8 +342,8 @@ def add_sip_plan(request, contact_id):
     if request.method == 'POST':
         form = SipPlanForm(request.POST)
         if form.is_valid():
-            save_plan(form, request.user, request.POST, contact_id)
-            return HttpResponseRedirect(reverse('lynx:plan_list', args=(contact_id,)))
+            new_plan_id = save_plan(form, request.user, request.POST, contact_id)
+            return HttpResponseRedirect(reverse('lynx:sip_plan', kwargs={'pk': new_plan_id}))
     return render(request, 'lynx/add_sip_plan.html', {'form': form})
 
 
