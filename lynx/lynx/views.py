@@ -1351,6 +1351,15 @@ class SipNoteUpdateView(LoginRequiredMixin, UpdateView):
               'modesto', 'group', 'community', 'class_hours', 'sip_plan', 'instructor']
     template_name_suffix = '_edit'
 
+    def get_success_url(self):
+        next_url = self.request.GET.get('next')
+        if next_url:
+            return next_url
+        else:
+            # NOTE Returns to the SIP notes page 
+            return reverse('lynx:note_list', kwargs={'client_id': self.object.pk})
+
+
     def form_valid(self, form):
         post = form.save(commit=False)
         note_date = post.note_date
@@ -1366,8 +1375,9 @@ class SipNoteUpdateView(LoginRequiredMixin, UpdateView):
         post.quarter = quarter
         post.fiscal_year = fiscal_year
         post.save()
-        action = "/lynx/sipnotes/" + str(post.contact_id)
-        return HttpResponseRedirect(action)
+        # action = "/lynx/sipnotes/" + str(post.contact_id)
+        # return HttpResponseRedirect(action)
+        return super().form_valid(form)
 
     def get_form(self, form_class=None):
         form = super().get_form(form_class=form_class)
@@ -1433,19 +1443,38 @@ class SipPlanUpdateView(LoginRequiredMixin, UpdateView):
               'employment_outcomes', 'community_plan_progress', 'ila_outcomes', 'support_services', 'plan_date']
     template_name_suffix = '_edit'
 
+    def get_success_url(self):
+        next_url = self.request.GET.get('next')
+        # import pdb; pdb.set_trace()
+        if next_url:
+            return next_url
+        else:
+            # NOTE Returns to the detailed view of the plan being edited 
+            return reverse('lynx:sip_plan', kwargs={'pk': self.object.pk})
+
     def get_form(self, form_class=None):
         notes = SipNote.objects.filter(sip_plan_id=self.kwargs['pk'])
         ils = True
         ats = True
         outcomes = True
         for note in notes:
-            if note.orientation or note.communications or note.dls or note.advocacy or note.counseling \
-                    or note.information or note.services or note.support:
+            if     note.orientation    \
+                or note.communications \
+                or note.dls            \
+                or note.advocacy       \
+                or note.counseling     \
+                or note.information    \
+                or note.services       \
+                or note.support:
+
                 ils = False
+
             if note.at_devices or note.at_services:
-                ats = False
+                 ats = False
+
         if not ils or not ats:
             outcomes = False
+
         form = super().get_form(form_class=form_class)
         form.fields['plan_date'].widget = forms.SelectDateWidget(years=list(range(1900, 2100)))
         form.fields['at_services'].label = "Assistive Technology Devices and Services"
@@ -1465,6 +1494,8 @@ class SipPlanUpdateView(LoginRequiredMixin, UpdateView):
         form.fields['ila_outcomes'].label = "IL/A Service Goal Outcomes"
 
         form.fields['plan_name'].disabled = True
+
+        # TODO: What does the `disabled` property mean here?
         form.fields['at_outcomes'].disabled = ats
         form.fields['ila_outcomes'].disabled = ils
         # Need to ask DOR

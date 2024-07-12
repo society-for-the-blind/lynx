@@ -3,13 +3,24 @@
 {% block title %}SIP Plan for {{ object.contact.first_name}} {{ object.contact.last_name}}: {{ object.plan_name }}{% endblock %}
 
 {% block content %}
-<h1>SIP Plan for {{ object.contact.first_name}} {{ object.contact.last_name}}: {{ object.plan_name}}</h1>
-    <form>
-      <button class="btn btn-success" formaction="/lynx/client/{{ object.contact_id }}">Return to {{ object.contact.first_name }} {{ object.contact.last_name }}'s Information </button>
-      <a class="btn btn-success" href="/lynx/add-sip-note/{{ object.contact_id }}/?sip_plan_id={{ object.id }}&next={{ request.path }}">
-            Add new note to SIP plan
-        </a>
-    </form>
+  <h1>SIP Plan for {{ object.contact.first_name}} {{ object.contact.last_name}}: {{ object.plan_name}}</h1>
+
+    <a class="btn btn-success" href="/lynx/client/{{ object.contact_id }}">
+      Return to {{ object.contact.first_name }} {{ object.contact.last_name }}'s Information
+    </a>
+    <a class="btn btn-success" href="/lynx/sip-plan-edit/{{ object.id }}?next={{ request.path }}">
+      Edit
+    </a>
+    <a class="btn btn-success" href="/lynx/sip-plan-confirm/{{ object.id }}/{{ object.contact_id }}">
+      Delete
+    </a>
+    <a class="btn btn-success" href="/lynx/add-sip-note/{{ object.contact_id }}/?sip_plan_id={{ object.id }}&next={{ request.path }}">
+      Add new note to SIP plan
+    </a>
+    <a class="btn btn-success" href="/lynx/sipnotes/{{ object.contact_id }}">
+      Show all SIP notes for {{ object.contact.first_name}} {{ object.contact.last_name}}
+    </a>
+
     <h2>SIP Plan Information</h2>
     <div class="container-fluid">
         <div class="row">
@@ -54,13 +65,15 @@
             <div class="col-11"><strong>Comments: </strong>{{ object.note}}</div>
         </div>
     </div>
-<br>
+
+    <br>
+
     <h2>SIP Plan Notes</h2>
-   <div class="container-fluid">
+    <div class="container-fluid">
     {% for sip in sip_note_list %}
        <div class="row">
-            <div class="col-1"></div>
-            <div class="col-12"><a href='/lynx/sip-note-edit/{{ sip.id }}?contact_id={{ sip.contact_id }}&plan_id={{ sip.sip_plan_id }}'>Edit {{ sip.note_date|date:'F j, Y' }}</a></div>
+          <div class="col-1"></divk
+          <div class="col-12"><a href='/lynx/sip-note-edit/{{ sip.id }}?contact_id={{ sip.contact_id }}&plan_id={{ sip.sip_plan_id }}&next={{ request.path }}'>Edit {{ sip.note_date|date:'F j, Y' }}</a></div>
         </div>
         <div class="row">
             <div class="col-1"></div>
