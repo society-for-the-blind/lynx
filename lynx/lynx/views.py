@@ -1361,7 +1361,7 @@ class SipNoteUpdateView(LoginRequiredMixin, UpdateView):
         if next_url:
             return next_url
         else:
-            # NOTE Returns to the SIP notes page 
+            # NOTE Returns to the SIP notes page
             return reverse('lynx:note_list', kwargs={'client_id': self.object.pk})
 
     def form_valid(self, form):
@@ -1386,6 +1386,7 @@ class SipNoteUpdateView(LoginRequiredMixin, UpdateView):
     def get_form(self, form_class=None):
         form = super().get_form(form_class=form_class)
         form.fields['note_date'].widget = forms.SelectDateWidget(years=list(range(1900, 2100)))
+        form.fields['note_date'].required = True
         form.fields['at_devices'].label = "Assistive Technology Devices and Services"
         form.fields['independent_living'].label = "Independent Living and Adjustment Services"
         form.fields['orientation'].label = "Orientation & Mobility Training"
@@ -1396,6 +1397,8 @@ class SipNoteUpdateView(LoginRequiredMixin, UpdateView):
         form.fields['counseling'].label = "Adjustment Counseling"
         form.fields['support'].label = "Supportive Services"
         form.fields['services'].label = "Other IL/A Services"
+        form.fields['class_hours'].required = True
+        form.fields['sip_plan'].required = True
         return form
 
 
@@ -1453,7 +1456,7 @@ class SipPlanUpdateView(LoginRequiredMixin, UpdateView):
         if next_url:
             return next_url
         else:
-            # NOTE Returns to the detailed view of the plan being edited 
+            # NOTE Returns to the detailed view of the plan being edited
             return reverse('lynx:sip_plan', kwargs={'pk': self.object.pk})
 
     def get_form(self, form_class=None):
@@ -1633,7 +1636,7 @@ class SipNoteDeleteView(LoginRequiredMixin, DeleteView):
         if next_url:
             return next_url
         else:
-            # NOTE Returns to the SIP notes page 
+            # NOTE Returns to the SIP notes page
             return reverse('lynx:note_list', kwargs={'client_id': self.kwargs['client_id']})
 
 

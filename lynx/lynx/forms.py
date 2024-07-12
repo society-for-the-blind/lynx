@@ -231,6 +231,7 @@ class SipNoteForm(forms.ModelForm):
         # self.fields['sip_plan'] = CustomModelChoiceField(queryset=SipPlan.objects.filter(contact_id=contact_id).annotate(date_substring=Cast(Substr('plan_name', 1, StrIndex('plan_name', V(' '))), DateField())).order_by('-date_substring'), required=True)
         self.fields['sip_plan'].queryset = SipPlan.objects.filter(contact_id=contact_id).annotate( date_substring=Cast(Substr('plan_name', 1, StrIndex('plan_name', V(' '))), DateField()) ).order_by('-date_substring')
         self.fields['sip_plan'].required = True
+        self.fields['sip_plan'].label = "SIP Plan"
         self.fields['at_devices'].label = "Assistive Technology Devices and Services"
         self.fields['independent_living'].label = "Independent Living and Adjustment Services"
         self.fields['orientation'].label = "Orientation & Mobility Training"
@@ -248,7 +249,7 @@ class SipNoteForm(forms.ModelForm):
         self.fields['class_hours'].label = "Class Length"
         self.fields['class_hours'].required = True
         self.fields['instructor'].label = "Instructor"
-        self.fields['sip_plan'].label = "SIP Plan"
+        self.fields['note_date'].required = True
         if sip_plan_id:
             self.fields['sip_plan'].initial = sip_plan_id
 
