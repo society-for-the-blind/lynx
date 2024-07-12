@@ -360,9 +360,14 @@ class Sip1854NoteBulkForm(forms.ModelForm):
 
 
 class SipPlanForm(forms.ModelForm):
-    types = (("Retreat", "Retreat"), ("In-home", "In-home"), ("Support Group", "Support Group"),
-              ("Training Seminar", "Training Seminar"), ("Workshop", "Workshop"),
-             ("Community Integration", "Community Integration"))
+    types = (                                                    \
+              ("In-home", "In-home")                             \
+            , ("Support Group", "Support Group")                 \
+            , ("Training Seminar", "Training Seminar")           \
+          # , ("Workshop", "Workshop")                           \
+            , ("Community Integration", "Community Integration") \
+            , ("Retreat", "Retreat")                             \
+            )
     instructor = forms.CharField(required=False)
     plan_type = forms.ChoiceField(choices=types)
     plan_date = forms.DateField( widget=forms.SelectDateWidget(years=list(range(1900, 2100))), label='Plan Date', initial=timezone.now())
