@@ -6,37 +6,65 @@
 {% block content %}
 
 <h1>{{ object.first_name }} {{ object.last_name }}</h1>
+
 {% if not request.GET.print %}
-{% if object.core_client %}
-<input type="button" class="btn btn-success" aria-label="Core Authorizations" onclick="location.href='/lynx/authorizations/{{ object.id }}';" value="Core Authorizations" />
+
+  {% if object.core_client %}
+    <a class="btn btn-success" aria-label="Core Authorizations" href="/lynx/authorizations/{{ object.id }}">
+      Core Authorizations
+    </a>
+  {% endif %}
+
+  {% if object.sip_client or object.sip1854_client %}
+    <a class="btn btn-success" aria-label="Assignments" href="/lynx/assignments/{{ object.id }}">Assignments</a>
+  {% endif %}
+
+  {% if object.sip_client %}
+    <a class="btn btn-success" aria-label="SIP Plans" href="/lynx/sipplans/{{ object.id }}">SIP Plans</a>
+    <a class="btn btn-success" aria-label="SIP Notes" href="/lynx/sipnotes/{{ object.id }}">SIP Notes</a>
+  {% endif %}
+
+  {% if object.sip1854_client %}
+    <a class="btn btn-success" aria-label="18-54 Plans" href="/lynx/sip1854plans/{{ object.id }}">18-54 Plans</a>
+    <a class="btn btn-success" aria-label="18-54 Notes" href="/lynx/sip1854notes/{{ object.id }}">18-54 Notes</a>
+  {% endif %}
+
+  <a class="btn btn-success" aria-label="Jump to Client Notes" href="#notes">Jump to Client Notes</a>
+  <a class="btn btn-success" aria-label="Jump to File Upload" href="#upload">Jump to File Upload</a>
 {% endif %}
-{% if object.sip_client or object.sip1854_client %}
-<input type="button" class="btn btn-success" aria-label="SIP and 18-54Assignments" onclick="location.href='/lynx/assignments/{{ object.id }}';" value="SIP and 18-54Assignments" />
-{% endif %}
-{% if object.sip_client %}
-<input type="button" class="btn btn-success" aria-label="SIP Plans" onclick="location.href='/lynx/sipplans/{{ object.id }}';" value="SIP Plans" />
-<input type="button" class="btn btn-success" aria-label="SIP Notes" onclick="location.href='/lynx/sipnotes/{{ object.id }}';" value="SIP Notes" />
-{% endif %}
-{% if object.sip1854_client %}
-<!-- <input type="button" class="btn btn-success" aria-label="18-54 Assignments" onclick="location.href='/lynx/assignments1854/{{ object.id }}';" value="18-54 Assignments" /> -->
-<input type="button" class="btn btn-success" aria-label="18-54 Plans" onclick="location.href='/lynx/sip1854plans/{{ object.id }}';" value="18-54 Plans" />
-<input type="button" class="btn btn-success" aria-label="18-54 Notes" onclick="location.href='/lynx/sip1854notes/{{ object.id }}';" value="18-54 Notes" />
-{% endif %}
-<input type="button" class="btn btn-success" aria-label="Jump to Client Notes" onclick="location.href='#notes';" value="Jump to Client Notes" />
-<input type="button" class="btn btn-success" aria-label="Jump to File Upload" onclick="location.href='#upload';" value="Jump to File Upload" />
-{% endif %}
+
 <br>
+
 <h2>Client Information</h2>
-<p class="tab"><strong>Name:</strong> {{ object.first_name }} {% if object.middle_name %}{{ object.middle_name }} {% endif %}{{ object.last_name }}</p>
+
+<p class="tab">
+  <strong>Name:</strong>
+  {{ object.first_name }} {% if object.middle_name %}{{ object.middle_name }} {% endif %}{{ object.last_name }}
+</p>
+
 {% if object.company %}<p class="tab"><strong>Company:</strong> {{ object.company }}</p>{% endif %}
 {% if object.deceased %}<p class="tab"><strong>Deceased</strong></p>{% endif %}
-<p class="tab"><strong>Services:</strong> {% if object.donor %}Donor, {% endif %}{% if object.sip_client %}SIP Client, {% endif %}
-    {% if object.core_client %}Core Client, {% endif %}{% if object.sip1854_client %}18-54 Client, {% endif %}{% if object.careers_plus %}Careers Plus, {% endif %}
-    {% if object.careers_plus_youth %}Careers Plus Youth, {% endif %}{% if object.volunteer %}Volunteer, {% endif %}
-    {% if object.access_news %}Access News, {% endif %}{% if object.other_services %} {{object.other_services}} {% endif %}</p>
-{% if not request.GET.print and user.is_superuser %}<p class="tab"><input type="button" aria-label="Edit Client Information" class="btn btn-primary" onclick="location.href='/lynx/contact-edit/{{ object.id }}';" value="Edit Client Information" />  <input type="button" aria-label="Delete Client" class="btn btn-danger" onclick="location.href='/lynx/contact-confirm/{{ object.id }}';" value="Delete Client" /></p> {% endif %}
-<!--{% if not request.GET.print %}<p class="tab"><input type="button" aria-label="Edit Client Information" class="btn btn-primary" onclick="location.href='/lynx/contact-edit/{{ object.id }}';" value="Edit Client Information" /></p> {% endif %}-->
-<!--<p class="tab"><input type="button" aria-label="Edit Client Information" class="btn btn-primary fa fa-input" onclick="location.href='/lynx/contact-edit/{{ object.id }}';" value="&#xf044  Edit Client Information" /></p>-->
+
+<p class="tab">
+  <strong>Services:</strong>
+  {%  if object.donor %}Donor,                              {%  endif %}
+  {%  if object.sip_client %}SIP Client,                    {%  endif %}
+  {%  if object.core_client %}Core Client,                  {%  endif %}
+  {%  if object.sip1854_client %}18-54 Client,              {%  endif %}
+  {%  if object.careers_plus %}Careers Plus,                {%  endif %}
+  {%  if object.careers_plus_youth %}Careers Plus Youth,    {%  endif %}
+  {%  if object.volunteer %}Volunteer,                      {%  endif %}
+  {%  if object.access_news %}Access News,                  {%  endif %}
+  {%  if object.other_services %} {{object.other_services}} {%  endif %}
+</p>
+
+{% if not request.GET.print and user.is_superuser %}
+  <p class="tab">
+    <a aria-label="Edit Client Information" class="btn btn-primary" href="/lynx/contact-edit/{{ object.id }}">Edit Client Information</a>
+    <a aria-label="Delete Client" class="btn btn-danger" href="/lynx/contact-confirm/{{ object.id }}">Delete Client</a>
+  </p>
+{% endif %}
+
 {% for address in address_list %}
     {% if not address.bad_address and address.address_one %}
         <p class="tab">
@@ -46,6 +74,7 @@
             {% if address.suite %}Apt/Suite {{ address.suite }}<br>{% endif %}
             {{ address.city }}, {{ address.state }} {{ address.zip_code }}<br>
             {{ address.county }}<br>
+            <!-- TODO replace input buttons with simple a hrefs as above -->
             {% if not request.GET.print %}<input type="button" class="btn btn-primary" aria-label="Edit Address" onclick="location.href='/lynx/address-edit/{{ address.id }}';" value="Edit Address" />{% endif %}
         </p>
         {% if address.region %}<p class="tab"><strong>SIR Region:</strong> {{ address.region }}</p>{% endif %}
