@@ -188,24 +188,24 @@ class LessonNoteForm(forms.ModelForm):
         self.fields['date'].label = "Lesson Note Date (YYYY-MM-DD)"
 
 
-class CustomModelChoiceField(ModelChoiceField):
-    def __init__(self, *args, **kwargs):
-        # Define additional choices
-        self.additional_choices = [
-              ('In-home',               'Add new In-home plan')
-            , ('Support Group',         'Add new Support Group plan')
-            , ('Training Seminar',      'Add new Training Seminar plan')
-          # , ('Workshop',              'Add new Workshop plan')
-            , ('Community Integration', 'Add new Community Integration plan')
-            , ('Retreat',               'Add new Retreat plan')
-            ]
-        super(CustomModelChoiceField, self).__init__(*args, **kwargs)
-        # Prepend additional choices to the field choices
-        self.choices = self.additional_choices + list(self.choices)
-
-    def label_from_instance(self, obj):
-        # Custom label formatting can be done here
-        return super(CustomModelChoiceField, self).label_from_instance(obj)
+# class CustomModelChoiceField(ModelChoiceField):
+#     def __init__(self, *args, **kwargs):
+#         # Define additional choices
+#         self.additional_choices = [
+#               ('In-home',               'Add new In-home plan')
+#             , ('Support Group',         'Add new Support Group plan')
+#             , ('Training Seminar',      'Add new Training Seminar plan')
+#           # , ('Workshop',              'Add new Workshop plan')
+#             , ('Community Integration', 'Add new Community Integration plan')
+#             , ('Retreat',               'Add new Retreat plan')
+#             ]
+#         super(CustomModelChoiceField, self).__init__(*args, **kwargs)
+#         # Prepend additional choices to the field choices
+#         self.choices = self.additional_choices + list(self.choices)
+# 
+#     def label_from_instance(self, obj):
+#         # Custom label formatting can be done here
+#         return super(CustomModelChoiceField, self).label_from_instance(obj)
 
 
 class SipNoteForm(forms.ModelForm):
@@ -226,8 +226,10 @@ class SipNoteForm(forms.ModelForm):
         super(SipNoteForm, self).__init__(*args, **kwargs)
         # self.fields['sip_plan'].queryset = SipPlan.objects.filter(contact_id=contact_id).order_by('-created')
         # self.fields['sip_plan'].queryset = SipPlan.objects.filter(contact_id=contact_id).order_by('-plan_date')
-        self.fields['sip_plan'] = CustomModelChoiceField(queryset=SipPlan.objects.filter(contact_id=contact_id).annotate(date_substring=Cast(Substr('plan_name', 1, StrIndex('plan_name', V(' '))), DateField())).order_by('-date_substring'), required=True)
-        # self.fields['sip_plan'].queryset = SipPlan.objects.filter(contact_id=contact_id).annotate( date_substring=Cast(Substr('plan_name', 1, StrIndex('plan_name', V(' '))), DateField()) ).order_by('-date_substring')
+
+        # NOTE deactivate creating new plan with a new note (it will confuse users)
+        # self.fields['sip_plan'] = CustomModelChoiceField(queryset=SipPlan.objects.filter(contact_id=contact_id).annotate(date_substring=Cast(Substr('plan_name', 1, StrIndex('plan_name', V(' '))), DateField())).order_by('-date_substring'), required=True)
+        self.fields['sip_plan'].queryset = SipPlan.objects.filter(contact_id=contact_id).annotate( date_substring=Cast(Substr('plan_name', 1, StrIndex('plan_name', V(' '))), DateField()) ).order_by('-date_substring')
         self.fields['sip_plan'].required = True
         self.fields['at_devices'].label = "Assistive Technology Devices and Services"
         self.fields['independent_living'].label = "Independent Living and Adjustment Services"
@@ -268,9 +270,10 @@ class Sip1854NoteForm(forms.ModelForm):
         super(Sip1854NoteForm, self).__init__(*args, **kwargs)
         # self.fields['sip_plan'].queryset = SipPlan.objects.filter(contact_id=contact_id).order_by('-created')
         # self.fields['sip_plan'].queryset = Sip1854Plan.objects.filter(contact_id=contact_id).order_by('-plan_date')
-        self.fields['sip_plan'] = CustomModelChoiceField(queryset=Sip1854Plan.objects.filter(contact_id=contact_id).annotate(date_substring=Cast(Substr('plan_name', 1, StrIndex('plan_name', V(' '))), DateField())).order_by('-date_substring'), required=True)
+        # NOTE deactivate creating new plan with a new note (it will confuse users)
+        #self.fields['sip_plan'] = CustomModelChoiceField(queryset=Sip1854Plan.objects.filter(contact_id=contact_id).annotate(date_substring=Cast(Substr('plan_name', 1, StrIndex('plan_name', V(' '))), DateField())).order_by('-date_substring'), required=True)
         # import pdb; pdb.set_trace()
-        # self.fields['sip_plan'].queryset = Sip1854Plan.objects.filter(contact_id=contact_id).annotate( date_substring=Cast(Substr('plan_name', 1, StrIndex('plan_name', V(' '))), DateField()) ).order_by('-date_substring')
+        self.fields['sip_plan'].queryset = Sip1854Plan.objects.filter(contact_id=contact_id).annotate( date_substring=Cast(Substr('plan_name', 1, StrIndex('plan_name', V(' '))), DateField()) ).order_by('-date_substring')
         self.fields['sip_plan'].required = True
         self.fields['at_devices'].label = "Assistive Technology Devices and Services"
         self.fields['independent_living'].label = "Independent Living and Adjustment Services"

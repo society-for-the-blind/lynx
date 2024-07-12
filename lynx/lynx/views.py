@@ -200,30 +200,35 @@ def add_sip_note(request, contact_id):
 
     # form = SipNoteForm(request, contact_id=contact_id)
     if request.method == 'POST':
-        if request.POST['sip_plan'].isnumeric():
-            post = request.POST
-        else:
-            post_with_new_plan = request.POST.copy()
-            post_with_new_plan['plan_type'] = post_with_new_plan['sip_plan']
-            post_with_new_plan['plan_date_month'] = post_with_new_plan['note_date_month']
-            post_with_new_plan['plan_date_day'] = post_with_new_plan['note_date_day']
-            post_with_new_plan['plan_date_year'] = post_with_new_plan['note_date_year']
-            post_with_new_plan['note'] = ''
-            if 'at_devices' in post_with_new_plan:
-                post_with_new_plan['at_services'] = post_with_new_plan['at_devices']
-            if 'support' in post_with_new_plan:
-                post_with_new_plan['support_services'] = post_with_new_plan['support']
-            if 'services' in post_with_new_plan:
-                post_with_new_plan['other_services']   = post_with_new_plan['services']
-            plan_form = SipPlanForm(post_with_new_plan)
-            # Not sure what happens if this fails, but then this should never fail.
-            if plan_form.is_valid():
-                # import pdb; pdb.set_trace()
-                new_plan_id = save_plan(plan_form, request.user, post_with_new_plan, contact_id)
-                post_with_new_plan['sip_plan'] = str(new_plan_id)
-                post_with_new_plan['note'] = request.POST['note']
-                post = post_with_new_plan
 
+        # NOTE deactivate creating new plan with a new note (it will confuse users)
+        #      See also forms.py if re-activation needed.
+
+        # if request.POST['sip_plan'].isnumeric():
+        #     post = request.POST
+        # else:
+        #     post_with_new_plan = request.POST.copy()
+        #     post_with_new_plan['plan_type'] = post_with_new_plan['sip_plan']
+        #     post_with_new_plan['plan_date_month'] = post_with_new_plan['note_date_month']
+        #     post_with_new_plan['plan_date_day'] = post_with_new_plan['note_date_day']
+        #     post_with_new_plan['plan_date_year'] = post_with_new_plan['note_date_year']
+        #     post_with_new_plan['note'] = ''
+        #     if 'at_devices' in post_with_new_plan:
+        #         post_with_new_plan['at_services'] = post_with_new_plan['at_devices']
+        #     if 'support' in post_with_new_plan:
+        #         post_with_new_plan['support_services'] = post_with_new_plan['support']
+        #     if 'services' in post_with_new_plan:
+        #         post_with_new_plan['other_services']   = post_with_new_plan['services']
+        #     plan_form = SipPlanForm(post_with_new_plan)
+        #     # Not sure what happens if this fails, but then this should never fail.
+        #     if plan_form.is_valid():
+        #         # import pdb; pdb.set_trace()
+        #         new_plan_id = save_plan(plan_form, request.user, post_with_new_plan, contact_id)
+        #         post_with_new_plan['sip_plan'] = str(new_plan_id)
+        #         post_with_new_plan['note'] = request.POST['note']
+        #         post = post_with_new_plan
+
+        post = request.POST
         form = SipNoteForm(post, contact_id=contact_id)
 
         if form.is_valid():
