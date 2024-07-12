@@ -1359,7 +1359,6 @@ class SipNoteUpdateView(LoginRequiredMixin, UpdateView):
             # NOTE Returns to the SIP notes page 
             return reverse('lynx:note_list', kwargs={'client_id': self.object.pk})
 
-
     def form_valid(self, form):
         post = form.save(commit=False)
         note_date = post.note_date
@@ -1625,8 +1624,12 @@ class SipNoteDeleteView(LoginRequiredMixin, DeleteView):
     model = SipNote
 
     def get_success_url(self):
-        client_id = self.kwargs['client_id']
-        return reverse_lazy('lynx:note_list', kwargs={'client_id': client_id})
+        next_url = self.request.GET.get('next')
+        if next_url:
+            return next_url
+        else:
+            # NOTE Returns to the SIP notes page 
+            return reverse('lynx:note_list', kwargs={'client_id': self.kwargs['client_id']})
 
 
 class Sip1854NoteDeleteView(LoginRequiredMixin, DeleteView):

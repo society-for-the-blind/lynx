@@ -36,7 +36,8 @@
 <!--                <div class="col-12"><strong>Service Delivery: </strong>{% if note.retreat %}Retreat, {% endif %}{% if note.in_home %}In-home Training, {% endif %}{% if note.seminar %}Training Seminar, {% endif %}{% if note.modesto %}Modesto training site, {% endif %}{% if note.group %}Support group(s), {% endif %}{% if note.community %}Community Integration{% endif %}</div>-->
 <!--            </div>-->
             <div class="row">
-                <div class="col-12"><a href='/lynx/sip-note-confirm/{{ note.id }}/{{ client.id }}'>Delete {{ note.note_date|date:'F j, Y' }}</a></div>
+                <!-- TODO this URL path scheme is just wrong... -->
+                <div class="col-12"><a href='/lynx/sip-note-confirm/{{ note.id }}/{{ client.id }}?next={{ request.path }}'>Delete {{ note.note_date|date:'F j, Y' }}</a></div>
             </div>
         </div>
         <hr>
