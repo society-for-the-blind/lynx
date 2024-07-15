@@ -7,20 +7,18 @@
     <h2>SIP Plans for {{ client.first_name }} {{ client.last_name }}</h2>
 
     {% if not request.GET.print %}
+      <!--
       <a class="btn btn-success" aria-label="Add New SIP Plan" href="/lynx/add-sip-plan/{{ client.id }}/">
         Add New SIP Plan
       </a>
       <a class="btn btn-success" aria-label="Back to Client" href="/lynx/client/{{ client.id }}">
         Return to {{ client.first_name }} {{ client.last_name }}'s Information
       </a>
+      -->
 
-      <!-- Not sure what this was a form with buttons in the first place -->
-      <!--
+      <!-- Not sure why this was a form with buttons in the first place -->
       <input type="button" class="btn btn-success" aria-label="Add New SIP Plan" onclick="location.href='/lynx/add-sip-plan/{{ client.id }}/';" value="Add New SIP Plan" />
-      -->
-      <!--
       <input type="button" class="btn btn-success" aria-label="Back to Client" onclick="location.href='/lynx/client/{{ client.id }}';" value="Return to {{ client.first_name }} {{ client.last_name }}'s Information" />
-      -->
     {% endif %}
 
     <div class="container-fluid">

@@ -10,27 +10,42 @@
 {% if not request.GET.print %}
 
   {% if object.core_client %}
+    <!--
     <a class="btn btn-success" aria-label="Core Authorizations" href="/lynx/authorizations/{{ object.id }}">
       Core Authorizations
     </a>
+    -->
+    <input type="button" class="btn btn-success" aria-label="Core Authorizations" onclick="location.href='/lynx/authorizations/{{ object.id }}';" value="Core Authorizations" />
   {% endif %}
 
   {% if object.sip_client or object.sip1854_client %}
-    <a class="btn btn-success" aria-label="Assignments" href="/lynx/assignments/{{ object.id }}">Assignments</a>
+    <input type="button" class="btn btn-success" aria-label="Assignments" onclick="location.href='/lynx/assignments/{{ object.id }}';" value="Assignments" />
   {% endif %}
 
   {% if object.sip_client %}
+    <!--
     <a class="btn btn-success" aria-label="SIP Plans" href="/lynx/sipplans/{{ object.id }}">SIP Plans</a>
     <a class="btn btn-success" aria-label="SIP Notes" href="/lynx/sipnotes/{{ object.id }}">SIP Notes</a>
+    -->
+    <input type="button" class="btn btn-success" aria-label="SIP Plans" onclick="location.href='/lynx/sipplans/{{ object.id }}';" value="SIP Plans" />
+    <input type="button" class="btn btn-success" aria-label="SIP Notes" onclick="location.href='/lynx/sipnotes/{{ object.id }}';" value="SIP Notes" />
   {% endif %}
 
   {% if object.sip1854_client %}
+    <!--
     <a class="btn btn-success" aria-label="18-54 Plans" href="/lynx/sip1854plans/{{ object.id }}">18-54 Plans</a>
     <a class="btn btn-success" aria-label="18-54 Notes" href="/lynx/sip1854notes/{{ object.id }}">18-54 Notes</a>
+    -->
+    <input type="button" class="btn btn-success" aria-label="18-54 Plans" onclick="location.href='/lynx/sip1854plans/{{ object.id }}';" value="18-54 Plans" />
+    <input type="button" class="btn btn-success" aria-label="18-54 Notes" onclick="location.href='/lynx/sip1854notes/{{ object.id }}';" value="18-54 Notes" />
   {% endif %}
 
+  <!--
   <a class="btn btn-success" aria-label="Jump to Client Notes" href="#notes">Jump to Client Notes</a>
   <a class="btn btn-success" aria-label="Jump to File Upload" href="#upload">Jump to File Upload</a>
+    -->
+    <input type="button" class="btn btn-success" aria-label="Jump to Client Notes" onclick="location.href='#notes';" value="Jump to Client Notes" />
+    <input type="button" class="btn btn-success" aria-label="Jump to File Upload" onclick="location.href='#upload';" value="Jump to File Upload" />
 {% endif %}
 
 <br>
@@ -60,8 +75,12 @@
 
 {% if not request.GET.print and user.is_superuser %}
   <p class="tab">
+    <!--
     <a aria-label="Edit Client Information" class="btn btn-primary" href="/lynx/contact-edit/{{ object.id }}">Edit Client Information</a>
     <a aria-label="Delete Client" class="btn btn-danger" href="/lynx/contact-confirm/{{ object.id }}">Delete Client</a>
+    -->
+    <input type="button" aria-label="Edit Client Information" class="btn btn-primary" onclick="location.href='/lynx/contact-edit/{{ object.id }}';" value="Edit Client Information" />
+    <input type="button" aria-label="Delete Client" class="btn btn-danger" onclick="location.href='/lynx/contact-confirm/{{ object.id }}';" value="Delete Client" />
   </p>
 {% endif %}
 
