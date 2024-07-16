@@ -299,6 +299,7 @@ class Sip1854NoteForm(forms.ModelForm):
 
 
 class SipNoteBulkForm(forms.ModelForm):
+    client_names = forms.CharField(widget=forms.Textarea(attrs={'rows': 5, 'cols': 20}), required=False, label='Client Names')
     client_list = Contact.objects.filter(sip_client=1).order_by('last_name')
     clients = forms.ModelMultipleChoiceField(queryset=client_list, required=False)
     note_date = forms.DateField( widget=forms.SelectDateWidget(years=list(range(1900, 2100))), label='Note Date', initial=timezone.now())

@@ -40,6 +40,7 @@
 <h1>Add New SIP Note</h1>
 <br>
 <form method="post"> {% csrf_token %}
+    {{ form.client_names|as_crispy_field }}
     <div class="container-fluid">
         <h2>Select Clients</h2>
             <div class="row">
