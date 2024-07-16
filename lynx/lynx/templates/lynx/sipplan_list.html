@@ -21,67 +21,61 @@
       <input type="button" class="btn btn-success" aria-label="Back to Client" onclick="location.href='/lynx/client/{{ client.id }}';" value="Return to {{ client.first_name }} {{ client.last_name }}'s Information" />
     {% endif %}
 
-    <div class="container-fluid">
+    <ul class="container-fluid">
     {% for sip in plans %}
-      <div class="container-fluid">
-        <div class="row">
-            <div class="col-12">
-              <strong>Plan Name: </strong>
-              {% if sip.plan_name %}
-                <a href='/lynx/sip-plan/{{ sip.id }}'>{{ sip.plan_name }}</a>
-              {% else %}
-                <a href='/lynx/sip-plan/{{ sip.id }}'>Unnamed Plan</a>
-              {% endif %}</div>
-        </div>
-        <div class="row">
-            <div class="col-12"><strong>AT Outcome: </strong>{{ sip.at_outcomes}}</div>
-        </div>
-        <div class="row">
-            <div class="col-12"><strong>IL/A Outcome: </strong>{{ sip.ila_outcomes}}</div>
-        </div>
-        <div class="row">
-            <div class="col-12"><strong>Living Situation Outcome: </strong>{{ sip.living_plan_progress}}</div>
-        </div>
-        <div class="row">
-            <div class="col-12"><strong>Community Involvement Outcome: </strong>{{ sip.community_plan_progress}}</div>
-        </div>
-        <div class="row">
-            <div class="col-12"><strong>Employment Outcome: </strong>{{ sip.employment_outcomes}}</div>
-        </div>
-        <div class="row">
-            <div class="col-12">
-              <strong>Plan Services: </strong>
-              {% if sip.at_services or sip.at_devices %}Assistive Technology Devices and Services, {% endif %}
-              {% if sip.independent_living %}IL/A Services, {% endif %}
-              {% if sip.orientation %}O&M Skills, {% endif %}
-              {% if sip.communications %}Communication skills, {% endif %}
-              {% if sip.dls %}Daily Living Skills, {% endif %}
-              {% if sip.advocacy %}Advocacy Training, {% endif %}
-              {% if sip.counseling %}Adjustment Counseling, {% endif %}
-              {% if sip.information %}I&R (Information & Referral), {% endif %}
-              {% if sip.services %}Other Services{% endif %}
-              {% if sip.support_services %}Supportive Services {% endif %}
-            </div>
-        </div>
-        <div class="row">
-          <div class="col-12">
+      <li>
+        <section>
+          <h3>
+            Plan Name:
+            <a href='/lynx/sip-plan/{{ sip.id }}'>{{ sip.plan_name }}</a>
+          </h3>
+          <p>
+            <span class="make-bold">AT Outcome:</span>
+            {{ sip.at_outcomes }}
+          </p>
+          <p>
+            <span class="make-bold">IL/A Outcome:</span>
+            {{ sip.ila_outcomes }}
+          </p>
+          <p>
+            <span class="make-bold">Living Situation Outcome:</span>
+            {{ sip.living_plan_progress }}
+          </p>
+          <p>
+            <span class="make-bold">Community Involvement Outcome:</span>
+            {{ sip.community_plan_progress }}
+          </p>
+          <p>
+            <span class="make-bold">Employment Outcome:</span>
+            {{ sip.employment_outcomes }}
+          </p>
+          <p>
+            <span class="make-bold">Plan Services:</span>
+            {% if sip.at_services or sip.at_devices %} Assistive Technology Devices and Services, {% endif %}
+            {% if sip.independent_living %}            IL/A Services,                             {% endif %}
+            {% if sip.orientation %}                   O&M Skills,                                {% endif %}
+            {% if sip.communications %}                Communication skills,                      {% endif %}
+            {% if sip.dls %}                           Daily Living Skills,                       {% endif %}
+            {% if sip.advocacy %}                      Advocacy Training,                         {% endif %}
+            {% if sip.counseling %}                    Adjustment Counseling,                     {% endif %}
+            {% if sip.information %}                   Information & Referral,                    {% endif %}
+            {% if sip.services %}                      Other Services                             {% endif %}
+            {% if sip.support_services %}              Supportive Services                        {% endif %}
+          </p>
+          <p>
             <a href="/lynx/sip-plan-edit/{{ sip.id }}?next={{ request.path }}">Edit</a>
             |
             <a href='/lynx/sip-plan-confirm/{{ sip.id }}/{{ client.id }}'>Delete</a>
-          </div>
-        </div>
-      </div>
-
-      <br>
+          </p>
+        </section>
+      </li>
 
       {% empty %}
-      <div class="container-fluid">
-          <div class="row">
-              <div class="col-11">Sorry, no SIP Plans have been created for this client</div>
-          </div>
+      <div class="row col-11">
+        Sorry, no SIP Plans have been created for this client
       </div>
 
     {% endfor %}
-    </div>
+    </ul>
     <br>
 {% endblock %}
