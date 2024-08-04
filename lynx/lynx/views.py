@@ -52,6 +52,7 @@ def reports(request):
     return render(request, 'lynx/reports.html', context)
 
 
+# TODO dead code?
 @login_required
 def client_list_view(request):
     clients = Contact.objects.filter(active=1).order_by(Lower('last_name'), Lower('first_name'))
