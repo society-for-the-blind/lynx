@@ -599,7 +599,7 @@ def add_authorization(request, contact_id):
             form.user_id = request.user.id
             form.active = 1
             form.save()
-            return HttpResponseRedirect(reverse('lynx:authorization_detail', args=(contact_id,)))
+            return HttpResponseRedirect(reverse('lynx:authorization_detail', args=(form.pk,)))
     return render(request, 'lynx/add_authorization.html', {'form': form})
 
 

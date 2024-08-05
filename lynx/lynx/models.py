@@ -166,7 +166,7 @@ class Contact(models.Model):
         return '%s, %s' % (self.last_name, self.first_name)
 
     def get_absolute_url(self):
-        return "/lynx/client/%i" % self.id
+        return reverse('lynx:client', kwargs={'pk': self.id})
 
     class Meta:
         ordering = ['last_name', 'first_name']
@@ -192,7 +192,11 @@ class Email (models.Model):
     history = HistoricalRecords()
 
     def get_absolute_url(self):
-        return "/lynx/client/%i" % self.contact_id
+        # NOTE Why check `self.contact`? See note in class `Phone` below.
+        if self.contact:
+            return reverse('lynx:client', kwargs={'pk': self.contact_id})
+        else:
+            return reverse('lynx:client', kwargs={'pk': self.emergency_contact.contact_id})
 
     def __str__(self):
         return self.email
@@ -212,13 +216,19 @@ class Phone (models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET(get_sentinel_user))
     history = HistoricalRecords()
 
-    # TODO How to generalize this pattern?
-    # The commit with this TODO will also show the typo fix below, and that the Email model also needed to be amended, because the convention of returning to the specific client's page was omitted (instead the app loaded /lynx/clients/).
-    # TODO Look into this method
-    # When is it called? And why in the model?...
-    # TODO Why is the path hard-coded instead of being derived with path() or url()?
     def get_absolute_url(self):
-        return "/lynx/client/%i" % self.contact_id
+        # NOTE Why check `self.contact`? {{-
+        #
+        #      On the  client page,  when editing the  phone number
+        #      of  an  emergency contact,  then  there  will be  no
+        #      `contact` property in self  for some reason, but the
+        #      `lynx_emergencycontact`  table  has  a  `contact_id`
+        #      column so it can be used to go back.
+        # }}-
+        if self.contact:
+            return reverse('lynx:client', kwargs={'pk': self.contact_id})
+        else:
+            return reverse('lynx:client', kwargs={'pk': self.emergency_contact.contact_id})
 
     def __str__(self):
         return self.phone
@@ -250,7 +260,7 @@ class Address(models.Model):
         verbose_name_plural = 'Addresses'
 
     def get_absolute_url(self):
-        return "/lynx/client/%i" % self.contact_id
+        return reverse('lynx:client', kwargs={'pk': self.contact_id})
 
 
 # Intake questionnaire
@@ -384,7 +394,7 @@ class Intake(models.Model):
     updated = models.DateTimeField(auto_now=True, null=True)
 
     def get_absolute_url(self):
-        return "/lynx/client/%i" % self.contact_id
+        return reverse('lynx:client', kwargs={'pk': self.contact_id})
 
     def __str__(self):
         return '%s Intake' % (self.contact_id,)
@@ -400,7 +410,7 @@ class IntakeNote(models.Model):
     history = HistoricalRecords()
 
     def get_absolute_url(self):
-        return "/lynx/client/%i" % self.contact_id
+        return reverse('lynx:client', kwargs={'pk': self.contact_id})
 
 
 # Addresses for Contacts.
@@ -415,7 +425,7 @@ class EmergencyContact(models.Model):
     history = HistoricalRecords()
 
     def get_absolute_url(self):
-        return "/lynx/client/%i" % self.contact_id
+        return reverse('lynx:client', kwargs={'pk': self.contact_id})
 
 
 class Authorization(models.Model):
@@ -448,7 +458,7 @@ class Authorization(models.Model):
     history = HistoricalRecords()
 
     def get_absolute_url(self):
-        return "/lynx/authorization/%i" % self.id
+        return reverse('lynx:authorization_detail', kwargs={'pk': self.id})
 
 
 class OutsideAgency(models.Model):
@@ -498,7 +508,7 @@ class ProgressReport(models.Model):
     history = HistoricalRecords()
 
     def get_absolute_url(self):
-        return "/lynx/authorization/%i" % self.authorization_id
+        return reverse('lynx:authorization_detail', kwargs={'pk': self.authorization_id})
 
 
 class LessonNote(models.Model):
@@ -528,11 +538,8 @@ class LessonNote(models.Model):
     history = HistoricalRecords()
 
     def get_absolute_url(self):
-        return "/lynx/authorization/%i" % self.authorization_id
+        return reverse('lynx:authorization_detail', kwargs={'pk': self.authorization_id})
 
-    # def save(self, *args, **kwargs):
-    #
-    #     super().save(*args, **kwargs)
 
 class BasePlanNote(models.Model):
     contact = models.ForeignKey('Contact', on_delete=models.CASCADE)
@@ -569,7 +576,7 @@ class BasePlanNote(models.Model):
     history = HistoricalRecords(inherit=True)
 
     def get_absolute_url(self):
-        return "/lynx/client/%i" % self.contact_id
+        return reverse('lynx:client', kwargs={'pk': self.contact_id})
 
     # TODO Add string representation methods to other models as well.
     def __str__(self):
@@ -602,7 +609,7 @@ class Volunteer(models.Model):
     history = HistoricalRecords()
 
     def get_absolute_url(self):
-        return "/lynx/volunteer/%i/" % self.contact_id
+        return reverse('lynx:volunteer', kwargs={'pk': self.contact_id})
 
 
 class BasePlan(models.Model):
@@ -661,7 +668,7 @@ class BasePlan(models.Model):
         return self.plan_name
 
     def get_absolute_url(self):
-        return "/lynx/client/%i" % self.contact_id
+        return reverse('lynx:client', kwargs={'pk': self.contact_id})
 
     class Meta:
             abstract = True
@@ -774,3 +781,5 @@ class Sip1854Assignment(models.Model):
 
     def get_absolute_url(self):
         return "/lynx/assignments1854/%i" % self.contact_id
+
+# vim: set foldmethod=marker foldmarker={{-,}}-:
