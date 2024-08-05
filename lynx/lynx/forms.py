@@ -202,36 +202,29 @@ class LessonNoteForm(forms.ModelForm):
 #         super(CustomModelChoiceField, self).__init__(*args, **kwargs)
 #         # Prepend additional choices to the field choices
 #         self.choices = self.additional_choices + list(self.choices)
-# 
+#
 #     def label_from_instance(self, obj):
 #         # Custom label formatting can be done here
 #         return super(CustomModelChoiceField, self).label_from_instance(obj)
 
 
-class SipNoteForm(forms.ModelForm):
+class BasePlanNoteForm(forms.ModelForm):
     client_list = Contact.objects.filter(sip_client=1).order_by('last_name')
     clients = forms.ModelMultipleChoiceField(queryset=client_list, required=False)
-    note_date = forms.DateField( widget=forms.SelectDateWidget(years=list(range(1900, 2100))), label='Note Date', initial=timezone.now())
+    note_date = forms.DateField(widget=forms.SelectDateWidget(years=list(range(1900, 2100))), label='Note Date', initial=timezone.now())
 
     class Meta:
-        model = SipNote
         exclude = ('created', 'modified', 'user', 'contact', 'modesto')
         widgets = {
             # "note_date": forms.DateInput(attrs={'type': 'date'})
-        };
+        }
 
     def __init__(self, *args, **kwargs):
         contact_id = kwargs.pop('contact_id')
-        sip_plan_id = kwargs.pop('sip_plan_id', None)
-        super(SipNoteForm, self).__init__(*args, **kwargs)
-        # self.fields['sip_plan'].queryset = SipPlan.objects.filter(contact_id=contact_id).order_by('-created')
-        # self.fields['sip_plan'].queryset = SipPlan.objects.filter(contact_id=contact_id).order_by('-plan_date')
-
-        # NOTE deactivate creating new plan with a new note (it will confuse users)
-        # self.fields['sip_plan'] = CustomModelChoiceField(queryset=SipPlan.objects.filter(contact_id=contact_id).annotate(date_substring=Cast(Substr('plan_name', 1, StrIndex('plan_name', V(' '))), DateField())).order_by('-date_substring'), required=True)
-        self.fields['sip_plan'].queryset = SipPlan.objects.filter(contact_id=contact_id).annotate( date_substring=Cast(Substr('plan_name', 1, StrIndex('plan_name', V(' '))), DateField()) ).order_by('-date_substring')
+        plan_id = kwargs.pop('plan_id', None)
+        super(BasePlanNoteForm, self).__init__(*args, **kwargs)
+        self.fields['sip_plan'].queryset = self.get_plan_queryset(contact_id)
         self.fields['sip_plan'].required = True
-        self.fields['sip_plan'].label = "SIP Plan"
         self.fields['at_devices'].label = "Assistive Technology Devices and Services"
         self.fields['independent_living'].label = "Independent Living and Adjustment Services"
         self.fields['orientation'].label = "Orientation & Mobility Training"
@@ -250,52 +243,31 @@ class SipNoteForm(forms.ModelForm):
         self.fields['class_hours'].required = True
         self.fields['instructor'].label = "Instructor"
         self.fields['note_date'].required = True
-        if sip_plan_id:
-            self.fields['sip_plan'].initial = sip_plan_id
+        if plan_id:
+            self.fields['sip_plan'].initial = plan_id
+
+    def get_plan_queryset(self, contact_id):
+        raise NotImplementedError("Subclasses should implement this method.")
 
 
-class Sip1854NoteForm(forms.ModelForm):
-    client_list = Contact.objects.filter(sip_client=1).order_by('last_name')
-    clients = forms.ModelMultipleChoiceField(queryset=client_list, required=False)
-    note_date = forms.DateField( widget=forms.SelectDateWidget(years=list(range(1900, 2100))), label='Note Date', initial=timezone.now())
+class SipNoteForm(BasePlanNoteForm):
+    class Meta(BasePlanNoteForm.Meta):
+        model = SipNote
 
-    class Meta:
+    def get_plan_queryset(self, contact_id):
+        return SipPlan.objects.filter(contact_id=contact_id).annotate(
+            date_substring=Cast(Substr('plan_name', 1, StrIndex('plan_name', V(' '))), DateField())
+        ).order_by('-date_substring')
+
+
+class Sip1854NoteForm(BasePlanNoteForm):
+    class Meta(BasePlanNoteForm.Meta):
         model = Sip1854Note
-        exclude = ('created', 'modified', 'user', 'contact', 'modesto')
-        widgets = {
-            # "note_date": forms.DateInput(attrs={'type': 'date'})
-        };
 
-    def __init__(self, *args, **kwargs):
-        contact_id = kwargs.pop('contact_id')
-        sip1854_plan_id = kwargs.pop('sip1854_plan_id', None)
-        super(Sip1854NoteForm, self).__init__(*args, **kwargs)
-        # self.fields['sip_plan'].queryset = SipPlan.objects.filter(contact_id=contact_id).order_by('-created')
-        # self.fields['sip_plan'].queryset = Sip1854Plan.objects.filter(contact_id=contact_id).order_by('-plan_date')
-        # NOTE deactivate creating new plan with a new note (it will confuse users)
-        #self.fields['sip_plan'] = CustomModelChoiceField(queryset=Sip1854Plan.objects.filter(contact_id=contact_id).annotate(date_substring=Cast(Substr('plan_name', 1, StrIndex('plan_name', V(' '))), DateField())).order_by('-date_substring'), required=True)
-        # import pdb; pdb.set_trace()
-        self.fields['sip_plan'].queryset = Sip1854Plan.objects.filter(contact_id=contact_id).annotate( date_substring=Cast(Substr('plan_name', 1, StrIndex('plan_name', V(' '))), DateField()) ).order_by('-date_substring')
-        self.fields['sip_plan'].required = True
-        self.fields['at_devices'].label = "Assistive Technology Devices and Services"
-        self.fields['independent_living'].label = "Independent Living and Adjustment Services"
-        self.fields['orientation'].label = "Orientation & Mobility Training"
-        self.fields['communications'].label = "Communication Skills Training"
-        self.fields['dls'].label = "Daily Living Skills Training"
-        self.fields['support'].label = "Supportive Services"
-        self.fields['advocacy'].label = "Advocacy Training"
-        self.fields['information'].label = "Information and Referral"
-        self.fields['services'].label = "Other IL/A Services"
-        self.fields['in_home'].label = "In-home training"
-        self.fields['seminar'].label = "Training Seminar"
-        self.fields['counseling'].label = "Adjustment Counseling"
-        self.fields['group'].label = "Support group(s)"
-        self.fields['community'].label = "Community Integration"
-        self.fields['class_hours'].label = "Class Length"
-        self.fields['instructor'].label = "Instructor"
-        self.fields['sip_plan'].label = "18-54 Plan"
-        if sip1854_plan_id:
-            self.fields['sip_plan'].initial = sip1854_plan_id
+    def get_plan_queryset(self, contact_id):
+        return Sip1854Plan.objects.filter(contact_id=contact_id).annotate(
+            date_substring=Cast(Substr('plan_name', 1, StrIndex('plan_name', V(' '))), DateField())
+        ).order_by('-date_substring')
 
 
 class SipNoteBulkForm(forms.ModelForm):
@@ -364,77 +336,48 @@ class Sip1854NoteBulkForm(forms.ModelForm):
         self.fields['sip_plan'].label = "SIP Plan"
 
 
-class SipPlanForm(forms.ModelForm):
-    types = (                                                    \
-              ("In-home", "In-home")                             \
+class BasePlanForm(forms.ModelForm):
+    types = ( ("In-home", "In-home")                             \
             , ("Support Group", "Support Group")                 \
             , ("Training Seminar", "Training Seminar")           \
           # , ("Workshop", "Workshop")                           \
             , ("Community Integration", "Community Integration") \
             , ("Retreat", "Retreat")                             \
             )
+
     instructor = forms.CharField(required=False)
     plan_type = forms.ChoiceField(choices=types)
     plan_date = forms.DateField( widget=forms.SelectDateWidget(years=list(range(1900, 2100))), label='Plan Date', initial=timezone.now())
 
+    def __init__(self, *args, **kwargs):
+        super(BasePlanForm, self).__init__(*args, **kwargs)
+        self.fields['at_services'].label = "Assistive Technology Devices and Services"
+        self.fields['independent_living'].label = "Independent Living and Adjustment Services"
+        self.fields['orientation'].label = "Orientation & Mobility Training"
+        self.fields['communications'].label = "Communication Skills Training"
+        self.fields['dls'].label = "Daily Living Skills Training"
+        self.fields['plan_date'].label = "Start Date"
+        self.fields['advocacy'].label = "Advocacy Training"
+        self.fields['information'].label = "Information and Referral"
+        self.fields['counseling'].label = "Adjustment Counseling"
+        self.fields['support_services'].label = "Supportive Services"
+        self.fields['other_services'].label = "Other IL/A Services"
+        self.fields['living_plan_progress'].label = "Living Situation Outcome"
+        self.fields['community_plan_progress'].label = "Home and Community Involvement Outcome"
+        self.fields['at_outcomes'].label = "AT Goal Outcomes"
+        self.fields['ila_outcomes'].label = "IL/A Service Goal Outcome"
+
     class Meta:
+        model = None  # Placeholder, to be overridden
+        exclude = ('created', 'modified', 'user', 'contact')
+
+class SipPlanForm(BasePlanForm):
+    class Meta(BasePlanForm.Meta):
         model = SipPlan
-        exclude = ('created', 'modified', 'user', 'contact')
-        widgets = {
-            # "plan_date": forms.DateInput(attrs={'type': 'date'})
-        };
 
-    def __init__(self, *args, **kwargs):
-        super(SipPlanForm, self).__init__(*args, **kwargs)
-        self.fields['at_services'].label = "Assistive Technology Devices and Services"
-        self.fields['independent_living'].label = "Independent Living and Adjustment Services"
-        self.fields['orientation'].label = "Orientation & Mobility Training"
-        self.fields['communications'].label = "Communication Skills Training"
-        self.fields['dls'].label = "Daily Living Skills Training"
-        self.fields['plan_date'].label = "Start Date"
-        self.fields['advocacy'].label = "Advocacy Training"
-        self.fields['information'].label = "Information and Referral"
-        self.fields['counseling'].label = "Adjustment Counseling"
-        self.fields['support_services'].label = "Supportive Services"
-        self.fields['other_services'].label = "Other IL/A Services"
-        self.fields['living_plan_progress'].label = "Living Situation Outcome"
-        self.fields['community_plan_progress'].label = "Home and Community Involvement Outcome"
-        self.fields['at_outcomes'].label = "AT Goal Outcomes"
-        self.fields['ila_outcomes'].label = "IL/A Service Goal Outcome"
-
-
-class Sip1854PlanForm(forms.ModelForm):
-    types = (("Retreat", "Retreat"), ("In-home", "In-home"), ("Support Group", "Support Group"),
-              ("Training Seminar", "Training Seminar"), ("Workshop", "Workshop"),
-             ("Community Integration", "Community Integration"))
-    instructor = forms.CharField(required=False)
-    plan_type = forms.ChoiceField(choices=types)
-    plan_date = forms.DateField( widget=forms.SelectDateWidget(years=list(range(1900, 2100))), label='Plan Date', initial=timezone.now())
-
-    class Meta:
+class Sip1854PlanForm(BasePlanForm):
+    class Meta(BasePlanForm.Meta):
         model = Sip1854Plan
-        exclude = ('created', 'modified', 'user', 'contact')
-        widgets = {
-            # "plan_date": forms.DateInput(attrs={'type': 'date'})
-        };
-
-    def __init__(self, *args, **kwargs):
-        super(Sip1854PlanForm, self).__init__(*args, **kwargs)
-        self.fields['at_services'].label = "Assistive Technology Devices and Services"
-        self.fields['independent_living'].label = "Independent Living and Adjustment Services"
-        self.fields['orientation'].label = "Orientation & Mobility Training"
-        self.fields['communications'].label = "Communication Skills Training"
-        self.fields['dls'].label = "Daily Living Skills Training"
-        self.fields['plan_date'].label = "Start Date"
-        self.fields['advocacy'].label = "Advocacy Training"
-        self.fields['information'].label = "Information and Referral"
-        self.fields['counseling'].label = "Adjustment Counseling"
-        self.fields['support_services'].label = "Supportive Services"
-        self.fields['other_services'].label = "Other IL/A Services"
-        self.fields['living_plan_progress'].label = "Living Situation Outcome"
-        self.fields['community_plan_progress'].label = "Home and Community Involvement Outcome"
-        self.fields['at_outcomes'].label = "AT Goal Outcomes"
-        self.fields['ila_outcomes'].label = "IL/A Service Goal Outcome"
 
 
 class BillingReportForm(forms.Form):

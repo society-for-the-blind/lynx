@@ -1,0 +1,144 @@
+{% extends 'lynx/base.html' %}
+
+{% block title %}{{ program_name }} Plan for {{ object.contact.first_name}} {{ object.contact.last_name}}: {{ object.plan_name }}{% endblock %}
+
+{% block content %}
+<h1>{{ program_name }} Plan for {{ object.contact.first_name}} {{ object.contact.last_name}}: {{ object.plan_name}}</h1>
+
+  <!--
+    <a class="btn btn-success" href="/lynx/client/{{ object.contact_id }}">Return to {{ object.contact.first_name }} {{ object.contact.last_name }}'s Information</a>
+    <a class="btn btn-success" href="/lynx/sip-plan-edit/{{ object.id }}?next={{ request.path }}">Edit</a>
+    <a class="btn btn-success" href="/lynx/sip-plan-confirm/{{ object.id }}/{{ object.contact_id }}">Delete</a>
+    <a class="btn btn-success" href="/lynx/add-sip-note/{{ object.contact_id }}/?plan_id={{ object.id }}&next={{ request.path }}">Add new note to {{ program_name }} plan</a>
+    <a class="btn btn-success" href="/lynx/sipnotes/{{ object.contact_id }}">Show all {{ program_name }} notes</a>
+    <a class="btn btn-success" href="/lynx/sipplans/{{ object.contact_id }}">Show all {{ program_name }} plans</a>
+  -->
+
+{% if program_name == 'SIP' %}
+  <input type="button" class="btn btn-success" onclick="location.href='{% url 'lynx:client' object.contact_id %}';" value="Return to {{ object.contact.first_name }} {{ object.contact.last_name }}'s Information" />
+  <input type="button" class="btn btn-success" onclick="location.href='{% url 'lynx:sip_plan_edit' object.id %}?next={{ request.path }}';" value="Edit" />
+  <input type="button" class="btn btn-success" onclick="location.href='{% url 'lynx:sip_plan_delete' object.id object.contact_id %}';" value="Delete" />
+  <input type="button" class="btn btn-success" onclick="location.href='{% url 'lynx:sip_note_add' object.contact_id %}?plan_id={{ object.id }}&next={{ request.path }}';" value="Add new note to {{ program_name }} plan" />
+  <input type="button" class="btn btn-success" onclick="location.href='{% url 'lynx:sip_note_list' object.contact_id %}';" value="Show all {{ program_name }} notes" />
+  <input type="button" class="btn btn-success" onclick="location.href='{% url 'lynx:sip_plan_list' object.contact_id %}';" value="Show all {{ program_name }} plans" />
+{% elif program_name == '18-54' %}
+  <input type="button" class="btn btn-success" onclick="location.href='{% url 'lynx:client' object.contact_id %}';" value="Return to {{ object.contact.first_name }} {{ object.contact.last_name }}'s Information" />
+  <input type="button" class="btn btn-success" onclick="location.href='{% url 'lynx:sip1854_plan_edit' object.id %}?next={{ request.path }}';" value="Edit" />
+  <input type="button" class="btn btn-success" onclick="location.href='{% url 'lynx:sip1854_plan_delete' object.id  object.contact_id %}';" value="Delete" />
+  <input type="button" class="btn btn-success" onclick="location.href='{% url 'lynx:sip1854_note_add' object.contact_id %}?plan_id={{ object.id }}&next={{ request.path }}';" value="Add new note to {{ program_name }} plan" />
+  <input type="button" class="btn btn-success" onclick="location.href='{% url 'lynx:sip1854_note_list' object.contact_id %}';" value="Show all {{ program_name }} notes" />
+  <input type="button" class="btn btn-success" onclick="location.href='{% url 'lynx:sip1854_plan_list' object.contact_id %}';" value="Show all {{ program_name }} plans" />
+{% else %}
+  <p class="error">No program with the name {{ program_name }}</p>
+{% endif %}
+
+<h2>{{ program_name }} Plan Information</h2>
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-1"></div>
+    <div class="col-11">
+      <strong>Client Name: </strong>
+      {{ object.contact.first_name}} {{ object.contact.last_name}}
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-1"></div>
+    <div class="col-11">
+      <strong>Plan Services: </strong>
+      {% if object.at_services or object.at_devices %}  Assistive Technology Devices and Services,  {% endif %}
+      {% if object.independent_living %}                IL/A Services,                              {% endif %}
+      {% if object.orientation %}                       O&M Skills,                                 {% endif %}
+      {% if object.communications %}                    Communication skills,                       {% endif %}
+      {% if object.dls %}                               Daily Living Skills,                        {% endif %}
+      {% if object.advocacy %}                          Advocacy Training,                          {% endif %}
+      {% if object.counseling %}                        Adjustment Counseling,                      {% endif %}
+      {% if object.information %}                       Information & Referral,                     {% endif %}
+      {% if object.services %}                          Other Services                              {% endif %}
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-1"></div>
+    <div class="col-11"><strong>AT Goal Outcomes: </strong>{{ object.at_outcomes}}</div>
+  </div>
+  <div class="row">
+    <div class="col-1"></div>
+    <div class="col-11"><strong>IL/A Service Goal Outcomes: </strong>{{ object.ila_outcomes}}</div>
+  </div>
+  <div class="row">
+    <div class="col-1"></div>
+    <div class="col-11"><strong>Living Situation Outcomes: </strong>{{ object.living_plan_progress}}</div>
+  </div>
+  <div class="row">
+    <div class="col-1"></div>
+    <div class="col-11"><strong>Home and Community involvement Outcomes: </strong>{{ object.community_plan_progress}}</div>
+  </div>
+  <div class="row">
+    <div class="col-1"></div>
+    <div class="col-11"><strong>Employment Outcomes: </strong>{{ object.employment_outcomes}}</div>
+  </div>
+  <div class="row">
+    <div class="col-1"></div>
+    <div class="col-11"><strong>Comments: </strong>{{ object.note}}</div>
+  </div>
+</div>
+
+<br>
+
+<h2>{{ program_name }} Plan Notes</h2>
+<div class="container-fluid">
+  {% for note in plan_note_list %}
+    <div class="row">
+      <div class="col-12">
+
+        {% if program_name == 'SIP' %}
+        <!-- TODO/NOTE `sip_plan_id` is a column for both note tables: `lynx_sipnote` and `lynx_sip1854note`; this should be taken care of -->
+          <a href='{% url 'lynx:sip_note_edit' note.id %}?contact_id={{ note.contact_id }}&plan_id={{ note.sip_plan_id }}&next={{ request.path }}'>
+        {% elif program_name == '18-54' %}
+        <!-- TODO/NOTE `sip_plan_id` is a column for both note tables: `lynx_sipnote` and `lynx_sip1854note`; this should be taken care of -->
+          <a href='{% url 'lynx:sip1854_note_edit' note.id %}?contact_id={{ note.contact_id }}&plan_id={{ note.sip_plan_id }}&next={{ request.path }}'>
+        {% endif %}
+            Edit {{ note.note_date|date:'F j, Y' }}
+          </a>
+      </div>
+      <div class="col-12">
+        {% if program_name == 'SIP' %}
+          <a href='{% url 'lynx:sip_note_delete' note.id  %}?next={{ request.path }}'>
+        {% elif program_name == '18-54' %}
+          <a href='{% url 'lynx:sip1854_note_delete' note.id  %}?next={{ request.path }}'>
+        {% endif %}
+            Delete {{ note.note_date|date:'F j, Y' }}
+          </a>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-1"></div>
+      <div class="col-11">
+        <h3>{{ note.note_date|date:'F j, Y' }}:</h3>
+        {{ note.note|linebreaks }}
+        Instructor: {{ note.instructor }}
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-1"></div>
+      <div class="col-11">
+        <strong>Services: </strong>
+        {% if note.at_services or note.at_devices %}    Assistive Technology Devices and Services,   {% endif %}
+        {% if note.independent_living %}                Independent Living and Adjustment Services,  {% endif %}
+        {% if note.orientation %}                       Orientation & Mobility Training,             {% endif %}
+        {% if note.communications %}                    Communication Skills Training,               {% endif %}
+        {% if note.dls %}                               Daily Living Skills Training,                {% endif %}
+        {% if note.advocacy %}                          Advocacy Training,                           {% endif %}
+        {% if note.counseling %}                        Adjustment Counseling,                       {% endif %}
+        {% if note.information %}                       Information and Referral,                    {% endif %}
+        {% if note.other_services %}                    Other IL/A services,                         {% endif %}
+        {% if note.support_services or note.support %}  Supportive Services                          {% endif %}
+      </div>
+    </div>
+    {% empty %}
+    <div class="row">
+        <div class="col-1"></div>
+        <div class="col-11">Sorry, no {{ program_name }} Notes have been entered for this plan</div>
+    </div>
+  {% endfor %}
+</div>
+{% endblock %}

@@ -59,7 +59,7 @@
                         </a>
                     <!-- If there is no In-home plan, there's no note, so create a new plan with a new note  -->
                     <!--
-                        <a class="btn btn-success" aria-label="Add New {% if assignment.program == 'SIP' %}SIP{% else %}18-54{% endif %} Note" href='/lynx/add-{% if assignment.program == 'SIP' %}sip{% else %}sip1854{% endif %}-note/{{ assignment.client_id }}/?sip_plan_id=In-home&next={{ request.get_full_path|urlencode }}'>
+                        <a class="btn btn-success" aria-label="Add New {% if assignment.program == 'SIP' %}SIP{% else %}18-54{% endif %} Note" href='/lynx/add-{% if assignment.program == 'SIP' %}sip{% else %}sip1854{% endif %}-note/{{ assignment.client_id }}/?plan_id=In-home&next={{ request.get_full_path|urlencode }}'>
                             Add new {% if assignment.program == 'SIP' %}SIP{% else %}18-54{% endif %} in-home plan and note
                         </a>
                     -->
@@ -69,7 +69,7 @@
                         </a>
                     <!-- There is an in-home plan, but it has no notes, so let the user create one in that plan -->
                     <!--
-                        <a class="btn btn-success" aria-label="Add New {% if assignment.program == 'SIP' %}SIP{% else %}18-54{% endif %} Note" href='/lynx/add-{% if assignment.program == 'SIP' %}sip{% else %}sip1854{% endif %}-note/{{ assignment.client_id }}/?sip_plan_id={{ assignment.most_recent_in_home_id }}&next={{ request.get_full_path|urlencode }}'>
+                        <a class="btn btn-success" aria-label="Add New {% if assignment.program == 'SIP' %}SIP{% else %}18-54{% endif %} Note" href='/lynx/add-{% if assignment.program == 'SIP' %}sip{% else %}sip1854{% endif %}-note/{{ assignment.client_id }}/?plan_id={{ assignment.most_recent_in_home_id }}&next={{ request.get_full_path|urlencode }}'>
                             Add {% if assignment.program == 'SIP' %}SIP{% else %}18-54{% endif %} note
                         </a>
                     -->

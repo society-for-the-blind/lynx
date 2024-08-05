@@ -221,11 +221,12 @@ if DEBUG:
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
 
+STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.ManifestStaticFilesStorage'
+
 DJANGO_DIR = os.environ['DJANGO_DIR']
+
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(DJANGO_DIR, 'static')
-
-STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.ManifestStaticFilesStorage'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(DJANGO_DIR, 'media')
 

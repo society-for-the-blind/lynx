@@ -1,0 +1,107 @@
+{% extends 'lynx/base.html' %}
+{% load time_convert %}
+
+{% block title %}
+  {{ program_name }} Plans for {{ client.first_name }} {{ client.last_name }}
+{% endblock %}
+
+{% block content %}
+  <h2>{{ program_name }} Plans for {{ client.first_name }} {{ client.last_name }}</h2>
+
+  {% if not request.GET.print %}
+    <!--
+    <a class="btn btn-success" aria-label="Add New SIP Plan" href="/lynx/add-sip-plan/{{ client.id }}/">
+      Add New SIP Plan
+    </a>
+    <a class="btn btn-success" aria-label="Back to Client" href="/lynx/client/{{ client.id }}">
+      Return to {{ client.first_name }} {{ client.last_name }}'s Information
+    </a>
+    -->
+
+    {% if program_name == 'SIP' %}
+      <input type="button" class="btn btn-success" aria-label="Add New {{ program_name }} Plan" onclick="location.href='{% url 'lynx:sip_plan_add' client.id %}';" value="Add New {{ program_name }} Plan" />
+    {% elif program_name == '18-54' %}
+      <input type="button" class="btn btn-success" aria-label="Add New {{ program_name }} Plan" onclick="location.href='{% url 'lynx:sip1854_plan_add' client.id %}';" value="Add New {{ program_name }} Plan" />
+    {% else %}
+      <p class="error">No program with the name {{ program_name }}</p>
+    {% endif %}
+
+    <input type="button" class="btn btn-success" aria-label="Back to Client" onclick="location.href='{% url 'lynx:client' client.id %}';" value="Return to {{ client.first_name }} {{ client.last_name }}'s Information" />
+  {% endif %}
+
+  <div class="container-fluid">
+  {% for program_plan in plans %}
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-12">
+          <strong>Plan Name: </strong>
+
+          <a href='
+            {% if program_name == 'SIP' %}
+              {% url 'lynx:sip_plan_detail' program_plan.id %}
+            {% elif program_name == '18-54' %}
+              {% url 'lynx:sip1854_plan_detail' program_plan.id %}
+            {% endif %}
+          '>
+            {% if program_plan.plan_name %} {{ program_plan.plan_name }} {% else %} Unnamed Plan {% endif %}
+          </a>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-12"><strong>AT Outcome: </strong>{{ program_plan.at_outcomes}}</div>
+      </div>
+      <div class="row">
+        <div class="col-12"><strong>IL/A Outcome: </strong>{{ program_plan.ila_outcomes}}</div>
+      </div>
+      <div class="row">
+        <div class="col-12"><strong>Living Situation Outcome: </strong>{{ program_plan.living_plan_progress}}</div>
+      </div>
+      <div class="row">
+        <div class="col-12"><strong>Community Involvement Outcome: </strong>{{ program_plan.community_plan_progress}}</div>
+      </div>
+      <div class="row">
+        <div class="col-12"><strong>Employment Outcome: </strong>{{ program_plan.employment_outcomes}}</div>
+      </div>
+      <div class="row">
+        <div class="col-12">
+          <strong>Plan Services: </strong>
+          {% if program_plan.at_services or program_plan.at_devices %}  Assistive Technology Devices and Services, {% endif %}
+          {% if program_plan.independent_living %}                      IL/A Services,                             {% endif %}
+          {% if program_plan.orientation %}                             O&M Skills,                                {% endif %}
+          {% if program_plan.communications %}                          Communication skills,                      {% endif %}
+          {% if program_plan.dls %}                                     Daily Living Skills,                       {% endif %}
+          {% if program_plan.advocacy %}                                Advocacy Training,                         {% endif %}
+          {% if program_plan.counseling %}                              Adjustment Counseling,                     {% endif %}
+          {% if program_plan.information %}                             Information & Referral,                    {% endif %}
+          {% if program_plan.services %}                                Other Services                             {% endif %}
+          {% if program_plan.support_services %}                        Supportive Services                        {% endif %}
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-12">
+          {% if program_name == 'SIP' %}
+            <a href="{% url 'lynx:sip_plan_edit' program_plan.id %}?next={{ request.path }}">Edit</a>
+            |
+            <a href='{% url 'lynx:sip_plan_delete'  program_plan.id client.id %}'>Delete</a>
+          {% elif program_name == '18-54' %}
+            <a href="{% url 'lynx:sip1854_plan_edit' program_plan.id %}?next={{ request.path }}">Edit</a>
+            |
+            <a href='{% url 'lynx:sip1854_plan_delete'  program_plan.id client.id %}'>Delete</a>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+    <br>
+
+    {% empty %}
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-11">Sorry, no {{ program_name }} Plans have been created for this client</div>
+      </div>
+    </div>
+
+  {% endfor %}
+  </div>
+  <br>
+{% endblock %}

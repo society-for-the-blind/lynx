@@ -1,37 +1,43 @@
-from django.shortcuts import render, reverse, redirect
-from django.http import HttpResponse, HttpResponseRedirect, Http404, JsonResponse
-from django.views.generic import DetailView, DeleteView, TemplateView
-from django.contrib.auth.decorators import login_required
-from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-from django.views.generic.edit import UpdateView
-from django.urls import reverse_lazy
-from django.db.models import Q, F
-from django.db.models import Value as V
-from django.db.models import DateField
-from django.db.models.functions import Concat, Replace, Lower, Substr, StrIndex, Cast
-from django.db import connection
-from django.core.paginator import Paginator
+from datetime    import datetime, date, timedelta
+from django      import forms
+from django.apps import apps
 from django.conf import settings
-from django.contrib.auth.models import User
-from django.core.mail import send_mail
-from django.forms.models import model_to_dict
 
-from django import forms
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins     import LoginRequiredMixin  \
+                                         , UserPassesTestMixin
 
-import os
-import csv
-import time
-from datetime import datetime, date, timedelta
-import logging
+from django.contrib.auth import models as dca
 
-from .models import Contact, Address, Phone, Email, Intake, IntakeNote, EmergencyContact, Authorization, \
-    ProgressReport, LessonNote, SipNote, Sip1854Note, Volunteer, SipPlan, Sip1854Plan, ContactInfoView, UNITS, Document, Vaccine, \
-    Assignment
-from .forms import ContactForm, IntakeForm, IntakeNoteForm, EmergencyForm, AddressForm, EmailForm, PhoneForm, \
-    AuthorizationForm, ProgressReportForm, LessonNoteForm, SipNoteForm, Sip1854NoteForm, BillingReportForm, SipDemographicReportForm, \
-    VolunteerForm, SipCSFReportForm, SipPlanForm, Sip1854PlanForm, SipNoteBulkForm, Sip1854NoteBulkForm, DocumentForm, VolunteerHoursForm, \
-    VolunteerReportForm, VaccineForm, AssignmentForm
-from .filters import AssignmentFilter, ContactFilter
+from django.core.mail      import send_mail
+from django.core.paginator import Paginator
+
+from django.db        import connection
+from django.db        import models    as ddm
+from django.db.models import functions as ddmf
+
+from django.forms.models  import model_to_dict
+from django.http          import HttpResponse         \
+                               , HttpResponseRedirect \
+                               , Http404              \
+                               , JsonResponse
+from django.shortcuts     import render  \
+                               , reverse \
+                               , redirect
+from django.urls          import reverse_lazy
+from django.views.generic import DetailView   \
+                               , DeleteView   \
+                               , TemplateView \
+                               , UpdateView
+
+import csv, logging, os, re, time
+
+# lm  = lynx model
+# lfo = lynx form
+# lfi = lynx filter
+from . import models  as lm  \
+            , forms   as lfo \
+            , filters as lfi
 
 logger = logging.getLogger(__name__)
 
@@ -52,96 +58,126 @@ def reports(request):
     return render(request, 'lynx/reports.html', context)
 
 
-# TODO dead code?
-@login_required
-def client_list_view(request):
-    clients = Contact.objects.filter(active=1).order_by(Lower('last_name'), Lower('first_name'))
-    return render(request, 'lynx/contact_list.html', {'clients': clients})
-
-
 @login_required
 def volunteer_list_view(request):
-    volunteers = Contact.objects.filter(volunteer_check=1).order_by(Lower('last_name'), Lower('first_name'))
+    volunteers = lm.Contact.objects.filter(volunteer_check=1).order_by(ddmf.Lower('last_name'), ddmf.Lower('first_name'))
     return render(request, 'lynx/volunteer_list.html', {'volunteers': volunteers})
 
 
 @login_required
 def authorization_list_view(request, client_id):
-    authorizations = Authorization.objects.filter(contact_id=client_id).order_by('-start_date')
-    client = Contact.objects.get(id=client_id)
+    authorizations = lm.Authorization.objects.filter(contact_id=client_id).order_by('-start_date')
+    client = lm.Contact.objects.get(id=client_id)
     return render(request, 'lynx/authorization_list.html', {'authorizations': authorizations, 'client': client})
 
 
-@login_required
-def sipplan_list_view(request, client_id):
-    plans = SipPlan.objects.filter(contact_id=client_id).annotate( date_substring=Cast(Substr('plan_name', 1, StrIndex('plan_name', V(' '))), DateField()) ).order_by('-date_substring')
-    client = Contact.objects.get(id=client_id)
-    return render(request, 'lynx/sipplan_list.html', {'plans': plans, 'client': client})
+# TODO RESTify  `urls.py` to  get  rid  of the  `path_part`
+#      duplication in the views below
+#
+# E.g., `sipplans` and `sip1854plans` should simply be
+# `plans` with  and added program identifier  as input
+# before/after the client  id. Does Django's `urls.py`
+# allow specifying parameters to be passed to views?
 
-
-@login_required
-def sip1854plan_list_view(request, client_id):
-    plans = Sip1854Plan.objects.filter(contact_id=client_id).annotate( date_substring=Cast(Substr('plan_name', 1, StrIndex('plan_name', V(' '))), DateField()) ).order_by('-date_substring')
-    client = Contact.objects.get(id=client_id)
-    return render(request, 'lynx/sip1854plan_list.html', {'plans': plans, 'client': client})
-
-
-@login_required
-def sipnote_list_view(request, client_id):
-    # notes = SipNote.objects.filter(contact_id=client_id).order_by('-note_date')
-    notes = SipNote.objects.filter(contact_id=client_id).select_related('sip_plan').order_by('-note_date')
-    client = Contact.objects.get(id=client_id)
-    return render(request, 'lynx/sipnote_list.html', {'notes': notes, 'client': client})
-
-
-@login_required
-def sip1854note_list_view(request, client_id):
-    notes = Sip1854Note.objects.filter(contact_id=client_id).order_by('-note_date')
-    plans = Sip1854Plan.objects.filter(contact_id=client_id)
-
-    plans_dict = {plan.id: plan.plan_name for plan in plans}
-    notes_with_plan_name = []
-    for note in notes:
-        note_dict = model_to_dict(note)  # Convert the note instance to a dictionary
-        plan_name = plans_dict.get(note.sip_plan_id, 'Unknown Plan')  # Get the plan_name using sip_plan_id
-        note_dict['plan_name'] = plan_name  # Add plan_name to the note dictionary
-        notes_with_plan_name.append(note_dict)
+def parse_path_for_program(request):
+    # (Pdb) request.path
+    # '/lynx/...sip1854...../11469'
+    # (Pdb) request.path.split('/')
+    # ['', 'lynx', '...sip1854.....', '11469']
+    path_part = request.path.split('/')[2]
+    # program_path_part = path_part[:-5]
+    program_path_part = re.search('(?P<program>sip(\d{4})?)', path_part).group('program')
     # import pdb; pdb.set_trace()
 
-    client = Contact.objects.get(id=client_id)
-    return render(request, 'lynx/sip1854note_list.html', {'notes_with_plan_name': notes_with_plan_name, 'plans': plans, 'notes': notes, 'client': client})
+    if   program_path_part == 'sip':
+
+        program_name    = 'SIP'
+        plan_model      = lm.SipPlan
+        plan_form_model = lfo.SipPlanForm
+        note_model      = lm.SipNote
+        note_form       = lfo.SipNoteForm
+
+    elif program_path_part == 'sip1854':
+
+        program_name    = '18-54'
+        plan_model      = lm.Sip1854Plan
+        plan_form_model = lfo.Sip1854PlanForm
+        note_model      = lm.Sip1854Note
+        note_form       = lfo.Sip1854NoteForm
+
+    else:
+        raise ValueError(f"Only `sip` and `sip1854` prefixes are supported. \
+                           Got: '{ program_path_part }'.")
+
+    return { 'program_name':      program_name      \
+           , 'program_path_part': program_path_part \
+           , 'plan_model':        plan_model        \
+           , 'plan_form_model':   plan_form_model   \
+           , 'note_model':        note_model        \
+           , 'note_form':         note_form         \
+           }
+
+@login_required
+def plan_list_view(request, client_id):
+    # import pdb; pdb.set_trace()
+    client = lm.Contact.objects.get(id=client_id)
+
+    p = parse_path_for_program( request )
+    plans = p['plan_model']               \
+            .objects                      \
+            .filter(contact_id=client_id) \
+            .annotate( date_substring=ddmf.Cast( ddmf.Substr( 'plan_name'                      \
+                                                  , 1                                          \
+                                                  , ddmf.StrIndex('plan_name', ddm.Value(' ')) \
+                                                  )
+                                          , ddm.DateField() \
+                                          )                 \
+                     )                                      \
+            .order_by('-date_substring')
+
+    return render( request                                       \
+                 , 'lynx/plan_list.html'                         \
+                 , { 'plans':             plans                  \
+                   , 'client':            client                 \
+                   , 'program_name':      p['program_name']      \
+                   , 'program_path_part': p['program_path_part'] \
+                   }                                             \
+                 )
 
 
 @login_required
-def instructor_list_view(request):
-    query = request.GET.get('q')
-    instructors = User.objects.filter(groups__name='SIP').order_by(Lower('last_name'))
-    if query:
-        instructor_list = User.objects.filter(groups__name='SIP').order_by(Lower('last_name'))
-        object_list = Contact.objects.filter(
-            Q(full_name__icontains=query) |
-            Q(first_name__icontains=query) |
-            Q(last_name__icontains=query)
-        )
+def plan_note_list_view(request, client_id):
+    # notes = lm.SipNote.objects.filter(contact_id=client_id).order_by('-note_date')
+    client = lm.Contact.objects.get(id=client_id)
 
-        object_list = object_list.order_by(Lower('last_name'), Lower('first_name'))
-    else:
-        object_list = None
-    # return render(request, 'lynx/client_search.html', {'object_list': object_list, 'clients': clients})
-    return render(request, 'lynx/instructor_search.html', {'instructors': instructors})
+    p = parse_path_for_program( request )
+    notes = p['note_model']               \
+            .objects                      \
+            .filter(contact_id=client_id) \
+            .select_related('sip_plan')   \
+            .order_by('-note_date')
+
+    return render( request
+                 , 'lynx/plan_note_list.html'
+                 , { 'notes': notes
+                   , 'client': client
+                   , 'program_name':      p['program_name']      \
+                   , 'program_path_part': p['program_path_part'] \
+                   }
+                 )
 
 
 @login_required
 def add_contact(request):
-    form = ContactForm()
-    address_form = AddressForm()
-    phone_form = PhoneForm()
-    email_form = EmailForm()
+    form = lfo.ContactForm()
+    address_form = lfo.AddressForm()
+    phone_form = lfo.PhoneForm()
+    email_form = lfo.EmailForm()
     if request.method == 'POST':
-        form = ContactForm(request.POST)
-        address_form = AddressForm(request.POST)
-        phone_form = PhoneForm(request.POST)
-        email_form = EmailForm(request.POST)
+        form = lfo.ContactForm(request.POST)
+        address_form = lfo.AddressForm(request.POST)
+        phone_form = lfo.PhoneForm(request.POST)
+        email_form = lfo.EmailForm(request.POST)
         if address_form.is_valid() & phone_form.is_valid() & email_form.is_valid() & form.is_valid():
             form = form.save(commit=False)
             form.user_id = request.user.id
@@ -175,9 +211,9 @@ def add_contact(request):
 
 @login_required
 def add_intake(request, contact_id):
-    form = IntakeForm()
+    form = lfo.IntakeForm()
     if request.method == 'POST':
-        form = IntakeForm(request.POST)
+        form = lfo.IntakeForm(request.POST)
         if form.is_valid():
             form = form.save(commit=False)
             form.user_id = request.user.id
@@ -189,21 +225,25 @@ def add_intake(request, contact_id):
 
 
 @login_required
-def add_sip_note(request, contact_id):
+def add_plan_note(request, contact_id):
     contact = {'contact_id': contact_id}
-    client = Contact.objects.get(id=contact_id)
-    sip_plan_id = request.GET.get('sip_plan_id')
+    client = lm.Contact.objects.get(id=contact_id)
+    plan_id = request.GET.get('plan_id')
     # import pdb; pdb.set_trace()
-    if sip_plan_id:
-        form = SipNoteForm(initial={'sip_plan': sip_plan_id}, **contact, sip_plan_id=sip_plan_id)
-    else:
-        form = SipNoteForm(**contact)
 
-    # form = SipNoteForm(request, contact_id=contact_id)
+    p = parse_path_for_program( request )
+    form_class = p['note_form']
+
+    if plan_id:
+        form = form_class(initial={'plan': plan_id}, **contact, plan_id=plan_id)
+    else:
+        form = form_class(**contact)
+
+    # form = form_class(request, contact_id=contact_id)
     if request.method == 'POST':
 
         # NOTE deactivate creating new plan with a new note (it will confuse users)
-        #      See also forms.py if re-activation needed.
+        #      See also forms.py if re-activation needed. {{-
 
         # if request.POST['sip_plan'].isnumeric():
         #     post = request.POST
@@ -220,7 +260,7 @@ def add_sip_note(request, contact_id):
         #         post_with_new_plan['support_services'] = post_with_new_plan['support']
         #     if 'services' in post_with_new_plan:
         #         post_with_new_plan['other_services']   = post_with_new_plan['services']
-        #     plan_form = SipPlanForm(post_with_new_plan)
+        #     plan_form = lfo.SipPlanForm(post_with_new_plan)
         #     # Not sure what happens if this fails, but then this should never fail.
         #     if plan_form.is_valid():
         #         # import pdb; pdb.set_trace()
@@ -228,9 +268,10 @@ def add_sip_note(request, contact_id):
         #         post_with_new_plan['sip_plan'] = str(new_plan_id)
         #         post_with_new_plan['note'] = request.POST['note']
         #         post = post_with_new_plan
+        # }}-
 
         post = request.POST
-        form = SipNoteForm(post, contact_id=contact_id)
+        form = form_class(post, contact_id=contact_id)
 
         if form.is_valid():
             form = form.save(commit=False)
@@ -259,83 +300,28 @@ def add_sip_note(request, contact_id):
             # If 'next' parameter isn't provided, redirect to a default location
             return HttpResponseRedirect(reverse('lynx:client', args=(contact_id,)))
 
-    return render(request, 'lynx/add_sip_note.html', {'form': form, 'contact_id': contact_id, 'client': client})
+    return render( request                              \
+                 , 'lynx/add_plan_note.html'            \
+                 , { 'form':          form              \
+                   , 'contact_id':    contact_id        \
+                   , 'client':        client            \
+                   , 'program_name':  p['program_name'] \
+                   }                                    \
+                 )
 
-
-# TODO `add_sip1854_note` and `add_sip_note` only differ in few places
-@login_required
-def add_sip1854_note(request, contact_id):
-    contact = {'contact_id': contact_id}
-    client = Contact.objects.get(id=contact_id)
-    sip1854_plan_id = request.GET.get('sip_plan_id')
-    # import pdb; pdb.set_trace()
-    if sip1854_plan_id:
-        form = Sip1854NoteForm(initial={'sip_plan': sip1854_plan_id}, **contact, sip1854_plan_id=sip1854_plan_id)
-    else:
-        form = Sip1854NoteForm(**contact)
-    # form = Sip1854NoteForm(request, contact_id=contact_id)
-    if request.method == 'POST':
-        # Check the value of the "SIP plan" dropdown
-        if request.POST['sip_plan'].isnumeric():
-            post = request.POST
-        else:
-            post_with_new_plan = request.POST.copy()
-            post_with_new_plan['plan_type'] = post_with_new_plan['sip_plan']
-            post_with_new_plan['plan_date_month'] = post_with_new_plan['note_date_month']
-            post_with_new_plan['plan_date_day'] = post_with_new_plan['note_date_day']
-            post_with_new_plan['plan_date_year'] = post_with_new_plan['note_date_year']
-            post_with_new_plan['note'] = ''
-            if 'at_devices' in post_with_new_plan:
-                post_with_new_plan['at_services'] = post_with_new_plan['at_devices']
-            if 'support' in post_with_new_plan:
-                post_with_new_plan['support_services'] = post_with_new_plan['support']
-            if 'services' in post_with_new_plan:
-                post_with_new_plan['other_services']   = post_with_new_plan['services']
-            plan_form = Sip1854PlanForm(post_with_new_plan)
-            # Not sure what happens if this fails, but then this should never fail.
-            if plan_form.is_valid():
-                # import pdb; pdb.set_trace()
-                new_plan_id = save_plan(plan_form, request.user, post_with_new_plan, contact_id)
-                post_with_new_plan['sip_plan'] = str(new_plan_id)
-                post_with_new_plan['note'] = request.POST['note']
-                post = post_with_new_plan
-
-        form = Sip1854NoteForm(post, contact_id=contact_id)
-
-
-        if form.is_valid():
-            form = form.save(commit=False)
-            form.contact_id = contact_id
-            note_date = form.note_date
-            note_month = note_date.month
-            note_year = note_date.year
-            quarter = get_quarter(note_month)
-            if quarter == 1:
-                fiscal_year = get_fiscal_year(note_year)
-            else:
-                f_year = note_year - 1
-                fiscal_year = get_fiscal_year(f_year)
-            form.quarter = quarter
-            form.fiscal_year = fiscal_year
-            form.instructor = request.user.first_name + request.user.last_name
-            form.user_id = request.user.id
-            form.save()
-
-        next_url = request.GET.get('next', '')  # Fallback to an empty string if 'next' is not present
-        # import pdb; pdb.set_trace()
-        if next_url:
-            # Optional: Validate next_url before redirecting
-            return HttpResponseRedirect(next_url)
-        else:
-            # If 'next' parameter isn't provided, redirect to a default location
-            return HttpResponseRedirect(reverse('lynx:client', args=(contact_id,)))
-
-    return render(request, 'lynx/add_sip1854_note.html', {'form': form, 'contact_id': contact_id, 'client': client})
 
 def save_plan(form, request_user, request_post, contact_id):
     form = form.save(commit=False)
     form.instructor = request_user.first_name + request_user.last_name
-    form.plan_name = request_post.get('plan_date_month') + '/' + request_post.get('plan_date_day') + '/' + request_post.get('plan_date_year') + ' - ' + request_post.get('plan_type') + ' - ' + form.instructor
+    form.plan_name =   request_post.get('plan_date_month') \
+                     + '/'                                 \
+                     + request_post.get('plan_date_day')   \
+                     + '/'                                 \
+                     + request_post.get('plan_date_year')  \
+                   + ' - '                                 \
+                   + request_post.get('plan_type')         \
+                   + ' - '                                 \
+                   + form.instructor
     # form.plan_date = request.POST.get('start_date')
     form.contact_id = contact_id
     form.user_id = request_user.id
@@ -343,34 +329,37 @@ def save_plan(form, request_user, request_post, contact_id):
     return form.pk
 
 @login_required
-def add_sip_plan(request, contact_id):
-    form = SipPlanForm()
+def add_plan(request, contact_id):
+    p = parse_path_for_program( request )
+    # import pdb; pdb.set_trace()
+    form = p['plan_form_model']()
+
     if request.method == 'POST':
-        form = SipPlanForm(request.POST)
+        form = p['plan_form_model'](request.POST)
+
         if form.is_valid():
             new_plan_id = save_plan(form, request.user, request.POST, contact_id)
-            return HttpResponseRedirect(reverse('lynx:sip_plan', kwargs={'pk': new_plan_id}))
-    return render(request, 'lynx/add_sip_plan.html', {'form': form})
+            return HttpResponseRedirect( reverse( f"lynx:{ p['program_path_part'] }_plan_detail" \
+                                                , kwargs={'pk': new_plan_id}                     \
+                                                )                                                \
+                                       )
 
-
-@login_required
-def add_sip1854_plan(request, contact_id):
-    form = Sip1854PlanForm()
-    if request.method == 'POST':
-        form = Sip1854PlanForm(request.POST)
-        if form.is_valid():
-            save_plan(form, request.user, request.POST, contact_id)
-            return HttpResponseRedirect(reverse('lynx:plan1854_list', args=(contact_id,)))
-    return render(request, 'lynx/add_sip1854_plan.html', {'form': form})
+    return render( request                                       \
+                 , 'lynx/add_plan.html'                          \
+                 , { 'form': form                                \
+                   , 'program_name':      p['program_name']      \
+                   , 'program_path_part': p['program_path_part'] \
+                   }                                             \
+                 )
 
 
 @login_required
 def add_sip_note_bulk(request):
-    form = SipNoteBulkForm()
-    client_list = Contact.objects.filter(sip_client=1).order_by(Lower('last_name'))
+    form = lfo.SipNoteBulkForm()
+    client_list = lm.Contact.objects.filter(sip_client=1).order_by(ddmf.Lower('last_name'))
     range = [1, 2, 3, 4, 5, 6, 7, 8, 9]
     if request.method == 'POST':
-        form = SipNoteBulkForm(request.POST)
+        form = lfo.SipNoteBulkForm(request.POST)
         if form.is_valid():
             form = form.save(commit=False)
             note_date = form.note_date
@@ -409,11 +398,11 @@ def add_sip_note_bulk(request):
 
 @login_required
 def add_sip1854_note_bulk(request):
-    form = Sip1854NoteBulkForm()
-    client_list = Contact.objects.filter(sip_client=1).order_by(Lower('last_name'))
+    form = lfo.Sip1854NoteBulkForm()
+    client_list = lm.Contact.objects.filter(sip_client=1).order_by(ddmf.Lower('last_name'))
     range = [1, 2, 3, 4, 5, 6, 7, 8, 9]
     if request.method == 'POST':
-        form = Sip1854NoteBulkForm(request.POST)
+        form = lfo.Sip1854NoteBulkForm(request.POST)
         if form.is_valid():
             form = form.save(commit=False)
             note_date = form.note_date
@@ -452,14 +441,15 @@ def add_sip1854_note_bulk(request):
 
 @login_required
 def add_assignments(request, contact_id):
-    form = AssignmentForm()
-    # breakpoint()
+    form = lfo.AssignmentForm()
     # import pdb; pdb.set_trace()
-    instructors = User.objects.filter(groups__name='SIP').order_by(Lower('last_name'))
+    instructors = dca.User.objects.filter(groups__name='SIP').order_by(ddmf.Lower('last_name'))
     program_options = ["SIP", "1854"]
     assignment_priorities = ["New", "Returning"]
+
     if request.method == 'POST':
-        form = AssignmentForm(request.POST)
+        form = lfo.AssignmentForm(request.POST)
+
         if form.is_valid():
             form = form.save(commit=False)
             form.contact_id = contact_id
@@ -468,7 +458,7 @@ def add_assignments(request, contact_id):
 
             username = 'SIP Assignments <' + settings.EMAIL_HOST_USER + '>'
             message = "You have a new Assignment by " + request.user.first_name + " with the following note: " + form.note
-            instructor = User.objects.filter(pk=form.instructor_id).values('email')
+            instructor = dca.User.objects.filter(pk=form.instructor_id).values('email')
             inst_email = instructor[0]['email']
             client_name = form.contact.first_name + " " + form.contact.last_name
 
@@ -480,30 +470,25 @@ def add_assignments(request, contact_id):
                       )
 
             return HttpResponseRedirect(reverse('lynx:assignment', args=(contact_id,)))
-    return render(request, 'lynx/add_assignments.html', {'form': form, 'instructors': instructors, 'contact_id': contact_id, 'program_options': program_options, 'assignment_priorities': assignment_priorities})
 
-
-@login_required
-def get_sip_plans(request):
-    contact_id = request.GET.get('client_id')
-    plans = SipPlan.objects.filter(contact_id=contact_id).order_by('-plan_date')
-    return render(request, 'lynx/sip_plan_list_options.html', {'plans': plans})
-
-
-@login_required
-def get_sip1854_plans(request):
-    contact_id = request.GET.get('client_id')
-    plans = Sip1854Plan.objects.filter(contact_id=contact_id).order_by('-plan_date')
-    return render(request, 'lynx/sip1854_plan_list_options.html', {'plans': plans})
+    return render( request                                          \
+                 , 'lynx/add_assignments.html'                      \
+                 , { 'form': form                                   \
+                   , 'instructors': instructors                     \
+                   , 'contact_id': contact_id                       \
+                   , 'program_options': program_options             \
+                   , 'assignment_priorities': assignment_priorities \
+                   }                                                \
+                 )
 
 
 @login_required
 def add_emergency(request, contact_id):
-    form = EmergencyForm()
-    phone_form = PhoneForm()
+    form = lfo.EmergencyForm()
+    phone_form = lfo.PhoneForm()
     if request.method == 'POST':
-        phone_form = PhoneForm(request.POST)
-        form = EmergencyForm(request.POST)
+        phone_form = lfo.PhoneForm(request.POST)
+        form = lfo.EmergencyForm(request.POST)
         if phone_form.is_valid() & form.is_valid():
             form = form.save(commit=False)
             form.contact_id = contact_id
@@ -526,9 +511,9 @@ def add_emergency(request, contact_id):
 
 @login_required
 def add_address(request, contact_id):
-    form = AddressForm()
+    form = lfo.AddressForm()
     if request.method == 'POST':
-        form = AddressForm(request.POST)
+        form = lfo.AddressForm(request.POST)
         if form.is_valid():
             form = form.save(commit=False)
             form.contact_id = contact_id
@@ -541,9 +526,9 @@ def add_address(request, contact_id):
 
 @login_required
 def add_email(request, contact_id):
-    form = EmailForm()
+    form = lfo.EmailForm()
     if request.method == 'POST':
-        form = EmailForm(request.POST)
+        form = lfo.EmailForm(request.POST)
         if form.is_valid():
             form = form.save(commit=False)
             form.contact_id = contact_id
@@ -556,16 +541,16 @@ def add_email(request, contact_id):
 
 @login_required
 def add_emergency_email(request, emergency_contact_id):
-    form = EmailForm()
+    form = lfo.EmailForm()
     if request.method == 'POST':
-        form = EmailForm(request.POST)
+        form = lfo.EmailForm(request.POST)
         if form.is_valid():
             form = form.save(commit=False)
             form.emergency_contact_id = emergency_contact_id
             form.active = 1
             form.user_id = request.user.id
             form.save()
-            emergency = EmergencyContact.objects.get(id=emergency_contact_id)
+            emergency = lm.EmergencyContact.objects.get(id=emergency_contact_id)
             contact_id = int(emergency.contact_id)
             return HttpResponseRedirect(reverse('lynx:client', args=(contact_id,)))
     return render(request, 'lynx/add_email.html', {'form': form})
@@ -573,9 +558,9 @@ def add_emergency_email(request, emergency_contact_id):
 
 @login_required
 def add_phone(request, contact_id):
-    form = PhoneForm()
+    form = lfo.PhoneForm()
     if request.method == 'POST':
-        form = PhoneForm(request.POST)
+        form = lfo.PhoneForm(request.POST)
         if form.is_valid():
             form = form.save(commit=False)
             form.contact_id = contact_id
@@ -588,16 +573,16 @@ def add_phone(request, contact_id):
 
 @login_required
 def add_emergency_phone(request, emergency_contact_id):
-    form = PhoneForm()
+    form = lfo.PhoneForm()
     if request.method == 'POST':
-        form = PhoneForm(request.POST)
+        form = lfo.PhoneForm(request.POST)
         if form.is_valid():
             form = form.save(commit=False)
             form.emergency_contact_id = emergency_contact_id
             form.user_id = request.user.id
             form.active = 1
             form.save()
-            emergency = EmergencyContact.objects.get(id=emergency_contact_id)
+            emergency = lm.EmergencyContact.objects.get(id=emergency_contact_id)
             contact_id = int(emergency.contact_id)
             return HttpResponseRedirect(reverse('lynx:client', args=(contact_id,)))
     return render(request, 'lynx/add_phone.html', {'form': form})
@@ -605,9 +590,9 @@ def add_emergency_phone(request, emergency_contact_id):
 
 @login_required
 def add_authorization(request, contact_id):
-    form = AuthorizationForm()
+    form = lfo.AuthorizationForm()
     if request.method == 'POST':
-        form = AuthorizationForm(request.POST)
+        form = lfo.AuthorizationForm(request.POST)
         if form.is_valid():
             form = form.save(commit=False)
             form.contact_id = contact_id
@@ -624,9 +609,9 @@ def add_progress_report(request, authorization_id):
     current_time = datetime.now()
     current_month = current_time.month
     current_year = current_time.year
-    form = ProgressReportForm(initial={'instructor': full_name, 'month': current_month, 'year': current_year})
+    form = lfo.ProgressReportForm(initial={'instructor': full_name, 'month': current_month, 'year': current_year})
     if request.method == 'POST':
-        form = ProgressReportForm(request.POST)
+        form = lfo.ProgressReportForm(request.POST)
         if form.is_valid():
             form = form.save(commit=False)
             form.authorization_id = authorization_id
@@ -636,19 +621,20 @@ def add_progress_report(request, authorization_id):
     return render(request, 'lynx/add_progress_report.html', {'form': form})
 
 
+# TODO aside from some classes, the code is the same as `add_contact`
 @login_required
 def add_volunteer(request):
-    form = VolunteerForm()
-    contact_form = ContactForm()
-    address_form = AddressForm()
-    phone_form = PhoneForm()
-    email_form = EmailForm()
+    form = lfo.VolunteerForm()
+    contact_form = lfo.ContactForm()
+    address_form = lfo.AddressForm()
+    phone_form = lfo.PhoneForm()
+    email_form = lfo.EmailForm()
     if request.method == 'POST':
-        form = VolunteerForm(request.POST)
-        contact_form = ContactForm(request.POST)
-        address_form = AddressForm(request.POST)
-        phone_form = PhoneForm(request.POST)
-        email_form = EmailForm(request.POST)
+        form = lfo.VolunteerForm(request.POST)
+        contact_form = lfo.ContactForm(request.POST)
+        address_form = lfo.AddressForm(request.POST)
+        phone_form = lfo.PhoneForm(request.POST)
+        email_form = lfo.EmailForm(request.POST)
         if address_form.is_valid() & phone_form.is_valid() & email_form.is_valid() & form.is_valid() & contact_form.is_valid():
             contact_form = contact_form.save()
             contact_id = contact_form.pk
@@ -680,9 +666,9 @@ def add_volunteer(request):
 
 @login_required
 def add_volunteer_hours(request):
-    form = VolunteerHoursForm()
+    form = lfo.VolunteerHoursForm()
     if request.method == 'POST':
-        form = VolunteerHoursForm(request.POST)
+        form = lfo.VolunteerHoursForm(request.POST)
         if form.is_valid():
             form = form.save(commit=False)
             contact_id = form.contact_id
@@ -694,17 +680,17 @@ def add_volunteer_hours(request):
 
 @login_required
 def add_lesson_note(request, authorization_id):
-    form = LessonNoteForm()
-    authorization = Authorization.objects.get(id=authorization_id)
-    note_list = LessonNote.objects.filter(authorization_id=authorization_id)
+    form = lfo.LessonNoteForm()
+    authorization = lm.Authorization.objects.get(id=authorization_id)
+    note_list = lm.LessonNote.objects.filter(authorization_id=authorization_id)
 
-    client = Contact.objects.get(id=authorization.contact_id)
+    client = lm.Contact.objects.get(id=authorization.contact_id)
     if authorization.authorization_type == 'Hours':
         auth_type = 'individual'
     else:
         auth_type = 'group'
     if request.method == 'POST':
-        form = LessonNoteForm(request.POST)
+        form = lfo.LessonNoteForm(request.POST)
 
         if form.is_valid():
             form = form.save(commit=False)
@@ -717,9 +703,9 @@ def add_lesson_note(request, authorization_id):
 
 @login_required
 def add_vaccination_record(request, contact_id):
-    form = VaccineForm()
+    form = lfo.VaccineForm()
     if request.method == 'POST':
-        form = VaccineForm(request.POST)
+        form = lfo.VaccineForm(request.POST)
         if form.is_valid():
             form = form.save(commit=False)
             form.contact_id = contact_id
@@ -730,8 +716,8 @@ def add_vaccination_record(request, contact_id):
 
 
 def get_hour_validation(request, authorization_id, billed_units): #check if they are entering more hours then allowed on authorization
-    authorization = Authorization.objects.get(id=authorization_id)
-    note_list = LessonNote.objects.filter(authorization_id=authorization_id)
+    authorization = lm.Authorization.objects.get(id=authorization_id)
+    note_list = lm.LessonNote.objects.filter(authorization_id=authorization_id)
 
     total_time = authorization.total_time
     total_units = 0
@@ -753,7 +739,7 @@ def get_hour_validation(request, authorization_id, billed_units): #check if they
 
 
 def get_date_validation(request, authorization_id, note_date): #check if they are entering a lesson note after the authorization authorization
-    authorization = Authorization.objects.get(id=authorization_id)
+    authorization = lm.Authorization.objects.get(id=authorization_id)
     auth_date = authorization.end_date
     auth_date = auth_date.strftime("%Y-%m-%d")
 
@@ -765,14 +751,14 @@ def get_date_validation(request, authorization_id, note_date): #check if they ar
 
 @login_required
 def volunteers_report_month(request):
-    form = VolunteerReportForm()
+    form = lfo.VolunteerReportForm()
     if request.method == 'POST':
-        form = VolunteerReportForm(request.POST)
+        form = lfo.VolunteerReportForm(request.POST)
         if form.is_valid():
             data = request.POST.copy()
             start = data.get('start_date')
             end = data.get('end_date')
-            volunteers = Volunteer.objects.raw("""SELECT lc.id, CONCAT(lc.last_name, ', ', lc.first_name) as name,
+            volunteers = lm.Volunteer.objects.raw("""SELECT lc.id, CONCAT(lc.last_name, ', ', lc.first_name) as name,
                                                         SUM(volunteer_hours) as hours,
                                                         EXTRACT(MONTH FROM volunteer_date) as month,
                                                         EXTRACT(YEAR FROM volunteer_date) as year
@@ -808,14 +794,14 @@ def volunteers_report_month(request):
 
 @login_required
 def volunteers_report_program(request):
-    form = VolunteerReportForm()
+    form = lfo.VolunteerReportForm()
     if request.method == 'POST':
-        form = VolunteerReportForm(request.POST)
+        form = lfo.VolunteerReportForm(request.POST)
         if form.is_valid():
             data = request.POST.copy()
             start = data.get('start_date')
             end = data.get('end_date')
-            volunteers = Volunteer.objects.raw("""SELECT lc.id,
+            volunteers = lm.Volunteer.objects.raw("""SELECT lc.id,
                                                         CONCAT(lc.last_name, ', ', lc.first_name) as name,
                                                         SUM(lv.volunteer_hours) as hours,
                                                         lv.volunteer_type,
@@ -856,17 +842,17 @@ def volunteers_report_program(request):
 @login_required
 def client_result_view(request):
     query = request.GET.get('q')
-    clients = Contact.objects.filter(active=1).order_by(Lower('last_name'), Lower('first_name'))
+    clients = lm.Contact.objects.filter(active=1).order_by(ddmf.Lower('last_name'), ddmf.Lower('first_name'))
     if query:
-        object_list = Contact.objects.annotate(
-            full_name=Concat('first_name', V(' '), 'last_name')
+        object_list = lm.Contact.objects.annotate(
+            full_name=ddmf.Concat('first_name', ddm.Value(' '), 'last_name')
         ).filter(
-            Q(full_name__icontains=query) |
-            Q(first_name__icontains=query) |
-            Q(last_name__icontains=query)
+            ddm.Q(full_name__icontains=query) |
+            ddm.Q(first_name__icontains=query) |
+            ddm.Q(last_name__icontains=query)
         )
 
-        object_list = object_list.order_by(Lower('last_name'), Lower('first_name'))
+        object_list = object_list.order_by(ddmf.Lower('last_name'), ddmf.Lower('first_name'))
     else:
         object_list = None
     return render(request, 'lynx/client_search.html', {'object_list': object_list, 'clients': clients})
@@ -876,36 +862,36 @@ def client_result_view(request):
 def client_advanced_result_view(request):
     query = request.GET.get('q')
     if query:
-        object_list = Contact.objects.annotate(
-            full_name=Concat('first_name', V(' '), 'last_name')
+        object_list = lm.Contact.objects.annotate(
+            full_name=ddmf.Concat('first_name', ddm.Value(' '), 'last_name')
         ).annotate(
-            phone_number=Replace('phone__phone', V('('), V(''))
+            phone_number=ddmf.Replace('phone__phone', ddm.Value('('), ddm.Value(''))
         ).annotate(
-            phone_number=Replace('phone_number', V(')'), V(''))
+            phone_number=ddmf.Replace('phone_number', ddm.Value(')'), ddm.Value(''))
         ).annotate(
-            phone_number=Replace('phone_number', V('-'), V(''))
+            phone_number=ddmf.Replace('phone_number', ddm.Value('-'), ddm.Value(''))
         ).annotate(
-            phone_number=Replace('phone_number', V(' '), V(''))
+            phone_number=ddmf.Replace('phone_number', ddm.Value(' '), ddm.Value(''))
         ).annotate(
-            zip_code=F('address__zip_code')
+            zip_code=ddm.F('address__zip_code')
         ).annotate(
-            county=F('address__county')
+            county=ddm.F('address__county')
         ).annotate(
-            intake_date=F('intake__intake_date')
+            intake_date=ddm.F('intake__intake_date')
         ).annotate(
-            email_address=F('email__email')
+            email_address=ddm.F('email__email')
         ).filter(
-            Q(full_name__icontains=query) |
-            Q(first_name__icontains=query) |
-            Q(last_name__icontains=query) |
-            Q(zip_code__icontains=query) |
-            Q(county__icontains=query) |
-            Q(phone_number__icontains=query) |
-            Q(intake_date__icontains=query) |
-            Q(email_address__icontains=query)
+            ddm.Q(full_name__icontains=query) |
+            ddm.Q(first_name__icontains=query) |
+            ddm.Q(last_name__icontains=query) |
+            ddm.Q(zip_code__icontains=query) |
+            ddm.Q(county__icontains=query) |
+            ddm.Q(phone_number__icontains=query) |
+            ddm.Q(intake_date__icontains=query) |
+            ddm.Q(email_address__icontains=query)
         )
 
-        object_list = object_list.order_by(Lower('last_name'), Lower('first_name'), 'id')
+        object_list = object_list.order_by(ddmf.Lower('last_name'), ddmf.Lower('first_name'), 'id')
         paginator = Paginator(object_list, 20)
         page_number = request.GET.get('page')
         page_obj = paginator.get_page(page_number)
@@ -920,8 +906,8 @@ def progress_result_view(request):
         MONTHS = {"January": 1, "February": 2, "March": 3, "April": 4, "May": 5, "June": 6, "July": 7,
                   "August": 8, "September": 9, "October": 10, "November": 11, "December": 12}
         given_month = MONTHS[request.GET.get('selMonth')]
-        object_list = ProgressReport.objects.filter(month=given_month).filter(
-            year=request.GET.get('selYear')).order_by(Lower('authorization__contact__last_name'), 'authorization__intake_service_area__agency')
+        object_list = lm.ProgressReport.objects.filter(month=given_month).filter(
+            year=request.GET.get('selYear')).order_by(ddmf.Lower('authorization__contact__last_name'), 'authorization__intake_service_area__agency')
 
     else:
         object_list = None
@@ -932,41 +918,39 @@ def progress_result_view(request):
 
 @login_required
 def assignment_detail(request, contact_id):
-    instructor_list = Assignment.objects.filter(contact_id=contact_id).order_by('-assignment_date')
-    # contact = Contact.objects.get(id=contact_id).first()
-    contact = Contact.objects.filter(pk=contact_id).first()
+    instructor_list = lm.Assignment.objects.filter(contact_id=contact_id).order_by('-assignment_date')
+    # contact = lm.Contact.objects.get(id=contact_id).first()
+    contact = lm.Contact.objects.filter(pk=contact_id).first()
     # import pdb; pdb.set_trace()
     return render(request, 'lynx/assignment_detail.html', {'instructor_list': instructor_list, "contact_id": contact_id, 'contact': contact})
 
 class ContactDetailView(LoginRequiredMixin, DetailView):
-    model = Contact
+    model = lm.Contact
 
     def get_context_data(self, **kwargs):
         # Call the base implementation first to get a context
         context = super(ContactDetailView, self).get_context_data(**kwargs)
-        context['address_list'] = Address.objects.filter(contact_id=self.kwargs['pk'])
-        context['phone_list'] = Phone.objects.filter(contact_id=self.kwargs['pk']).order_by('created')
-        context['email_list'] = Email.objects.filter(contact_id=self.kwargs['pk'])
-        context['intake_list'] = Intake.objects.filter(contact_id=self.kwargs['pk'])
-        context['authorization_list'] = Authorization.objects.filter(contact_id=self.kwargs['pk']).order_by('-created')
-        context['note_list'] = IntakeNote.objects.filter(contact_id=self.kwargs['pk']).order_by('-created')
-        context['sip_list'] = SipNote.objects.filter(contact_id=self.kwargs['pk']).order_by(F('note_date').desc(nulls_last=True))
-        context['sip_plan_list'] = SipPlan.objects.filter(contact_id=self.kwargs['pk']).order_by('-plan_date')
-        context['emergency_list'] = EmergencyContact.objects.filter(contact_id=self.kwargs['pk']).order_by('-created')
-        context['document_list'] = Document.objects.filter(contact_id=self.kwargs['pk']).order_by('-created')
-        context['vaccine_list'] = Vaccine.objects.filter(contact_id=self.kwargs['pk']).order_by('-created')
-        context['instructor_list'] = Assignment.objects.filter(contact_id=self.kwargs['pk']).order_by('-created')
-        context['form'] = IntakeNoteForm
-        context['upload_form'] = DocumentForm
+        context['address_list'] = lm.Address.objects.filter(contact_id=self.kwargs['pk'])
+        context['phone_list'] = lm.Phone.objects.filter(contact_id=self.kwargs['pk']).order_by('created')
+        context['email_list'] = lm.Email.objects.filter(contact_id=self.kwargs['pk'])
+        context['intake_list'] = lm.Intake.objects.filter(contact_id=self.kwargs['pk'])
+        context['authorization_list'] = lm.Authorization.objects.filter(contact_id=self.kwargs['pk']).order_by('-created')
+        context['note_list'] = lm.IntakeNote.objects.filter(contact_id=self.kwargs['pk']).order_by('-created')
+        context['emergency_list'] = lm.EmergencyContact.objects.filter(contact_id=self.kwargs['pk']).order_by('-created')
+        context['document_list'] = lm.Document.objects.filter(contact_id=self.kwargs['pk']).order_by('-created')
+        context['vaccine_list'] = lm.Vaccine.objects.filter(contact_id=self.kwargs['pk']).order_by('-created')
+        context['instructor_list'] = lm.Assignment.objects.filter(contact_id=self.kwargs['pk']).order_by('-created')
+        context['form'] = lfo.IntakeNoteForm
+        context['upload_form'] = lfo.DocumentForm
 
         return context
 
     def post(self, request, *args, **kwargs):
         if 'note' in request.POST:
-            form = IntakeNoteForm(request.POST, request.FILES)
+            form = lfo.IntakeNoteForm(request.POST, request.FILES)
             upload = False
         else:
-            form = DocumentForm(request.POST, request.FILES)
+            form = lfo.DocumentForm(request.POST, request.FILES)
             upload = True
 
         if form.is_valid():
@@ -976,20 +960,21 @@ class ContactDetailView(LoginRequiredMixin, DetailView):
             if upload:
                 form.description = request.FILES['document'].name
             form.save()
+            # TODO Remove hard coded path (see `SipNoteUpdateView.form_valid`'s return function)
             action = "/lynx/client/" + str(self.kwargs['pk'])
             return HttpResponseRedirect(action)
 
 
 class AuthorizationDetailView(LoginRequiredMixin, DetailView):
-    model = Authorization
+    model = lm.Authorization
 
     def get_context_data(self, **kwargs):
         # Call the base implementation first to get a context
         context = super(AuthorizationDetailView, self).get_context_data(**kwargs)
-        context['report_list'] = ProgressReport.objects.filter(authorization_id=self.kwargs['pk'])
-        context['note_list'] = LessonNote.objects.filter(authorization_id=self.kwargs['pk']).order_by('-date')
-        notes = LessonNote.objects.filter(authorization_id=self.kwargs['pk']).values()
-        authorization = Authorization.objects.filter(id=self.kwargs['pk']).values()
+        context['report_list'] = lm.ProgressReport.objects.filter(authorization_id=self.kwargs['pk'])
+        context['note_list'] = lm.LessonNote.objects.filter(authorization_id=self.kwargs['pk']).order_by('-date')
+        notes = lm.LessonNote.objects.filter(authorization_id=self.kwargs['pk']).values()
+        authorization = lm.Authorization.objects.filter(id=self.kwargs['pk']).values()
         total_units = 0
         total_notes = 0
         total_present = 0
@@ -1034,22 +1019,23 @@ class AuthorizationDetailView(LoginRequiredMixin, DetailView):
         context['total_time'] = authorization[0]['total_time']
 
         context['total_present'] = total_present
-        context['form'] = LessonNoteForm
+        context['form'] = lfo.LessonNoteForm
         return context
 
     def post(self, request, *args, **kwargs):
-        form = LessonNoteForm(request.POST, request.FILES)
+        form = lfo.LessonNoteForm(request.POST, request.FILES)
         if form.is_valid():
             form = form.save(commit=False)
             form.authorization_id = self.kwargs['pk']
             form.user_id = request.user.id
             form.save()
+            # TODO Remove hard coded path (see `SipNoteUpdateView.form_valid`'s return function)
             action = "/lynx/authorization/" + str(self.kwargs['pk'])
             return HttpResponseRedirect(action)
 
 
 class ProgressReportDetailView(LoginRequiredMixin, DetailView):
-    model = ProgressReport
+    model = lm.ProgressReport
 
     def get_context_data(self, **kwargs):
         # Call the base implementation first to get a context
@@ -1059,7 +1045,7 @@ class ProgressReportDetailView(LoginRequiredMixin, DetailView):
         month_days = {'1': '-01-31', '2': '-02-28', '3': '-03-31', '4': '-04-30', '5': '-05-31', '6': '-06-30',
                       '7': '-07-31', '8': '-08-31', '9':'-09-30', '10': '-10-31', '11':'-11-30', '12': '-12-31'}
 
-        report = ProgressReport.objects.filter(id=self.kwargs['pk']).values()
+        report = lm.ProgressReport.objects.filter(id=self.kwargs['pk']).values()
         auth_id = report[0]['authorization_id']
         month_number = report[0]['month']
         year = report[0]['year']
@@ -1067,10 +1053,10 @@ class ProgressReportDetailView(LoginRequiredMixin, DetailView):
             month = report[0]['month']
             month_number = MONTHS[month]
         max_date = str(year) + month_days[month_number]
-        notes = LessonNote.objects.filter(authorization_id=auth_id).filter(
+        notes = lm.LessonNote.objects.filter(authorization_id=auth_id).filter(
             date__month=month_number).filter(date__year=year).values()
-        all_notes = LessonNote.objects.filter(authorization_id=auth_id).filter(date__lte=max_date).values()
-        authorization = Authorization.objects.filter(id=auth_id).values()
+        all_notes = lm.LessonNote.objects.filter(authorization_id=auth_id).filter(date__lte=max_date).values()
+        authorization = lm.Authorization.objects.filter(id=auth_id).values()
 
         total_units = 0
         all_units = 0
@@ -1118,11 +1104,11 @@ class ProgressReportDetailView(LoginRequiredMixin, DetailView):
 
 
 class LessonNoteDetailView(LoginRequiredMixin, DetailView):
-    model = LessonNote
+    model = lm.LessonNote
 
 
 class BillingReviewDetailView(LoginRequiredMixin, DetailView):
-    model = Authorization
+    model = lm.Authorization
     template_name = 'lynx/billing_review.html'
 
     def get_context_data(self, **kwargs):
@@ -1135,23 +1121,23 @@ class BillingReviewDetailView(LoginRequiredMixin, DetailView):
         context['year'] = year
 
         auth_id = self.kwargs['pk']
-        # report = ProgressReport.objects.filter(authorization_id=auth_id).values()
-        notes = LessonNote.objects.filter(authorization_id=auth_id).filter(date__month=month).filter(date__year=year).order_by(
+        # report = lm.ProgressReport.objects.filter(authorization_id=auth_id).values()
+        notes = lm.LessonNote.objects.filter(authorization_id=auth_id).filter(date__month=month).filter(date__year=year).order_by(
             'date').values()
-        reports = ProgressReport.objects.filter(authorization_id=auth_id).values()
-        month_report = ProgressReport.objects.filter(authorization_id=auth_id).filter(month=month).filter(year=year).values()[:1]
+        reports = lm.ProgressReport.objects.filter(authorization_id=auth_id).values()
+        month_report = lm.ProgressReport.objects.filter(authorization_id=auth_id).filter(month=month).filter(year=year).values()[:1]
         context['month_report'] = month_report
-        authorization = Authorization.objects.filter(id=auth_id).values()
+        authorization = lm.Authorization.objects.filter(id=auth_id).values()
 
         context['note_list'] = notes
 
         contact_id = authorization[0]['outside_agency_id']
-        outside = Contact.objects.filter(id=contact_id).values()
+        outside = lm.Contact.objects.filter(id=contact_id).values()
         context['payment'] = outside[0]['first_name'] + ' ' + outside[0]['last_name'] + ' - ' + outside[0]['company']
         # contact_id = outside[0]['contact_id']
         address = Address.objects.filter(contact_id=contact_id).values()[:1]
         context['address'] = address
-        phone = Phone.objects.filter(contact_id=contact_id).values()[:1]
+        phone = lm.Phone.objects.filter(contact_id=contact_id).values()[:1]
         context['phone'] = phone
 
         total_units = 0
@@ -1179,59 +1165,41 @@ class BillingReviewDetailView(LoginRequiredMixin, DetailView):
         return context
 
 
-class SipPlanDetailView(LoginRequiredMixin, DetailView):
-    model = SipPlan
+class PlanDetailView(LoginRequiredMixin, DetailView):
+    template_name = 'lynx/plan_detail.html'
+
+    def get_queryset(self):
+        p = parse_path_for_program( self.request )
+        self.model = p['plan_model']
+        self.queryset = p['plan_model'].objects.all()
+        return super(PlanDetailView, self).get_queryset()
 
     def get_context_data(self, **kwargs):
-        # Call the base implementation first to get a context
-        context = super(SipPlanDetailView, self).get_context_data(**kwargs)
-        context['sip_note_list'] = SipNote.objects.filter(sip_plan_id=self.kwargs['pk']).order_by('-note_date')
-        # context['model_name'] = self.model.__name__
-
-        return context
-
-
-class Sip1854PlanDetailView(LoginRequiredMixin, DetailView):
-    model = Sip1854Plan
-
-    def get_context_data(self, **kwargs):
-        # Call the base implementation first to get a context
-        context = super(Sip1854PlanDetailView, self).get_context_data(**kwargs)
-        context['sip1854_note_list'] = Sip1854Note.objects.filter(sip_plan_id=self.kwargs['pk']).order_by('-note_date')
-        context['model_name'] = self.model.__name__
-
+        p = parse_path_for_program( self.request )
+        # import pdb; pdb.set_trace()
+        context = super(PlanDetailView, self).get_context_data(**kwargs)
+        context['plan_note_list'] = p['note_model'].objects.filter(sip_plan_id=self.kwargs['pk']).order_by('-note_date')
+        context['program_name'] = p['program_name']
+        context['program_path_part'] = p['program_path_part']
         return context
 
 
 class VolunteerDetailView(LoginRequiredMixin, DetailView):
-    model = Contact
+    model = lm.Contact
     template_name = 'lynx/volunteer_detail.html'
 
     def get_context_data(self, **kwargs):
         # Call the base implementation first to get a context
         context = super(VolunteerDetailView, self).get_context_data(**kwargs)
-        context['volunteer_list'] = Volunteer.objects.filter(contact_id=self.kwargs['pk'])
-        context['address_list'] = Address.objects.filter(contact_id=self.kwargs['pk'])
-        context['phone_list'] = Phone.objects.filter(contact_id=self.kwargs['pk'])
-        context['email_list'] = Email.objects.filter(contact_id=self.kwargs['pk'])
+        context['volunteer_list'] = lm.Volunteer.objects.filter(contact_id=self.kwargs['pk'])
+        context['address_list'] = lm.Address.objects.filter(contact_id=self.kwargs['pk'])
+        context['phone_list'] = lm.Phone.objects.filter(contact_id=self.kwargs['pk'])
+        context['email_list'] = lm.Email.objects.filter(contact_id=self.kwargs['pk'])
         return context
-
-
-"""
-class InstructorDetailView(LoginRequiredMixin, DetailView):
-    model = User
-    template_name = 'lynx/instructor_detail.html'
-
-    def get_context_data(self, **kwargs):
-        # Call the base implementation first to get a context
-        context = super(InstructorDetailView, self).get_context_data(**kwargs)
-        context['assignment_list'] = Assignment.objects.filter(instructor_id=self.kwargs['pk']).order_by('-assignment_date')
-        return context
-"""
 
 
 class ClientUpdateView(LoginRequiredMixin, UpdateView):
-    model = Contact
+    model = lm.Contact
     fields = ['first_name', 'middle_name', 'last_name', 'company', 'do_not_contact', 'donor', 'deceased',
               'remove_mailing', 'active', 'contact_notes', 'sip_client', 'core_client', 'sip1854_client', 'careers_plus',
               'careers_plus_youth', 'volunteer_check', 'access_news', 'other_services']
@@ -1245,26 +1213,26 @@ class ClientUpdateView(LoginRequiredMixin, UpdateView):
 
 
 class AddressUpdateView(LoginRequiredMixin, UpdateView):
-    model = Address
+    model = lm.Address
     fields = ['address_one', 'address_two', 'suite', 'city', 'state', 'zip_code', 'county', 'country', 'region',
               'cross_streets', 'bad_address', 'address_notes', 'preferred_medium']
     template_name_suffix = '_edit'
 
 
 class EmailUpdateView(LoginRequiredMixin, UpdateView):
-    model = Email
+    model = lm.Email
     fields = ['email', 'email_type', 'active']
     template_name_suffix = '_edit'
 
 
 class PhoneUpdateView(LoginRequiredMixin, UpdateView):
-    model = Phone
+    model = lm.Phone
     fields = ['phone', 'phone_type', 'active']
     template_name_suffix = '_edit'
 
 
 class IntakeUpdateView(LoginRequiredMixin, UpdateView):
-    model = Intake
+    model = lm.Intake
     fields = ['intake_date', 'intake_type', 'age_group', 'gender', 'pronouns', 'birth_date', 'ethnicity',
               'other_ethnicity', 'income', 'first_language', 'second_language', 'other_languages', 'education',
               'living_arrangement', 'residence_type', 'performs_tasks', 'notes', 'work_history', 'veteran',
@@ -1291,7 +1259,7 @@ class IntakeUpdateView(LoginRequiredMixin, UpdateView):
         form.fields["other_languages"].label = "Other Language(s)"
         form.fields["ethnicity"].label = "Race"
         form.fields["other_ethnicity"].label = "Ethnicity"
-        form.fields['payment_source'].queryset = Contact.objects.filter(payment_source=1).order_by(Lower('last_name'))
+        form.fields['payment_source'].queryset = lm.Contact.objects.filter(payment_source=1).order_by(ddmf.Lower('last_name'))
         form.fields['payment_source'].label = "Payment Sources"
         form.fields["crime"].label = "Have you been convicted of a crime?"
         form.fields[
@@ -1314,25 +1282,25 @@ class IntakeUpdateView(LoginRequiredMixin, UpdateView):
 
 
 class IntakeNoteUpdateView(LoginRequiredMixin, UpdateView):
-    model = IntakeNote
+    model = lm.IntakeNote
     fields = ['note']
     template_name_suffix = '_edit'
 
 
 class EmergencyContactUpdateView(LoginRequiredMixin, UpdateView):
-    model = EmergencyContact
+    model = lm.EmergencyContact
     fields = ['name',  'emergency_notes', 'relationship']
     template_name_suffix = '_edit'
 
 
 class LessonNoteUpdateView(LoginRequiredMixin, UpdateView):
-    form_class = LessonNoteForm
-    model = LessonNote
+    form_class = lfo.LessonNoteForm
+    model = lm.LessonNote
     template_name_suffix = '_edit'
 
 
 class ProgressReportUpdateView(LoginRequiredMixin, UpdateView):
-    model = ProgressReport
+    model = lm.ProgressReport
     fields = ['month', 'instructor', 'accomplishments', 'short_term_goals', 'short_term_goals_time',
               'long_term_goals', 'long_term_goals_time', 'client_behavior', 'notes']
     template_name_suffix = '_edit'
@@ -1350,20 +1318,30 @@ class ProgressReportUpdateView(LoginRequiredMixin, UpdateView):
         return form
 
 
-class SipNoteUpdateView(LoginRequiredMixin, UpdateView):
-    model = SipNote
+class PlanNoteUpdateView(LoginRequiredMixin, UpdateView):
     fields = ['note', 'note_date', 'at_devices',  'independent_living', 'orientation', 'communications', 'dls',
               'support', 'advocacy', 'counseling', 'information', 'services', 'retreat', 'in_home', 'seminar',
               'modesto', 'group', 'community', 'class_hours', 'sip_plan', 'instructor']
-    template_name_suffix = '_edit'
+    template_name = 'lynx/plan_note_edit.html'
+
+    def get_queryset(self):
+        p = parse_path_for_program( self.request )
+        self.model = p['note_model']
+        self.queryset = p['note_model'].objects.all()
+        return super(PlanNoteUpdateView, self).get_queryset()
 
     def get_success_url(self):
         next_url = self.request.GET.get('next')
-        if next_url:
-            return next_url
-        else:
-            # NOTE Returns to the SIP notes page
-            return reverse('lynx:note_list', kwargs={'client_id': self.object.pk})
+        # NOTE Don't check for `next_url`, because it should always
+        #      be there as deleting a note would always happen in a
+        #      context.
+        return next_url
+
+    def get_context_data(self, **kwargs):
+        p = parse_path_for_program( self.request )
+        context = super(PlanNoteUpdateView, self).get_context_data(**kwargs)
+        context['program_name'] = p['program_name']
+        return context
 
     def form_valid(self, form):
         post = form.save(commit=False)
@@ -1385,6 +1363,8 @@ class SipNoteUpdateView(LoginRequiredMixin, UpdateView):
         return super().form_valid(form)
 
     def get_form(self, form_class=None):
+        p = parse_path_for_program( self.request )
+
         form = super().get_form(form_class=form_class)
         form.fields['note_date'].widget = forms.SelectDateWidget(years=list(range(1900, 2100)))
         form.fields['note_date'].required = True
@@ -1398,70 +1378,95 @@ class SipNoteUpdateView(LoginRequiredMixin, UpdateView):
         form.fields['counseling'].label = "Adjustment Counseling"
         form.fields['support'].label = "Supportive Services"
         form.fields['services'].label = "Other IL/A Services"
+
+        class_hours_choices = [
+            ('', '---------'),
+                                ('0.25', '15 minutes'),         ('0.5', '30 minutes'),         ('0.75', '45 minutes'),
+            ('1.0', '1 hour'),  ('1.25', '1 hour 15 minutes'),  ('1.5', '1 hour 30 minutes'),  ('1.75', '1 hour 45 minutes'),
+            ('2.0', '2 hours'), ('2.25', '2 hours 15 minutes'), ('2.5', '2 hours 30 minutes'), ('2.75', '2 hours 45 minutes'),
+            ('3.0', '3 hours'), ('3.25', '3 hours 15 minutes'), ('3.5', '3 hours 30 minutes'), ('3.75', '3 hours 45 minutes'),
+            ('4.0', '4 hours'), ('4.25', '4 hours 15 minutes'), ('4.5', '4 hours 30 minutes'), ('4.75', '4 hours 45 minutes'),
+            ('5.0', '5 hours'), ('5.25', '5 hours 15 minutes'), ('5.5', '5 hours 30 minutes'), ('5.75', '5 hours 45 minutes'),
+            ('6.0', '6 hours'), ('6.25', '6 hours 15 minutes'), ('6.5', '6 hours 30 minutes'), ('6.75', '6 hours 45 minutes'),
+            ('7.0', '7 hours'), ('7.25', '7 hours 15 minutes'), ('7.5', '7 hours 30 minutes'), ('7.75', '7 hours 45 minutes'),
+            ('8.0', '8 hours')
+        ]
+
+        # Update the class_hours field with the new choices
+        form.fields['class_hours'].choices = class_hours_choices
         form.fields['class_hours'].required = True
+
+        form.fields['sip_plan'].label = f"{ p['program_name'] } plan"
         form.fields['sip_plan'].required = True
+        # import pdb; pdb.set_trace()
         return form
 
 
-class Sip1854NoteUpdateView(LoginRequiredMixin, UpdateView):
-    model = Sip1854Note
-    fields = ['note', 'note_date', 'at_devices',  'independent_living', 'orientation', 'communications', 'dls',
-              'support', 'advocacy', 'counseling', 'information', 'services', 'retreat', 'in_home', 'seminar',
-              'modesto', 'group', 'community', 'class_hours', 'sip_plan', 'instructor']
-    template_name_suffix = '_edit'
-
-    def form_valid(self, form):
-        post = form.save(commit=False)
-        note_date = post.note_date
-        # note_date = datetime.strptime(note_date, '%Y-%m-%d')
-        note_month = note_date.month
-        note_year = note_date.year
-        quarter = get_quarter(note_month)
-        if quarter == 1:
-            fiscal_year = get_fiscal_year(note_year)
-        else:
-            f_year = note_year - 1
-            fiscal_year = get_fiscal_year(f_year)
-        post.quarter = quarter
-        post.fiscal_year = fiscal_year
-        post.save()
-        action = "/lynx/sip1854notes/" + str(post.contact_id)
-        return HttpResponseRedirect(action)
-
-    def get_form(self, form_class=None):
-        form = super().get_form(form_class=form_class)
-        form.fields['note_date'].widget = forms.SelectDateWidget(years=list(range(1900, 2100)))
-        form.fields['at_devices'].label = "Assistive Technology Devices and Services"
-        form.fields['independent_living'].label = "Independent Living and Adjustment Services"
-        form.fields['orientation'].label = "Orientation & Mobility Training"
-        form.fields['communications'].label = "Communication Skills Training"
-        form.fields['dls'].label = "Daily Living Skills Training"
-        form.fields['advocacy'].label = "Advocacy Training"
-        form.fields['information'].label = "Information and Referral"
-        form.fields['counseling'].label = "Adjustment Counseling"
-        form.fields['support'].label = "Supportive Services"
-        form.fields['services'].label = "Other IL/A Services"
-        return form
-
-
-class SipPlanUpdateView(LoginRequiredMixin, UpdateView):
-    model = SipPlan
+class PlanUpdateView(LoginRequiredMixin, UpdateView):
     fields = ['note', 'at_services', 'independent_living', 'orientation', 'communications', 'dls', 'advocacy',
               'counseling', 'information', 'other_services', 'plan_name', 'living_plan_progress', 'at_outcomes',
               'employment_outcomes', 'community_plan_progress', 'ila_outcomes', 'support_services', 'plan_date']
-    template_name_suffix = '_edit'
+    template_name = 'lynx/plan_edit.html'
+
+    def get_queryset(self):
+        p = parse_path_for_program( self.request )
+        self.model = p['plan_model']
+        self.queryset = p['plan_model'].objects.all()
+        return super(PlanUpdateView, self).get_queryset()
 
     def get_success_url(self):
+        p = parse_path_for_program( self.request )
         next_url = self.request.GET.get('next')
         # import pdb; pdb.set_trace()
         if next_url:
             return next_url
         else:
             # NOTE Returns to the detailed view of the plan being edited
-            return reverse('lynx:sip_plan', kwargs={'pk': self.object.pk})
+            return reverse(f"lynx:{ p['program_path_part'] }_plan_detail", kwargs={'pk': self.object.pk})
+
+    def get_context_data(self, **kwargs):
+        p = parse_path_for_program( self.request )
+        context = super(PlanUpdateView, self).get_context_data(**kwargs)
+        context['program_name'] = p['program_name']
+        context['program_path_part'] = p['program_path_part']
+        return context
 
     def get_form(self, form_class=None):
-        notes = SipNote.objects.filter(sip_plan_id=self.kwargs['pk'])
+        p = parse_path_for_program( self.request )
+        notes = p['note_model'].objects.filter(sip_plan_id=self.kwargs['pk'])
+
+        form = super().get_form(form_class=form_class)
+        form.fields['plan_date'].widget              = forms.SelectDateWidget(years=list(range(1900, 2100)))
+        form.fields['at_services'].label             = "Assistive Technology Devices and Services"
+        form.fields['independent_living'].label      = "Independent Living and Adjustment Services"
+        form.fields['orientation'].label             = "Orientation & Mobility Training"
+        form.fields['communications'].label          = "Communication Skills Training"
+        form.fields['dls'].label                     = "Daily Living Skills Training"
+        form.fields['plan_date'].label               = "Start Date"
+        form.fields['advocacy'].label                = "Advocacy Training"
+        form.fields['information'].label             = "Information and Referral"
+        form.fields['counseling'].label              = "Adjustment Counseling"
+        form.fields['support_services'].label        = "Supportive Services"
+        form.fields['other_services'].label          = "Other IL/A Services"
+        form.fields['living_plan_progress'].label    = "Living Situation Outcomes"
+        form.fields['community_plan_progress'].label = "Home and Community involvement Outcomes"
+        form.fields['at_outcomes'].label             = "AT Goal Outcomes"
+        form.fields['ila_outcomes'].label            = "IL/A Service Goal Outcomes"
+
+        is_me = self.request.user.username == 'agulyas'
+        form.fields['plan_name'].disabled = False if is_me else True
+
+        # NOTE (soft deletion) {{-
+        #      This section enables or disables setting certain OIB
+        #      outcomes when  editing a  plan depending  on whether
+        #      the  plan has  notes  that have  the right  services
+        #      checked.  Now  that  outcomes  can be  set  on  plan
+        #      creation,  it  doesn't  make sense  to  impose  such
+        #      restrictions.
+        # }}-
+        # TODO Re-evaluate if  outcome setting  is disabled {{-
+        #      again on plan creation.
+        """
         ils = True
         ats = True
         outcomes = True
@@ -1483,85 +1488,20 @@ class SipPlanUpdateView(LoginRequiredMixin, UpdateView):
         if not ils or not ats:
             outcomes = False
 
-        form = super().get_form(form_class=form_class)
-        form.fields['plan_date'].widget = forms.SelectDateWidget(years=list(range(1900, 2100)))
-        form.fields['at_services'].label = "Assistive Technology Devices and Services"
-        form.fields['independent_living'].label = "Independent Living and Adjustment Services"
-        form.fields['orientation'].label = "Orientation & Mobility Training"
-        form.fields['communications'].label = "Communication Skills Training"
-        form.fields['dls'].label = "Daily Living Skills Training"
-        form.fields['plan_date'].label = "Start Date"
-        form.fields['advocacy'].label = "Advocacy Training"
-        form.fields['information'].label = "Information and Referral"
-        form.fields['counseling'].label = "Adjustment Counseling"
-        form.fields['support_services'].label = "Supportive Services"
-        form.fields['other_services'].label = "Other IL/A Services"
-        form.fields['living_plan_progress'].label = "Living Situation Outcomes"
-        form.fields['community_plan_progress'].label = "Home and Community involvement Outcomes"
-        form.fields['at_outcomes'].label = "AT Goal Outcomes"
-        form.fields['ila_outcomes'].label = "IL/A Service Goal Outcomes"
-
-        form.fields['plan_name'].disabled = True
-
-        # TODO: What does the `disabled` property mean here?
         form.fields['at_outcomes'].disabled = ats
         form.fields['ila_outcomes'].disabled = ils
         # Need to ask DOR
         form.fields['living_plan_progress'].disabled = outcomes
         form.fields['community_plan_progress'].disabled = outcomes
         form.fields['employment_outcomes'].disabled = outcomes
-        return form
+        """
+        # }}-
 
-
-class Sip1854PlanUpdateView(LoginRequiredMixin, UpdateView):
-    model = Sip1854Plan
-    fields = ['note', 'at_services', 'independent_living', 'orientation', 'communications', 'dls', 'advocacy',
-              'counseling', 'information', 'other_services', 'plan_name', 'living_plan_progress', 'at_outcomes',
-              'employment_outcomes', 'community_plan_progress', 'ila_outcomes', 'support_services', 'plan_date']
-    template_name_suffix = '_edit'
-
-    def get_form(self, form_class=None):
-        notes = Sip1854Note.objects.filter(sip_plan_id=self.kwargs['pk'])
-        ils = True
-        ats = True
-        outcomes = True
-        for note in notes:
-            if note.orientation or note.communications or note.dls or note.advocacy or note.counseling \
-                    or note.information or note.services or note.support:
-                ils = False
-            if note.at_devices or note.at_services:
-                ats = False
-        if not ils or not ats:
-            outcomes = False
-        form = super().get_form(form_class=form_class)
-        form.fields['plan_date'].widget = forms.SelectDateWidget(years=list(range(1900, 2100)))
-        form.fields['at_services'].label = "Assistive Technology Devices and Services"
-        form.fields['independent_living'].label = "Independent Living and Adjustment Services"
-        form.fields['orientation'].label = "Orientation & Mobility Training"
-        form.fields['communications'].label = "Communication Skills Training"
-        form.fields['dls'].label = "Daily Living Skills Training"
-        form.fields['plan_date'].label = "Start Date"
-        form.fields['advocacy'].label = "Advocacy Training"
-        form.fields['information'].label = "Information and Referral"
-        form.fields['counseling'].label = "Adjustment Counseling"
-        form.fields['support_services'].label = "Supportive Services"
-        form.fields['other_services'].label = "Other IL/A Services"
-        form.fields['living_plan_progress'].label = "Living Situation Outcomes"
-        form.fields['community_plan_progress'].label = "Home and Community involvement Outcomes"
-        form.fields['at_outcomes'].label = "AT Goal Outcomes"
-        form.fields['ila_outcomes'].label = "IL/A Service Goal Outcomes"
-
-        form.fields['at_outcomes'].disabled = ats
-        form.fields['ila_outcomes'].disabled = ils
-        # Need to ask DOR
-        form.fields['living_plan_progress'].disabled = outcomes
-        form.fields['community_plan_progress'].disabled = outcomes
-        form.fields['employment_outcomes'].disabled = outcomes
         return form
 
 
 class AuthorizationUpdateView(LoginRequiredMixin, UpdateView):
-    model = Authorization
+    model = lm.Authorization
     fields = ['intake_service_area', 'authorization_number', 'authorization_type', 'start_date', 'end_date',
               'total_time', 'billing_rate', 'outside_agency', 'student_plan', 'notes']
     template_name_suffix = '_edit'
@@ -1570,7 +1510,7 @@ class AuthorizationUpdateView(LoginRequiredMixin, UpdateView):
         form = super().get_form(form_class=form_class)
         form.fields['start_date'].widget = forms.SelectDateWidget(years=list(range(1900, 2100)))
         form.fields['end_date'].widget = forms.SelectDateWidget(years=list(range(1900, 2100)))
-        form.fields['outside_agency'].queryset = Contact.objects.filter(payment_source=1).order_by(Lower('last_name'))
+        form.fields['outside_agency'].queryset = lm.Contact.objects.filter(payment_source=1).order_by(ddmf.Lower('last_name'))
         form.fields['outside_agency'].label = "Payment Sources"
         form.fields['start_date'].label = "Start Date (YYYY-MM-DD)"
         form.fields['end_date'].label = "End Date (YYYY-MM-DD)"
@@ -1578,13 +1518,13 @@ class AuthorizationUpdateView(LoginRequiredMixin, UpdateView):
 
 
 class VolunteerHourUpdateView(LoginRequiredMixin, UpdateView):
-    model = Volunteer
+    model = lm.Volunteer
     fields = ['volunteer_type', 'note', 'volunteer_date', 'volunteer_hours']
     template_name_suffix = '_edit'
 
 
 class VaccineUpdateView(LoginRequiredMixin, UpdateView):
-    model = Vaccine
+    model = lm.Vaccine
     fields = ['vaccine', 'vaccine_note', 'vaccination_date']
     template_name_suffix = '_edit'
 
@@ -1598,7 +1538,7 @@ class VaccineUpdateView(LoginRequiredMixin, UpdateView):
 
 
 class AssignmentUpdateView(LoginRequiredMixin, UpdateView):
-    model = Assignment
+    model = lm.Assignment
     fields = ['program', 'priority', 'note']
     template_name_suffix = '_edit'
 
@@ -1607,51 +1547,46 @@ class AssignmentUpdateView(LoginRequiredMixin, UpdateView):
 
 
 class AssignmentDeleteView(LoginRequiredMixin, DeleteView):
-    model = Assignment
+    model = lm.Assignment
 
     def get_success_url(self):
         return self.request.GET.get('next')
 
 
-class SipPlanDeleteView(LoginRequiredMixin, DeleteView):
-    model = SipPlan
+class PlanDeleteView(LoginRequiredMixin, DeleteView):
+    template_name = 'lynx/plan_confirm_delete.html'
+
+    def get_queryset(self):
+        p = parse_path_for_program( self.request )
+        self.model = p['plan_model']
+        self.queryset = p['plan_model'].objects.all()
+        return super(PlanDeleteView, self).get_queryset()
 
     def get_success_url(self):
+        p = parse_path_for_program( self.request )
         client_id = self.kwargs['client_id']
-        return reverse_lazy('lynx:plan_list', kwargs={'client_id': client_id})
+        return reverse_lazy(f"lynx:{ p['program_path_part'] }_plan_list", kwargs={'client_id': client_id})
 
 
-class Sip1854PlanDeleteView(LoginRequiredMixin, DeleteView):
-    model = Sip1854Plan
+class PlanNoteDeleteView(LoginRequiredMixin, DeleteView):
+    template_name = 'lynx/plan_note_confirm_delete.html'
 
-    def get_success_url(self):
-        client_id = self.kwargs['client_id']
-        return reverse_lazy('lynx:plan1854_list', kwargs={'client_id': client_id})
-
-
-class SipNoteDeleteView(LoginRequiredMixin, DeleteView):
-    model = SipNote
+    def get_queryset(self):
+        p = parse_path_for_program( self.request )
+        self.model = p['note_model']
+        self.queryset = p['note_model'].objects.all()
+        return super(PlanNoteDeleteView, self).get_queryset()
 
     def get_success_url(self):
         next_url = self.request.GET.get('next')
-        if next_url:
-            return next_url
-        else:
-            # NOTE Returns to the SIP notes page
-            return reverse('lynx:note_list', kwargs={'client_id': self.kwargs['client_id']})
-
-
-class Sip1854NoteDeleteView(LoginRequiredMixin, DeleteView):
-    model = Sip1854Note
-
-    def get_success_url(self):
-        client_id = self.kwargs['client_id']
-        # import pdb; pdb.set_trace()
-        return reverse_lazy('lynx:note1854_list', kwargs={'client_id': client_id})
+        # NOTE Don't check for `next_url`, because it should always
+        #      be there as deleting a note would always happen in a
+        #      context.
+        return next_url
 
 
 class IntakeNoteDeleteView(LoginRequiredMixin, DeleteView):
-    model = IntakeNote
+    model = lm.IntakeNote
 
     def get_success_url(self):
         client_id = self.kwargs['client_id']
@@ -1659,7 +1594,7 @@ class IntakeNoteDeleteView(LoginRequiredMixin, DeleteView):
 
 
 class ProgressReportDeleteView(UserPassesTestMixin, DeleteView):
-    model = ProgressReport
+    model = lm.ProgressReport
 
     def test_func(self):
         return self.request.user.is_superuser
@@ -1670,7 +1605,7 @@ class ProgressReportDeleteView(UserPassesTestMixin, DeleteView):
 
 
 class AuthorizationDeleteView(UserPassesTestMixin, DeleteView):
-    model = Authorization
+    model = lm.Authorization
 
     def test_func(self):
         return self.request.user.is_superuser
@@ -1681,7 +1616,7 @@ class AuthorizationDeleteView(UserPassesTestMixin, DeleteView):
 
 
 class ContactDeleteView(UserPassesTestMixin, DeleteView):
-    model = Contact
+    model = lm.Contact
 
     def test_func(self):
         return self.request.user.is_superuser
@@ -1691,7 +1626,7 @@ class ContactDeleteView(UserPassesTestMixin, DeleteView):
 
 
 class LessonNoteDeleteView(LoginRequiredMixin, DeleteView):
-    model = LessonNote
+    model = lm.LessonNote
 
     def get_success_url(self):
         auth_id = self.kwargs['auth_id']
@@ -1699,14 +1634,14 @@ class LessonNoteDeleteView(LoginRequiredMixin, DeleteView):
 
 
 class VolunteerHourDeleteView(LoginRequiredMixin, DeleteView):
-    model = Volunteer
+    model = lm.Volunteer
 
     def get_success_url(self):
         return reverse_lazy('lynx:volunteer_list')
 
 
 class PhoneDeleteView(LoginRequiredMixin, DeleteView):
-    model = Phone
+    model = lm.Phone
 
     def get_success_url(self):
         client_id = self.kwargs['client_id']
@@ -1714,7 +1649,7 @@ class PhoneDeleteView(LoginRequiredMixin, DeleteView):
 
 
 class VaccineDeleteView(LoginRequiredMixin, DeleteView):
-    model = Vaccine
+    model = lm.Vaccine
 
     def get_success_url(self):
         client_id = self.kwargs['client_id']
@@ -1722,7 +1657,7 @@ class VaccineDeleteView(LoginRequiredMixin, DeleteView):
 
 
 class DocumentDeleteView(LoginRequiredMixin, DeleteView):
-    model = Document
+    model = lm.Document
 
     def get_success_url(self):
         client_id = self.kwargs['client_id']
@@ -1731,9 +1666,9 @@ class DocumentDeleteView(LoginRequiredMixin, DeleteView):
 
 @login_required
 def billing_report(request):
-    form = BillingReportForm()
+    form = lfo.BillingReportForm()
     if request.method == 'POST':
-        form = BillingReportForm(request.POST)
+        form = lfo.BillingReportForm(request.POST)
         if form.is_valid():
             data = request.POST.copy()
             month = data.get('month')
@@ -1860,9 +1795,9 @@ def billing_report(request):
 
 @login_required
 def sip_demographic_report(request):
-    form = SipDemographicReportForm()
+    form = lfo.SipDemographicReportForm()
     if request.method == 'POST':
-        form = SipDemographicReportForm(request.POST)
+        form = lfo.SipDemographicReportForm(request.POST)
         if form.is_valid():
             data = request.POST.copy()
             month = data.get('month')
@@ -1978,15 +1913,15 @@ def sip_demographic_report(request):
 
 @login_required
 def sip_quarterly_report(request):
-    form = SipCSFReportForm()
+    form = lfo.SipCSFReportForm()
     return render(request, 'lynx/sip_quarterly_report.html', {'form': form})
 
 
 @login_required
 def sip_csf_services_report(request):
-    form = SipCSFReportForm()
+    form = lfo.SipCSFReportForm()
     if request.method == 'POST':
-        form = SipCSFReportForm(request.POST)
+        form = lfo.SipCSFReportForm(request.POST)
         if form.is_valid():
             data = request.POST.copy()
             quarter = data.get('quarter')
@@ -2140,9 +2075,9 @@ def sip_csf_services_report(request):
 
 @login_required
 def sip_csf_demographic_report(request):
-    form = SipCSFReportForm()
+    form = lfo.SipCSFReportForm()
     if request.method == 'POST':
-        form = SipCSFReportForm(request.POST)
+        form = lfo.SipCSFReportForm(request.POST)
         if form.is_valid():
             data = request.POST.copy()
             quarter = data.get('quarter')
@@ -2433,7 +2368,7 @@ def contact_list(request):
     if request.method == 'GET':
         excel = request.GET.get('excel', False)
         strict = True
-        f = ContactFilter(request.GET, queryset=ContactInfoView.objects.all().order_by(Lower('full_name')))
+        f = lfi.ContactFilter(request.GET, queryset=lm.ContactInfoView.objects.all().order_by(ddmf.Lower('full_name')))
 
         client_condensed = {}
         for client in f.qs:
@@ -2508,7 +2443,7 @@ def contact_list(request):
             return response
 
     else:
-        f = ContactFilter()
+        f = lfi.ContactFilter()
         client_condensed = {}
     return render(request, 'lynx/contact_search.html', {'filter': f, 'client_list': client_condensed})
 
@@ -2550,38 +2485,6 @@ def get_volunteers(request):
         volunteer_condensed = {}
     return render(request, 'lynx/contact_search.html', {'filter': f, 'volunteer_list': volunteer_condensed})
 
-    # query = request.GET.get('q')
-    # if query:
-    #     object_list = Contact.objects.annotate(
-    #         full_name=Concat('first_name', V(' '), 'last_name')
-    #     ).annotate(
-    #         zip_code=F('address__zip_code')
-    #     ).annotate(
-    #         county=F('address__county')
-    #     ).annotate(
-    #         intake_date=F('intake__intake_date')
-    #     ).annotate(
-    #         email_address=F('email__email')
-    #     ).filter(
-    #         Q(volunteer_check=1) & (
-    #             Q(first_name__icontains=query) |
-    #             Q(last_name__icontains=query) |
-    #             Q(zip_code__icontains=query) |
-    #             Q(county__icontains=query) |
-    #             Q(phone_number__icontains=query) |
-    #             Q(intake_date__icontains=query) |
-    #             Q(email_address__icontains=query)
-    #         )
-    #     )
-    #
-    #     object_list = object_list.order_by(Lower('last_name'), Lower('first_name'), 'id')
-    #     paginator = Paginator(object_list, 20)
-    #     page_number = request.GET.get('page')
-    #     page_obj = paginator.get_page(page_number)
-    # else:
-    #     page_obj = None
-    # return render(request, 'lynx/client_advanced_search.html', {'page_obj': page_obj})
-
 
 def is_assessed(ila_outcomes, at_outcomes):
     ila_assessed = False
@@ -2596,8 +2499,6 @@ def is_assessed(ila_outcomes, at_outcomes):
         return "Not Assessed"
 
 
-# from django.utils import timezone
-
 def get_current_grant_year_startdate():
     now = datetime.now()
     grant_year_start = date(now.year, 10, 1)
@@ -2608,6 +2509,25 @@ def get_current_grant_year_startdate():
         return date(now.year - 1, 10, 1)
 
 
+# TODO Replace `sip1845` prefixes with `ab2480`
+#          AND
+#      Change `sip_plan_id` foreign key in `lynx_sip1854note` table
+#      (plus also the table names with that prefix...)
+#
+#      `lynx_sipnote`  and `lynx_sip1845note`  both have  a
+#      foreign key  called `sip_plan_id`  but it  should be
+#      `ab2480_plan_id`  to make  relationships  in the  DB
+#      unambiguous (even if it is more work in the app).
+#
+#     NOTE Why `ab2480_plan_id` and not `sip1854_plan_id`?
+#
+#          Because the `sip1854` prefix  has been a mistake all
+#          along.  The "18-54"  program is  an unofficial  name
+#          using a mnemonic to make  it easier to remember that
+#          clients in the  AB2480 have to be between  18 and 54
+#          years  of age.  (It doesn't  help that  even in  the
+#          official forms it is sometimes referred to as "Under
+#          55 7-OB" or simply just as "7-OB" program...)
 @login_required
 def assignment_advanced_result_view(request):
     # import pdb; pdb.set_trace()
@@ -2623,16 +2543,16 @@ def assignment_advanced_result_view(request):
         # page is being loaded the first time.
         if request.GET:
             # initial_data = {'assignment_date_lt': timezone.now()}
-            # f = AssignmentFilter(request.GET, queryset=Assignment.objects.all())
-            # f = AssignmentFilter(request.GET or initial_data, queryset=Assignment.objects.all().order_by('-assignment_date'))
-            f = AssignmentFilter(request.GET, queryset=Assignment.objects.all().order_by('-assignment_date'))
-            # notes = SipNote.objects.all()
+            # f = lfi.AssignmentFilter(request.GET, queryset=lm.Assignment.objects.all())
+            # f = lfi.AssignmentFilter(request.GET or initial_data, queryset=lm.Assignment.objects.all().order_by('-assignment_date'))
+            f = lfi.AssignmentFilter(request.GET, queryset=lm.Assignment.objects.all().order_by('-assignment_date'))
+            # notes = lm.SipNote.objects.all()
         else:
             initial_data = {
                 'assignment_date_gt': get_current_grant_year_startdate()
             ,   'instructor': request.user.id
             }
-            f = AssignmentFilter(initial_data, queryset=Assignment.objects.all().order_by('-assignment_date'))
+            f = lfi.AssignmentFilter(initial_data, queryset=lm.Assignment.objects.all().order_by('-assignment_date'))
 
         assignment_condensed = {}
         for assignment in f.qs:
@@ -2756,29 +2676,11 @@ def assignment_advanced_result_view(request):
                 assignment_condensed[assignment.id]['intakenote'] = ''
 
     else:
-        f = AssignmentFilter()
+        f = lfi.AssignmentFilter()
         assignment_condensed = {}
 
     # import pdb; pdb.set_trace()
     return render(request, 'lynx/instructor_search.html', {'filter': f, 'assignment_list': assignment_condensed})
 
 
-
-#
-# @login_required
-# def change_assignment_status(request, assignment_id, status):
-#     if status == 'Assigned':
-#         new_status = 'In Progress'
-#     elif status == 'InProgress':
-#         new_status = 'Completed'
-#     else:
-#         new_status = 'Completed'
-#
-#     assignment = Assignment.objects.get(id=assignment_id)
-#     assignment.status = new_status
-#     assignment.save()
-#
-#     # f = AssignmentFilter()
-#     # assignment_condensed = {}
-#     return redirect('lynx/instructors/')
-#     # return render(request, 'lynx/instructor_search.html', {'filter': f, 'assignment_list': assignment_condensed})
+# vim: set foldmethod=marker foldmarker={{-,}}-:

@@ -52,7 +52,7 @@ GENDERS = (("Female", "Female"), ("Male", "Male"), ("Non-Binary", "Non-Binary"),
            ("Prefer Not to Say", "Prefer Not to Say"), )
 
 ETHNICITIES = (("American Indian or Alaska Native", "American Indian or Alaska Native"), ("Asian", "Asian"),
-               ("Black or African American", "Black or African American"), 
+               ("Black or African American", "Black or African American"),
                ("Native Hawaiian or Pacific Islander", "Native Hawaiian or Pacific Islander"), ("White", "White"),
                ("Did not self identify Race", "Did not self identify Race"),
                ("Two or More Races", "Two or More Races"))
@@ -534,9 +534,8 @@ class LessonNote(models.Model):
     #
     #     super().save(*args, **kwargs)
 
-class SipNote(models.Model):
+class BasePlanNote(models.Model):
     contact = models.ForeignKey('Contact', on_delete=models.CASCADE)
-    sip_plan = models.ForeignKey('SipPlan', on_delete=models.CASCADE, blank=True, null=True)
     note = models.TextField(null=True)
     note_date = models.DateField(blank=True, null=True)
     vision_screening = models.BooleanField(blank=True, default=False)
@@ -566,7 +565,8 @@ class SipNote(models.Model):
     created = models.DateTimeField(auto_now_add=True, null=True)
     modified = models.DateTimeField(auto_now=True, null=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET(get_sentinel_user))
-    history = HistoricalRecords()
+
+    history = HistoricalRecords(inherit=True)
 
     def get_absolute_url(self):
         return "/lynx/client/%i" % self.contact_id
@@ -574,6 +574,17 @@ class SipNote(models.Model):
     # TODO Add string representation methods to other models as well.
     def __str__(self):
         return str(self.note_date)
+
+    class Meta:
+        abstract = True
+
+
+class SipNote(BasePlanNote):
+    sip_plan = models.ForeignKey('SipPlan', on_delete=models.CASCADE, blank=True, null=True)
+
+
+class Sip1854Note(BasePlanNote):
+    sip_plan = models.ForeignKey('Sip1854Plan', on_delete=models.CASCADE, blank=True, null=True)
 
 
 class Volunteer(models.Model):
@@ -594,7 +605,7 @@ class Volunteer(models.Model):
         return "/lynx/volunteer/%i/" % self.contact_id
 
 
-class SipPlan(models.Model):
+class BasePlan(models.Model):
     PLANS = (("Plan not complete", "Plan not complete"),
              ("Plan complete, feeling more confident in ability to maintain living situation",
               "Plan complete, feeling more confident in ability to maintain living situation"),
@@ -644,13 +655,23 @@ class SipPlan(models.Model):
     created = models.DateTimeField(auto_now_add=True, null=True)
     modified = models.DateTimeField(auto_now=True, null=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET(get_sentinel_user))
-    history = HistoricalRecords()
+    history = HistoricalRecords(inherit=True)
 
     def __str__(self):
         return self.plan_name
 
     def get_absolute_url(self):
         return "/lynx/client/%i" % self.contact_id
+
+    class Meta:
+            abstract = True
+
+class SipPlan(BasePlan):
+    pass
+
+
+class Sip1854Plan(BasePlan):
+    pass
 
 
 class ContactInfoView(pg.View):
@@ -736,106 +757,8 @@ class Assignment(models.Model):
     def get_absolute_url(self):
         return "/lynx/assignments/%i" % self.contact_id
 
-class Sip1854Note(models.Model):
-    contact = models.ForeignKey('Contact', on_delete=models.CASCADE)
-    sip_plan = models.ForeignKey('Sip1854Plan', on_delete=models.CASCADE, blank=True, null=True)
-    note = models.TextField(null=True)
-    note_date = models.DateField(blank=True, null=True)
-    vision_screening = models.BooleanField(blank=True, default=False)
-    treatment = models.BooleanField(blank=True, default=False)
-    at_devices = models.BooleanField(blank=True, default=False)
-    at_services = models.BooleanField(blank=True, default=False)
-    independent_living = models.BooleanField(blank=True, default=False)
-    orientation = models.BooleanField(blank=True, default=False)
-    communications = models.BooleanField(blank=True, default=False)
-    dls = models.BooleanField(blank=True, default=False)
-    # other_services = models.BooleanField(blank=True, default=False)
-    support = models.BooleanField(blank=True, default=False)
-    advocacy = models.BooleanField(blank=True, default=False)
-    counseling = models.BooleanField(blank=True, default=False)
-    information = models.BooleanField(blank=True, default=False)
-    services = models.BooleanField(blank=True, default=False)
-    retreat = models.BooleanField(blank=True, default=False)
-    in_home = models.BooleanField(blank=True, default=False)
-    seminar = models.BooleanField(blank=True, default=False)
-    modesto = models.BooleanField(blank=True, default=False)
-    group = models.BooleanField(blank=True, default=False)
-    community = models.BooleanField(blank=True, default=False)
-    fiscal_year = models.CharField(max_length=15, blank=True, null=True)
-    quarter = models.IntegerField(blank=True, null=True)
-    class_hours = models.FloatField(blank=True, null=True, choices=SIP_UNITS)
-    instructor = models.CharField(max_length=50, blank=True, null=True)
-    created = models.DateTimeField(auto_now_add=True, null=True)
-    modified = models.DateTimeField(auto_now=True, null=True)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET(get_sentinel_user))
-    history = HistoricalRecords()
 
-    def get_absolute_url(self):
-        return "/lynx/client/%i" % self.contact_id
-
-    # TODO Add string representation methods to other models as well.
-    def __str__(self):
-        return str(self.note_date)
-
-class Sip1854Plan(models.Model):
-    PLANS = (("Plan not complete", "Plan not complete"),
-             ("Plan complete, feeling more confident in ability to maintain living situation",
-              "Plan complete, feeling more confident in ability to maintain living situation"),
-             ("Plan complete, no difference in ability to maintain living situation",
-              "Plan complete, no difference in ability to maintain living situation"),
-             ("Plan complete, feeling less confident in ability to maintain living situation",
-              "Plan complete, feeling less confident in ability to maintain living situation"))
-    ASSESSMENTS = (("Not assessed", "Not assessed"), ("Assessed with improved independence",
-                                                      "Assessed with improved independence"),
-                   ("Assessed and maintained independence", "Assessed and maintained independence"),
-                   ("Assessed with decreased independence", "Assessed with decreased independence"))
-    EMPLOYMENT = (("Not Interested in Employment", "Not Interested in Employment"),
-                  ("Less Likely to Seek Employment", "Less Likely to Seek Employment"),
-                  ("Unsure about Seeking Employment", "Unsure about Seeking Employment"),
-                  ("More Likely to Seek Employment", "More Likely to Seek Employment"))
-    contact = models.ForeignKey('Contact', on_delete=models.CASCADE)
-    note = models.TextField(null=True, blank=True)
-    at_services = models.BooleanField(blank=True, default=False)
-    independent_living = models.BooleanField(blank=True, default=False)
-    orientation = models.BooleanField(blank=True, default=False)
-    communications = models.BooleanField(blank=True, default=False)
-    dls = models.BooleanField(blank=True, default=False)
-    advocacy = models.BooleanField(blank=True, default=False)
-    counseling = models.BooleanField(blank=True, default=False)
-    information = models.BooleanField(blank=True, default=False)
-    other_services = models.BooleanField(blank=True, default=False)
-    plan_name = models.CharField(max_length=100, null=True, blank=True)
-    plan_date = models.DateField(blank=True, null=True)
-    support_services = models.BooleanField(blank=True, default=False)
-    living_plan_progress = models.CharField(
-        max_length=150,
-        choices=PLANS,
-        blank=True,
-        null=True,
-        default="Plan not complete"
-    )
-    community_plan_progress = models.CharField(
-        max_length=150,
-        choices=PLANS,
-        blank=True,
-        null=True,
-        default="Plan not complete"
-    )
-    employment_outcomes = models.CharField(max_length=150, choices=EMPLOYMENT, blank=True, null=True, default="Not Interested in Employment")
-    at_outcomes = models.CharField(max_length=150, choices=ASSESSMENTS, blank=True, null=True, default="Not assessed")
-    ila_outcomes = models.CharField(max_length=150, choices=ASSESSMENTS, blank=True, null=True, default="Not assessed")
-    created = models.DateTimeField(auto_now_add=True, null=True)
-    modified = models.DateTimeField(auto_now=True, null=True)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET(get_sentinel_user))
-    history = HistoricalRecords()
-
-    def __str__(self):
-        return self.plan_name
-
-    def get_absolute_url(self):
-        return "/lynx/client/%i" % self.contact_id
-
-
+# TODO remove this and the corresponding table
 class Sip1854Assignment(models.Model):
     program = models.CharField(max_length=25, null=True, blank=True, default='1854', choices=PROGRAM)
     priority = models.CharField(max_length=25, null=True, blank=True, default='New', choices=ASSIGNMENT_PRIORITY)
