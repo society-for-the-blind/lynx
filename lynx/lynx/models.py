@@ -664,7 +664,46 @@ class Plan(models.Model):
     other_services     = models.BooleanField( blank=True, default=False )
     support_services   = models.BooleanField( blank=True, default=False )
 
-    # HOW TO PICK UP FROM HERE:
+    # HOW TO PICK UP FROM HERE: (v2)
+    #
+    # After  thinking  about  how to  implement  the  bulk
+    # notes feature, I remembered  that plans are entirely
+    # virtual:  it  is   an  arbitrary  representation  of
+    # the  delivered services  (via  instances of  service
+    # delivery types,  such as support  groups, trainings,
+    # in-homes, etc.) required by the grants.
+    #
+    # The  grant reports  require information  on services
+    # delivered to individuals, but services are delivered
+    # through **events**  (support groups,  in-homes, etc.
+    # a.k.a.  service  delivery type  instances).  Instead
+    # of  having  a table  where  each  individual has  an
+    # associated  service  in   a  "plan",  the  delivered
+    # services are  associated with service  delivery type
+    # instances, where participants  in a service delivery
+    # type instance  (e.g., support group)  get associated
+    # with the services indirectly.
+    #
+    # service delivery type: support group
+    # service delivery subtype: Spanish support group
+    #   (TODO: figure out how to represent sub-types)
+    # service delivery type instance: Spanish support group on 7/23/2024
+    # -> services associated: AT, Comm,
+    # -> participants: A, B, C
+    #
+    # On the report it will show  that clients A, B, and C
+    # received services AT and Comm.
+    #
+    # QUESTION: How to represent this new structure as plans?
+    # ANSWER: With queries. They  change so much that they
+    # are re-implemented anyway, which is a tell-tale sign
+    # that they don't really represent anything, and their
+    # rules are  totally arbitrary. In  contrast, services
+    # and events  (i.e., service delivery  type instances)
+    # are concrete concepts (and, in a sense, real).
+
+
+    # HOW TO PICK UP FROM HERE: (outdated)
     #
     # 1.
     # Removed a  couple of  nulls -  make sure  that those
@@ -697,8 +736,8 @@ class Plan(models.Model):
     # PLAN: at_services         <-> NOTE: at_devices
     # PLAN: supportive_services <-> NOTE: support
     # PLAN: other_services      <-> NOTE: other
-
-4. You'll probably find plenty more
+    #
+    # 4. You'll probably find plenty more
 
     # TODO Why on Earth can these be null?
     # https://stackoverflow.com/questions/8609192/what-is-the-difference-between-null-true-and-blank-true-in-django
