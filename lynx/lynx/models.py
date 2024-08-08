@@ -612,6 +612,140 @@ class Volunteer(models.Model):
         return reverse('lynx:volunteer', kwargs={'pk': self.contact_id})
 
 
+class Plan(models.Model):
+
+    PLANS = ( ("Plan not complete", "Plan not complete")                                        \
+            , ( "Plan complete, feeling more confident in ability to maintain living situation" \
+              , "Plan complete, feeling more confident in ability to maintain living situation" \
+              )                                                                                 \
+            , ( "Plan complete, no difference in ability to maintain living situation"          \
+              , "Plan complete, no difference in ability to maintain living situation"          \
+              )                                                                                 \
+            , ( "Plan complete, feeling less confident in ability to maintain living situation" \
+              , "Plan complete, feeling less confident in ability to maintain living situation" \
+              )                                                                                 \
+            )
+
+    ASSESSMENTS = ( ( "Not assessed", "Not assessed" )       \
+                  , ( "Assessed with improved independence"  \
+                    , "Assessed with improved independence"  \
+                    )                                        \
+                  , ( "Assessed and maintained independence" \
+                    , "Assessed and maintained independence" \
+                    )                                        \
+                  , ( "Assessed with decreased independence" \
+                    , "Assessed with decreased independence" \
+                    )                                        \
+                  )
+
+    EMPLOYMENT = ( ( "Not Interested in Employment",    "Not Interested in Employment"    ) \
+                 , ( "Less Likely to Seek Employment",  "Less Likely to Seek Employment"  ) \
+                 , ( "Unsure about Seeking Employment", "Unsure about Seeking Employment" ) \
+                 , ( "More Likely to Seek Employment",  "More Likely to Seek Employment"  ) \
+                 )
+
+    contact            = models.ForeignKey('Contact', on_delete=models.CASCADE)
+    user               = models.ForeignKey( settings.AUTH_USER_MODEL
+                                          , null      = True
+                                          , blank     = True
+                                          , on_delete = models.SET(get_sentinel_user)
+                                          )
+
+    note               = models.TextField(   blank=True, default="" )
+
+    at_services        = models.BooleanField( blank=True, default=False )
+    independent_living = models.BooleanField( blank=True, default=False )
+    orientation        = models.BooleanField( blank=True, default=False )
+    communications     = models.BooleanField( blank=True, default=False )
+    dls                = models.BooleanField( blank=True, default=False )
+    advocacy           = models.BooleanField( blank=True, default=False )
+    counseling         = models.BooleanField( blank=True, default=False )
+    information        = models.BooleanField( blank=True, default=False )
+    other_services     = models.BooleanField( blank=True, default=False )
+    support_services   = models.BooleanField( blank=True, default=False )
+
+    # HOW TO PICK UP FROM HERE:
+    #
+    # 1.
+    # Removed a  couple of  nulls -  make sure  that those
+    # won't cause a problem.
+    #
+    # 2. !!! `plan_name` !!!
+    # Originally,  it  had  constraints  `blank=True`  and
+    # `null=True` because it was  easier to implement it I
+    # guess, but it  should `blank=True` and `null=False`,
+    # but that requires special accomodations. Or not. See
+    # here:
+    #
+    # > blank=True   can  be   used  with   fields
+    # > having null=False,  but this  will require
+    # > implementing clean() on the model in order
+    # > to  programmatically  supply  any  missing
+    # > values.
+    # https://docs.djangoproject.com/en/5.0/ref/models/fields/
+    #
+    # `clean` is  needed thus  as `form.save()`  will call
+    # it. Figure out how to do it.
+    #
+    # 3.
+    # Some "service"  fields should be moved  into another
+    # table because they are  shared with the plan andnote
+    # tables  (which,  in  turn, should  be  merged  under
+    # `plan_note` or something), and it is already a mess.
+    #
+    # E.g.,
+    # PLAN: at_services         <-> NOTE: at_devices
+    # PLAN: supportive_services <-> NOTE: support
+    # PLAN: other_services      <-> NOTE: other
+
+4. You'll probably find plenty more
+
+    # TODO Why on Earth can these be null?
+    # https://stackoverflow.com/questions/8609192/what-is-the-difference-between-null-true-and-blank-true-in-django
+    # https://docs.djangoproject.com/en/5.0/ref/models/fields/
+    plan_date          = models.DateField()
+
+    created            = models.DateTimeField( auto_now_add = True )
+    modified           = models.DateTimeField( auto_now     = True )
+
+    plan_name               = models.CharField( max_length = 100   \
+                                              , null       = False \
+                                              , blank      = True  \
+                                              )
+    program                 = models.CharField( max_length = 25      \
+                                              , default    = 'SIP'   \
+                                              , choices    = PROGRAM \
+                                              )
+    living_plan_progress    = models.CharField( max_length = 150                 \
+                                              , choices    = PLANS               \
+                                              , default    = "Plan not complete" \
+                                              )
+    community_plan_progress = models.CharField( max_length = 150                 \
+                                              , choices    = PLANS               \
+                                              , default    = "Plan not complete" \
+                                              )
+    employment_outcomes     = models.CharField( max_length = 150                            \
+                                              , choices    = EMPLOYMENT                     \
+                                              , default    = "Not Interested in Employment" \
+                                              )
+    at_outcomes             = models.CharField( max_length=150
+                                              , choices=ASSESSMENTS
+                                              , default="Not assessed"
+                                              )
+    ila_outcomes            = models.CharField( max_length=150
+                                              , choices=ASSESSMENTS
+                                              , default="Not assessed"
+                                              )
+
+    history = HistoricalRecords(inherit=True)
+
+    def __str__(self):
+        return self.plan_name
+
+    def get_absolute_url(self):
+        return reverse('lynx:client', kwargs={'pk': self.contact_id})
+
+
 class BasePlan(models.Model):
     PLANS = (("Plan not complete", "Plan not complete"),
              ("Plan complete, feeling more confident in ability to maintain living situation",
