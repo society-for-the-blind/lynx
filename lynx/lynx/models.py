@@ -9,6 +9,7 @@ from django.contrib.auth.models import User
 from django_pgviews import view as pg
 from datetime import datetime, date
 from simple_history.models import HistoricalRecords
+from django.utils.translation import gettext_lazy as _
 
 
 STATES = (("Alabama", "Alabama"), ("Alaska", "Alaska"), ("Arizona", "Arizona"), ("Arkansas", "Arkansas"),
@@ -404,8 +405,8 @@ class IntakeNote(models.Model):
     contact = models.ForeignKey('Contact', on_delete=models.CASCADE)
     note = models.TextField(null=True)
     note_type = models.CharField(max_length=250, null=True)
-    created = models.DateTimeField(auto_now_add=True, null=True)
-    modified = models.DateTimeField(auto_now=True, null=True)
+    created = models.DateTimeField(auto_now_add=True)
+    modified = models.DateTimeField(auto_now=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET(get_sentinel_user))
     history = HistoricalRecords()
 
@@ -419,8 +420,8 @@ class EmergencyContact(models.Model):
     name = models.CharField(max_length=150, blank=True, null=True)
     emergency_notes = models.TextField(blank=True, null=True)
     relationship = models.TextField(blank=True, null=True)
-    created = models.DateTimeField(auto_now_add=True, null=True)
-    modified = models.DateTimeField(auto_now=True, null=True)
+    created = models.DateTimeField(auto_now_add=True)
+    modified = models.DateTimeField(auto_now=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET(get_sentinel_user))
     history = HistoricalRecords()
 
@@ -764,5 +765,90 @@ class Assignment(models.Model):
     def get_absolute_url(self):
         return reverse('lynx:assignment', kwargs={'pk': self.contact_id})
 
+# === OIB RE-DESIGN ==================================
+
+# single: SDT
+class ServiceDeliveryType(models.Model):
+
+    # class SDT(models.TextChoices):
+    #     IN_HOME               = "In-home",               _("In-home"               )
+    #     SUPPORT_GROUP         = "Support Group",         _("Support Group"         )
+    #     TRAINING_SEMINAR      = "Training Seminar",      _("Training Seminar"      )
+    #     COMMUNITY_INTEGRATION = "Community Integration", _("Community Integration" )
+    #     RETREAT               = "Retreat",               _("Retreat"               )
+
+    name = models.CharField(
+        max_length = 100,
+        unique     = True,
+        blank      = False,
+        null       = False
+    )
+    created  = models.DateTimeField(auto_now_add = True)
+    modified = models.DateTimeField(auto_now     = True)
+    history  = HistoricalRecords()
+
+    def __str__(self):
+        return self.name
+
+#  1  :  N
+# SDT : SDST
+class ServiceDeliverySubType(models.Model):
+
+    #     ("Spanish Support Group",  "Spanish Support Group"  ),
+    #     ("BASS",                   "BASS"                   ),
+    #     ("Woodland Support Group", "Woodland Support Group" ),
+    #     ("Asian Support Group",    "Asian Support Group"    ),
+    # )
+
+    name = models.CharField(
+        max_length = 100,
+        unique     = True,
+        blank      = False,
+        null       = False
+    )
+    service_delivery_type = models.ForeignKey(
+        ServiceDeliveryType,
+        on_delete    = models.CASCADE,
+        related_name = 'subtypes'
+    )
+
+    #     WHAT ARE "ONE-TIME" EVENTS
+    # AND WHY IS THIS HERE INSTEAD OF IN THE ServiceEvent MODEL? {{-
+    #
+    # One-time  events   are  service  events   that  will
+    # possibly  only happen  once.  Nonetheless, they  may
+    # happen again, for example:
+    #
+    #   + The "Eclips Party" can happen again in the
+    #     future.
+    #
+    #   + One-time   events  can   become  recurring
+    #     events (in  which case,  the flag  will be
+    #     flipped).
+    #
+    # It is stored here because even though this refers to
+    # an event, but it is easier to filter the table using
+    # this  flag here  when representing  SDST choices  on
+    # the  front  end,  rather  than having  to  join  the
+    # ever-expanding `ServiceEvent` table and filter that.
+    # If it  helps, one  can think of  this as  a "SERVICE
+    # DELIVERY SUBTYPE NAME USED  ONLY ONCE". (Then again,
+    # because of  the examples above, we  wouldn't want to
+    # enforce these being only used only once either.)
+    #
+    # }}-
+
+    is_one_time = models.BooleanField(
+        blank   = False,
+        null    = False
+    )
+    created  = models.DateTimeField(auto_now_add = True)
+    modified = models.DateTimeField(auto_now     = True)
+    history = HistoricalRecords()
+
+    def __str__(self):
+        return self.name
+
 
 # vim: set foldmethod=marker foldmarker={{-,}}-:
+# vim: set tabstop=4 softtabstop=4 shiftwidth=4 expandtab:
