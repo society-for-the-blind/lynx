@@ -770,13 +770,6 @@ class Assignment(models.Model):
 # single: SDT
 class ServiceDeliveryType(models.Model):
 
-    # class SDT(models.TextChoices):
-    #     IN_HOME               = "In-home",               _("In-home"               )
-    #     SUPPORT_GROUP         = "Support Group",         _("Support Group"         )
-    #     TRAINING_SEMINAR      = "Training Seminar",      _("Training Seminar"      )
-    #     COMMUNITY_INTEGRATION = "Community Integration", _("Community Integration" )
-    #     RETREAT               = "Retreat",               _("Retreat"               )
-
     name = models.CharField(
         max_length = 100,
         unique     = True,
@@ -793,12 +786,6 @@ class ServiceDeliveryType(models.Model):
 #  1  :  N
 # SDT : SDST
 class ServiceDeliverySubType(models.Model):
-
-    #     ("Spanish Support Group",  "Spanish Support Group"  ),
-    #     ("BASS",                   "BASS"                   ),
-    #     ("Woodland Support Group", "Woodland Support Group" ),
-    #     ("Asian Support Group",    "Asian Support Group"    ),
-    # )
 
     name = models.CharField(
         max_length = 100,
@@ -845,6 +832,22 @@ class ServiceDeliverySubType(models.Model):
     created  = models.DateTimeField(auto_now_add = True)
     modified = models.DateTimeField(auto_now     = True)
     history = HistoricalRecords()
+
+    def __str__(self):
+        return self.name
+
+# single: Services
+class Service(models.Model):
+
+    name = models.CharField(
+        max_length = 100,
+        unique     = True,
+        blank      = False,
+        null       = False
+    )
+    created  = models.DateTimeField(auto_now_add = True)
+    modified = models.DateTimeField(auto_now     = True)
+    history  = HistoricalRecords()
 
     def __str__(self):
         return self.name
