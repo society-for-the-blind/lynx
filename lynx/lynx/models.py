@@ -853,5 +853,157 @@ class Service(models.Model):
         return self.name
 
 
+class ServiceEvent(models.Model):
+
+    date         = models.DateField(     null = False, blank = False )
+    note         = models.TextField(     null = False, blank = False )
+    duration     = models.DurationField( null = False, blank = False )
+    soft_deleted = models.BooleanField(  null = False, blank = False )
+
+    # Allow null: maybe SDT/SDST needs to be added later
+    service_delivery = models.ForeignKey(
+        ServiceDeliverySubType,
+        on_delete = models.RESTRICT,
+        null      = True,
+        blank     = True
+    )
+
+    created  = models.DateTimeField(auto_now_add = True)
+    modified = models.DateTimeField(auto_now     = True)
+    history  = HistoricalRecords()
+
+    def __str__(self):
+        return self.name
+
+
+# Why the `RESTRICT`s? {{-
+#
+# If a  client is deleted,  it doesn't erase  the fact
+# that they attended service events. If a client needs
+# to be  re-created for  whatever reason, it  is safer
+# (albeit  less convenient)  to  re-associate the  new
+# client entry  with the  same service  events, delete
+# the  old client  entry's participation  records, and
+# then  delete the  client.  This  could be  automated
+# though.
+#
+# This is less straightforward  in the case of service
+# events,  because  it  could  be that  an  event  was
+# wrongly entered, but  decided to err on  the side of
+# caution, because if an  service event is erroneously
+# deleted,  then it  will be  a pain  to put  it back.
+# Hence the "soft delete"  solution, which will ignore
+# "deleted" events  during the plan  building process.
+# (Event  sourcing  would   be  way  more  appropriate
+# here...)
+# }}-
+class ServiceEventContact(models.Model):
+
+    # Why disallow null and blank? {{-
+    #
+    # Because it doesn't make sense in these M:N tables to
+    # miss  any values;  there  should  be an  association
+    # between  the  two entities  or  not.  The fact  that
+    # many-to-many   relationships  are   distinct  tables
+    # fulfill the  role of not  being required on  a form,
+    # unless making the validation so.
+    # }}-
+    contact       = models.ForeignKey(
+        Contact,
+        on_delete = models.RESTRICT,
+        null      = False,
+        blank     = False
+    )
+    service_event = models.ForeignKey(
+        ServiceEvent,
+        on_delete = models.RESTRICT,
+        null      = False,
+        blank     = False
+    )
+
+    created  = models.DateTimeField(auto_now_add = True)
+    modified = models.DateTimeField(auto_now     = True)
+    history  = HistoricalRecords()
+
+    def __str__(self):
+        return f'{self.contact} - {self.service_event}'
+
+# Why the `RESTRICT`s? {{-
+#
+# If  a service  is deleted from the "services" table,
+# then it  could mean that  it should have  never been
+# provided (which  sounds strange)  or that it  is not
+# offered anymore. `RESTRICT`  applies here because in
+# the  latter  case  there should  be  a  conversation
+# whether  retro-active removal  is  ok (because  that
+# will happen if `CASCADE` is on; meaning that it will
+# look  like that  clients  never  ever received  that
+# service).
+#
+# For  the rationale  in  the case  of service  events
+# see  the   2nd  paragraph   in  the   comment  above
+# `ContactServiceEvent`.
+# }}-
+class ServiceEventService(models.Model):
+
+    # See note on NULLs and blanks in `ServiceEventContact`.
+    service =       models.ForeignKey(
+        Service,
+        on_delete = models.RESTRICT,
+        null      = False,
+        blank     = False
+    )
+    service_event = models.ForeignKey(
+        ServiceEvent,
+        on_delete = models.RESTRICT,
+        null      = False,
+        blank     = False
+    )
+
+    created  = models.DateTimeField(auto_now_add = True)
+    modified = models.DateTimeField(auto_now     = True)
+    history  = HistoricalRecords()
+
+    def __str__(self):
+        return f'{self.service} - {self.service_event}'
+
+# Why the `RESTRICT`s? {{-
+#
+# If  the user  (i.e.,  instructor)  is deleted,  then
+# we'll lose  all trace who conducted  these events. I
+# think there  is already  a "soft delete"  option for
+# Django users.
+#
+# If the service event is  deleted, then that would be
+# a big  issue for  this relation,  but all  the other
+# many-to-many  relations are  set  to `RESTRICT`,  so
+# this  would  cause  inconsistencies,  and  therefore
+# leaving this one `RESTRICT` as well.
+#
+# }}-
+class ServiceEventInstructor(models.Model):
+
+    # See note on NULLs and blanks in `ServiceEventContact`.
+    user =          models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete = models.RESTRICT,
+        null      = False,
+        blank     = False
+    )
+    service_event = models.ForeignKey(
+        ServiceEvent,
+        on_delete = models.RESTRICT,
+        null      = False,
+        blank     = False
+    )
+
+    created  = models.DateTimeField(auto_now_add = True)
+    modified = models.DateTimeField(auto_now     = True)
+    history  = HistoricalRecords()
+
+    def __str__(self):
+        return f'{self.user} - {self.service_event}'
+
+
 # vim: set foldmethod=marker foldmarker={{-,}}-:
 # vim: set tabstop=4 softtabstop=4 shiftwidth=4 expandtab:
