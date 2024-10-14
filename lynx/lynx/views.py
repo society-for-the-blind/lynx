@@ -2499,6 +2499,19 @@ def is_assessed(ila_outcomes, at_outcomes):
         return "Not Assessed"
 
 
+def get_current_date_minus_one_year():
+    now = datetime.now()
+    return date(now.year -1, now.month, now.day)
+
+# DEPRECATION NOTE
+# The original idea was  that the default "Assignments
+# after date"  will always  be the current  grant year
+# start date,  but then  this turned out  to be  a bad
+# idea  as  assignments  don't simply  vanish  when  a
+# new  grant year  starts.  Still, the  list needs  to
+# be  limited,  so  a  compromise  was  made  to  show
+# assignments 1 year back.
+
 def get_current_grant_year_startdate():
     now = datetime.now()
     grant_year_start = date(now.year, 10, 1)
@@ -2549,7 +2562,7 @@ def assignment_advanced_result_view(request):
             # notes = lm.SipNote.objects.all()
         else:
             initial_data = {
-                'assignment_date_gt': get_current_grant_year_startdate()
+                'assignment_date_gt': get_current_date_minus_one_year()
             ,   'instructor': request.user.id
             }
             f = lfi.AssignmentFilter(initial_data, queryset=lm.Assignment.objects.all().order_by('-assignment_date'))
@@ -2591,9 +2604,25 @@ def assignment_advanced_result_view(request):
                 plan for plan in plans
                 if      "In-home" in plan.plan_name
                     and plan.user_id == assignment.instructor_id
-                    # Every instructor has one in-home plan per grant year per client,
-                    # but sometimes more, so show the latest one in the current grant year
-                    and plan.created.date() >= get_current_grant_year_startdate()
+
+                    # HISTORICAL NOTE
+                    #
+                    # The note below was for `get_current_grant_year_startdate`
+                    # (before switching to `get_current_date_minus_one_year`),
+                    # and   I   remember   the  pain   of   getting   this
+                    # one   right,  so   leaving   it   here  until   this
+                    # whole   shebang  will   be  ripped   out.  I   think
+                    # `get_current_date_minus_one_year` will get the right
+                    # results,  but then  the whole  solution is  "ad hoc"
+                    # given the current DB structure.
+                    #
+                    # > Every instructor has  one in-home plan per
+                    # > grant year per client, but sometimes more,
+                    # > so  show the  latest  one  in the  current
+                    # > grant year
+
+                    and plan.created.date() >= get_current_date_minus_one_year()
+
                     # FAILED ATTEMPS
                     #
                     # # 1. This will only pick plans for the grant year the assignment was created.
