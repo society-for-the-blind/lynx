@@ -1005,5 +1005,75 @@ class ServiceEventInstructor(models.Model):
         return f'{self.user} - {self.service_event}'
 
 
+class OIBOutcome(models.Model):
+
+    name = models.CharField(
+        max_length = 100,
+        unique     = True,
+        blank      = False,
+        null       = False
+    )
+    created  = models.DateTimeField(auto_now_add = True)
+    modified = models.DateTimeField(auto_now     = True)
+    history  = HistoricalRecords()
+
+    def __str__(self):
+        return self.name
+
+
+class OIBOutcomeChoice(models.Model):
+
+    name = models.CharField(
+        max_length = 100,
+        unique     = True,
+        blank      = False,
+        null       = False
+    )
+
+    created  = models.DateTimeField(auto_now_add = True)
+    modified = models.DateTimeField(auto_now     = True)
+    history = HistoricalRecords()
+
+    def __str__(self):
+        return self.name
+
+# Why outcome `RESTRICT`, but choice `RESTRICT` too? {{-
+#
+# When an  outcome is deleted, it's  choices may still
+# be associated with other outcomes.
+#
+# Deleting  a choice  is undefined  behaviour at  this
+# moment:  What  does  it  mean to  delete  a  choice?
+# Should  be removed  from all  outcomes or  just from
+# the  selected  ones?  Bottom  line is,  it  will  be
+# `RESTRICT`ed, and  if it needs to  be represented in
+# the  UI,  just make  it  the  intention explicit  by
+# asking  the user  to delete  the choice  association
+# that are not needed.
+# }}-
+class OIBOutcomeOIBOutcomeChoice(models.Model):
+
+    oib_outcome = models.ForeignKey(
+        OIBOutcome,
+        on_delete = models.RESTRICT,
+        null      = False,
+        blank     = False
+    )
+
+    oib_outcome_choice = models.ForeignKey(
+        OIBOutcomeChoice,
+        on_delete = models.RESTRICT,
+        null      = False,
+        blank     = False
+    )
+
+    created  = models.DateTimeField(auto_now_add = True)
+    modified = models.DateTimeField(auto_now     = True)
+    history  = HistoricalRecords()
+
+    def __str__(self):
+        return f'{self.service} - {self.service_event}'
+
+
 # vim: set foldmethod=marker foldmarker={{-,}}-:
 # vim: set tabstop=4 softtabstop=4 shiftwidth=4 expandtab:

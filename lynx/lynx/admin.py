@@ -3,8 +3,23 @@ from django.contrib import admin
 # Register your models here.
 
 
-from .models import Contact, Intake, Address, Authorization, Email, EmergencyContact, SipPlan, SipNote, \
-    IntakeNote, IntakeServiceArea, Phone, ProgressReport, LessonNote, Assignment
+from .models import Contact,           \
+                    Intake,            \
+                    Address,           \
+                    Authorization,     \
+                    Email,             \
+                    EmergencyContact,  \
+                    SipPlan,           \
+                    SipNote,           \
+                    IntakeNote,        \
+                    IntakeServiceArea, \
+                    Phone,             \
+                    ProgressReport,    \
+                    LessonNote,        \
+                    Assignment
+#                   ServiceDeliveryType,
+#                   ServiceDeliverySubType,
+#                   Service
 
 admin.site.register(Contact)
 admin.site.register(Intake)
@@ -22,3 +37,8 @@ admin.site.register(ProgressReport)
 admin.site.register(LessonNote)
 # admin.site.register(Staff)
 admin.site.register(Assignment)
+
+# OIB RE-DESIGN MODELS
+# admin.site.register(ServiceDeliveryType)
+# admin.site.register(ServiceDeliverySubType)
+# admin.site.register(Service)
