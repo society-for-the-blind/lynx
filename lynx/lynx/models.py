@@ -764,5 +764,109 @@ class Assignment(models.Model):
     def get_absolute_url(self):
         return reverse('lynx:assignment', kwargs={'pk': self.contact_id})
 
+# === OIB RE-DESIGN =========================================================
+class SipServiceDeliveryType(models.Model):
+    parent_id = models.IntegerField(null=True, blank=True)
+    name = models.CharField(max_length=255)
+    history = HistoricalRecords()
+
+    def __str__(self):
+        return self.name
+
+class SipService(models.Model):
+    name = models.CharField(max_length=255)
+    history = HistoricalRecords()
+
+    def __str__(self):
+        return self.name
+
+class SipServiceEvent(models.Model):
+    date = models.DateField()
+    time = models.TimeField()
+    length = models.DurationField()
+    note = models.TextField(blank=True, null=True)
+    history = HistoricalRecords()
+
+    def __str__(self):
+        return f"{self.date} {self.time} - {self.note}"
+
+class OibOutcomeType(models.Model):
+    name = models.CharField(max_length=255)
+    history = HistoricalRecords()
+
+    def __str__(self):
+        return self.name
+
+class OibOutcomeChoice(models.Model):
+    name = models.CharField(max_length=255)
+    history = HistoricalRecords()
+
+    def __str__(self):
+        return self.name
+
+# NOTE Why no FK to `SipServiceEvent`? or other models?
+#      ----------------------------------------------------
+#      Because there is no  process  on  when  to  set  the
+#      outcomes and it is  usually  an  afterthought  until
+#      time to report.
+class OibOutcome(models.Model):
+    outcome_choice = models.ForeignKey(OibOutcomeChoice, on_delete=models.CASCADE)
+    outcome_type = models.ForeignKey(OibOutcomeType, on_delete=models.CASCADE)
+    contact = models.ForeignKey(Contact, on_delete=models.CASCADE)
+    # NOTE I think Django automatically adds `created` and `modified` fields.
+    # date = models.DateField()
+    # time = models.TimeField()
+    history = HistoricalRecords()
+
+    def __str__(self):
+        return f"{self.date} {self.time} - {self.outcome_choice.name} - {self.contact}"
+
+
+class SipServiceEventSipServiceDeliveryType(models.Model):
+    service_delivery_type = models.ForeignKey(SipServiceDeliveryType, on_delete=models.CASCADE)
+    service_event = models.ForeignKey(SipServiceEvent, on_delete=models.CASCADE)
+    history = HistoricalRecords()
+
+    def __str__(self):
+        return f"{self.service_delivery_type} - {self.service_event}"
+
+class SipServiceEventSipService(models.Model):
+    service_delivery_type = models.ForeignKey(SipService, on_delete=models.CASCADE)
+    service_event = models.ForeignKey(SipServiceEvent, on_delete=models.CASCADE)
+    history = HistoricalRecords()
+
+    def __str__(self):
+        return f"{self.service_delivery_type} - {self.service_event}"
+
+
+# TODO Pre-populate the roles.
+class ServiceEventRole(models.Model):
+    role = models.CharField(max_length=255)
+    history = HistoricalRecords()
+
+    def __str__(self):
+        return self.role
+
+
+class SipServiceEventContact(models.Model):
+    service_event = models.ForeignKey(SipServiceEvent, on_delete=models.CASCADE)
+    contact = models.ForeignKey(Contact, on_delete=models.CASCADE)
+    service_event_role = models.ForeignKey(ServiceEventRole, on_delete=models.CASCADE)
+    note = models.TextField(blank=True, null=True)
+    history = HistoricalRecords()
+
+    def __str__(self):
+        return f"{self.service_event} - {self.contact} - {self.service_event_role}"
+
+
+class SipServiceEventInstructor(models.Model):
+    service_event = models.ForeignKey(SipServiceEvent, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    service_event_role = models.ForeignKey(ServiceEventRole, on_delete=models.CASCADE)
+    history = HistoricalRecords()
+
+    def __str__(self):
+        return f"{self.service_event} - {self.user} - {self.service_event_role}"
+# ===========================================================================
 
 # vim: set foldmethod=marker foldmarker={{-,}}-:

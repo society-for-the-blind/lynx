@@ -40,7 +40,7 @@ SECRET_KEY = str((subprocess.run(["openssl", "rand", "-hex", "52"], capture_outp
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True if (deployment_environment == 'dev') else False
 
-ALLOWED_HOSTS = [ os.environ.get('HTTPS_DOMAIN', '') ]
+ALLOWED_HOSTS = [ os.environ.get('HTTPS_DOMAIN', '') ] + [ 'localhost' ]
 
 # https://stackoverflow.com/a/38842030/1498178
 CSRF_TRUSTED_ORIGINS = ['https://lynx.societyfortheblind.org']
