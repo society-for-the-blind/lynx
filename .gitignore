@@ -1,3 +1,7 @@
 *.pyc
 *egg-info
-_nix-shell
+_nix-shell*
+*schemaspy*
+backup/
+*jar
+*zip

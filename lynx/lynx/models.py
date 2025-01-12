@@ -1,4 +1,4 @@
-from django.db import models
+from django.db import models, connection
 from django import forms
 from django.contrib.auth import get_user_model
 from django.conf import settings
@@ -764,5 +764,205 @@ class Assignment(models.Model):
     def get_absolute_url(self):
         return reverse('lynx:assignment', kwargs={'pk': self.contact_id})
 
+# === OIB RE-DESIGN =========================================================
+
+class OIBProgram(models.Model):
+    oib_program = models.CharField(max_length=255)
+    long_name = models.CharField(max_length=255)
+    created = models.DateTimeField(auto_now_add=True)
+    modified = models.DateTimeField(auto_now=True)
+    history = HistoricalRecords()
+
+    def __str__(self):
+        return self.oib_program
+
+# NOTE "service delivery type" === "plan type"
+#      ----------------------------------------------------
+#      On the front-end, this is called  "plan  type",  for
+#      historical and  beurocratic  reasons.  Beaurocratic:
+#      DOR wants lots of plans, and  having  one  plan  per
+#      year per client per service  delivery  type  is  the
+#      sweet spot. Historical: the original  implementation
+#      is flawed, and every user now  thinks  of  these  as
+#      "plan types". Damage done.
+class OIBServiceDeliveryType(models.Model):
+    parent_id = models.IntegerField(null=True, blank=True)
+    oib_service_delivery_type = models.CharField(max_length=255)
+    created = models.DateTimeField(auto_now_add=True)
+    modified = models.DateTimeField(auto_now=True)
+    history = HistoricalRecords()
+
+    # Show only the SDTs that are not categories themselves
+    # (i.e. the leaf nodes of the hierarchy tree)
+    #
+    # TODO This doesn't really belong here as it is  not  a
+    #      class method, but a simple function defined on a
+    #      class, but not sure where to put it.
+    def get_leaf_nodes():
+        with connection.cursor() as cursor:
+            cursor.execute("""
+                WITH RECURSIVE cte AS (
+                    SELECT id, parent_id, oib_service_delivery_type
+                    FROM lynx_oibservicedeliverytype
+                    WHERE parent_id IS NULL
+                    UNION ALL
+                    SELECT id, parent_id, oib_service_delivery_type
+                    FROM lynx_oibservicedeliverytype t
+                    INNER JOIN cte ON t.parent_id = cte.id
+                )
+                SELECT id, oib_service_delivery_type
+                FROM lynx_oibservicedeliverytype
+                WHERE id NOT IN (SELECT parent_id FROM lynx_oibservicedeliverytype WHERE parent_id IS NOT NULL);
+            """)
+            rows = cursor.fetchall()
+        return [row[0] for row in rows]  # Return list of leaf node IDs
+
+    def __str__(self):
+        return self.oib_service_delivery_type
+
+class OIBServiceEvent(models.Model):
+    # NOTE This is the "plan" in the front-end.
+    oib_service_delivery_type = models.ForeignKey(OIBServiceDeliveryType, on_delete=models.PROTECT)
+    oib_program = models.ForeignKey(OIBProgram, on_delete=models.PROTECT)
+    date = models.DateField(blank=True, default=date.today)
+    # start_time = models.TimeField(blank=True, default="00:00:00")
+    # end_time = models.TimeField(blank=True, default="00:00:00")
+    length = models.DurationField(blank=True, default="00:00:00")
+    note = models.TextField(blank=True, default="")
+    entered_by = models.ForeignKey(User, on_delete=models.PROTECT)
+    created = models.DateTimeField(auto_now_add=True)
+    modified = models.DateTimeField(auto_now=True)
+    history = HistoricalRecords()
+
+    def __str__(self):
+        return f"{self.date} {self.service_delivery_type} {self.start_time}"
+
+class OIBService(models.Model):
+    oib_service = models.CharField(max_length=255)
+    long_name = models.CharField(max_length=255)
+    created = models.DateTimeField(auto_now_add=True)
+    modified = models.DateTimeField(auto_now=True)
+    history = HistoricalRecords()
+
+    def __str__(self):
+        return self.oib_service
+
+class OIBServiceEventOIBService(models.Model):
+    oib_service_event = models.ForeignKey(OIBServiceEvent, on_delete=models.PROTECT)
+    oib_service = models.ForeignKey(OIBService, on_delete=models.PROTECT)
+    created = models.DateTimeField(auto_now_add=True)
+    modified = models.DateTimeField(auto_now=True)
+    history = HistoricalRecords()
+
+    def __str__(self):
+        return f"{self.service_event} {self.oib_service}"
+
+class OIBServiceEventContactRole(models.Model):
+    oib_service_event_contact_role = models.CharField(max_length=255)
+    created = models.DateTimeField(auto_now_add=True)
+    modified = models.DateTimeField(auto_now=True)
+    history = HistoricalRecords()
+
+    def __str__(self):
+        return self.oib_service_event_contact_role
+
+class OIBServiceEventInstructorRole(models.Model):
+    oib_service_event_instructor_role = models.CharField(max_length=255)
+    created = models.DateTimeField(auto_now_add=True)
+    modified = models.DateTimeField(auto_now=True)
+    history = HistoricalRecords()
+
+    def __str__(self):
+        return self.oib_service_event_instructor_role
+
+class OIBServiceEventInstructor(models.Model):
+    service_event = models.ForeignKey(OIBServiceEvent, on_delete=models.PROTECT)
+    instructor = models.ForeignKey(User, on_delete=models.PROTECT)
+    oib_service_event_instructor_role = models.ForeignKey(OIBServiceEventInstructorRole, on_delete=models.PROTECT, default=0)
+    created = models.DateTimeField(auto_now_add=True)
+    modified = models.DateTimeField(auto_now=True)
+    history = HistoricalRecords()
+
+    def __str__(self):
+        return f"{self.service_event} {self.user} {self.role}"
+
+class OIBServiceEventContact(models.Model):
+    oib_service_event = models.ForeignKey(OIBServiceEvent, on_delete=models.PROTECT)
+    contact = models.ForeignKey(Contact, on_delete=models.PROTECT)
+    oib_service_event_contact_role = models.ForeignKey(OIBServiceEventContactRole, on_delete=models.PROTECT, default=0)
+    oib_program = models.ForeignKey(OIBProgram, on_delete=models.PROTECT, default=0)
+    created = models.DateTimeField(auto_now_add=True)
+    modified = models.DateTimeField(auto_now=True)
+    history = HistoricalRecords()
+
+    def __str__(self):
+        return f"{self.oib_service_event} {self.contact} {self.oib_service_event_contact_role}"
+
+class OibOutcomeType(models.Model):
+    oib_outcome_type = models.CharField(max_length=255)
+    created = models.DateTimeField(auto_now_add=True)
+    modified = models.DateTimeField(auto_now=True)
+    history = HistoricalRecords()
+
+    def __str__(self):
+        return self.oib_outcome_type
+
+class OibOutcomeChoice(models.Model):
+    oib_outcome_choice = models.CharField(max_length=255)
+    created = models.DateTimeField(auto_now_add=True)
+    modified = models.DateTimeField(auto_now=True)
+    history = HistoricalRecords()
+
+    def __str__(self):
+        return self.oib_outcome_choice
+
+class OibOutcomeTypeChoice(models.Model):
+    oib_outcome_type = models.ForeignKey(OibOutcomeType, on_delete=models.PROTECT)
+    oib_outcome_choice = models.ForeignKey(OibOutcomeChoice, on_delete=models.PROTECT)
+    created = models.DateTimeField(auto_now_add=True)
+    modified = models.DateTimeField(auto_now=True)
+    history = HistoricalRecords()
+
+    def __str__(self):
+        return f"{self.outcome_type} {self.outcome_choice}"
+
+# NOTE Why no FK to `OIBServiceEvent` or other models?
+#      ----------------------------------------------------
+# Because  the  relationships  between  SERVICES   and
+# OUTCOMES are only loosely defined, and the  official
+# procedure is to follow  up  with  a  survey  to  the
+# client 60 days AFTER receiving services.
+
+# NOTE Making this table immutable and append-only on the
+#      application level (Django models) and not on the DB
+#      level (i.e., migrations), in case some manual adjustments
+#      are needed in the future.
+class OibOutcome(models.Model):
+    oib_outcome_type_choice = models.ForeignKey(OibOutcomeTypeChoice, on_delete=models.PROTECT)
+    contact = models.ForeignKey(Contact, on_delete=models.PROTECT)
+    created = models.DateTimeField(auto_now_add=True)
+    # This field may seem superfluous if the model is append-only
+    # and immutable, but it is good to have in case someone
+    # or something tries (and able) to modify a record.
+    modified = models.DateTimeField(auto_now=True)
+    history = HistoricalRecords()
+
+    def __str__(self):
+        return f"{self.date} {self.time} {self.outcome_choice.name} {self.contact}"
+
+    def save(self, *args, **kwargs):
+        if self.pk is not None:
+            raise ValueError("Updates are not allowed for OibOutcome records.")
+        super(OibOutcome, self).save(*args, **kwargs)
+
+    def delete(self, *args, **kwargs):
+        raise ValueError("Deletions are not allowed for OibOutcome records.")
+
+    class Meta:
+        verbose_name = "OIB Outcome"
+        verbose_name_plural = "OIB Outcomes"
+
+
+# ===========================================================================
 
 # vim: set foldmethod=marker foldmarker={{-,}}-:
