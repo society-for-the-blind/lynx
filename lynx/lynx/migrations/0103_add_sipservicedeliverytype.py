@@ -18,6 +18,7 @@ def add_initial_delivery_types(apps, schema_editor):
         SipServiceDeliveryType(id=6, parent_id=2, name='Spanish Support Group'),
         SipServiceDeliveryType(id=7, parent_id=2, name='Asian Support Group'),
         SipServiceDeliveryType(id=8, parent_id=2, name='BASS'),
+        SipServiceDeliveryType(id=9, parent_id=0, name='one-time event'),
     ])
 
 class Migration(migrations.Migration):

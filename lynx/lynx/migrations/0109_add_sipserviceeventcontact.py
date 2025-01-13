@@ -22,6 +22,7 @@ class Migration(migrations.Migration):
                 ('contact', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='lynx.contact')),
                 ('service_event', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='lynx.sipserviceevent')),
                 ('service_event_role', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='lynx.serviceeventrole')),
+                ('note', models.TextField(blank=True, null=True)),
             ],
         ),
         migrations.CreateModel(
@@ -37,6 +38,7 @@ class Migration(migrations.Migration):
                 ('history_user', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='+', to=settings.AUTH_USER_MODEL)),
                 ('service_event', models.ForeignKey(blank=True, db_constraint=False, null=True, on_delete=django.db.models.deletion.DO_NOTHING, related_name='+', to='lynx.sipserviceevent')),
                 ('service_event_role', models.ForeignKey(blank=True, db_constraint=False, null=True, on_delete=django.db.models.deletion.DO_NOTHING, related_name='+', to='lynx.serviceeventrole')),
+                ('note', models.TextField(blank=True, null=True)),
             ],
             options={
                 'verbose_name': 'historical sip service event contact',

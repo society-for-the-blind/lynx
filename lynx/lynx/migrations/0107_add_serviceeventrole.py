@@ -6,11 +6,23 @@ import django.db.models.deletion
 import simple_history.models
 
 
+def add_initial_roles(apps, schema_editor):
+    ServiceEventRole = apps.get_model('lynx', 'ServiceEventRole')
+    ServiceEventRole.objects.bulk_create([
+        ServiceEventRole(id=0, name='participant'),
+        ServiceEventRole(id=1, name='facilitator'),
+        ServiceEventRole(id=2, name='presenter'),
+        ServiceEventRole(id=3, name='guest'),
+        ServiceEventRole(id=4, name='caregiver'),
+        ServiceEventRole(id=5, name='family member'),
+    ])
+
+
 class Migration(migrations.Migration):
 
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('lynx', '0106_add_sipserviceeventsipservicedeliverytype'),
+        ('lynx', '0105_add_sipserviceeventsipservice'),
     ]
 
     operations = [
@@ -21,6 +33,8 @@ class Migration(migrations.Migration):
                 ('role', models.CharField(max_length=255)),
             ],
         ),
+        migrations.RunPython(add_initial_roles),
+
         migrations.CreateModel(
             name='HistoricalServiceEventRole',
             fields=[

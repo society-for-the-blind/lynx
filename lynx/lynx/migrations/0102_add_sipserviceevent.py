@@ -18,6 +18,7 @@ class Migration(migrations.Migration):
             name='SipServiceEvent',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('service_delivery_type', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='lynx.sipservicedeliverytype')),
                 ('date', models.DateField()),
                 ('time', models.TimeField()),
                 ('length', models.DurationField()),
@@ -28,6 +29,7 @@ class Migration(migrations.Migration):
             name='HistoricalSipServiceEvent',
             fields=[
                 ('id', models.IntegerField(auto_created=True, blank=True, db_index=True, verbose_name='ID')),
+                ('service_delivery_type', models.ForeignKey(blank=True, db_constraint=False, null=True, on_delete=django.db.models.deletion.DO_NOTHING, related_name='+', to='lynx.sipservicedeliverytype')),
                 ('date', models.DateField()),
                 ('time', models.TimeField()),
                 ('length', models.DurationField()),
