@@ -784,7 +784,8 @@ class SipServiceEvent(models.Model):
     date = models.DateField()
     time = models.TimeField()
     length = models.DurationField()
-    note = models.TextField(blank=True, null=True)
+    # Allowing blank for convenience.
+    note = models.TextField(blank=True)
     history = HistoricalRecords()
 
     def __str__(self):
@@ -822,14 +823,6 @@ class OibOutcome(models.Model):
         return f"{self.date} {self.time} - {self.outcome_choice.name} - {self.contact}"
 
 
-class SipServiceEventSipServiceDeliveryType(models.Model):
-    service_delivery_type = models.ForeignKey(SipServiceDeliveryType, on_delete=models.CASCADE)
-    service_event = models.ForeignKey(SipServiceEvent, on_delete=models.CASCADE)
-    history = HistoricalRecords()
-
-    def __str__(self):
-        return f"{self.service_delivery_type} - {self.service_event}"
-
 class SipServiceEventSipService(models.Model):
     service_delivery_type = models.ForeignKey(SipService, on_delete=models.CASCADE)
     service_event = models.ForeignKey(SipServiceEvent, on_delete=models.CASCADE)
@@ -863,6 +856,7 @@ class SipServiceEventInstructor(models.Model):
     service_event = models.ForeignKey(SipServiceEvent, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     service_event_role = models.ForeignKey(ServiceEventRole, on_delete=models.CASCADE)
+    note = models.TextField(blank=True, null=True)
     history = HistoricalRecords()
 
     def __str__(self):
