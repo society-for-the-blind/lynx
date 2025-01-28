@@ -119,5 +119,7 @@ urlpatterns = [
     path('instructors/', views.assignment_advanced_result_view, name='instructors'),
     # --- END ASSGNMENTS ---
 
+    path('add_service_event/', views.add_service_event, name='add_service_event'),
+
     path("", views.index, name='index')
 ]

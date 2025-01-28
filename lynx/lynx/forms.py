@@ -1,16 +1,18 @@
 from django import forms
 from django.db.models.functions import Lower
 from django.utils import timezone
-from django.db.models import Q, F
+# from django.db.models import Q, F
 from django.db.models import Value as V
 from django.db.models import DateField
-from django.forms.models import ModelChoiceField
+# from django.forms.models import ModelChoiceField
 from django.db.models.functions import Concat, Replace, Lower, Substr, StrIndex, Cast
 
 from .models import Contact, Address, Intake, Email, Phone, SipPlan, Sip1854Plan, IntakeNote, EmergencyContact, Authorization, \
-    ProgressReport, LessonNote, SipNote, Sip1854Note, Volunteer, UNITS, Document, Vaccine, Assignment
+    ProgressReport, LessonNote, SipNote, Sip1854Note, Volunteer, UNITS, Document, Vaccine, Assignment, ServiceEventRole
 
 from datetime import datetime
+
+from .models import SipServiceEvent
 
 months = (("1", "January"), ("2", "February"), ("3", "March"), ("4", "April"), ("5", "May"), ("6", "June"),
           ("7", "July"), ("8", "August"), ("9", "September"), ("10", "October"), ("11", "November"), ("12", "December"),
@@ -555,3 +557,12 @@ def filter_units(authorization_id): #remove any selections that would take instr
             choices_dictionary[key] = value
 
     return choices_dictionary
+
+class SipServiceEventForm(forms.ModelForm):
+    contacts = forms.ModelMultipleChoiceField(queryset=Contact.objects.all(), widget=forms.SelectMultiple)
+    roles = forms.ModelMultipleChoiceField(queryset=ServiceEventRole.objects.all(), widget=forms.SelectMultiple)
+    date = forms.DateField(widget=forms.SelectDateWidget(years=list(range(1900, 2100))), label='Note Date', initial=timezone.now())
+
+    class Meta:
+        model = SipServiceEvent
+        fields = ['service_delivery_type', 'date', 'length', 'note', 'contacts', 'roles']

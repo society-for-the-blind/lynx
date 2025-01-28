@@ -2711,5 +2711,19 @@ def assignment_advanced_result_view(request):
     # import pdb; pdb.set_trace()
     return render(request, 'lynx/instructor_search.html', {'filter': f, 'assignment_list': assignment_condensed})
 
+def add_service_event(request):
+    if request.method == 'POST':
+        form = lfo.SipServiceEventForm(request.POST)
+        if form.is_valid():
+            service_event = form.save()
+            contacts = form.cleaned_data['contacts']
+            roles = form.cleaned_data['roles']
+            for contact in contacts:
+                for role in roles:
+                    lm.SipServiceEventContact.objects.create(service_event=service_event, contact=contact, service_event_role=role)
+            return redirect('lynx:index')  # Redirect to a list view or another page after saving
+    else:
+        form = lfo.SipServiceEventForm()
+    return render( request, 'lynx/add_service_event.html', {'form': form})
 
 # vim: set foldmethod=marker foldmarker={{-,}}-:
