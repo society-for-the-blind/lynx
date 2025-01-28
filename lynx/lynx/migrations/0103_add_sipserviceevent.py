@@ -2,6 +2,7 @@
 
 from django.db import migrations, models
 import django.db.models.deletion
+from datetime import datetime, date
 
 
 class Migration(migrations.Migration):
@@ -23,11 +24,13 @@ class Migration(migrations.Migration):
                 #      delivery types,  decided  to  simply  include  it
                 #      here.
                 ('service_delivery_type', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='lynx.sipservicedeliverytype')),
-                ('date', models.DateField()),
-                ('start_time', models.TimeField()),
-                ('end_time', models.TimeField()),
-                ('length', models.DurationField()),
+                ('date', models.DateField(blank=True, default=date.today)),
+                # ('start_time', models.TimeField(blank=True, default="00:00:00")),
+                # ('end_time', models.TimeField(blank=True, default="00:00:00")),
+                ('length', models.DurationField(blank=True, default="00:00:00")),
                 ('note', models.TextField(blank=True, default="")),
+                ('created', models.DateTimeField(auto_now_add=True, null=True)),
+                ('modified', models.DateTimeField(auto_now=True, null=True)),
             ],
         ),
     ]

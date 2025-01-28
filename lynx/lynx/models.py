@@ -768,6 +768,8 @@ class Assignment(models.Model):
 class SipServiceDeliveryType(models.Model):
     parent_id = models.IntegerField(null=True, blank=True)
     name = models.CharField(max_length=255)
+    created = models.DateTimeField(auto_now_add=True, null=True)
+    modified = models.DateTimeField(auto_now=True, null=True)
     history = HistoricalRecords()
 
     def __str__(self):
@@ -775,12 +777,14 @@ class SipServiceDeliveryType(models.Model):
 
 class SipServiceEvent(models.Model):
     service_delivery_type = models.ForeignKey(SipServiceDeliveryType, on_delete=models.CASCADE)
-    date = models.DateField()
-    start_time = models.TimeField()
-    end_time = models.TimeField()
-    length = models.DurationField()
+    date = models.DateField(blank=True, default=date.today)
+    # start_time = models.TimeField(blank=True, default="00:00:00")
+    # end_time = models.TimeField(blank=True, default="00:00:00")
+    length = models.DurationField(blank=True, default="00:00:00")
     # Allowing blank for convenience.
     note = models.TextField(blank=True, default="")
+    created = models.DateTimeField(auto_now_add=True, null=True)
+    modified = models.DateTimeField(auto_now=True, null=True)
     history = HistoricalRecords()
 
     def __str__(self):
@@ -788,6 +792,8 @@ class SipServiceEvent(models.Model):
 
 class SipService(models.Model):
     name = models.CharField(max_length=255)
+    created = models.DateTimeField(auto_now_add=True, null=True)
+    modified = models.DateTimeField(auto_now=True, null=True)
     history = HistoricalRecords()
 
     def __str__(self):
@@ -796,6 +802,8 @@ class SipService(models.Model):
 class SipServiceEventSipService(models.Model):
     service_event = models.ForeignKey(SipServiceEvent, on_delete=models.CASCADE)
     sip_service = models.ForeignKey(SipService, on_delete=models.CASCADE)
+    created = models.DateTimeField(auto_now_add=True, null=True)
+    modified = models.DateTimeField(auto_now=True, null=True)
     history = HistoricalRecords()
 
     def __str__(self):
@@ -804,6 +812,8 @@ class SipServiceEventSipService(models.Model):
 # TODO Pre-populate the roles.
 class ServiceEventRole(models.Model):
     name = models.CharField(max_length=255)
+    created = models.DateTimeField(auto_now_add=True, null=True)
+    modified = models.DateTimeField(auto_now=True, null=True)
     history = HistoricalRecords()
 
     def __str__(self):
@@ -814,6 +824,8 @@ class SipServiceEventInstructor(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     service_event_role = models.ForeignKey(ServiceEventRole, on_delete=models.CASCADE)
     note = models.TextField(blank=True, null=True)
+    created = models.DateTimeField(auto_now_add=True, null=True)
+    modified = models.DateTimeField(auto_now=True, null=True)
     history = HistoricalRecords()
 
     def __str__(self):
@@ -824,6 +836,8 @@ class SipServiceEventContact(models.Model):
     contact = models.ForeignKey(Contact, on_delete=models.CASCADE)
     service_event_role = models.ForeignKey(ServiceEventRole, on_delete=models.CASCADE)
     note = models.TextField(blank=True, null=True)
+    created = models.DateTimeField(auto_now_add=True, null=True)
+    modified = models.DateTimeField(auto_now=True, null=True)
     history = HistoricalRecords()
 
     def __str__(self):
@@ -831,6 +845,8 @@ class SipServiceEventContact(models.Model):
 
 class OibOutcomeType(models.Model):
     name = models.CharField(max_length=255)
+    created = models.DateTimeField(auto_now_add=True, null=True)
+    modified = models.DateTimeField(auto_now=True, null=True)
     history = HistoricalRecords()
 
     def __str__(self):
@@ -838,6 +854,8 @@ class OibOutcomeType(models.Model):
 
 class OibOutcomeChoice(models.Model):
     name = models.CharField(max_length=255)
+    created = models.DateTimeField(auto_now_add=True, null=True)
+    modified = models.DateTimeField(auto_now=True, null=True)
     history = HistoricalRecords()
 
     def __str__(self):
@@ -846,6 +864,8 @@ class OibOutcomeChoice(models.Model):
 class OibOutcomeTypeChoice(models.Model):
     oib_outcome_type = models.ForeignKey(OibOutcomeType, on_delete=models.CASCADE)
     oib_outcome_choice = models.ForeignKey(OibOutcomeChoice, on_delete=models.CASCADE)
+    created = models.DateTimeField(auto_now_add=True, null=True)
+    modified = models.DateTimeField(auto_now=True, null=True)
     history = HistoricalRecords()
 
     def __str__(self):
@@ -862,6 +882,8 @@ class OibOutcome(models.Model):
     # NOTE I think Django automatically adds `created` and `modified` fields.
     # date = models.DateField()
     # time = models.TimeField()
+    created = models.DateTimeField(auto_now_add=True, null=True)
+    modified = models.DateTimeField(auto_now=True, null=True)
     history = HistoricalRecords()
 
     def __str__(self):

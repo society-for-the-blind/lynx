@@ -31,6 +31,8 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('parent_id', models.IntegerField(blank=True, null=True)),
                 ('name', models.CharField(max_length=255)),
+                ('created', models.DateTimeField(auto_now_add=True, null=True)),
+                ('modified', models.DateTimeField(auto_now=True, null=True)),
             ],
         ),
         migrations.RunPython(add_initial_delivery_types),

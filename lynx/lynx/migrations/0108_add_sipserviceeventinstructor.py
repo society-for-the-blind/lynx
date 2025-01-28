@@ -19,8 +19,10 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('service_event', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='lynx.sipserviceevent')),
                 ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
-                ('service_event_role', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='lynx.serviceeventrole')),
+                ('service_event_role', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='lynx.serviceeventrole', default=0)),
                 ('note', models.TextField(blank=True, null=True)),
+                ('created', models.DateTimeField(auto_now_add=True, null=True)),
+                ('modified', models.DateTimeField(auto_now=True, null=True)),
             ],
         ),
     ]
