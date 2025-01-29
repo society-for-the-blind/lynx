@@ -1,4 +1,5 @@
 from django import forms
+from django.db.models import functions as ddmf
 from django.db.models.functions import Lower
 from django.utils import timezone
 # from django.db.models import Q, F
@@ -12,7 +13,7 @@ from .models import Contact, Address, Intake, Email, Phone, SipPlan, Sip1854Plan
 
 from datetime import datetime
 
-from .models import SipServiceEvent
+from .models import SipServiceEvent, SipServiceEventContact
 
 months = (("1", "January"), ("2", "February"), ("3", "March"), ("4", "April"), ("5", "May"), ("6", "June"),
           ("7", "July"), ("8", "August"), ("9", "September"), ("10", "October"), ("11", "November"), ("12", "December"),
@@ -558,11 +559,55 @@ def filter_units(authorization_id): #remove any selections that would take instr
 
     return choices_dictionary
 
+DURATION_CHOICES = [
+    ("00:15:00", "15 minutes"),
+    ("00:30:00", "30 minutes"),
+    ("00:45:00", "45 minutes"),
+    ("01:00:00", "1 hour"),
+    ("01:15:00", "1 hour 15 minutes"),
+    ("01:30:00", "1 hour 30 minutes"),
+    ("01:45:00", "1 hour 45 minutes"),
+    ("02:00:00", "2 hours"),
+    ("02:15:00", "2 hours 15 minutes"),
+    ("02:30:00", "2 hours 30 minutes"),
+    ("02:45:00", "2 hours 45 minutes"),
+    ("03:00:00", "3 hours"),
+    ("03:15:00", "3 hours 15 minutes"),
+    ("03:30:00", "3 hours 30 minutes"),
+    ("03:45:00", "3 hours 45 minutes"),
+    ("04:00:00", "4 hours"),
+    ("04:15:00", "4 hours 15 minutes"),
+    ("04:30:00", "4 hours 30 minutes"),
+    ("04:45:00", "4 hours 45 minutes"),
+    ("05:00:00", "5 hours"),
+    ("05:15:00", "5 hours 15 minutes"),
+    ("05:30:00", "5 hours 30 minutes"),
+    ("05:45:00", "5 hours 45 minutes"),
+    ("06:00:00", "6 hours"),
+    ("06:15:00", "6 hours 15 minutes"),
+    ("06:30:00", "6 hours 30 minutes"),
+    ("06:45:00", "6 hours 45 minutes"),
+    ("07:00:00", "7 hours"),
+    ("07:15:00", "7 hours 15 minutes"),
+    ("07:30:00", "7 hours 30 minutes"),
+    ("07:45:00", "7 hours 45 minutes"),
+    ("08:00:00", "8 hours"),
+]
+
 class SipServiceEventForm(forms.ModelForm):
-    contacts = forms.ModelMultipleChoiceField(queryset=Contact.objects.all(), widget=forms.SelectMultiple)
-    roles = forms.ModelMultipleChoiceField(queryset=ServiceEventRole.objects.all(), widget=forms.SelectMultiple)
     date = forms.DateField(widget=forms.SelectDateWidget(years=list(range(1900, 2100))), label='Note Date', initial=timezone.now())
+    length = forms.ChoiceField(choices=DURATION_CHOICES, label='Length')
 
     class Meta:
         model = SipServiceEvent
-        fields = ['service_delivery_type', 'date', 'length', 'note', 'contacts', 'roles']
+        fields = ['service_delivery_type', 'date', 'length', 'note']
+
+class ContactRoleForm(forms.ModelForm):
+    contact = forms.ModelChoiceField(queryset=Contact.objects.filter(active=1).order_by(ddmf.Lower('last_name'), ddmf.Lower('first_name')), label='Contact')
+    role = forms.ModelChoiceField(queryset=ServiceEventRole.objects.all(), label='Role')
+
+    class Meta:
+        model = SipServiceEventContact
+        fields = ['contact', 'role']
+
+ContactRoleFormSet = forms.inlineformset_factory(SipServiceEvent, SipServiceEventContact, form=ContactRoleForm, extra=1, can_delete=True)
