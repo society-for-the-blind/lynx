@@ -1,33 +1,26 @@
 {% extends 'lynx/base.html' %}
 {% load crispy_forms_tags %}
 
-{% block title %}New {{ program_name }} Note for {{ client.first_name }} {{ client.last_name }}{% endblock %}
+{% block title %}Add SIP Service Event{% endblock %}
 
 {% block javascript %}
 <script>
 
-    $(document).ready(function() {
-        var thisYear = new Date().getFullYear();
-        $("#id_note_date_year").val(thisYear);
-
-        //THis javascript function uses an array of 0-11
-        var thisMonth = new Date().getMonth() + 1;
-        $("#id_note_date_month").val(thisMonth);
-
-        var thisDay = new Date().getDate();
-        $("#id_note_date_day").val(thisDay);
-    });
-
     // function setDate(selectObject) {
     //     document.getElementById('id_note_date').value = new Date().toISOString().slice(0, 10);
     // }
+    function addContactRoleRow() {
+        var formIdx = $('#id_form-TOTAL_FORMS').val();
+        $('#formset').append($('#empty-form').html().replace(/__prefix__/g, formIdx));
+        $('#id_form-TOTAL_FORMS').val(parseInt(formIdx) + 1);
+    }
 
 </script>
 {% endblock %}
 
 {% block content %}
 <!-- This will probably need to be done with ILP as well -->
-<h1>Add SIP Service Event</h1>
+<h1>Add SIP Service Event (or SIP Note)</h1>
 <form method="post"> {% csrf_token %}
     <div class="container-fluid">
         <div class="row">
@@ -35,9 +28,21 @@
             <div class="col-12">{{ form.date|as_crispy_field }}</div>
             <div class="col-12">{{ form.length|as_crispy_field }}</div>
             <div class="col-12">{{ form.note|as_crispy_field }}</div>
-            <div class="col-12">{{ form.contacts|as_crispy_field }}</div>
-            <div class="col-12">{{ form.roles|as_crispy_field }}</div>
-        {{ form.errors }}
+        </div>
+        <div id="formset" class="row">
+            {% for form in formset %}
+                <div class="col-6">{{ form.contact|as_crispy_field }}</div>
+                <div class="col-6">{{ form.role|as_crispy_field }}</div>
+            {% endfor %}
+        </div>
+        <button type="button" onclick="addContactRoleRow()">Add Contact & Role</button>
+        {{ formset.management_form }}
+        <div id="empty-form" style="display: none;">
+            <div class="col-6">{{ formset.empty_form.contact|as_crispy_field }}</div>
+            <div class="col-6">{{ formset.empty_form.role|as_crispy_field }}</div>
+        </div>
+        <div class="row">
+            {{ form.errors }}
         </div>
     </div>
     <button type="submit">Save</button>

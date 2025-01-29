@@ -2714,16 +2714,15 @@ def assignment_advanced_result_view(request):
 def add_service_event(request):
     if request.method == 'POST':
         form = lfo.SipServiceEventForm(request.POST)
-        if form.is_valid():
+        formset = lfo.ContactRoleFormSet(request.POST, instance=form.instance)
+        if form.is_valid() and formset.is_valid():
             service_event = form.save()
-            contacts = form.cleaned_data['contacts']
-            roles = form.cleaned_data['roles']
-            for contact in contacts:
-                for role in roles:
-                    lm.SipServiceEventContact.objects.create(service_event=service_event, contact=contact, service_event_role=role)
-            return redirect('lynx:index')  # Redirect to a list view or another page after saving
+            formset.instance = service_event
+            formset.save()
+            return redirect('success_url')  # Replace with your success URL
     else:
         form = lfo.SipServiceEventForm()
-    return render( request, 'lynx/add_service_event.html', {'form': form})
+        formset = lfo.ContactRoleFormSet(instance=form.instance)
+    return render(request, 'lynx/add_service_event.html', {'form': form, 'formset': formset})
 
 # vim: set foldmethod=marker foldmarker={{-,}}-:
