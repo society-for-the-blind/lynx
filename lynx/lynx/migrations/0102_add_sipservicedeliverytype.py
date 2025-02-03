@@ -3,6 +3,7 @@
 from django.db import migrations, models
 
 
+# https://wiki.postgresql.org/wiki/CTEReadme
 def add_initial_delivery_types(apps, schema_editor):
     SipServiceDeliveryType = apps.get_model('lynx', 'SipServiceDeliveryType')
     SipServiceDeliveryType.objects.bulk_create([

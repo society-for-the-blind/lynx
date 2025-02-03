@@ -9,17 +9,19 @@ class Migration(migrations.Migration):
 
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('lynx', '0107_add_sipserviceeventcontactrole'),
+        ('lynx', '0114_add_sipserviceeventinstructorrole'),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='SipServiceEventContact',
+            name='SipServiceEventInstructor',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('service_event', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='lynx.sipserviceevent')),
-                ('contact', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='lynx.contact')),
-                ('role', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='lynx.sipserviceeventcontactrole', default=0)),
+                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
+                # Service event user roles will probably not be used,
+                # but in case it is needed, it will be here.
+                ('role', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='lynx.sipserviceeventinstructorrole', default=0)),
                 ('note', models.TextField(blank=True, null=True)),
                 ('created', models.DateTimeField(auto_now_add=True, null=True)),
                 ('modified', models.DateTimeField(auto_now=True, null=True)),

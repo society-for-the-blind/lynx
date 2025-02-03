@@ -8,12 +8,13 @@ from django.db.models import DateField
 # from django.forms.models import ModelChoiceField
 from django.db.models.functions import Concat, Replace, Lower, Substr, StrIndex, Cast
 
-from .models import Contact, Address, Intake, Email, Phone, SipPlan, Sip1854Plan, IntakeNote, EmergencyContact, Authorization, \
-    ProgressReport, LessonNote, SipNote, Sip1854Note, Volunteer, UNITS, Document, Vaccine, Assignment, ServiceEventRole
+# lm  = lynx model
+from . import models  as lm
 
 from datetime import datetime
 
 from .models import SipServiceEvent, SipServiceEventContact
+from django.contrib.auth import models as dca
 
 months = (("1", "January"), ("2", "February"), ("3", "March"), ("4", "April"), ("5", "May"), ("6", "June"),
           ("7", "July"), ("8", "August"), ("9", "September"), ("10", "October"), ("11", "November"), ("12", "December"),
@@ -28,7 +29,7 @@ class ContactForm(forms.ModelForm):
 
     class Meta:
 
-        model = Contact
+        model = lm.Contact
         exclude = ('created', 'modified', 'user')
 
     def __init__(self, *args, **kwargs):
@@ -44,7 +45,7 @@ class IntakeForm(forms.ModelForm):
 
 
     class Meta:
-        model = Intake
+        model = lm.Intake
         exclude = ('contact', 'created', 'modified', 'user')
         widgets = {
             # "intake_date": forms.DateInput(attrs={'type': 'date'}),
@@ -56,7 +57,7 @@ class IntakeForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(IntakeForm, self).__init__(*args, **kwargs)
         self.fields['intake_date'].label = "Intake Date (YYYY-MM-DD)"
-        self.fields['payment_source'].queryset = Contact.objects.filter(payment_source=1).order_by(Lower('last_name'))
+        self.fields['payment_source'].queryset = lm.Contact.objects.filter(payment_source=1).order_by(Lower('last_name'))
         self.fields['payment_source'].label = "Payment Sources"
         self.fields['eye_condition_date'].label = "Eye Condition Onset Date (YYYY-MM-DD)"
         self.fields['birth_date'].label = "Birthdate (YYYY-MM-DD)"
@@ -93,7 +94,7 @@ class AddressForm(forms.ModelForm):
 
     class Meta:
 
-        model = Address
+        model = lm.Address
         exclude = ('created', 'modified', 'user', 'contact')
 
     def __init__(self, *args, **kwargs):
@@ -105,7 +106,7 @@ class EmergencyForm(forms.ModelForm):
 
     class Meta:
 
-        model = EmergencyContact
+        model = lm.EmergencyContact
         exclude = ('created', 'modified', 'user', 'contact')
 
 
@@ -113,7 +114,7 @@ class EmailForm(forms.ModelForm):
 
     class Meta:
 
-        model = Email
+        model = lm.Email
         exclude = ('created', 'modified', 'user', 'contact', 'active', 'emergency_contact')
 
 
@@ -121,7 +122,7 @@ class PhoneForm(forms.ModelForm):
 
     class Meta:
 
-        model = Phone
+        model = lm.Phone
         exclude = ('created', 'modified', 'user', 'contact', 'active', 'emergency_contact')
 
 
@@ -129,7 +130,7 @@ class IntakeNoteForm(forms.ModelForm):
 
     class Meta:
 
-        model = IntakeNote
+        model = lm.IntakeNote
         fields = ('note',)
 
 
@@ -139,7 +140,7 @@ class AuthorizationForm(forms.ModelForm):
 
     class Meta:
 
-        model = Authorization
+        model = lm.Authorization
         exclude = ('created', 'modified', 'user', 'contact')
         widgets = {
             # "start_date": forms.DateInput(attrs={'type': 'date'}),
@@ -148,7 +149,7 @@ class AuthorizationForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(AuthorizationForm, self).__init__(*args, **kwargs)
-        self.fields['outside_agency'].queryset = Contact.objects.filter(payment_source=1).order_by(Lower('last_name'))
+        self.fields['outside_agency'].queryset = lm.Contact.objects.filter(payment_source=1).order_by(Lower('last_name'))
         self.fields['outside_agency'].label = "Payment Sources"
         self.fields['start_date'].label = "Start Date (YYYY-MM-DD)"
         self.fields['end_date'].label = "End Date (YYYY-MM-DD)"
@@ -158,7 +159,7 @@ class ProgressReportForm(forms.ModelForm):
 
     class Meta:
 
-        model = ProgressReport
+        model = lm.ProgressReport
         exclude = ('created', 'modified', 'user', 'authorization')
 
     def __init__(self, *args, **kwargs):
@@ -176,11 +177,11 @@ class ProgressReportForm(forms.ModelForm):
 class LessonNoteForm(forms.ModelForm):
     total_time = forms.CharField(required=False)
     total_used = forms.CharField(required=False)
-    billed_units = forms.ChoiceField(choices=UNITS, widget=forms.Select(attrs={"onChange": 'checkHours(this)'}))
+    billed_units = forms.ChoiceField(choices=lm.UNITS, widget=forms.Select(attrs={"onChange": 'checkHours(this)'}))
     date = forms.DateField( widget=forms.SelectDateWidget(years=list(range(1900, 2100))), label='Lesson date', initial=timezone.now())
 
     class Meta:
-        model = LessonNote
+        model = lm.LessonNote
         exclude = ('created', 'modified', 'user')
         widgets = {
             # "date": forms.DateInput(attrs={'type': 'date'})
@@ -212,7 +213,7 @@ class LessonNoteForm(forms.ModelForm):
 
 
 class BasePlanNoteForm(forms.ModelForm):
-    client_list = Contact.objects.filter(sip_client=1).order_by('last_name')
+    client_list = lm.Contact.objects.filter(sip_client=1).order_by('last_name')
     clients = forms.ModelMultipleChoiceField(queryset=client_list, required=False)
     note_date = forms.DateField(widget=forms.SelectDateWidget(years=list(range(1900, 2100))), label='Note Date', initial=timezone.now())
 
@@ -255,31 +256,31 @@ class BasePlanNoteForm(forms.ModelForm):
 
 class SipNoteForm(BasePlanNoteForm):
     class Meta(BasePlanNoteForm.Meta):
-        model = SipNote
+        model = lm.SipNote
 
     def get_plan_queryset(self, contact_id):
-        return SipPlan.objects.filter(contact_id=contact_id).annotate(
+        return lm.SipPlan.objects.filter(contact_id=contact_id).annotate(
             date_substring=Cast(Substr('plan_name', 1, StrIndex('plan_name', V(' '))), DateField())
         ).order_by('-date_substring')
 
 
 class Sip1854NoteForm(BasePlanNoteForm):
     class Meta(BasePlanNoteForm.Meta):
-        model = Sip1854Note
+        model = lm.Sip1854Note
 
     def get_plan_queryset(self, contact_id):
-        return Sip1854Plan.objects.filter(contact_id=contact_id).annotate(
+        return lm.Sip1854Plan.objects.filter(contact_id=contact_id).annotate(
             date_substring=Cast(Substr('plan_name', 1, StrIndex('plan_name', V(' '))), DateField())
         ).order_by('-date_substring')
 
 
 class SipNoteBulkForm(forms.ModelForm):
-    client_list = Contact.objects.filter(sip_client=1).order_by('last_name')
+    client_list = lm.Contact.objects.filter(sip_client=1).order_by('last_name')
     clients = forms.ModelMultipleChoiceField(queryset=client_list, required=False)
     note_date = forms.DateField( widget=forms.SelectDateWidget(years=list(range(1900, 2100))), label='Note Date', initial=timezone.now())
 
     class Meta:
-        model = SipNote
+        model = lm.SipNote
         exclude = ('created', 'modified', 'user', 'contact', 'modesto')
         widgets = {
             # "note_date": forms.DateInput(attrs={'type': 'date'})
@@ -307,12 +308,12 @@ class SipNoteBulkForm(forms.ModelForm):
 
 
 class Sip1854NoteBulkForm(forms.ModelForm):
-    client_list = Contact.objects.filter(sip_client=1).order_by('last_name')
+    client_list = lm.Contact.objects.filter(sip_client=1).order_by('last_name')
     clients = forms.ModelMultipleChoiceField(queryset=client_list, required=False)
     note_date = forms.DateField( widget=forms.SelectDateWidget(years=list(range(1900, 2100))), label='Note Date', initial=timezone.now())
 
     class Meta:
-        model = Sip1854Note
+        model = lm.Sip1854Note
         exclude = ('created', 'modified', 'user', 'contact', 'modesto')
         widgets = {
             # "note_date": forms.DateInput(attrs={'type': 'date'})
@@ -376,11 +377,11 @@ class BasePlanForm(forms.ModelForm):
 
 class SipPlanForm(BasePlanForm):
     class Meta(BasePlanForm.Meta):
-        model = SipPlan
+        model = lm.SipPlan
 
 class Sip1854PlanForm(BasePlanForm):
     class Meta(BasePlanForm.Meta):
-        model = Sip1854Plan
+        model = lm.Sip1854Plan
 
 
 class BillingReportForm(forms.Form):
@@ -455,23 +456,23 @@ class VolunteerReportForm(forms.Form):
 class VolunteerForm(forms.ModelForm):
 
     class Meta:
-        model = Volunteer
+        model = lm.Volunteer
         exclude = ('created', 'modified', 'user')
 
 
 class VolunteerHoursForm(forms.ModelForm):
-    volunteer_list = Contact.objects.filter(volunteer_check=1).order_by('last_name')
+    volunteer_list = lm.Contact.objects.filter(volunteer_check=1).order_by('last_name')
     contact = forms.ModelChoiceField(queryset=volunteer_list)
 
     class Meta:
-        model = Volunteer
+        model = lm.Volunteer
         exclude = ('created', 'modified', 'user')
 
 
 class DocumentForm(forms.ModelForm):
 
     class Meta:
-        model = Document
+        model = lm.Document
         fields = ('document', )
 
 
@@ -479,7 +480,7 @@ class VaccineForm(forms.ModelForm):
     vaccination_date = forms.DateField( widget=forms.SelectDateWidget(years=list(range(1900, 2100))), label='Vaccination Date', initial=timezone.now())
 
     class Meta:
-        model = Vaccine
+        model = lm.Vaccine
         exclude = ('created', 'modified', 'user', 'contact')
         widgets = {
             # "vaccination_date": forms.DateInput(attrs={'type': 'date'})
@@ -496,7 +497,7 @@ class AssignmentForm(forms.ModelForm):
     # assignment_date = forms.DateField( widget=forms.SelectDateWidget(years=list(range(1900, 2100))), label='Assignment Date', initial=timezone.now())
 
     class Meta:
-        model = Assignment
+        model = lm.Assignment
         exclude = ('created', 'modified', 'user', 'assignment_date')
         widgets = {
             # "assignment_date": forms.DateInput(attrs={'type': 'date'})
@@ -536,8 +537,8 @@ def get_quarter(month):
 
 
 def filter_units(authorization_id): #remove any selections that would take instructor over allotted hours
-    authorization = Authorization.objects.get(id=authorization_id)
-    note_list = LessonNote.objects.filter(authorization_id=authorization_id)
+    authorization = lm.Authorization.objects.get(id=authorization_id)
+    note_list = lm.LessonNote.objects.filter(authorization_id=authorization_id)
 
     total_time = authorization.total_time
     minutes = total_time * 60
@@ -553,7 +554,7 @@ def filter_units(authorization_id): #remove any selections that would take instr
     remaining = total_time - total_units
 
     choices_dictionary = {}
-    for key, value in UNITS:
+    for key, value in lm.UNITS:
         if key <= remaining:
             choices_dictionary[key] = value
 
@@ -600,14 +601,27 @@ class SipServiceEventForm(forms.ModelForm):
 
     class Meta:
         model = SipServiceEvent
-        fields = ['service_delivery_type', 'date', 'length', 'note']
+        fields = ['service_delivery_type', 'date', 'length', 'note', 'entered_by']
+
+    def __init__(self, *args, **kwargs):
+        instructors = kwargs.pop('instructors', None)
+        super(SipServiceEventForm, self).__init__(*args, **kwargs)
+        leaf_node_ids = lm.SipServiceDeliveryType.get_leaf_nodes()
+        self.fields['service_delivery_type'].queryset = lm.SipServiceDeliveryType.objects.filter(id__in=leaf_node_ids)
+        if instructors is not None:
+            self.fields['entered_by'].queryset = instructors
 
 class ContactRoleForm(forms.ModelForm):
-    contact = forms.ModelChoiceField(queryset=Contact.objects.filter(active=1).order_by(ddmf.Lower('last_name'), ddmf.Lower('first_name')), label='Contact')
-    role = forms.ModelChoiceField(queryset=ServiceEventRole.objects.all(), label='Role')
+    contact_queryset = lm.Contact.objects.filter(active=1).order_by(ddmf.Lower('last_name'), ddmf.Lower('first_name'))
+    user_queryset = dca.User.objects.all().order_by(ddmf.Lower('last_name'), ddmf.Lower('first_name'))
+
+    contact = forms.ModelChoiceField(queryset=contact_queryset, label='Contact')
+    user = forms.ModelChoiceField(queryset=user_queryset, label='User')
+    contact_and_user = forms.ModelChoiceField(queryset=contact_queryset.union(user_queryset), label='Contact and User')
+    # role = forms.ModelChoiceField(queryset=ServiceEventRole.objects.all(), label='Role')
 
     class Meta:
         model = SipServiceEventContact
-        fields = ['contact', 'role']
+        fields = ['contact', 'role', 'user', 'contact_and_user']
 
 ContactRoleFormSet = forms.inlineformset_factory(SipServiceEvent, SipServiceEventContact, form=ContactRoleForm, extra=1, can_delete=True)

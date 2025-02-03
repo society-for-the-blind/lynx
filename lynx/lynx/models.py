@@ -1,4 +1,4 @@
-from django.db import models
+from django.db import models, connection
 from django import forms
 from django.contrib.auth import get_user_model
 from django.conf import settings
@@ -772,6 +772,25 @@ class SipServiceDeliveryType(models.Model):
     modified = models.DateTimeField(auto_now=True, null=True)
     history = HistoricalRecords()
 
+    def get_leaf_nodes():
+        with connection.cursor() as cursor:
+            cursor.execute("""
+                WITH RECURSIVE cte AS (
+                    SELECT id, parent_id, name
+                    FROM lynx_sipservicedeliverytype
+                    WHERE parent_id IS NULL
+                    UNION ALL
+                    SELECT t.id, t.parent_id, t.name
+                    FROM lynx_sipservicedeliverytype t
+                    INNER JOIN cte ON t.parent_id = cte.id
+                )
+                SELECT id, name
+                FROM lynx_sipservicedeliverytype
+                WHERE id NOT IN (SELECT parent_id FROM lynx_sipservicedeliverytype WHERE parent_id IS NOT NULL);
+            """)
+            rows = cursor.fetchall()
+        return [row[0] for row in rows]  # Return list of leaf node IDs
+
     def __str__(self):
         return self.name
 
@@ -783,12 +802,33 @@ class SipServiceEvent(models.Model):
     length = models.DurationField(blank=True, default="00:00:00")
     # Allowing blank for convenience.
     note = models.TextField(blank=True, default="")
+    entered_by = models.ForeignKey(User, on_delete=models.CASCADE)
     created = models.DateTimeField(auto_now_add=True, null=True)
     modified = models.DateTimeField(auto_now=True, null=True)
     history = HistoricalRecords()
 
     def __str__(self):
         return f"{self.date} {self.service_delivery_type} {self.start_time}"
+
+class SipProgram(models.Model):
+    name = models.CharField(max_length=255)
+    long_name = models.CharField(max_length=255)
+    created = models.DateTimeField(auto_now_add=True, null=True)
+    modified = models.DateTimeField(auto_now=True, null=True)
+    history = HistoricalRecords()
+
+    def __str__(self):
+        return self.name
+
+class SipServiceEventSipProgram(models.Model):
+    service_event = models.ForeignKey(SipServiceEvent, on_delete=models.CASCADE)
+    sip_program = models.ForeignKey(SipProgram, on_delete=models.CASCADE)
+    created = models.DateTimeField(auto_now_add=True, null=True)
+    modified = models.DateTimeField(auto_now=True, null=True)
+    history = HistoricalRecords()
+
+    def __str__(self):
+        return f"{self.service_event} {self.sip_service}"
 
 class SipService(models.Model):
     name = models.CharField(max_length=255)
@@ -809,8 +849,16 @@ class SipServiceEventSipService(models.Model):
     def __str__(self):
         return f"{self.service_event} {self.sip_service}"
 
-# TODO Pre-populate the roles.
-class ServiceEventRole(models.Model):
+class SipServiceEventContactRole(models.Model):
+    name = models.CharField(max_length=255)
+    created = models.DateTimeField(auto_now_add=True, null=True)
+    modified = models.DateTimeField(auto_now=True, null=True)
+    history = HistoricalRecords()
+
+    def __str__(self):
+        return self.name
+
+class SipServiceEventInstructorRole(models.Model):
     name = models.CharField(max_length=255)
     created = models.DateTimeField(auto_now_add=True, null=True)
     modified = models.DateTimeField(auto_now=True, null=True)
@@ -822,26 +870,26 @@ class ServiceEventRole(models.Model):
 class SipServiceEventInstructor(models.Model):
     service_event = models.ForeignKey(SipServiceEvent, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    service_event_role = models.ForeignKey(ServiceEventRole, on_delete=models.CASCADE)
+    role = models.ForeignKey(SipServiceEventInstructorRole, on_delete=models.CASCADE, default=0)
     note = models.TextField(blank=True, null=True)
     created = models.DateTimeField(auto_now_add=True, null=True)
     modified = models.DateTimeField(auto_now=True, null=True)
     history = HistoricalRecords()
 
     def __str__(self):
-        return f"{self.service_event} {self.user} {self.service_event_role}"
+        return f"{self.service_event} {self.user} {self.role}"
 
 class SipServiceEventContact(models.Model):
     service_event = models.ForeignKey(SipServiceEvent, on_delete=models.CASCADE)
     contact = models.ForeignKey(Contact, on_delete=models.CASCADE)
-    service_event_role = models.ForeignKey(ServiceEventRole, on_delete=models.CASCADE)
+    role = models.ForeignKey(SipServiceEventContactRole, on_delete=models.CASCADE, default=0)
     note = models.TextField(blank=True, null=True)
     created = models.DateTimeField(auto_now_add=True, null=True)
     modified = models.DateTimeField(auto_now=True, null=True)
     history = HistoricalRecords()
 
     def __str__(self):
-        return f"{self.service_event} {self.contact} {self.service_event_role}"
+        return f"{self.service_event} {self.contact} {self.role}"
 
 class OibOutcomeType(models.Model):
     name = models.CharField(max_length=255)
@@ -871,23 +919,40 @@ class OibOutcomeTypeChoice(models.Model):
     def __str__(self):
         return f"{self.outcome_type} {self.outcome_choice}"
 
-# NOTE Why no FK to `SipServiceEvent`? or other models?
+# NOTE Why no FK to `SipServiceEvent` or other models?
 #      ----------------------------------------------------
 #      Because there is no  process  on  when  to  set  the
 #      outcomes and it is  usually  an  afterthought  until
-#      time to report.
+#      time to report - and they seem to be independent of
+#      each other.
+# NOTE Making this table immutable and append-only on the
+#      application level (Django models) and not on the DB
+#      level (i.e., migrations). My idea may backfire, so
+#      want to have some wiggle-room if needed.
 class OibOutcome(models.Model):
     oib_outcome_type_choice = models.ForeignKey(OibOutcomeTypeChoice, on_delete=models.CASCADE)
     contact = models.ForeignKey(Contact, on_delete=models.CASCADE)
-    # NOTE I think Django automatically adds `created` and `modified` fields.
-    # date = models.DateField()
-    # time = models.TimeField()
     created = models.DateTimeField(auto_now_add=True, null=True)
+    # This may seem superfluous if the model is append-only
+    # and immutable, but it is good to have in case someone
+    # or something tries (and able) to modify a record.
     modified = models.DateTimeField(auto_now=True, null=True)
     history = HistoricalRecords()
 
     def __str__(self):
         return f"{self.date} {self.time} {self.outcome_choice.name} {self.contact}"
+
+    def save(self, *args, **kwargs):
+        if self.pk is not None:
+            raise ValueError("Updates are not allowed for OibOutcome records.")
+        super(OibOutcome, self).save(*args, **kwargs)
+
+    def delete(self, *args, **kwargs):
+        raise ValueError("Deletions are not allowed for OibOutcome records.")
+
+    class Meta:
+        verbose_name = "OIB Outcome"
+        verbose_name_plural = "OIB Outcomes"
 
 
 # ===========================================================================
