@@ -6,13 +6,13 @@
 {% block javascript %}
 <script>
 
-    // function setDate(selectObject) {
-    //     document.getElementById('id_note_date').value = new Date().toISOString().slice(0, 10);
-    // }
     function addContactRoleRow() {
-        var formIdx = $('#id_form-TOTAL_FORMS').val();
-        $('#formset').append($('#empty-form').html().replace(/__prefix__/g, formIdx));
-        $('#id_form-TOTAL_FORMS').val(parseInt(formIdx) + 1);
+        const formIdx = document.getElementById('id_form-TOTAL_FORMS').value;
+        const newFormHtml = document.getElementById('empty-form').innerHTML.replace(/__prefix__/g, formIdx);
+        const newFormElement = document.createElement('div');
+        newFormElement.innerHTML = newFormHtml;
+        document.getElementById('formset').appendChild(newFormElement);
+        document.getElementById('id_form-TOTAL_FORMS').value = parseInt(formIdx) + 1;
     }
 
 </script>
@@ -28,11 +28,14 @@
             <div class="col-12">{{ form.date|as_crispy_field }}</div>
             <div class="col-12">{{ form.length|as_crispy_field }}</div>
             <div class="col-12">{{ form.note|as_crispy_field }}</div>
+            <div class="col-12">{{ form.entered_by|as_crispy_field }}</div>
         </div>
+        <!--
         <div id="formset" class="row">
             {% for form in formset %}
                 <div class="col-6">{{ form.contact|as_crispy_field }}</div>
                 <div class="col-6">{{ form.role|as_crispy_field }}</div>
+                <div class="col-6">{{ form.user|as_crispy_field }}</div>
             {% endfor %}
         </div>
         <button type="button" onclick="addContactRoleRow()">Add Contact & Role</button>
@@ -40,10 +43,18 @@
         <div id="empty-form" style="display: none;">
             <div class="col-6">{{ formset.empty_form.contact|as_crispy_field }}</div>
             <div class="col-6">{{ formset.empty_form.role|as_crispy_field }}</div>
+            <div class="col-6">{{ formset.empty_form.user|as_crispy_field }}</div>
         </div>
         <div class="row">
             {{ form.errors }}
         </div>
+    </div>
+    -->
+    <h3>Clients</h3>
+    <div id="Clients">
+        <button type="button" onclick="addSectionRow('{{ role.id }}')">
+            Add another {{ role.name }}
+        </button>
     </div>
     <button type="submit">Save</button>
 </form>

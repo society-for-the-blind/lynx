@@ -4,16 +4,13 @@ from django.db import migrations, models
 
 
 def add_initial_roles(apps, schema_editor):
-    ServiceEventRole = apps.get_model('lynx', 'ServiceEventRole')
-    ServiceEventRole.objects.bulk_create([
-        ServiceEventRole(id=0, name='participant'),
-        ServiceEventRole(id=1, name='facilitator'),
-        ServiceEventRole(id=2, name='presenter'),
-        ServiceEventRole(id=3, name='guest'),
-        ServiceEventRole(id=4, name='caregiver'),
-        ServiceEventRole(id=5, name='family member'),
-        ServiceEventRole(id=6, name='entered by'),
-        ServiceEventRole(id=7, name='switchboard'),
+    SipServiceEventContactRole = apps.get_model('lynx', 'SipServiceEventContactRole')
+    SipServiceEventContactRole.objects.bulk_create([
+        SipServiceEventContactRole(id=0, name='participating_client'),
+        SipServiceEventContactRole(id=1, name='presenter'),
+        SipServiceEventContactRole(id=2, name='guest'),
+        SipServiceEventContactRole(id=3, name='caregiver'),
+        SipServiceEventContactRole(id=4, name='family member'),
     ])
 
 
@@ -25,7 +22,7 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name='ServiceEventRole',
+            name='SipServiceEventContactRole',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('name', models.CharField(max_length=255)),

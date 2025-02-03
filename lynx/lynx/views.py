@@ -2711,18 +2711,37 @@ def assignment_advanced_result_view(request):
     # import pdb; pdb.set_trace()
     return render(request, 'lynx/instructor_search.html', {'filter': f, 'assignment_list': assignment_condensed})
 
+
 def add_service_event(request):
+    contact_qs = lfo.ContactRoleForm.base_fields['contact'].queryset
+    user_qs = lfo.ContactRoleForm.base_fields['user'].queryset
+    contact_and_user_qs = lfo.ContactRoleForm.base_fields['contact_and_user'].queryset
+    role_qs = lfo.ContactRoleForm.base_fields['role'].queryset
+
     if request.method == 'POST':
         form = lfo.SipServiceEventForm(request.POST)
         formset = lfo.ContactRoleFormSet(request.POST, instance=form.instance)
+
         if form.is_valid() and formset.is_valid():
             service_event = form.save()
             formset.instance = service_event
             formset.save()
-            return redirect('success_url')  # Replace with your success URL
+            return redirect('success_url')
     else:
         form = lfo.SipServiceEventForm()
         formset = lfo.ContactRoleFormSet(instance=form.instance)
-    return render(request, 'lynx/add_service_event.html', {'form': form, 'formset': formset})
+
+    return render(
+        request,
+        'lynx/add_service_event.html',
+        {
+            'form': form,
+            'formset': formset,
+            'contact_and_user_qs': contact_and_user_qs,
+            'contact_qs': contact_qs,
+            'user_qs': user_qs,
+            'role_qs': role_qs,
+        }
+    )
 
 # vim: set foldmethod=marker foldmarker={{-,}}-:

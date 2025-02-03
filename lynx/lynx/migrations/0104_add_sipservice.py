@@ -21,7 +21,7 @@ def add_initial_services(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('lynx', '0103_add_sipserviceevent'),
+        ('lynx', '0103-2_add_sipserviceeventsipprogram'),
     ]
 
     operations = [
