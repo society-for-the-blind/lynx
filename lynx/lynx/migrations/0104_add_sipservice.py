@@ -21,7 +21,7 @@ def add_initial_services(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('lynx', '0103-2_add_sipserviceeventsipprogram'),
+        ('lynx', '0103-1_add_sipprogram'),
     ]
 
     operations = [
@@ -30,8 +30,8 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('name', models.CharField(max_length=255)),
-                ('created', models.DateTimeField(auto_now_add=True, null=True)),
-                ('modified', models.DateTimeField(auto_now=True, null=True)),
+                ('created', models.DateTimeField(auto_now_add=True)),
+                ('modified', models.DateTimeField(auto_now=True)),
             ],
         ),
         migrations.RunPython(add_initial_services),

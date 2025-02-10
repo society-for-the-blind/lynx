@@ -3,6 +3,10 @@
 from django.db import migrations, models
 import django.db.models.deletion
 
+# NOTE Making this table immutable and append-only on the
+#      application level (Django models) and not on the DB
+#      level (i.e., migrations), in case some manual adjustments
+#      are needed in the future.
 
 class Migration(migrations.Migration):
 
@@ -17,8 +21,11 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('contact', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='lynx.contact')),
                 ('oib_outcome_type_choice', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='lynx.oiboutcometypechoice')),
-                ('created', models.DateTimeField(auto_now_add=True, null=True)),
-                ('modified', models.DateTimeField(auto_now=True, null=True)),
+                ('created', models.DateTimeField(auto_now_add=True)),
+                # This field may seem superfluous if the model is append-only
+                # and immutable, but it is good to have in case someone
+                # or something tries (and able) to modify a record.
+                ('modified', models.DateTimeField(auto_now=True)),
             ],
         ),
     ]

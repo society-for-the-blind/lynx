@@ -765,13 +765,25 @@ class Assignment(models.Model):
         return reverse('lynx:assignment', kwargs={'pk': self.contact_id})
 
 # === OIB RE-DESIGN =========================================================
+
+# NOTE "service delivery type" === "plan type"
+#      ----------------------------------------------------
+#      On the front-end, this is called  "plan  type",  for
+#      historical and  beurocratic  reasons.  Beaurocratic:
+#      DOR wants lots of plans, and  having  one  plan  per
+#      year per client per service  delivery  type  is  the
+#      sweet spot. Historical: the original  implementation
+#      is flawed, and every user now  thinks  of  these  as
+#      "plan types". Damage done.
 class SipServiceDeliveryType(models.Model):
     parent_id = models.IntegerField(null=True, blank=True)
     name = models.CharField(max_length=255)
-    created = models.DateTimeField(auto_now_add=True, null=True)
-    modified = models.DateTimeField(auto_now=True, null=True)
+    created = models.DateTimeField(auto_now_add=True)
+    modified = models.DateTimeField(auto_now=True)
     history = HistoricalRecords()
 
+    # Show only the SDTs that are not categories themselves
+    # (i.e. the leaf nodes of the hierarchy tree)
     def get_leaf_nodes():
         with connection.cursor() as cursor:
             cursor.execute("""
@@ -803,8 +815,8 @@ class SipServiceEvent(models.Model):
     # Allowing blank for convenience.
     note = models.TextField(blank=True, default="")
     entered_by = models.ForeignKey(User, on_delete=models.CASCADE)
-    created = models.DateTimeField(auto_now_add=True, null=True)
-    modified = models.DateTimeField(auto_now=True, null=True)
+    created = models.DateTimeField(auto_now_add=True)
+    modified = models.DateTimeField(auto_now=True)
     history = HistoricalRecords()
 
     def __str__(self):
@@ -813,27 +825,17 @@ class SipServiceEvent(models.Model):
 class SipProgram(models.Model):
     name = models.CharField(max_length=255)
     long_name = models.CharField(max_length=255)
-    created = models.DateTimeField(auto_now_add=True, null=True)
-    modified = models.DateTimeField(auto_now=True, null=True)
+    created = models.DateTimeField(auto_now_add=True)
+    modified = models.DateTimeField(auto_now=True)
     history = HistoricalRecords()
 
     def __str__(self):
         return self.name
 
-class SipServiceEventSipProgram(models.Model):
-    service_event = models.ForeignKey(SipServiceEvent, on_delete=models.CASCADE)
-    sip_program = models.ForeignKey(SipProgram, on_delete=models.CASCADE)
-    created = models.DateTimeField(auto_now_add=True, null=True)
-    modified = models.DateTimeField(auto_now=True, null=True)
-    history = HistoricalRecords()
-
-    def __str__(self):
-        return f"{self.service_event} {self.sip_service}"
-
 class SipService(models.Model):
     name = models.CharField(max_length=255)
-    created = models.DateTimeField(auto_now_add=True, null=True)
-    modified = models.DateTimeField(auto_now=True, null=True)
+    created = models.DateTimeField(auto_now_add=True)
+    modified = models.DateTimeField(auto_now=True)
     history = HistoricalRecords()
 
     def __str__(self):
@@ -842,8 +844,8 @@ class SipService(models.Model):
 class SipServiceEventSipService(models.Model):
     service_event = models.ForeignKey(SipServiceEvent, on_delete=models.CASCADE)
     sip_service = models.ForeignKey(SipService, on_delete=models.CASCADE)
-    created = models.DateTimeField(auto_now_add=True, null=True)
-    modified = models.DateTimeField(auto_now=True, null=True)
+    created = models.DateTimeField(auto_now_add=True)
+    modified = models.DateTimeField(auto_now=True)
     history = HistoricalRecords()
 
     def __str__(self):
@@ -851,8 +853,8 @@ class SipServiceEventSipService(models.Model):
 
 class SipServiceEventContactRole(models.Model):
     name = models.CharField(max_length=255)
-    created = models.DateTimeField(auto_now_add=True, null=True)
-    modified = models.DateTimeField(auto_now=True, null=True)
+    created = models.DateTimeField(auto_now_add=True)
+    modified = models.DateTimeField(auto_now=True)
     history = HistoricalRecords()
 
     def __str__(self):
@@ -860,8 +862,8 @@ class SipServiceEventContactRole(models.Model):
 
 class SipServiceEventInstructorRole(models.Model):
     name = models.CharField(max_length=255)
-    created = models.DateTimeField(auto_now_add=True, null=True)
-    modified = models.DateTimeField(auto_now=True, null=True)
+    created = models.DateTimeField(auto_now_add=True)
+    modified = models.DateTimeField(auto_now=True)
     history = HistoricalRecords()
 
     def __str__(self):
@@ -871,9 +873,8 @@ class SipServiceEventInstructor(models.Model):
     service_event = models.ForeignKey(SipServiceEvent, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     role = models.ForeignKey(SipServiceEventInstructorRole, on_delete=models.CASCADE, default=0)
-    note = models.TextField(blank=True, null=True)
-    created = models.DateTimeField(auto_now_add=True, null=True)
-    modified = models.DateTimeField(auto_now=True, null=True)
+    created = models.DateTimeField(auto_now_add=True)
+    modified = models.DateTimeField(auto_now=True)
     history = HistoricalRecords()
 
     def __str__(self):
@@ -883,9 +884,9 @@ class SipServiceEventContact(models.Model):
     service_event = models.ForeignKey(SipServiceEvent, on_delete=models.CASCADE)
     contact = models.ForeignKey(Contact, on_delete=models.CASCADE)
     role = models.ForeignKey(SipServiceEventContactRole, on_delete=models.CASCADE, default=0)
-    note = models.TextField(blank=True, null=True)
-    created = models.DateTimeField(auto_now_add=True, null=True)
-    modified = models.DateTimeField(auto_now=True, null=True)
+    program = models.ForeignKey(SipProgram, on_delete=models.CASCADE, default=0)
+    created = models.DateTimeField(auto_now_add=True)
+    modified = models.DateTimeField(auto_now=True)
     history = HistoricalRecords()
 
     def __str__(self):
@@ -893,8 +894,8 @@ class SipServiceEventContact(models.Model):
 
 class OibOutcomeType(models.Model):
     name = models.CharField(max_length=255)
-    created = models.DateTimeField(auto_now_add=True, null=True)
-    modified = models.DateTimeField(auto_now=True, null=True)
+    created = models.DateTimeField(auto_now_add=True)
+    modified = models.DateTimeField(auto_now=True)
     history = HistoricalRecords()
 
     def __str__(self):
@@ -902,8 +903,8 @@ class OibOutcomeType(models.Model):
 
 class OibOutcomeChoice(models.Model):
     name = models.CharField(max_length=255)
-    created = models.DateTimeField(auto_now_add=True, null=True)
-    modified = models.DateTimeField(auto_now=True, null=True)
+    created = models.DateTimeField(auto_now_add=True)
+    modified = models.DateTimeField(auto_now=True)
     history = HistoricalRecords()
 
     def __str__(self):
@@ -912,8 +913,8 @@ class OibOutcomeChoice(models.Model):
 class OibOutcomeTypeChoice(models.Model):
     oib_outcome_type = models.ForeignKey(OibOutcomeType, on_delete=models.CASCADE)
     oib_outcome_choice = models.ForeignKey(OibOutcomeChoice, on_delete=models.CASCADE)
-    created = models.DateTimeField(auto_now_add=True, null=True)
-    modified = models.DateTimeField(auto_now=True, null=True)
+    created = models.DateTimeField(auto_now_add=True)
+    modified = models.DateTimeField(auto_now=True)
     history = HistoricalRecords()
 
     def __str__(self):
@@ -921,22 +922,23 @@ class OibOutcomeTypeChoice(models.Model):
 
 # NOTE Why no FK to `SipServiceEvent` or other models?
 #      ----------------------------------------------------
-#      Because there is no  process  on  when  to  set  the
-#      outcomes and it is  usually  an  afterthought  until
-#      time to report - and they seem to be independent of
-#      each other.
+# Because  the  relationships  between  SERVICES   and
+# OUTCOMES are only loosely defined, and the  official
+# procedure is to follow  up  with  a  survey  to  the
+# client 60 days AFTER receiving services.
+
 # NOTE Making this table immutable and append-only on the
 #      application level (Django models) and not on the DB
-#      level (i.e., migrations). My idea may backfire, so
-#      want to have some wiggle-room if needed.
+#      level (i.e., migrations), in case some manual adjustments
+#      are needed in the future.
 class OibOutcome(models.Model):
     oib_outcome_type_choice = models.ForeignKey(OibOutcomeTypeChoice, on_delete=models.CASCADE)
     contact = models.ForeignKey(Contact, on_delete=models.CASCADE)
-    created = models.DateTimeField(auto_now_add=True, null=True)
-    # This may seem superfluous if the model is append-only
+    created = models.DateTimeField(auto_now_add=True)
+    # This field may seem superfluous if the model is append-only
     # and immutable, but it is good to have in case someone
     # or something tries (and able) to modify a record.
-    modified = models.DateTimeField(auto_now=True, null=True)
+    modified = models.DateTimeField(auto_now=True)
     history = HistoricalRecords()
 
     def __str__(self):

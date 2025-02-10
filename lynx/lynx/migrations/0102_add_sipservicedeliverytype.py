@@ -2,6 +2,15 @@
 
 from django.db import migrations, models
 
+# NOTE "service delivery type" === "plan type"
+#      ----------------------------------------------------
+#      On the front-end, this is called  "plan  type",  for
+#      historical and  beurocratic  reasons.  Beaurocratic:
+#      DOR wants lots of plans, and  having  one  plan  per
+#      year per client per service  delivery  type  is  the
+#      sweet spot. Historical: the original  implementation
+#      is flawed, and every user now  thinks  of  these  as
+#      "plan types". Damage done.
 
 # https://wiki.postgresql.org/wiki/CTEReadme
 def add_initial_delivery_types(apps, schema_editor):
@@ -32,8 +41,8 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('parent_id', models.IntegerField(blank=True, null=True)),
                 ('name', models.CharField(max_length=255)),
-                ('created', models.DateTimeField(auto_now_add=True, null=True)),
-                ('modified', models.DateTimeField(auto_now=True, null=True)),
+                ('created', models.DateTimeField(auto_now_add=True)),
+                ('modified', models.DateTimeField(auto_now=True)),
             ],
         ),
         migrations.RunPython(add_initial_delivery_types),
