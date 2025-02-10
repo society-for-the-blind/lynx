@@ -20,9 +20,12 @@ class Migration(migrations.Migration):
                 ('service_event', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='lynx.sipserviceevent')),
                 ('contact', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='lynx.contact')),
                 ('role', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='lynx.sipserviceeventcontactrole', default=0)),
-                ('note', models.TextField(blank=True, null=True)),
-                ('created', models.DateTimeField(auto_now_add=True, null=True)),
-                ('modified', models.DateTimeField(auto_now=True, null=True)),
+                # All  clients  (should...)  exclusively   belong   to
+                # **one** SIP program, so one SERVICE EVENT  can  only
+                # be delivered under one SIP program per client.
+                ('program', models.ForeignKey(default=0, on_delete=django.db.models.deletion.CASCADE, to='lynx.sipprogram')),
+                ('created', models.DateTimeField(auto_now_add=True)),
+                ('modified', models.DateTimeField(auto_now=True)),
             ],
         ),
     ]

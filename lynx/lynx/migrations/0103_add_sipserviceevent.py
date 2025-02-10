@@ -32,8 +32,8 @@ class Migration(migrations.Migration):
                 ('length', models.DurationField(blank=True, default="00:00:00")),
                 ('note', models.TextField(blank=True, default="")),
                 ('entered_by', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
-                ('created', models.DateTimeField(auto_now_add=True, null=True)),
-                ('modified', models.DateTimeField(auto_now=True, null=True)),
+                ('created', models.DateTimeField(auto_now_add=True)),
+                ('modified', models.DateTimeField(auto_now=True)),
             ],
         ),
     ]

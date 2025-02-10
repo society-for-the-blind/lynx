@@ -22,9 +22,11 @@ class Migration(migrations.Migration):
                 # Service event user roles will probably not be used,
                 # but in case it is needed, it will be here.
                 ('role', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='lynx.sipserviceeventinstructorrole', default=0)),
-                ('note', models.TextField(blank=True, null=True)),
-                ('created', models.DateTimeField(auto_now_add=True, null=True)),
-                ('modified', models.DateTimeField(auto_now=True, null=True)),
+                # No "program" field, like in  SipServiceEventContact,
+                # because instructors deliver services  in  every  SIP
+                # program, so it doesn't make sense.
+                ('created', models.DateTimeField(auto_now_add=True)),
+                ('modified', models.DateTimeField(auto_now=True)),
             ],
         ),
     ]
