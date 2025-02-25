@@ -766,6 +766,16 @@ class Assignment(models.Model):
 
 # === OIB RE-DESIGN =========================================================
 
+class OIBProgram(models.Model):
+    oib_program = models.CharField(max_length=255)
+    long_name = models.CharField(max_length=255)
+    created = models.DateTimeField(auto_now_add=True)
+    modified = models.DateTimeField(auto_now=True)
+    history = HistoricalRecords()
+
+    def __str__(self):
+        return self.name
+
 # NOTE "service delivery type" === "plan type"
 #      ----------------------------------------------------
 #      On the front-end, this is called  "plan  type",  for
@@ -775,30 +785,34 @@ class Assignment(models.Model):
 #      sweet spot. Historical: the original  implementation
 #      is flawed, and every user now  thinks  of  these  as
 #      "plan types". Damage done.
-class SipServiceDeliveryType(models.Model):
+class OIBServiceDeliveryType(models.Model):
     parent_id = models.IntegerField(null=True, blank=True)
-    name = models.CharField(max_length=255)
+    oib_service_delivery_type = models.CharField(max_length=255)
     created = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)
     history = HistoricalRecords()
 
     # Show only the SDTs that are not categories themselves
     # (i.e. the leaf nodes of the hierarchy tree)
+    #
+    # TODO This doesn't really belong here as it is  not  a
+    #      class method, but a simple function defined on a
+    #      class, but not sure where to put it.
     def get_leaf_nodes():
         with connection.cursor() as cursor:
             cursor.execute("""
                 WITH RECURSIVE cte AS (
                     SELECT id, parent_id, name
-                    FROM lynx_sipservicedeliverytype
+                    FROM lynx_oibservicedeliverytype
                     WHERE parent_id IS NULL
                     UNION ALL
                     SELECT t.id, t.parent_id, t.name
-                    FROM lynx_sipservicedeliverytype t
+                    FROM lynx_oibservicedeliverytype t
                     INNER JOIN cte ON t.parent_id = cte.id
                 )
                 SELECT id, name
-                FROM lynx_sipservicedeliverytype
-                WHERE id NOT IN (SELECT parent_id FROM lynx_sipservicedeliverytype WHERE parent_id IS NOT NULL);
+                FROM lynx_oibservicedeliverytype
+                WHERE id NOT IN (SELECT parent_id FROM lynx_oibservicedeliverytype WHERE parent_id IS NOT NULL);
             """)
             rows = cursor.fetchall()
         return [row[0] for row in rows]  # Return list of leaf node IDs
@@ -806,8 +820,9 @@ class SipServiceDeliveryType(models.Model):
     def __str__(self):
         return self.name
 
-class SipServiceEvent(models.Model):
-    service_delivery_type = models.ForeignKey(SipServiceDeliveryType, on_delete=models.CASCADE)
+class OIBServiceEvent(models.Model):
+    oib_service_delivery_type = models.ForeignKey(OIBServiceDeliveryType, on_delete=models.CASCADE)
+    oib_program = models.ForeignKey(OIBProgram, on_delete=models.CASCADE)
     date = models.DateField(blank=True, default=date.today)
     # start_time = models.TimeField(blank=True, default="00:00:00")
     # end_time = models.TimeField(blank=True, default="00:00:00")
@@ -822,9 +837,8 @@ class SipServiceEvent(models.Model):
     def __str__(self):
         return f"{self.date} {self.service_delivery_type} {self.start_time}"
 
-class SipProgram(models.Model):
-    name = models.CharField(max_length=255)
-    long_name = models.CharField(max_length=255)
+class OIBService(models.Model):
+    oib_service = models.CharField(max_length=255)
     created = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)
     history = HistoricalRecords()
@@ -832,26 +846,17 @@ class SipProgram(models.Model):
     def __str__(self):
         return self.name
 
-class SipService(models.Model):
-    name = models.CharField(max_length=255)
+class OIBServiceEventOIBService(models.Model):
+    service_event = models.ForeignKey(OIBServiceEvent, on_delete=models.CASCADE)
+    oib_service = models.ForeignKey(OIBService, on_delete=models.CASCADE)
     created = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)
     history = HistoricalRecords()
 
     def __str__(self):
-        return self.name
+        return f"{self.service_event} {self.oib_service}"
 
-class SipServiceEventSipService(models.Model):
-    service_event = models.ForeignKey(SipServiceEvent, on_delete=models.CASCADE)
-    sip_service = models.ForeignKey(SipService, on_delete=models.CASCADE)
-    created = models.DateTimeField(auto_now_add=True)
-    modified = models.DateTimeField(auto_now=True)
-    history = HistoricalRecords()
-
-    def __str__(self):
-        return f"{self.service_event} {self.sip_service}"
-
-class SipServiceEventContactRole(models.Model):
+class OIBServiceEventContactRole(models.Model):
     name = models.CharField(max_length=255)
     created = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)
@@ -860,7 +865,7 @@ class SipServiceEventContactRole(models.Model):
     def __str__(self):
         return self.name
 
-class SipServiceEventInstructorRole(models.Model):
+class OIBServiceEventInstructorRole(models.Model):
     name = models.CharField(max_length=255)
     created = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)
@@ -869,10 +874,10 @@ class SipServiceEventInstructorRole(models.Model):
     def __str__(self):
         return self.name
 
-class SipServiceEventInstructor(models.Model):
-    service_event = models.ForeignKey(SipServiceEvent, on_delete=models.CASCADE)
+class OIBServiceEventInstructor(models.Model):
+    service_event = models.ForeignKey(OIBServiceEvent, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    role = models.ForeignKey(SipServiceEventInstructorRole, on_delete=models.CASCADE, default=0)
+    role = models.ForeignKey(OIBServiceEventInstructorRole, on_delete=models.CASCADE, default=0)
     created = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)
     history = HistoricalRecords()
@@ -880,11 +885,11 @@ class SipServiceEventInstructor(models.Model):
     def __str__(self):
         return f"{self.service_event} {self.user} {self.role}"
 
-class SipServiceEventContact(models.Model):
-    service_event = models.ForeignKey(SipServiceEvent, on_delete=models.CASCADE)
+class OIBServiceEventContact(models.Model):
+    service_event = models.ForeignKey(OIBServiceEvent, on_delete=models.CASCADE)
     contact = models.ForeignKey(Contact, on_delete=models.CASCADE)
-    role = models.ForeignKey(SipServiceEventContactRole, on_delete=models.CASCADE, default=0)
-    program = models.ForeignKey(SipProgram, on_delete=models.CASCADE, default=0)
+    role = models.ForeignKey(OIBServiceEventContactRole, on_delete=models.CASCADE, default=0)
+    program = models.ForeignKey(OIBProgram, on_delete=models.CASCADE, default=0)
     created = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)
     history = HistoricalRecords()
@@ -920,7 +925,7 @@ class OibOutcomeTypeChoice(models.Model):
     def __str__(self):
         return f"{self.outcome_type} {self.outcome_choice}"
 
-# NOTE Why no FK to `SipServiceEvent` or other models?
+# NOTE Why no FK to `OIBServiceEvent` or other models?
 #      ----------------------------------------------------
 # Because  the  relationships  between  SERVICES   and
 # OUTCOMES are only loosely defined, and the  official

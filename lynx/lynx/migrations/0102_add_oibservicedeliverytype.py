@@ -14,33 +14,33 @@ from django.db import migrations, models
 
 # https://wiki.postgresql.org/wiki/CTEReadme
 def add_initial_delivery_types(apps, schema_editor):
-    SipServiceDeliveryType = apps.get_model('lynx', 'SipServiceDeliveryType')
-    SipServiceDeliveryType.objects.bulk_create([
-        SipServiceDeliveryType(id=0, parent_id=None, name='ROOT'),
-        SipServiceDeliveryType(id=1, parent_id=0, name='in-home'),
-        SipServiceDeliveryType(id=2, parent_id=0, name='support group'),
-        SipServiceDeliveryType(id=3, parent_id=0, name='training seminar'),
-        SipServiceDeliveryType(id=4, parent_id=0, name='community integration'),
-        SipServiceDeliveryType(id=5, parent_id=0, name='retreat'),
-        SipServiceDeliveryType(id=6, parent_id=2, name='Spanish Support Group'),
-        SipServiceDeliveryType(id=7, parent_id=2, name='Asian Support Group'),
-        SipServiceDeliveryType(id=8, parent_id=2, name='BASS'),
-        SipServiceDeliveryType(id=9, parent_id=0, name='one-time event'),
+    OIBServiceDeliveryType = apps.get_model('lynx', 'OIBServiceDeliveryType')
+    OIBServiceDeliveryType.objects.bulk_create([
+        OIBServiceDeliveryType(id=0, parent_id=None, oib_service_delivery_type='ROOT'),
+        OIBServiceDeliveryType(id=1, parent_id=0, oib_service_delivery_type='in-home'),
+        OIBServiceDeliveryType(id=2, parent_id=0, oib_service_delivery_type='support group'),
+        OIBServiceDeliveryType(id=3, parent_id=0, oib_service_delivery_type='training seminar'),
+        OIBServiceDeliveryType(id=4, parent_id=0, oib_service_delivery_type='community integration'),
+        OIBServiceDeliveryType(id=5, parent_id=0, oib_service_delivery_type='retreat'),
+        OIBServiceDeliveryType(id=6, parent_id=2, oib_service_delivery_type='Spanish Support Group'),
+        OIBServiceDeliveryType(id=7, parent_id=2, oib_service_delivery_type='Asian Support Group'),
+        OIBServiceDeliveryType(id=8, parent_id=2, oib_service_delivery_type='BASS'),
+        OIBServiceDeliveryType(id=9, parent_id=0, oib_service_delivery_type='one-time event'),
     ])
 
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('lynx', '0101_delete_unused_tables'),
+        ('lynx', '0101-1_add_oibprogram'),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='SipServiceDeliveryType',
+            name='OIBServiceDeliveryType',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('parent_id', models.IntegerField(blank=True, null=True)),
-                ('name', models.CharField(max_length=255)),
+                ('oib_service_delivery_type', models.CharField(max_length=255)),
                 ('created', models.DateTimeField(auto_now_add=True)),
                 ('modified', models.DateTimeField(auto_now=True)),
             ],

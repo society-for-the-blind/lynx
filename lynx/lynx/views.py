@@ -2363,6 +2363,7 @@ def replace_characters(a_string, remove_characters):
     return a_string
 
 
+# TODO This should probably called something like `active_client_list`
 @login_required
 def contact_list(request):
     if request.method == 'GET':
@@ -2712,6 +2713,7 @@ def assignment_advanced_result_view(request):
     return render(request, 'lynx/instructor_search.html', {'filter': f, 'assignment_list': assignment_condensed})
 
 
+@login_required
 def add_service_event(request):
     contact_qs = lfo.ContactRoleForm.base_fields['contact'].queryset
     user_qs = lfo.ContactRoleForm.base_fields['user'].queryset
