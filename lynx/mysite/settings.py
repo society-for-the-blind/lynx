@@ -47,7 +47,6 @@ CSRF_TRUSTED_ORIGINS = ['https://lynx.societyfortheblind.org']
 # CSRF_TRUSTED_ORIGINS = ['https://lynx.societyfortheblind.org'] + ['http://192.168.64.4:8001']
 
 INSTALLED_APPS = [
-    'lynx.apps.LynxConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -61,7 +60,8 @@ INSTALLED_APPS = [
     'django_filters',
     'django_pgviews',
     'simple_history',
-    'django_crontab'
+    'django_crontab',
+    'lynx'
 ]
 
 SITE_ID=1

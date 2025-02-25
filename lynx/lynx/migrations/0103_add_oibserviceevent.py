@@ -10,12 +10,12 @@ class Migration(migrations.Migration):
 
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('lynx', '0102_add_sipservicedeliverytype'),
+        ('lynx', '0102_add_oibservicedeliverytype'),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='SipServiceEvent',
+            name='OIBServiceEvent',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 # NOTE 1 service delivery type per service event
@@ -25,7 +25,8 @@ class Migration(migrations.Migration):
                 #      service  event  delivered  by  multiple   service
                 #      delivery types,  decided  to  simply  include  it
                 #      here.
-                ('service_delivery_type', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='lynx.sipservicedeliverytype')),
+                ('service_delivery_type', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='lynx.oibservicedeliverytype')),
+                ('oib_program', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='lynx.oibprogram')),
                 ('date', models.DateField(blank=True, default=date.today)),
                 # ('start_time', models.TimeField(blank=True, default="00:00:00")),
                 # ('end_time', models.TimeField(blank=True, default="00:00:00")),

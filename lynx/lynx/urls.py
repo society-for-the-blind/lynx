@@ -6,7 +6,44 @@ from . import cron
 app_name = "lynx"
 
 urlpatterns = [
+    # At the moment, this one pull all active clients into a dropdown, so the path name should probably reflect that (e.g., `clients/active`). Why not just list them with the ability to search all contacts at the top?
     path('clients/', views.client_result_view, name='contact_list'),
+    # TODO The URL path scheme should be consistent:
+    # clients/ should show a list of clients
+    # clients/<int:pk> <- client/<int:pk>
+    # clients/<int:pk>/edit <- contact-edit/<int:pk>
+    # clients/search <- client_search
+
+    # contacts/
+    # contacts/active_clients (linkname should be "clients" and have the current functionality, even point to the same template but with a different context provided to the view - that is, the active clients only instead of all clients)
+    # contacts/<int:pk>
+    # contacts/search but this one is probably superfluous
+
+    # TODO Remove redundant views/templates/paths.
+    #      Case in point: `clients/` and `client-search`  pages
+    #      look the same and do the same,  but  there  are  two
+    #      distinct  templates  for  each  and  the  views  are
+    #      probably duplicates of each other as well.
+    path('client-search', views.client_result_view, name='client_search'),
+
+    path('client/<int:pk>', views.ContactDetailView.as_view(), name='client'),
+
+    path('client-advanced-search', views.client_advanced_result_view, name='client_advanced_search'),
+    path('contact-edit/<int:pk>', views.ClientUpdateView.as_view(), name='contact-edit'),
+    path('address-edit/<int:pk>', views.AddressUpdateView.as_view(), name='address-edit'),
+    path('phone-edit/<int:pk>', views.PhoneUpdateView.as_view(), name='phone-edit'),
+    path('email-edit/<int:pk>', views.EmailUpdateView.as_view(), name='email-edit'),
+
+    # QUESTION Should there also be `contact`-related URL paths?
+    #
+    # FOLLOW-UP QUESTION What is the purpose of the Django admin site?
+    #
+    #                    Even though one could  use  it  to  manage  entities
+    #                    (contacts, notes, service_events, etc.), but  it  is
+    #                    mostly used for Lynx user management - but even that
+    #                    is not accessible.
+    # So, use it to manage entities that are rarely touched? (Was meaning to write non-client contacts, but those can be managed from `clients/` as well...)
+
     path('volunteers/', views.volunteer_list_view, name='volunteer_list'),
     path('authorizations/<int:client_id>', views.authorization_list_view, name='auth_list'),
     path('add-contact/', views.add_contact, name='add_contact'),
@@ -31,14 +68,9 @@ urlpatterns = [
     path('sip-quarterly-service-report/', views.sip_csf_services_report, name='sip_quarterly_service_report'),
     path('sip-quarterly-report/', views.sip_quarterly_report, name='sip_quarterly_report'),
     path('authorization/<int:pk>', views.AuthorizationDetailView.as_view(), name='authorization_detail'),
-    path('client/<int:pk>', views.ContactDetailView.as_view(), name='client'),
     path('progress-report/<int:pk>/', views.ProgressReportDetailView.as_view(), name='progress_report_detail'),
     path('billing-review/<int:pk>/', views.BillingReviewDetailView.as_view(), name='billing_review'),
     path('volunteer/<int:pk>/', views.VolunteerDetailView.as_view(), name='volunteer'),
-    path('contact-edit/<int:pk>', views.ClientUpdateView.as_view(), name='contact-edit'),
-    path('address-edit/<int:pk>', views.AddressUpdateView.as_view(), name='address-edit'),
-    path('phone-edit/<int:pk>', views.PhoneUpdateView.as_view(), name='phone-edit'),
-    path('email-edit/<int:pk>', views.EmailUpdateView.as_view(), name='email-edit'),
     path('intake-edit/<int:pk>', views.IntakeUpdateView.as_view(), name='intake-edit'),
     path('progress-report-edit/<int:pk>', views.ProgressReportUpdateView.as_view(), name='progresss-report-edit'),
     path('emergency-contact-edit/<int:pk>', views.EmergencyContactUpdateView.as_view(), name='emergency-contact-edit'),
@@ -52,8 +84,6 @@ urlpatterns = [
     path('contact-confirm/<int:pk>', views.ContactDeleteView.as_view(), name='contact-delete'),
     path('volunteer-hour-confirm/<int:pk>', views.VolunteerHourDeleteView.as_view(), name='contact-delete'),
     path('document-confirm/<int:pk>/<int:client_id>', views.DocumentDeleteView.as_view(), name='document-delete'),
-    path('client-search', views.client_result_view, name='client_search'),
-    path('client-advanced-search', views.client_advanced_result_view, name='client_advanced_search'),
     path('report-search', views.progress_result_view, name='report_search'),
     path('search', views.contact_list, name='searcher'),
     path('download/<path:path>', views.download, name='download'),
@@ -119,7 +149,10 @@ urlpatterns = [
     path('instructors/', views.assignment_advanced_result_view, name='instructors'),
     # --- END ASSGNMENTS ---
 
-    path('add_service_event/', views.add_service_event, name='add_service_event'),
+    # OIB RE-WRITE
+    path('service_events/', views.add_service_event, name='add_service_event'),
+    path('service_events/new', views.add_service_event, name='add_service_event'),
+    path('service_events/<int:pk>/edit', views.add_service_event, name='add_service_event'),
 
     path("", views.index, name='index')
 ]
