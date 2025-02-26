@@ -9,20 +9,20 @@ class Migration(migrations.Migration):
 
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('lynx', '0114_add_sipserviceeventinstructorrole'),
+        ('lynx', '0114_add_oibserviceeventinstructorrole'),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='SipServiceEventInstructor',
+            name='OIBServiceEventInstructor',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('service_event', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='lynx.sipserviceevent')),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
+                ('service_event', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to='lynx.oibserviceevent')),
+                ('instructor', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to=settings.AUTH_USER_MODEL)),
                 # Service event user roles will probably not be used,
                 # but in case it is needed, it will be here.
-                ('role', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='lynx.sipserviceeventinstructorrole', default=0)),
-                # No "program" field, like in  SipServiceEventContact,
+                ('oib_service_event_instructor_role', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to='lynx.oibserviceeventinstructorrole', default=0)),
+                # No "program" field, like in  OIBServiceEventContact,
                 # because instructors deliver services  in  every  SIP
                 # program, so it doesn't make sense.
                 ('created', models.DateTimeField(auto_now_add=True)),

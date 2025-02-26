@@ -4,28 +4,28 @@ from django.db import migrations, models
 
 
 def add_initial_roles(apps, schema_editor):
-    SipServiceEventContactRole = apps.get_model('lynx', 'SipServiceEventContactRole')
-    SipServiceEventContactRole.objects.bulk_create([
-        SipServiceEventContactRole(id=0, name='participating_client'),
-        SipServiceEventContactRole(id=1, name='presenter'),
-        SipServiceEventContactRole(id=2, name='guest'),
-        SipServiceEventContactRole(id=3, name='caregiver'),
-        SipServiceEventContactRole(id=4, name='family member'),
+    OIBServiceEventContactRole = apps.get_model('lynx', 'OIBServiceEventContactRole')
+    OIBServiceEventContactRole.objects.bulk_create([
+        OIBServiceEventContactRole(id=0, oib_service_event_contact_role='participating_client'),
+        OIBServiceEventContactRole(id=1, oib_service_event_contact_role='presenter'),
+        OIBServiceEventContactRole(id=2, oib_service_event_contact_role='guest'),
+        OIBServiceEventContactRole(id=3, oib_service_event_contact_role='caregiver'),
+        OIBServiceEventContactRole(id=4, oib_service_event_contact_role='family member'),
     ])
 
 
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('lynx', '0105_add_sipserviceeventsipservice'),
+        ('lynx', '0105_add_oibserviceeventoibservice'),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='SipServiceEventContactRole',
+            name='OIBServiceEventContactRole',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=255)),
+                ('oib_service_event_contact_role', models.CharField(max_length=255)),
                 ('created', models.DateTimeField(auto_now_add=True)),
                 ('modified', models.DateTimeField(auto_now=True)),
             ],

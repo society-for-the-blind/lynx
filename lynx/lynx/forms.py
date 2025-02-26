@@ -13,7 +13,7 @@ from . import models  as lm
 
 from datetime import datetime
 
-from .models import SipServiceEvent, SipServiceEventContact
+# from .models import SipServiceEvent, SipServiceEventContact
 from django.contrib.auth import models as dca
 
 months = (("1", "January"), ("2", "February"), ("3", "March"), ("4", "April"), ("5", "May"), ("6", "June"),
@@ -595,33 +595,33 @@ DURATION_CHOICES = [
     ("08:00:00", "8 hours"),
 ]
 
-class SipServiceEventForm(forms.ModelForm):
-    date = forms.DateField(widget=forms.SelectDateWidget(years=list(range(1900, 2100))), label='Note Date', initial=timezone.now())
-    length = forms.ChoiceField(choices=DURATION_CHOICES, label='Length')
+# class SipServiceEventForm(forms.ModelForm):
+#     date = forms.DateField(widget=forms.SelectDateWidget(years=list(range(1900, 2100))), label='Note Date', initial=timezone.now())
+#     length = forms.ChoiceField(choices=DURATION_CHOICES, label='Length')
 
-    class Meta:
-        model = SipServiceEvent
-        fields = ['service_delivery_type', 'date', 'length', 'note', 'entered_by']
+#     class Meta:
+#         model = SipServiceEvent
+#         fields = ['service_delivery_type', 'date', 'length', 'note', 'entered_by']
 
-    def __init__(self, *args, **kwargs):
-        instructors = kwargs.pop('instructors', None)
-        super(SipServiceEventForm, self).__init__(*args, **kwargs)
-        leaf_node_ids = lm.SipServiceDeliveryType.get_leaf_nodes()
-        self.fields['service_delivery_type'].queryset = lm.SipServiceDeliveryType.objects.filter(id__in=leaf_node_ids)
-        if instructors is not None:
-            self.fields['entered_by'].queryset = instructors
+#     def __init__(self, *args, **kwargs):
+#         instructors = kwargs.pop('instructors', None)
+#         super(SipServiceEventForm, self).__init__(*args, **kwargs)
+#         leaf_node_ids = lm.SipServiceDeliveryType.get_leaf_nodes()
+#         self.fields['service_delivery_type'].queryset = lm.SipServiceDeliveryType.objects.filter(id__in=leaf_node_ids)
+#         if instructors is not None:
+#             self.fields['entered_by'].queryset = instructors
 
-class ContactRoleForm(forms.ModelForm):
-    contact_queryset = lm.Contact.objects.filter(active=1).order_by(ddmf.Lower('last_name'), ddmf.Lower('first_name'))
-    user_queryset = dca.User.objects.all().order_by(ddmf.Lower('last_name'), ddmf.Lower('first_name'))
+# class ContactRoleForm(forms.ModelForm):
+#     contact_queryset = lm.Contact.objects.filter(active=1).order_by(ddmf.Lower('last_name'), ddmf.Lower('first_name'))
+#     user_queryset = dca.User.objects.all().order_by(ddmf.Lower('last_name'), ddmf.Lower('first_name'))
 
-    contact = forms.ModelChoiceField(queryset=contact_queryset, label='Contact')
-    user = forms.ModelChoiceField(queryset=user_queryset, label='User')
-    contact_and_user = forms.ModelChoiceField(queryset=contact_queryset.union(user_queryset), label='Contact and User')
-    # role = forms.ModelChoiceField(queryset=ServiceEventRole.objects.all(), label='Role')
+#     contact = forms.ModelChoiceField(queryset=contact_queryset, label='Contact')
+#     user = forms.ModelChoiceField(queryset=user_queryset, label='User')
+#     contact_and_user = forms.ModelChoiceField(queryset=contact_queryset.union(user_queryset), label='Contact and User')
+#     # role = forms.ModelChoiceField(queryset=ServiceEventRole.objects.all(), label='Role')
 
-    class Meta:
-        model = SipServiceEventContact
-        fields = ['contact', 'role', 'user', 'contact_and_user']
+#     class Meta:
+#         model = SipServiceEventContact
+#         fields = ['contact', 'role', 'user', 'contact_and_user']
 
-ContactRoleFormSet = forms.inlineformset_factory(SipServiceEvent, SipServiceEventContact, form=ContactRoleForm, extra=1, can_delete=True)
+# ContactRoleFormSet = forms.inlineformset_factory(SipServiceEvent, SipServiceEventContact, form=ContactRoleForm, extra=1, can_delete=True)

@@ -7,16 +7,16 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('lynx', '0104_add_sipservice'),
+        ('lynx', '0104_add_oibservice'),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='SipServiceEventSipService',
+            name='OIBServiceEventOIBService',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('service_event', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='lynx.sipserviceevent')),
-                ('sip_service', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='lynx.sipservice')),
+                ('oib_service_event', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to='lynx.oibserviceevent')),
+                ('oib_service', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to='lynx.oibservice')),
                 ('created', models.DateTimeField(auto_now_add=True)),
                 ('modified', models.DateTimeField(auto_now=True)),
             ],

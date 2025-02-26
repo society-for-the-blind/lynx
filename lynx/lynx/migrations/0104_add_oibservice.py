@@ -4,32 +4,32 @@ from django.db import migrations, models
 
 
 def add_initial_services(apps, schema_editor):
-    SipService = apps.get_model('lynx', 'SipService')
-    SipService.objects.bulk_create([
-        SipService(id=0, name='assistive technology devices and services'),
-        SipService(id=1, name='orientation and mobility training'),
-        SipService(id=2, name='communication skills training'),
-        SipService(id=3, name='daily living skills training'),
-        SipService(id=4, name='advocacy training'),
-        SipService(id=5, name='adjustment counseling'),
-        SipService(id=6, name='supportive services'),
-        SipService(id=7, name='information and referral'),
-        SipService(id=8, name='other IL/A services'),
-        SipService(id=9, name='supportive services'),
+    OIBService = apps.get_model('lynx', 'OIBService')
+    OIBService.objects.bulk_create([
+        OIBService(id=0, oib_service='assistive technology devices and services'),
+        OIBService(id=1, oib_service='orientation and mobility training'),
+        OIBService(id=2, oib_service='communication skills training'),
+        OIBService(id=3, oib_service='daily living skills training'),
+        OIBService(id=4, oib_service='advocacy training'),
+        OIBService(id=5, oib_service='adjustment counseling'),
+        OIBService(id=6, oib_service='supportive services'),
+        OIBService(id=7, oib_service='information and referral'),
+        OIBService(id=8, oib_service='other IL/A services'),
+        OIBService(id=9, oib_service='supportive services'),
     ])
 
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('lynx', '0103-1_add_sipprogram'),
+        ('lynx', '0103_add_oibserviceevent'),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='SipService',
+            name='OIBService',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=255)),
+                ('oib_service', models.CharField(max_length=255)),
                 ('created', models.DateTimeField(auto_now_add=True)),
                 ('modified', models.DateTimeField(auto_now=True)),
             ],

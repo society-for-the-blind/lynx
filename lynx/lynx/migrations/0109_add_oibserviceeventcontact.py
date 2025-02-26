@@ -9,21 +9,21 @@ class Migration(migrations.Migration):
 
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('lynx', '0107_add_sipserviceeventcontactrole'),
+        ('lynx', '0107_add_oibserviceeventcontactrole'),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='SipServiceEventContact',
+            name='OIBServiceEventContact',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('service_event', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='lynx.sipserviceevent')),
-                ('contact', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='lynx.contact')),
-                ('role', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='lynx.sipserviceeventcontactrole', default=0)),
+                ('oib_service_event', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to='lynx.oibserviceevent')),
+                ('contact', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to='lynx.contact')),
+                ('oib_service_event_contact_role', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to='lynx.oibserviceeventcontactrole', default=0)),
                 # All  clients  (should...)  exclusively   belong   to
                 # **one** SIP program, so one SERVICE EVENT  can  only
                 # be delivered under one SIP program per client.
-                ('program', models.ForeignKey(default=0, on_delete=django.db.models.deletion.CASCADE, to='lynx.sipprogram')),
+                ('oib_program', models.ForeignKey(default=0, on_delete=django.db.models.deletion.PROTECT, to='lynx.oibprogram')),
                 ('created', models.DateTimeField(auto_now_add=True)),
                 ('modified', models.DateTimeField(auto_now=True)),
             ],
