@@ -536,7 +536,7 @@ def get_quarter(month):
         return 0
 
 
-def filter_units(authorization_id): #remove any selections that would take instructor over allotted hours
+def filter_units(authorization_id):
     authorization = lm.Authorization.objects.get(id=authorization_id)
     note_list = lm.LessonNote.objects.filter(authorization_id=authorization_id)
 
@@ -594,6 +594,37 @@ DURATION_CHOICES = [
     ("07:45:00", "7 hours 45 minutes"),
     ("08:00:00", "8 hours"),
 ]
+
+class OIBServiceEventForm(forms.ModelForm):
+    date = forms.DateField(
+        widget=forms.SelectDateWidget(years=list(range(1900, 2100))),
+        label='Note Date',
+        initial=timezone.now(),
+        required=True
+    )
+    length = forms.ChoiceField(
+        choices=DURATION_CHOICES,
+        label='Class Length',
+        required=True
+    )
+
+    class Meta:
+        model = lm.OIBServiceEvent
+        fields = [ 'oib_service_delivery_type',
+                   'oib_program',
+                   'date',
+                   'length',
+                   'note',
+                   'entered_by'
+                 ]
+
+    def __init__(self, *args, **kwargs):
+        instructors = kwargs.pop('instructors', None)
+        super(OIBServiceEventForm, self).__init__(*args, **kwargs)
+        leaf_node_ids = lm.OIBServiceDeliveryType.get_leaf_nodes()
+        self.fields['service_delivery_type'].queryset = lm.OIBServiceDeliveryType.objects.filter(id__in=leaf_node_ids)
+        if instructors is not None:
+            self.fields['entered_by'].queryset = instructors
 
 # class SipServiceEventForm(forms.ModelForm):
 #     date = forms.DateField(widget=forms.SelectDateWidget(years=list(range(1900, 2100))), label='Note Date', initial=timezone.now())
