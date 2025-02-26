@@ -6,17 +6,17 @@ from django.db import migrations, models
 def add_initial_outcome_types(apps, schema_editor):
     OibOutcomeType = apps.get_model('lynx', 'OibOutcomeType')
     OibOutcomeType.objects.bulk_create([
-        OibOutcomeType(id=0, name='AT Goal Outcome'),
-        OibOutcomeType(id=1, name='IL/A Service Goal Outcome'),
-        OibOutcomeType(id=2, name='Living Situation Outcome'),
-        OibOutcomeType(id=3, name='Home and Community Involvement Outcome'),
-        OibOutcomeType(id=4, name='Employment Outcome'),
+        OibOutcomeType(id=0, oib_outcome_type='AT Goal Outcome'),
+        OibOutcomeType(id=1, oib_outcome_type='IL/A Service Goal Outcome'),
+        OibOutcomeType(id=2, oib_outcome_type='Living Situation Outcome'),
+        OibOutcomeType(id=3, oib_outcome_type='Home and Community Involvement Outcome'),
+        OibOutcomeType(id=4, oib_outcome_type='Employment Outcome'),
     ])
 
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('lynx', '0109_add_sipserviceeventcontact'),
+        ('lynx', '0109_add_oibserviceeventcontact'),
     ]
 
     operations = [
@@ -24,7 +24,7 @@ class Migration(migrations.Migration):
             name='OibOutcomeType',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=255)),
+                ('oib_outcome_type', models.CharField(max_length=255)),
                 ('created', models.DateTimeField(auto_now_add=True)),
                 ('modified', models.DateTimeField(auto_now=True)),
             ],

@@ -774,7 +774,7 @@ class OIBProgram(models.Model):
     history = HistoricalRecords()
 
     def __str__(self):
-        return self.name
+        return self.oib_program
 
 # NOTE "service delivery type" === "plan type"
 #      ----------------------------------------------------
@@ -802,15 +802,15 @@ class OIBServiceDeliveryType(models.Model):
         with connection.cursor() as cursor:
             cursor.execute("""
                 WITH RECURSIVE cte AS (
-                    SELECT id, parent_id, name
+                    SELECT id, parent_id, oib_service_delivery_type
                     FROM lynx_oibservicedeliverytype
                     WHERE parent_id IS NULL
                     UNION ALL
-                    SELECT t.id, t.parent_id, t.name
+                    SELECT id, parent_id, oib_service_delivery_type
                     FROM lynx_oibservicedeliverytype t
                     INNER JOIN cte ON t.parent_id = cte.id
                 )
-                SELECT id, name
+                SELECT id, oib_service_delivery_type
                 FROM lynx_oibservicedeliverytype
                 WHERE id NOT IN (SELECT parent_id FROM lynx_oibservicedeliverytype WHERE parent_id IS NOT NULL);
             """)
@@ -818,18 +818,18 @@ class OIBServiceDeliveryType(models.Model):
         return [row[0] for row in rows]  # Return list of leaf node IDs
 
     def __str__(self):
-        return self.name
+        return self.oib_service_delivery_type
 
 class OIBServiceEvent(models.Model):
-    oib_service_delivery_type = models.ForeignKey(OIBServiceDeliveryType, on_delete=models.CASCADE)
-    oib_program = models.ForeignKey(OIBProgram, on_delete=models.CASCADE)
+    oib_service_delivery_type = models.ForeignKey(OIBServiceDeliveryType, on_delete=models.PROTECT)
+    oib_program = models.ForeignKey(OIBProgram, on_delete=models.PROTECT)
     date = models.DateField(blank=True, default=date.today)
     # start_time = models.TimeField(blank=True, default="00:00:00")
     # end_time = models.TimeField(blank=True, default="00:00:00")
     length = models.DurationField(blank=True, default="00:00:00")
     # Allowing blank for convenience.
     note = models.TextField(blank=True, default="")
-    entered_by = models.ForeignKey(User, on_delete=models.CASCADE)
+    entered_by = models.ForeignKey(User, on_delete=models.PROTECT)
     created = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)
     history = HistoricalRecords()
@@ -844,11 +844,11 @@ class OIBService(models.Model):
     history = HistoricalRecords()
 
     def __str__(self):
-        return self.name
+        return self.oib_service
 
 class OIBServiceEventOIBService(models.Model):
-    service_event = models.ForeignKey(OIBServiceEvent, on_delete=models.CASCADE)
-    oib_service = models.ForeignKey(OIBService, on_delete=models.CASCADE)
+    oib_service_event = models.ForeignKey(OIBServiceEvent, on_delete=models.PROTECT)
+    oib_service = models.ForeignKey(OIBService, on_delete=models.PROTECT)
     created = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)
     history = HistoricalRecords()
@@ -857,27 +857,27 @@ class OIBServiceEventOIBService(models.Model):
         return f"{self.service_event} {self.oib_service}"
 
 class OIBServiceEventContactRole(models.Model):
-    name = models.CharField(max_length=255)
+    oib_service_event_contact_role = models.CharField(max_length=255)
     created = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)
     history = HistoricalRecords()
 
     def __str__(self):
-        return self.name
+        return self.oib_service_event_contact_role
 
 class OIBServiceEventInstructorRole(models.Model):
-    name = models.CharField(max_length=255)
+    oib_service_event_instructor_role = models.CharField(max_length=255)
     created = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)
     history = HistoricalRecords()
 
     def __str__(self):
-        return self.name
+        return self.oib_service_event_instructor_role
 
 class OIBServiceEventInstructor(models.Model):
-    service_event = models.ForeignKey(OIBServiceEvent, on_delete=models.CASCADE)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    role = models.ForeignKey(OIBServiceEventInstructorRole, on_delete=models.CASCADE, default=0)
+    service_event = models.ForeignKey(OIBServiceEvent, on_delete=models.PROTECT)
+    instructor = models.ForeignKey(User, on_delete=models.PROTECT)
+    oib_service_event_instructor_role = models.ForeignKey(OIBServiceEventInstructorRole, on_delete=models.PROTECT, default=0)
     created = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)
     history = HistoricalRecords()
@@ -886,38 +886,38 @@ class OIBServiceEventInstructor(models.Model):
         return f"{self.service_event} {self.user} {self.role}"
 
 class OIBServiceEventContact(models.Model):
-    service_event = models.ForeignKey(OIBServiceEvent, on_delete=models.CASCADE)
-    contact = models.ForeignKey(Contact, on_delete=models.CASCADE)
-    role = models.ForeignKey(OIBServiceEventContactRole, on_delete=models.CASCADE, default=0)
-    program = models.ForeignKey(OIBProgram, on_delete=models.CASCADE, default=0)
+    oib_service_event = models.ForeignKey(OIBServiceEvent, on_delete=models.PROTECT)
+    contact = models.ForeignKey(Contact, on_delete=models.PROTECT)
+    oib_service_event_contact_role = models.ForeignKey(OIBServiceEventContactRole, on_delete=models.PROTECT, default=0)
+    oib_program = models.ForeignKey(OIBProgram, on_delete=models.PROTECT, default=0)
     created = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)
     history = HistoricalRecords()
 
     def __str__(self):
-        return f"{self.service_event} {self.contact} {self.role}"
+        return f"{self.oib_service_event} {self.contact} {self.oib_service_event_contact_role}"
 
 class OibOutcomeType(models.Model):
-    name = models.CharField(max_length=255)
+    oib_outcome_type = models.CharField(max_length=255)
     created = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)
     history = HistoricalRecords()
 
     def __str__(self):
-        return self.name
+        return self.oib_outcome_type
 
 class OibOutcomeChoice(models.Model):
-    name = models.CharField(max_length=255)
+    oib_outcome_choice = models.CharField(max_length=255)
     created = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)
     history = HistoricalRecords()
 
     def __str__(self):
-        return self.name
+        return self.oib_outcome_choice
 
 class OibOutcomeTypeChoice(models.Model):
-    oib_outcome_type = models.ForeignKey(OibOutcomeType, on_delete=models.CASCADE)
-    oib_outcome_choice = models.ForeignKey(OibOutcomeChoice, on_delete=models.CASCADE)
+    oib_outcome_type = models.ForeignKey(OibOutcomeType, on_delete=models.PROTECT)
+    oib_outcome_choice = models.ForeignKey(OibOutcomeChoice, on_delete=models.PROTECT)
     created = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)
     history = HistoricalRecords()
@@ -937,8 +937,8 @@ class OibOutcomeTypeChoice(models.Model):
 #      level (i.e., migrations), in case some manual adjustments
 #      are needed in the future.
 class OibOutcome(models.Model):
-    oib_outcome_type_choice = models.ForeignKey(OibOutcomeTypeChoice, on_delete=models.CASCADE)
-    contact = models.ForeignKey(Contact, on_delete=models.CASCADE)
+    oib_outcome_type_choice = models.ForeignKey(OibOutcomeTypeChoice, on_delete=models.PROTECT)
+    contact = models.ForeignKey(Contact, on_delete=models.PROTECT)
     created = models.DateTimeField(auto_now_add=True)
     # This field may seem superfluous if the model is append-only
     # and immutable, but it is good to have in case someone

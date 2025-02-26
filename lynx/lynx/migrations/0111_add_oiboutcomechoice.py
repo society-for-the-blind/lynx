@@ -6,18 +6,18 @@ from django.db import migrations, models
 def add_initial_outcome_choice(apps, schema_editor):
     OibOutcomeChoice = apps.get_model('lynx', 'OibOutcomeChoice')
     OibOutcomeChoice.objects.bulk_create([
-        OibOutcomeChoice(id=0, name="Plan not complete"),
-        OibOutcomeChoice(id=1, name="Plan complete, feeling more confident in ability to maintain living situation"),
-        OibOutcomeChoice(id=2, name="Plan complete, no difference in ability to maintain living situation"),
-        OibOutcomeChoice(id=3, name="Plan complete, feeling less confident in ability to maintain living situation"),
-        OibOutcomeChoice(id=4, name="Not assessed"),
-        OibOutcomeChoice(id=5, name="Assessed with improved independence"),
-        OibOutcomeChoice(id=6, name="Assessed and maintained independence"),
-        OibOutcomeChoice(id=7, name="Assessed with decreased independence"),
-        OibOutcomeChoice(id=8, name="Not Interested in Employment"),
-        OibOutcomeChoice(id=9, name="Less Likely to Seek Employment"),
-        OibOutcomeChoice(id=10, name="Unsure about Seeking Employment"),
-        OibOutcomeChoice(id=11, name="More Likely to Seek Employment"),
+        OibOutcomeChoice(id=0, oib_outcome_choice="Plan not complete"),
+        OibOutcomeChoice(id=1, oib_outcome_choice="Plan complete, feeling more confident in ability to maintain living situation"),
+        OibOutcomeChoice(id=2, oib_outcome_choice="Plan complete, no difference in ability to maintain living situation"),
+        OibOutcomeChoice(id=3, oib_outcome_choice="Plan complete, feeling less confident in ability to maintain living situation"),
+        OibOutcomeChoice(id=4, oib_outcome_choice="Not assessed"),
+        OibOutcomeChoice(id=5, oib_outcome_choice="Assessed with improved independence"),
+        OibOutcomeChoice(id=6, oib_outcome_choice="Assessed and maintained independence"),
+        OibOutcomeChoice(id=7, oib_outcome_choice="Assessed with decreased independence"),
+        OibOutcomeChoice(id=8, oib_outcome_choice="Not Interested in Employment"),
+        OibOutcomeChoice(id=9, oib_outcome_choice="Less Likely to Seek Employment"),
+        OibOutcomeChoice(id=10, oib_outcome_choice="Unsure about Seeking Employment"),
+        OibOutcomeChoice(id=11, oib_outcome_choice="More Likely to Seek Employment"),
 ])
 
 class Migration(migrations.Migration):
@@ -31,7 +31,7 @@ class Migration(migrations.Migration):
             name='OibOutcomeChoice',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=255)),
+                ('oib_outcome_choice', models.CharField(max_length=255)),
                 ('created', models.DateTimeField(auto_now_add=True)),
                 ('modified', models.DateTimeField(auto_now=True)),
             ],

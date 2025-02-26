@@ -19,8 +19,8 @@ class Migration(migrations.Migration):
             name='OibOutcome',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('contact', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='lynx.contact')),
-                ('oib_outcome_type_choice', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='lynx.oiboutcometypechoice')),
+                ('contact', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to='lynx.contact')),
+                ('oib_outcome_type_choice', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to='lynx.oiboutcometypechoice')),
                 ('created', models.DateTimeField(auto_now_add=True)),
                 # This field may seem superfluous if the model is append-only
                 # and immutable, but it is good to have in case someone
