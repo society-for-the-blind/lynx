@@ -151,7 +151,7 @@ urlpatterns = [
 
     # OIB RE-WRITE
     # path('service_events/', views.add_service_event, name='add_service_event'),
-    # path('service_events/new', views.add_service_event, name='add_service_event'),
+    path('service_events/new', views.add_service_event, name='add_service_event'),
     # path('service_events/<int:pk>/edit', views.add_service_event, name='add_service_event'),
 
     path("", views.index, name='index')
