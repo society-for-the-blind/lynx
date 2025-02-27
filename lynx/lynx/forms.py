@@ -596,6 +596,11 @@ DURATION_CHOICES = [
 ]
 
 class OIBServiceEventForm(forms.ModelForm):
+    instructors = forms.ModelChoiceField(
+        queryset=dca.User.objects.filter(groups__name='SIP').order_by(ddmf.Lower('last_name')),
+        required=True,
+        label="Instructor"
+    )
     date = forms.DateField(
         widget=forms.SelectDateWidget(years=list(range(1900, 2100))),
         label='Note Date',
@@ -625,6 +630,10 @@ class OIBServiceEventForm(forms.ModelForm):
         self.fields['service_delivery_type'].queryset = lm.OIBServiceDeliveryType.objects.filter(id__in=leaf_node_ids)
         if instructors is not None:
             self.fields['entered_by'].queryset = instructors
+
+    class Meta:
+        model = lm.Assignment
+        fields = ['instructor', 'note', 'priority']
 
 # class SipServiceEventForm(forms.ModelForm):
 #     date = forms.DateField(widget=forms.SelectDateWidget(years=list(range(1900, 2100))), label='Note Date', initial=timezone.now())
