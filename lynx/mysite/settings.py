@@ -167,7 +167,7 @@ LOGOUT_REDIRECT_URL = '/lynx/'
 
 APPEND_SLASH = False
 
-EMAIL_HOST = 'smtp.office365.com'
+EMAIL_HOST = 'blizzard.mxrouting.net'
 EMAIL_PORT = 587
 EMAIL_HOST_USER = config['EMAIL_HOST_USER']
 EMAIL_HOST_PASSWORD = config['EMAIL_HOST_PASSWORD']
