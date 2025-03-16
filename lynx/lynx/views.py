@@ -2712,6 +2712,27 @@ def assignment_advanced_result_view(request):
     # import pdb; pdb.set_trace()
     return render(request, 'lynx/instructor_search.html', {'filter': f, 'assignment_list': assignment_condensed})
 
+####################################################
+# OIB RE-WRITE                                     #
+####################################################
+
+@login_required
+def show_all_service_events_per_client(request, contact_id):
+    # notes = lm.SipNote.objects.filter(contact_id=contact_id).order_by('-note_date')
+    client = lm.Contact.objects.get(id=contact_id)
+
+    notes = lm.OIBServiceEvent.objects \
+            .filter(oibserviceeventcontact__contact_id=contact_id) \
+            .order_by('-date')
+
+    return render( request
+                 , 'lynx/plan_note_list.html'
+                 , { 'notes': notes
+                   , 'client': client
+                   , 'program_name':      p['program_name']      \
+                   , 'program_path_part': p['program_path_part'] \
+                   }
+                 )
 
 # @login_required
 # def add_service_event(request):

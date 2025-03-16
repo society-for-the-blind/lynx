@@ -149,10 +149,27 @@ urlpatterns = [
     path('instructors/', views.assignment_advanced_result_view, name='instructors'),
     # --- END ASSGNMENTS ---
 
-    # OIB RE-WRITE
-    # path('service_events/', views.add_service_event, name='add_service_event'),
-    path('service_events/new', views.add_service_event, name='add_service_event'),
-    # path('service_events/<int:pk>/edit', views.add_service_event, name='add_service_event'),
-
-    path("", views.index, name='index')
+    ################
+    # OIB RE-WRITE #
+    ################
+    path('client/<int:contact_id>/oib_service_events',
+         views.show_all_oib_service_events_per_client,
+         name='show_all_oib_service_events_per_client'
+        ),
+    # path('oib_service_events/<int:oib_service_event_id>',
+    #      views.show_oib_service_event,
+    #      name='show_oib_service_event'
+    #     ),
+    # path('oib_service_events/new',
+    #      views.add_oib_service_event,
+    #      name='add_oib_service_event'
+    #     ),
+    # path('oib_service_events/<int:oib_service_event_id>/edit',
+    #      views.edit_oib_service_event,
+    #      name='edit_oib_service_event'
+    #     ),
+    # path('oib_service_events/<int:oib_service_event_id>/delete',
+    #      views.delete_oib_service_event,
+    #      name='delete_oib_service_event'
+    #     )
 ]

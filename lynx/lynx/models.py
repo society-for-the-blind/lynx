@@ -821,13 +821,13 @@ class OIBServiceDeliveryType(models.Model):
         return self.oib_service_delivery_type
 
 class OIBServiceEvent(models.Model):
+    # NOTE This is the "plan" in the front-end.
     oib_service_delivery_type = models.ForeignKey(OIBServiceDeliveryType, on_delete=models.PROTECT)
     oib_program = models.ForeignKey(OIBProgram, on_delete=models.PROTECT)
     date = models.DateField(blank=True, default=date.today)
     # start_time = models.TimeField(blank=True, default="00:00:00")
     # end_time = models.TimeField(blank=True, default="00:00:00")
     length = models.DurationField(blank=True, default="00:00:00")
-    # Allowing blank for convenience.
     note = models.TextField(blank=True, default="")
     entered_by = models.ForeignKey(User, on_delete=models.PROTECT)
     created = models.DateTimeField(auto_now_add=True)
