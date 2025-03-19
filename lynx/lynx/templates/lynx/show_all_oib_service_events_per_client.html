@@ -1,0 +1,39 @@
+{% extends 'lynx/base.html' %}
+{% load time_convert %}
+
+{% block title %}Notes for {{ client.first_name }} {{ client.last_name }}{% endblock %}
+
+{% block content %}
+<h2>{{ program_name }} Notes for {{ client.first_name }} {{ client.last_name }}</h2>
+  {% if not request.GET.print %}
+    <!--
+    <a class="btn btn-success" aria-label="Add New {{ program_name }} Note" href="/lynx/add-{{ program_path_part }}-note/{{ client.id }}/?next={{ request.path }}">Add New {{ program_name }} Note</a>
+    <input type="button" class="btn btn-success" aria-label="Add New {{ program_name }} Note" onclick="location.href='/lynx/add-{{ program_path_part }}-note/{{ client.id }}/?next={{ request.path }}';" value="Add New {{ program_name }} Note" />
+    <input type="button" class="btn btn-success" aria-label="Back to Client" onclick="location.href='/lynx/client/{{ client.id }}';" value="Return to {{ client.first_name }} {{ client.last_name }}'s Information" />
+    -->
+  {% endif %}
+
+  {% for service_event in service_events %}
+    <ol>
+      <li>
+        <span>{{ service_event.date|date:'F j, Y' }}</span>
+        <span>{{ service_event.length }}</span>
+        <span>{{ service_event.oib_program }}</span>
+        <span>{{ service_event.oib_service_delivery_type }}</span>
+        <!-- <span>{{ service_event.note|linebreaks }}</span> -->
+      </li>
+    </ol>
+
+    <hr>
+
+  {% empty %}
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-12">
+          Sorry, no {{ program_name }} Notes have been entered for this client
+        </div>
+      </div>
+    </div>
+  {% endfor %}
+
+{% endblock %}

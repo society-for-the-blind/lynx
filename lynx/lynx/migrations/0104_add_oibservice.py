@@ -6,16 +6,15 @@ from django.db import migrations, models
 def add_initial_services(apps, schema_editor):
     OIBService = apps.get_model('lynx', 'OIBService')
     OIBService.objects.bulk_create([
-        OIBService(id=0, oib_service='assistive technology devices and services'),
-        OIBService(id=1, oib_service='orientation and mobility training'),
-        OIBService(id=2, oib_service='communication skills training'),
-        OIBService(id=3, oib_service='daily living skills training'),
-        OIBService(id=4, oib_service='advocacy training'),
-        OIBService(id=5, oib_service='adjustment counseling'),
-        OIBService(id=6, oib_service='supportive services'),
-        OIBService(id=7, oib_service='information and referral'),
-        OIBService(id=8, oib_service='other IL/A services'),
-        OIBService(id=9, oib_service='supportive services'),
+        OIBService(id=0, oib_service='AT', long_name='Assistive Technology Devices and Services'),
+        OIBService(id=1, oib_service='O&M', long_name='Orientation and Mobility Training'),
+        OIBService(id=2, oib_service='Comm', long_name='Communication Skills Training'),
+        OIBService(id=3, oib_service='DLS', long_name='Daily Living Skills Training'),
+        OIBService(id=4, oib_service='Advocacy', long_name='Advocacy Training'),
+        OIBService(id=5, oib_service='AC', long_name='Adjustment Counseling'),
+        OIBService(id=6, oib_service='SS', long_name='Supportive Services'),
+        OIBService(id=7, oib_service='IR', long_name='Information and Referral'),
+        OIBService(id=8, oib_service='other IL/A', long_name='Other IL/A Services'),
     ])
 
 class Migration(migrations.Migration):
@@ -30,6 +29,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('oib_service', models.CharField(max_length=255)),
+                ('long_name', models.CharField(max_length=255)),
                 ('created', models.DateTimeField(auto_now_add=True)),
                 ('modified', models.DateTimeField(auto_now=True)),
             ],

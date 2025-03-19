@@ -839,6 +839,7 @@ class OIBServiceEvent(models.Model):
 
 class OIBService(models.Model):
     oib_service = models.CharField(max_length=255)
+    long_name = models.CharField(max_length=255)
     created = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)
     history = HistoricalRecords()

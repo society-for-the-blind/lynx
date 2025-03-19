@@ -2717,20 +2717,19 @@ def assignment_advanced_result_view(request):
 ####################################################
 
 @login_required
-def show_all_service_events_per_client(request, contact_id):
+def show_all_oib_service_events_per_client(request, contact_id):
     # notes = lm.SipNote.objects.filter(contact_id=contact_id).order_by('-note_date')
     client = lm.Contact.objects.get(id=contact_id)
 
-    notes = lm.OIBServiceEvent.objects \
-            .filter(oibserviceeventcontact__contact_id=contact_id) \
-            .order_by('-date')
+    service_events = \
+        lm.OIBServiceEvent.objects \
+        .filter(oibserviceeventcontact__contact_id=contact_id) \
+        .order_by('-date')
 
     return render( request
-                 , 'lynx/plan_note_list.html'
-                 , { 'notes': notes
+                 , 'lynx/show_all_oib_service_events_per_client.html'
+                 , { 'service_events': service_events
                    , 'client': client
-                   , 'program_name':      p['program_name']      \
-                   , 'program_path_part': p['program_path_part'] \
                    }
                  )
 
