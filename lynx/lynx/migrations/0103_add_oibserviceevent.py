@@ -35,7 +35,9 @@ class Migration(migrations.Migration):
                 #     Probably  adding  a  soft-delete  feature   to   the
                 #     referenced tables would be a good idea.
                 ('oib_service_delivery_type', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to='lynx.oibservicedeliverytype')),
-                ('oib_program', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to='lynx.oibprogram')),
+                # NOTE See "0109_add_oibserviceeventcontact.py" for
+                #      the diff between `organizer` and `OIBServiceEventContact.oib_program`
+                ('organizer', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to='lynx.oibprogram')),
                 ('date', models.DateField(blank=True, default=date.today)),
                 # ('start_time', models.TimeField(blank=True, default="00:00:00")),
                 # ('end_time', models.TimeField(blank=True, default="00:00:00")),

@@ -20,9 +20,44 @@ class Migration(migrations.Migration):
                 ('oib_service_event', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to='lynx.oibserviceevent')),
                 ('contact', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to='lynx.contact')),
                 ('oib_service_event_contact_role', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to='lynx.oibserviceeventcontactrole', default=0)),
-                # All  clients  (should...)  exclusively   belong   to
-                # **one** SIP program, so one SERVICE EVENT  can  only
-                # be delivered under one SIP program per client.
+                # NOTE `OIBServiceEvent.organizer` vs `OIBServiceEventContact.oib_program`
+                #      ===================================================================
+                #      VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
+                #      A client should only belong to one (1)  OIB  program
+                #      (SIP, ILP, CareersPlus, etc.).
+                #      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                #      Unfortunately, this  constraint  wasn't  taken  into
+                #      consideration when it was implemented; see `Contact`
+                #      model with a boolean field for  each  SFTB  program.
+                #      Not only that, but it also cannot be determined when
+                #      a client aged  into  another  program.  (Unless  one
+                #      queries the "historical" tables, but  those  records
+                #      are patchy too as they weren't set up  in  the  very
+                #      beginning.)
+                #      
+                #      Re-implementing the `Contact` table and the logic to
+                #      enforce the  constraint  above  is  not  an  option,
+                #      because   it   would   require   an   almost    full
+                #      re-implementation of LYNX. Instead, I chose to  only
+                #      make the new SIP department code to be aware of this
+                #      constraint. Not ideal, but at  least  the  necessary
+                #      changes won't affect legacy code.
+                #      
+                #      With that out of the way:
+                #      
+                #        + `OIBServiceEvent.organizer`
+                #          This can be used  to  indicate  which  program's
+                #          service event it is. (It will probably be a  SIP
+                #          program mostly. "SIP" here referst  to  the  OIB
+                #          program, and not the SFTB department!)
+                #      
+                #        + `OIBServiceEventContact.oib_program`
+                #          This serves the purpose to "lock"  what  program
+                #          the contact was a  client  of  at  the  time  of
+                #          attending the event. (There is still  the  issue
+                #          of deciding the right program is  multiple  ones
+                #          are  flagged  as  active,   but   that   is   an
+                #          application-level concern at this point.)
                 ('oib_program', models.ForeignKey(default=0, on_delete=django.db.models.deletion.PROTECT, to='lynx.oibprogram')),
                 ('created', models.DateTimeField(auto_now_add=True)),
                 ('modified', models.DateTimeField(auto_now=True)),

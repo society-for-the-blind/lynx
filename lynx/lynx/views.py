@@ -2733,6 +2733,18 @@ def show_all_oib_service_events_per_client(request, contact_id):
                    }
                  )
 
+@login_required
+def show_oib_service_event(request, service_event_id):
+    service_event = \
+        lm.OIBServiceEvent.objects \
+        .select_related('oib_service_delivery_type') \
+        .get(id=service_event_id)
+    return render( request
+                 , 'lynx/show_oib_service_event.html'
+                 , { 'service_event': service_event
+                   }
+                 )
+
 # @login_required
 # def add_service_event(request):
 #     contact_qs = lfo.ContactRoleForm.base_fields['contact'].queryset

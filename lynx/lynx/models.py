@@ -823,7 +823,9 @@ class OIBServiceDeliveryType(models.Model):
 class OIBServiceEvent(models.Model):
     # NOTE This is the "plan" in the front-end.
     oib_service_delivery_type = models.ForeignKey(OIBServiceDeliveryType, on_delete=models.PROTECT)
-    oib_program = models.ForeignKey(OIBProgram, on_delete=models.PROTECT)
+    # NOTE See "0109_add_oibserviceeventcontact.py" for
+    #      the diff between `organizer` and `OIBServiceEventContact.oib_program`
+    organizer = models.ForeignKey(OIBProgram, on_delete=models.PROTECT)
     date = models.DateField(blank=True, default=date.today)
     # start_time = models.TimeField(blank=True, default="00:00:00")
     # end_time = models.TimeField(blank=True, default="00:00:00")
@@ -890,6 +892,8 @@ class OIBServiceEventContact(models.Model):
     oib_service_event = models.ForeignKey(OIBServiceEvent, on_delete=models.PROTECT)
     contact = models.ForeignKey(Contact, on_delete=models.PROTECT)
     oib_service_event_contact_role = models.ForeignKey(OIBServiceEventContactRole, on_delete=models.PROTECT, default=0)
+    # NOTE See "0109_add_oibserviceeventcontact.py" for
+    #      the diff between `OIBServiceEvent.organizer` and `oib_program`
     oib_program = models.ForeignKey(OIBProgram, on_delete=models.PROTECT, default=0)
     created = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)
