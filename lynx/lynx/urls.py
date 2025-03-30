@@ -164,6 +164,10 @@ urlpatterns = [
     #      views.add_oib_service_event,
     #      name='add_oib_service_event'
     #     ),
+    # path('client/<int:contact_id>/oib_service_events/new',
+    #      views.add_oib_service_event_for_single_client,
+    #      name='add_oib_service_event_for_single_client'
+    #     ),
     # path('oib_service_events/<int:oib_service_event_id>/edit',
     #      views.edit_oib_service_event,
     #      name='edit_oib_service_event'
