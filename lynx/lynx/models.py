@@ -820,25 +820,6 @@ class OIBServiceDeliveryType(models.Model):
     def __str__(self):
         return self.oib_service_delivery_type
 
-class OIBServiceEvent(models.Model):
-    # NOTE This is the "plan" in the front-end.
-    oib_service_delivery_type = models.ForeignKey(OIBServiceDeliveryType, on_delete=models.PROTECT)
-    # NOTE See "0109_add_oibserviceeventcontact.py" for
-    #      the diff between `organizer` and `OIBServiceEventContact.oib_program`
-    organizer = models.ForeignKey(OIBProgram, on_delete=models.PROTECT)
-    date = models.DateField(blank=True, default=date.today)
-    # start_time = models.TimeField(blank=True, default="00:00:00")
-    # end_time = models.TimeField(blank=True, default="00:00:00")
-    length = models.DurationField(blank=True, default="00:00:00")
-    note = models.TextField(blank=True, default="")
-    entered_by = models.ForeignKey(User, on_delete=models.PROTECT)
-    created = models.DateTimeField(auto_now_add=True)
-    modified = models.DateTimeField(auto_now=True)
-    history = HistoricalRecords()
-
-    def __str__(self):
-        return f"{self.date} {self.service_delivery_type} {self.start_time}"
-
 class OIBService(models.Model):
     oib_service = models.CharField(max_length=255)
     long_name = models.CharField(max_length=255)
@@ -849,12 +830,52 @@ class OIBService(models.Model):
     def __str__(self):
         return self.oib_service
 
+class OIBServiceEvent(models.Model):
+    # NOTE This is the "plan" in the front-end.
+    oib_service_delivery_type = models.ForeignKey(OIBServiceDeliveryType, on_delete=models.PROTECT)
+    # NOTE-1 See "0109_add_oibserviceeventcontact.py" for
+    #        the diff between `organizer` and `OIBServiceEventContact.oib_program`
+    # NOTE-2 The default OIB program is "SIP". 
+    #      (This  is  may  not  even  be  necessary  and  I  am
+    #      overthinking  it,   because   the   SIP   department
+    #      organizes the events for all  OIB  programs,  so  it
+    #      would  be  more   fitting   to   have   this   named
+    #      `organizing_department`. In which case,  this  field
+    #      is  just  plain  wrong.  Case  in  point,  I   think
+    #      CareersPlus is its own department, for example.)
+    # organizer = models.ForeignKey(OIBProgram, on_delete=models.PROTECT, default=0)
+    date = models.DateField(blank=True, default=date.today)
+    # start_time = models.TimeField(blank=True, default="00:00:00")
+    # end_time = models.TimeField(blank=True, default="00:00:00")
+    length = models.DurationField(blank=True, default="00:00:00")
+    note = models.TextField(blank=True, default="")
+    entered_by = models.ForeignKey(User, on_delete=models.PROTECT, related_name="entered_service_events")
+    created = models.DateTimeField(auto_now_add=True)
+    modified = models.DateTimeField(auto_now=True)
+    history = HistoricalRecords()
+
+    # many-to-many relationships
+    contacts = models.ManyToManyField(Contact,    through='OIBServiceEventContact',    through_fields=('oib_service_event', 'contact'))
+    instructors = models.ManyToManyField(User,      through='OIBServiceEventInstructor', through_fields=('oib_service_event', 'instructor'))
+    services = models.ManyToManyField(OIBService, through='OIBServiceEventOIBService', through_fields=('oib_service_event', 'oib_service'))
+
+    def __str__(self):
+        return f"{self.date} {self.service_delivery_type} {self.start_time}"
+
 class OIBServiceEventOIBService(models.Model):
     oib_service_event = models.ForeignKey(OIBServiceEvent, on_delete=models.PROTECT)
     oib_service = models.ForeignKey(OIBService, on_delete=models.PROTECT)
     created = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)
     history = HistoricalRecords()
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["oib_service_event", "oib_service"],
+                name="unique_oib_service_event_oib_service"
+            )
+        ]
 
     def __str__(self):
         return f"{self.service_event} {self.oib_service}"
@@ -878,12 +899,20 @@ class OIBServiceEventInstructorRole(models.Model):
         return self.oib_service_event_instructor_role
 
 class OIBServiceEventInstructor(models.Model):
-    service_event = models.ForeignKey(OIBServiceEvent, on_delete=models.PROTECT)
+    oib_service_event = models.ForeignKey(OIBServiceEvent, on_delete=models.PROTECT)
     instructor = models.ForeignKey(User, on_delete=models.PROTECT)
     oib_service_event_instructor_role = models.ForeignKey(OIBServiceEventInstructorRole, on_delete=models.PROTECT, default=0)
     created = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)
     history = HistoricalRecords()
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["oib_service_event", "instructor"],
+                name="unique_oib_service_event_instructor"
+            )
+        ]
 
     def __str__(self):
         return f"{self.service_event} {self.user} {self.role}"
@@ -898,6 +927,14 @@ class OIBServiceEventContact(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)
     history = HistoricalRecords()
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["oib_service_event", "contact"],
+                name="unique_oib_service_event_contact"
+            )
+        ]
 
     def __str__(self):
         return f"{self.oib_service_event} {self.contact} {self.oib_service_event_contact_role}"
@@ -917,6 +954,9 @@ class OibOutcomeChoice(models.Model):
     modified = models.DateTimeField(auto_now=True)
     history = HistoricalRecords()
 
+    # many-to-many relationships
+    outcome_types = models.ManyToManyField(OibOutcomeType, through='OibOutcomeTypeChoice', through_fields=('oib_outcome_choice', 'oib_outcome_type'))
+
     def __str__(self):
         return self.oib_outcome_choice
 
@@ -926,6 +966,14 @@ class OibOutcomeTypeChoice(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)
     history = HistoricalRecords()
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["oib_outcome_type", "oib_outcome_choice"],
+                name="unique_oib_outcome_type_choice"
+            )
+        ]
 
     def __str__(self):
         return f"{self.outcome_type} {self.outcome_choice}"

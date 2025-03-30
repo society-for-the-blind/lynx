@@ -2746,7 +2746,7 @@ def show_oib_service_event(request, service_event_id):
                  )
 
 # @login_required
-# def add_service_event(request):
+# def add_oib_service_event(request):
 #     contact_qs = lfo.ContactRoleForm.base_fields['contact'].queryset
 #     user_qs = lfo.ContactRoleForm.base_fields['user'].queryset
 #     contact_and_user_qs = lfo.ContactRoleForm.base_fields['contact_and_user'].queryset
