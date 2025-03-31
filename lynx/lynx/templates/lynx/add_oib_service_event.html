@@ -1,0 +1,10 @@
+{% extends 'lynx/base.html' %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<form action="/your-name/" method="post">
+  {% csrf_token %}
+  {{ form }}
+  <input type="submit" value="Submit">
+</form>
+{% endblock %}

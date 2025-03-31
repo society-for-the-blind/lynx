@@ -2745,8 +2745,17 @@ def show_oib_service_event(request, service_event_id):
                    }
                  )
 
-# @login_required
-# def add_oib_service_event(request):
+@login_required
+def add_oib_service_event(request):
+    if request.method == 'POST':
+        form = lfo.OIBServiceEventForm(request.POST)
+        if form.is_valid():
+            service_event = form.save()
+            return redirect('placeholder')
+    else:
+        form = lfo.OIBServiceEventForm()
+    return render(request, "lynx/add_oib_service_event.html", {'form': form})
+
 #     contact_qs = lfo.ContactRoleForm.base_fields['contact'].queryset
 #     user_qs = lfo.ContactRoleForm.base_fields['user'].queryset
 #     contact_and_user_qs = lfo.ContactRoleForm.base_fields['contact_and_user'].queryset
