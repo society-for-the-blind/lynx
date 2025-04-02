@@ -1,0 +1,283 @@
+acme==3.1.0
+adal @ file:///build/adal-1.2.7/dist/adal-1.2.7-py2.py3-none-any.whl
+aiodns @ file:///build/source/dist/aiodns-3.0.0-py3-none-any.whl
+aiohttp @ file:///build/aiohttp-3.8.3/dist/aiohttp-3.8.3-cp310-cp310-linux_x86_64.whl
+aiosignal @ file:///build/source/dist/aiosignal-1.2.0-py3-none-any.whl
+antlr4-python3-runtime @ file:///build/source/runtime/Python3/dist/antlr4_python3_runtime-4.9.3-py3-none-any.whl
+applicationinsights @ file:///build/applicationinsights-0.11.10/dist/applicationinsights-0.11.10-py2.py3-none-any.whl
+argcomplete @ file:///build/argcomplete-1.8.0/dist/argcomplete-1.8.0-py2.py3-none-any.whl
+asgiref==3.8.1
+asn1crypto==1.5.1
+async-generator @ file:///build/async_generator-1.10/dist/async_generator-1.10-py3-none-any.whl
+async-timeout @ file:///build/async-timeout-4.0.2/dist/async_timeout-4.0.2-py3-none-any.whl
+attrs @ file:///build/attrs-22.1.0/dist/attrs-22.1.0-py2.py3-none-any.whl
+Automat==24.8.1
+azure-appconfiguration @ file:///build/azure-appconfiguration-1.1.1/dist/azure_appconfiguration-1.1.1-py2.py3-none-any.whl
+azure-batch @ file:///build/azure-batch-12.0.0/dist/azure_batch-12.0.0-py2.py3-none-any.whl
+azure-cli @ file:///build/azure-cli-2.37.0-src/src/azure-cli/dist/azure_cli-2.37.0-py3-none-any.whl
+azure-cli-core @ file:///build/azure-cli-2.37.0-src/src/azure-cli-core/dist/azure_cli_core-2.37.0-py3-none-any.whl
+azure-cli-telemetry @ file:///build/azure-cli-2.37.0-src/src/azure-cli-telemetry/dist/azure_cli_telemetry-1.0.6-py3-none-any.whl
+azure-common @ file:///build/azure-common-1.1.28/dist/azure_common-1.1.28-py2.py3-none-any.whl
+azure-core @ file:///build/azure-core-1.25.1/dist/azure_core-1.25.1-py3-none-any.whl
+azure-cosmos @ file:///build/azure-cosmos-3.2.0/dist/azure_cosmos-3.2.0-py2.py3-none-any.whl
+azure-data-tables @ file:///build/azure-data-tables-12.4.0/dist/azure_data_tables-12.4.0-py3-none-any.whl
+azure-datalake-store @ file:///build/azure-datalake-store-0.0.52/dist/azure_datalake_store-0.0.52-py2.py3-none-any.whl
+azure-functions-devops-build @ file:///build/source/dist/azure_functions_devops_build-0.0.22-py3-none-any.whl
+azure-graphrbac @ file:///build/azure-graphrbac-0.60.0/dist/azure_graphrbac-0.60.0-py2.py3-none-any.whl
+azure-identity @ file:///build/azure-identity-1.12.0/dist/azure_identity-1.12.0-py3-none-any.whl
+azure-keyvault @ file:///build/azure-keyvault-1.1.0/dist/azure_keyvault-1.1.0-py2.py3-none-any.whl
+azure-keyvault-administration @ file:///build/azure-keyvault-administration-4.0.0b3/dist/azure_keyvault_administration-4.0.0b3-py2.py3-none-any.whl
+azure-keyvault-keys @ file:///build/azure-keyvault-keys-4.5.1/dist/azure_keyvault_keys-4.5.1-py3-none-any.whl
+azure-loganalytics @ file:///build/azure-loganalytics-0.1.1/dist/azure_loganalytics-0.1.1-py2.py3-none-any.whl
+azure-mgmt-advisor @ file:///build/azure-mgmt-advisor-9.0.0/dist/azure_mgmt_advisor-9.0.0-py2.py3-none-any.whl
+azure-mgmt-apimanagement @ file:///build/azure-mgmt-apimanagement-3.0.0/dist/azure_mgmt_apimanagement-3.0.0-py3-none-any.whl
+azure-mgmt-appconfiguration @ file:///build/azure-mgmt-appconfiguration-2.1.0b2/dist/azure_mgmt_appconfiguration-2.1.0b2-py3-none-any.whl
+azure-mgmt-applicationinsights @ file:///build/azure-mgmt-applicationinsights-1.0.0/dist/azure_mgmt_applicationinsights-1.0.0-py2.py3-none-any.whl
+azure-mgmt-authorization @ file:///build/azure-mgmt-authorization-0.61.0/dist/azure_mgmt_authorization-0.61.0-py2.py3-none-any.whl
+azure-mgmt-batch @ file:///build/azure-mgmt-batch-16.1.0/dist/azure_mgmt_batch-16.1.0-py3-none-any.whl
+azure-mgmt-batchai @ file:///build/azure-mgmt-batchai-7.0.0b1/dist/azure_mgmt_batchai-7.0.0b1-py2.py3-none-any.whl
+azure-mgmt-billing @ file:///build/azure-mgmt-billing-6.0.0/dist/azure_mgmt_billing-6.0.0-py2.py3-none-any.whl
+azure-mgmt-botservice @ file:///build/azure-mgmt-botservice-0.3.0/dist/azure_mgmt_botservice-0.3.0-py2.py3-none-any.whl
+azure-mgmt-cdn @ file:///build/azure-mgmt-cdn-12.0.0/dist/azure_mgmt_cdn-12.0.0-py3-none-any.whl
+azure-mgmt-cognitiveservices @ file:///build/azure-mgmt-cognitiveservices-13.1.0/dist/azure_mgmt_cognitiveservices-13.1.0-py3-none-any.whl
+azure-mgmt-common @ file:///build/azure-mgmt-common-0.20.0/dist/azure_mgmt_common-0.20.0-py2.py3-none-any.whl
+azure-mgmt-compute @ file:///build/azure-mgmt-compute-27.0.0/dist/azure_mgmt_compute-27.0.0-py3-none-any.whl
+azure-mgmt-consumption @ file:///build/azure-mgmt-consumption-2.0.0/dist/azure_mgmt_consumption-2.0.0-py2.py3-none-any.whl
+azure-mgmt-containerinstance @ file:///build/azure-mgmt-containerinstance-9.1.0/dist/azure_mgmt_containerinstance-9.1.0-py2.py3-none-any.whl
+azure-mgmt-containerregistry @ file:///build/azure-mgmt-containerregistry-8.2.0/dist/azure_mgmt_containerregistry-8.2.0-py2.py3-none-any.whl
+azure-mgmt-containerservice @ file:///build/azure-mgmt-containerservice-19.1.0/dist/azure_mgmt_containerservice-19.1.0-py3-none-any.whl
+azure-mgmt-core @ file:///build/azure-mgmt-core-1.3.2/dist/azure_mgmt_core-1.3.2-py3-none-any.whl
+azure-mgmt-cosmosdb @ file:///build/azure-mgmt-cosmosdb-7.0.0b2/dist/azure_mgmt_cosmosdb-7.0.0b2-py2.py3-none-any.whl
+azure-mgmt-databoxedge @ file:///build/azure-mgmt-databoxedge-1.0.0/dist/azure_mgmt_databoxedge-1.0.0-py2.py3-none-any.whl
+azure-mgmt-datalake-analytics @ file:///build/azure-mgmt-datalake-analytics-0.2.1/dist/azure_mgmt_datalake_analytics-0.2.1-py2.py3-none-any.whl
+azure-mgmt-datalake-nspkg @ file:///build/azure-mgmt-datalake-nspkg-3.0.1/dist/azure_mgmt_datalake_nspkg-3.0.1-py3-none-any.whl
+azure-mgmt-datalake-store @ file:///build/azure-mgmt-datalake-store-0.5.0/dist/azure_mgmt_datalake_store-0.5.0-py2.py3-none-any.whl
+azure-mgmt-datamigration @ file:///build/azure-mgmt-datamigration-10.0.0/dist/azure_mgmt_datamigration-10.0.0-py2.py3-none-any.whl
+azure-mgmt-deploymentmanager @ file:///build/azure-mgmt-deploymentmanager-0.2.0/dist/azure_mgmt_deploymentmanager-0.2.0-py2.py3-none-any.whl
+azure-mgmt-devtestlabs @ file:///build/azure-mgmt-devtestlabs-4.0.0/dist/azure_mgmt_devtestlabs-4.0.0-py2.py3-none-any.whl
+azure-mgmt-dns @ file:///build/azure-mgmt-dns-8.0.0/dist/azure_mgmt_dns-8.0.0-py2.py3-none-any.whl
+azure-mgmt-eventgrid @ file:///build/azure-mgmt-eventgrid-9.0.0/dist/azure_mgmt_eventgrid-9.0.0-py2.py3-none-any.whl
+azure-mgmt-eventhub @ file:///build/azure-mgmt-eventhub-10.0.0/dist/azure_mgmt_eventhub-10.0.0-py2.py3-none-any.whl
+azure-mgmt-extendedlocation @ file:///build/azure-mgmt-extendedlocation-1.0.0b2/dist/azure_mgmt_extendedlocation-1.0.0b2-py2.py3-none-any.whl
+azure-mgmt-hdinsight @ file:///build/azure-mgmt-hdinsight-9.0.0/dist/azure_mgmt_hdinsight-9.0.0-py2.py3-none-any.whl
+azure-mgmt-imagebuilder @ file:///build/azure-mgmt-imagebuilder-1.0.0/dist/azure_mgmt_imagebuilder-1.0.0-py2.py3-none-any.whl
+azure-mgmt-iotcentral @ file:///build/azure-mgmt-iotcentral-10.0.0b1/dist/azure_mgmt_iotcentral-10.0.0b1-py3-none-any.whl
+azure-mgmt-iothub @ file:///build/azure-mgmt-iothub-2.2.0/dist/azure_mgmt_iothub-2.2.0-py3-none-any.whl
+azure-mgmt-iothubprovisioningservices @ file:///build/azure-mgmt-iothubprovisioningservices-1.1.0/dist/azure_mgmt_iothubprovisioningservices-1.1.0-py3-none-any.whl
+azure-mgmt-keyvault @ file:///build/azure-mgmt-keyvault-9.3.0/dist/azure_mgmt_keyvault-9.3.0-py2.py3-none-any.whl
+azure-mgmt-kusto @ file:///build/azure-mgmt-kusto-0.3.0/dist/azure_mgmt_kusto-0.3.0-py2.py3-none-any.whl
+azure-mgmt-loganalytics @ file:///build/azure-mgmt-loganalytics-13.0.0b4/dist/azure_mgmt_loganalytics-13.0.0b4-py3-none-any.whl
+azure-mgmt-managedservices @ file:///build/azure-mgmt-managedservices-1.0.0/dist/azure_mgmt_managedservices-1.0.0-py2.py3-none-any.whl
+azure-mgmt-managementgroups @ file:///build/azure-mgmt-managementgroups-1.0.0/dist/azure_mgmt_managementgroups-1.0.0-py2.py3-none-any.whl
+azure-mgmt-maps @ file:///build/azure-mgmt-maps-2.0.0/dist/azure_mgmt_maps-2.0.0-py2.py3-none-any.whl
+azure-mgmt-marketplaceordering @ file:///build/azure-mgmt-marketplaceordering-1.1.0/dist/azure_mgmt_marketplaceordering-1.1.0-py2.py3-none-any.whl
+azure-mgmt-media @ file:///build/azure-mgmt-media-9.0.0/dist/azure_mgmt_media-9.0.0-py3-none-any.whl
+azure-mgmt-monitor @ file:///build/azure-mgmt-monitor-3.0.0/dist/azure_mgmt_monitor-3.0.0-py2.py3-none-any.whl
+azure-mgmt-msi @ file:///build/azure-mgmt-msi-6.0.1/dist/azure_mgmt_msi-6.0.1-py3-none-any.whl
+azure-mgmt-netapp @ file:///build/azure-mgmt-netapp-7.0.0/dist/azure_mgmt_netapp-7.0.0-py3-none-any.whl
+azure-mgmt-network @ file:///build/azure-mgmt-network-20.0.0/dist/azure_mgmt_network-20.0.0-py3-none-any.whl
+azure-mgmt-nspkg @ file:///build/azure-mgmt-nspkg-3.0.2/dist/azure_mgmt_nspkg-3.0.2-py3-none-any.whl
+azure-mgmt-policyinsights @ file:///build/azure-mgmt-policyinsights-1.1.0b2/dist/azure_mgmt_policyinsights-1.1.0b2-py2.py3-none-any.whl
+azure-mgmt-privatedns @ file:///build/azure-mgmt-privatedns-1.0.0/dist/azure_mgmt_privatedns-1.0.0-py2.py3-none-any.whl
+azure-mgmt-rdbms @ file:///build/azure-mgmt-rdbms-10.0.0/dist/azure_mgmt_rdbms-10.0.0-py2.py3-none-any.whl
+azure-mgmt-recoveryservices @ file:///build/azure-mgmt-recoveryservices-2.0.0/dist/azure_mgmt_recoveryservices-2.0.0-py2.py3-none-any.whl
+azure-mgmt-recoveryservicesbackup @ file:///build/azure-mgmt-recoveryservicesbackup-5.0.0/dist/azure_mgmt_recoveryservicesbackup-5.0.0-py3-none-any.whl
+azure-mgmt-redhatopenshift @ file:///build/azure-mgmt-redhatopenshift-1.1.0/dist/azure_mgmt_redhatopenshift-1.1.0-py3-none-any.whl
+azure-mgmt-redis @ file:///build/azure-mgmt-redis-13.1.0/dist/azure_mgmt_redis-13.1.0-py2.py3-none-any.whl
+azure-mgmt-relay @ file:///build/azure-mgmt-relay-0.1.0/dist/azure_mgmt_relay-0.1.0-py2.py3-none-any.whl
+azure-mgmt-reservations @ file:///build/azure-mgmt-reservations-2.0.0/dist/azure_mgmt_reservations-2.0.0-py3-none-any.whl
+azure-mgmt-resource @ file:///build/azure-mgmt-resource-21.1.0b1/dist/azure_mgmt_resource-21.1.0b1-py3-none-any.whl
+azure-mgmt-search @ file:///build/azure-mgmt-search-8.0.0/dist/azure_mgmt_search-8.0.0-py2.py3-none-any.whl
+azure-mgmt-security @ file:///build/azure-mgmt-security-2.0.0b1/dist/azure_mgmt_security-2.0.0b1-py2.py3-none-any.whl
+azure-mgmt-servicebus @ file:///build/azure-mgmt-servicebus-7.1.0/dist/azure_mgmt_servicebus-7.1.0-py2.py3-none-any.whl
+azure-mgmt-servicefabric @ file:///build/azure-mgmt-servicefabric-1.0.0/dist/azure_mgmt_servicefabric-1.0.0-py2.py3-none-any.whl
+azure-mgmt-servicefabricmanagedclusters @ file:///build/azure-mgmt-servicefabricmanagedclusters-1.0.0/dist/azure_mgmt_servicefabricmanagedclusters-1.0.0-py2.py3-none-any.whl
+azure-mgmt-servicelinker @ file:///build/azure-mgmt-servicelinker-1.0.0/dist/azure_mgmt_servicelinker-1.0.0-py3-none-any.whl
+azure-mgmt-signalr @ file:///build/azure-mgmt-signalr-1.0.0b2/dist/azure_mgmt_signalr-1.0.0b2-py2.py3-none-any.whl
+azure-mgmt-sql @ file:///build/azure-mgmt-sql-4.0.0b1/dist/azure_mgmt_sql-4.0.0b1-py2.py3-none-any.whl
+azure-mgmt-sqlvirtualmachine @ file:///build/azure-mgmt-sqlvirtualmachine-1.0.0b2/dist/azure_mgmt_sqlvirtualmachine-1.0.0b2-py3-none-any.whl
+azure-mgmt-storage @ file:///build/azure-mgmt-storage-20.0.0/dist/azure_mgmt_storage-20.0.0-py3-none-any.whl
+azure-mgmt-synapse @ file:///build/azure-mgmt-synapse-2.1.0b2/dist/azure_mgmt_synapse-2.1.0b2-py2.py3-none-any.whl
+azure-mgmt-trafficmanager @ file:///build/azure-mgmt-trafficmanager-1.0.0/dist/azure_mgmt_trafficmanager-1.0.0-py3-none-any.whl
+azure-mgmt-web @ file:///build/azure-mgmt-web-6.1.0/dist/azure_mgmt_web-6.1.0-py3-none-any.whl
+azure-multiapi-storage @ file:///build/azure-multiapi-storage-0.9.0/dist/azure_multiapi_storage-0.9.0-py2.py3-none-any.whl
+azure-nspkg @ file:///build/azure-nspkg-3.0.2/dist/azure_nspkg-3.0.2-py3-none-any.whl
+azure-storage-blob @ file:///build/azure-storage-blob-1.5.0/dist/azure_storage_blob-1.5.0-py2.py3-none-any.whl
+azure-storage-common @ file:///build/azure-storage-common-1.4.2/dist/azure_storage_common-1.4.2-py2.py3-none-any.whl
+azure-synapse-accesscontrol @ file:///build/azure-synapse-accesscontrol-0.5.0/dist/azure_synapse_accesscontrol-0.5.0-py2.py3-none-any.whl
+azure-synapse-artifacts @ file:///build/azure-synapse-artifacts-0.12.0/dist/azure_synapse_artifacts-0.12.0-py3-none-any.whl
+azure-synapse-managedprivateendpoints @ file:///build/azure-synapse-managedprivateendpoints-0.3.0/dist/azure_synapse_managedprivateendpoints-0.3.0-py2.py3-none-any.whl
+azure-synapse-spark @ file:///build/azure-synapse-spark-0.2.0/dist/azure_synapse_spark-0.2.0-py2.py3-none-any.whl
+Babel @ file:///build/Babel-2.11.0/dist/Babel-2.11.0-py3-none-any.whl
+backports.tarfile==1.2.0
+bcrypt @ file:///build/bcrypt-4.0.0/dist/bcrypt-4.0.0-cp310-cp310-linux_x86_64.whl
+blinker @ file:///build/blinker-1.5/dist/blinker-1.5-py2.py3-none-any.whl
+Brotli @ file:///build/source/dist/Brotli-1.0.9-cp310-cp310-linux_x86_64.whl
+brotlicffi @ file:///build/source/dist/brotlicffi-1.0.9.2-cp310-abi3-linux_x86_64.whl
+cchardet @ file:///build/cchardet-2.1.7/dist/cchardet-2.1.7-cp310-cp310-linux_x86_64.whl
+certbot==3.1.0
+certbot-nginx==3.1.0
+certifi @ file:///build/source/dist/certifi-2022.12.7-py3-none-any.whl
+cffi @ file:///build/cffi-1.15.1/dist/cffi-1.15.1-cp310-cp310-linux_x86_64.whl
+chardet @ file:///build/chardet-5.0.0/dist/chardet-5.0.0-py3-none-any.whl
+charset-normalizer @ file:///build/source/dist/charset_normalizer-2.1.0-py3-none-any.whl
+click==8.1.8
+colorama @ file:///build/colorama-0.4.6/dist/colorama-0.4.6-py2.py3-none-any.whl
+ConfigArgParse==1.7
+configobj==5.0.9
+constantly==23.10.4
+cryptography @ file:///build/cryptography-38.0.1/dist/cryptography-38.0.1-cp310-cp310-linux_x86_64.whl
+curio @ file:///build/curio-1.5/dist/curio-1.5-py3-none-any.whl
+Deprecated @ file:///build/Deprecated-1.2.13/dist/Deprecated-1.2.13-py2.py3-none-any.whl
+dicttoxml @ file:///build/dicttoxml-1.7.4/dist/dicttoxml-1.7.4-py3-none-any.whl
+distlib==0.3.9
+distro @ file:///build/distro-1.7.0/dist/distro-1.7.0-py3-none-any.whl
+Django==5.1.7
+django-appconf==1.1.0
+django-audit-log==0.7.0
+django-crispy-forms==2.3
+django-crontab==0.7.1
+django-debug-toolbar==5.1.0
+django-filter==25.1
+django-mathfilters==1.0.0
+django-pgviews-redux==0.11.0
+django-reversion==5.1.0
+django-simple-history==3.8.0
+django-tables2==2.7.5
+docutils @ file:///build/docutils-0.19/dist/docutils-0.19-py3-none-any.whl
+et_xmlfile==2.0.0
+fabric @ file:///build/fabric-2.7.1/dist/fabric-2.7.1-py2.py3-none-any.whl
+fasteners==0.19
+fastjsonschema==2.21.1
+filelock==3.18.0
+frozenlist @ file:///build/source/dist/frozenlist-1.3.1-cp310-cp310-linux_x86_64.whl
+future==1.0.0
+gunicorn==23.0.0
+httplib2==0.22.0
+humanfriendly @ file:///build/humanfriendly-10.0/dist/humanfriendly-10.0-py2.py3-none-any.whl
+hyperlink==21.0.0
+idna @ file:///build/idna-3.4/dist/idna-3.4-py3-none-any.whl
+importlib-metadata @ file:///build/importlib_metadata-4.12.0/dist/importlib_metadata-4.12.0-py3-none-any.whl
+incremental==24.7.2
+invoke @ file:///build/invoke-1.7.3/dist/invoke-1.7.3-py3-none-any.whl
+isodate @ file:///build/isodate-0.6.1/dist/isodate-0.6.1-py2.py3-none-any.whl
+jaraco.classes==3.4.0
+jaraco.context==6.0.1
+jaraco.functools==4.1.0
+javaproperties @ file:///build/source/dist/javaproperties-0.8.1-py3-none-any.whl
+jdcal==1.4.1
+jeepney==0.9.0
+Jinja2 @ file:///build/Jinja2-3.1.2/dist/Jinja2-3.1.2-py3-none-any.whl
+jmespath @ file:///build/jmespath-1.0.1/dist/jmespath-1.0.1-py3-none-any.whl
+josepy==1.15.0
+jsmin @ file:///build/jsmin-3.0.1/dist/jsmin-3.0.1-py3-none-any.whl
+jsondiff @ file:///build/jsondiff-2.0.0/dist/jsondiff-2.0.0-py3-none-any.whl
+jsonpatch==1.33
+jsonpointer==3.0.0
+jsonschema==4.23.0
+jsonschema-specifications==2024.10.1
+jupyter_core==5.7.2
+keyring==25.6.0
+keyrings.alt==5.0.2
+knack @ file:///build/knack-0.9.0/dist/knack-0.9.0-py3-none-any.whl
+lynx @ file:///home/toraritte/dev/clones/lynx/lynx
+MarkupSafe @ file:///build/MarkupSafe-2.1.1/dist/MarkupSafe-2.1.1-cp310-cp310-linux_x86_64.whl
+mock @ file:///build/mock-4.0.3/dist/mock-4.0.3-py3-none-any.whl
+more-itertools==10.6.0
+msal @ file:///build/msal-1.18.0b1/dist/msal-1.18.0b1-py2.py3-none-any.whl
+msal-extensions @ file:///build/msal-extensions-1.0.0/dist/msal_extensions-1.0.0-py2.py3-none-any.whl
+msrest @ file:///build/source/dist/msrest-0.7.1-py3-none-any.whl
+msrestazure @ file:///build/source/dist/msrestazure-0.6.4-py2.py3-none-any.whl
+multidict @ file:///build/multidict-6.0.2/dist/multidict-6.0.2-cp310-cp310-linux_x86_64.whl
+nbformat==5.10.4
+ndg-httpsclient==0.5.1
+netifaces==0.11.0
+networkx==3.4.2
+oauthlib @ file:///build/source/dist/oauthlib-3.2.1-py3-none-any.whl
+openpyxl==3.1.5
+outcome @ file:///build/outcome-1.2.0/dist/outcome-1.2.0-py2.py3-none-any.whl
+packaging @ file:///build/packaging-21.3/dist/packaging-21.3-py3-none-any.whl
+pam==0.2.0
+paramiko @ file:///build/paramiko-2.11.0/dist/paramiko-2.11.0-py2.py3-none-any.whl
+parsedatetime==2.6
+pbr==6.1.1
+pexpect @ file:///build/pexpect-4.8.0/dist/pexpect-4.8.0-py2.py3-none-any.whl
+pkginfo @ file:///build/pkginfo-1.8.3/dist/pkginfo-1.8.3-py2.py3-none-any.whl
+platformdirs==4.3.7
+portalocker @ file:///build/portalocker-2.6.0/dist/portalocker-2.6.0-py2.py3-none-any.whl
+prettytable @ file:///build/prettytable-3.4.1/dist/prettytable-3.4.1-py3-none-any.whl
+psutil @ file:///build/psutil-5.9.3/dist/psutil-5.9.3-cp310-cp310-linux_x86_64.whl
+psycopg2-binary==2.9.10
+ptyprocess @ file:///build/ptyprocess-0.7.0/dist/ptyprocess-0.7.0-py3-none-any.whl
+pyasn1 @ file:///build/pyasn1-0.4.8/dist/pyasn1-0.4.8-py2.py3-none-any.whl
+pyasn1_modules==0.4.2
+pycairo==1.27.0
+pycares @ file:///build/pycares-4.2.2/dist/pycares-4.2.2-cp310-cp310-linux_x86_64.whl
+pycparser @ file:///build/pycparser-2.21/dist/pycparser-2.21-py2.py3-none-any.whl
+pycrypto==2.6.1
+pydocumentdb @ file:///build/pydocumentdb-2.3.5/dist/pydocumentdb-2.3.5-py3-none-any.whl
+pydot==3.0.4
+pydotplus==2.0.2
+PyGithub @ file:///build/source/dist/PyGithub-1.57-py3-none-any.whl
+Pygments @ file:///build/Pygments-2.13.0/dist/Pygments-2.13.0-py3-none-any.whl
+PyGObject==3.42.2
+PyICU==2.15
+PyJWT @ file:///build/PyJWT-2.5.0/dist/PyJWT-2.5.0-py3-none-any.whl
+PyNaCl @ file:///build/PyNaCl-1.5.0/dist/PyNaCl-1.5.0-cp310-cp310-linux_x86_64.whl
+pyOpenSSL @ file:///build/pyOpenSSL-22.1.0/dist/pyOpenSSL-22.1.0-py3-none-any.whl
+pyparsing @ file:///build/source/dist/pyparsing-3.0.9-py3-none-any.whl
+pyperclip @ file:///build/pyperclip-1.8.2/dist/pyperclip-1.8.2-py3-none-any.whl
+pyRFC3339==2.0.1
+pyrsistent==0.20.0
+pyserial==3.5
+PySocks @ file:///build/PySocks-1.7.1/dist/PySocks-1.7.1-py3-none-any.whl
+python-dateutil @ file:///build/python-dateutil-2.8.2/dist/python_dateutil-2.8.2-py2.py3-none-any.whl
+python-debian==1.0.1
+python-pam==2.0.2
+python-socks @ file:///build/source/dist/python_socks-2.0.3-py3-none-any.whl
+pytz @ file:///build/pytz-2022.2.1/dist/pytz-2022.2.1-py3-none-any.whl
+pyxdg==0.28
+PyYAML @ file:///build/source/dist/PyYAML-6.0-cp310-cp310-linux_x86_64.whl
+pyzmq==26.3.0
+redis @ file:///build/redis-4.3.6/dist/redis-4.3.6-py3-none-any.whl
+referencing==0.36.2
+requests @ file:///build/requests-2.28.1/dist/requests-2.28.1-py3-none-any.whl
+requests-oauthlib @ file:///build/requests-oauthlib-1.3.1/dist/requests_oauthlib-1.3.1-py2.py3-none-any.whl
+requests-toolbelt @ file:///build/requests-toolbelt-0.9.1/dist/requests_toolbelt-0.9.1-py2.py3-none-any.whl
+requests-unixsocket==0.4.1
+rpds-py==0.24.0
+scp @ file:///build/scp-0.14.4/dist/scp-0.14.4-py2.py3-none-any.whl
+SecretStorage==3.3.3
+semver @ file:///build/semver-2.13.0/dist/semver-2.13.0-py3-none-any.whl
+service-identity==24.2.0
+six @ file:///build/six-1.16.0/dist/six-1.16.0-py2.py3-none-any.whl
+sniffio @ file:///build/sniffio-1.3.0/dist/sniffio-1.3.0-py3-none-any.whl
+sortedcontainers @ file:///build/source/dist/sortedcontainers-2.4.0-py3-none-any.whl
+sos==0.25.1
+sqlparse==0.5.3
+ssh-import-id==5.11
+sshtunnel @ file:///build/sshtunnel-0.1.5/dist/sshtunnel-0.1.5-py2.py3-none-any.whl
+systemd-python==235
+tabulate @ file:///build/tabulate-0.8.10/dist/tabulate-0.8.10-py3-none-any.whl
+toml @ file:///build/toml-0.10.2/dist/toml-0.10.2-py2.py3-none-any.whl
+tomli==2.2.1
+tqdm==4.67.1
+traitlets==5.14.3
+trio @ file:///build/trio-0.21.0/dist/trio-0.21.0-py3-none-any.whl
+Twisted==24.11.0
+typing_extensions @ file:///build/typing_extensions-4.3.0/dist/typing_extensions-4.3.0-py3-none-any.whl
+urllib3 @ file:///build/urllib3-1.26.12/dist/urllib3-1.26.12-py2.py3-none-any.whl
+virtualenv==20.30.0
+vsts @ file:///build/vsts-0.1.25/dist/vsts-0.1.25-py3-none-any.whl
+vsts-cd-manager @ file:///build/vsts-cd-manager-1.0.2/dist/vsts_cd_manager-1.0.2-py3-none-any.whl
+wcwidth @ file:///build/wcwidth-0.2.5/dist/wcwidth-0.2.5-py2.py3-none-any.whl
+websocket-client @ file:///build/websocket-client-1.3.1/dist/websocket_client-1.3.1-py3-none-any.whl
+wrapt @ file:///build/source/dist/wrapt-1.13.3-cp310-cp310-linux_x86_64.whl
+xmltodict @ file:///build/xmltodict-0.13.0/dist/xmltodict-0.13.0-py2.py3-none-any.whl
+xxhash==3.5.0
+yarl @ file:///build/yarl-1.8.1/dist/yarl-1.8.1-cp310-cp310-linux_x86_64.whl
+zipp @ file:///build/zipp-3.10.0/dist/zipp-3.10.0-py3-none-any.whl
+zope.component==6.0
+zope.event==5.0
+zope.hookable==7.0
+zope.interface==7.2
