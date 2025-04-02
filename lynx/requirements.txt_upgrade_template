@@ -1,0 +1,130 @@
+# EXTERNAL DEPENDENCIES
+# ---------------------------------------------------------------
+# nix-shell -p systemd pkg-config cairo gobject-introspection icu
+# ---------------------------------------------------------------
+acme
+asgiref
+asn1crypto
+attrs
+Automat
+blinker
+certbot
+certbot-nginx
+certifi
+cffi
+chardet
+# Needed to downgrade because `aiohttp` has a <3.0.0 requirement.
+# TODO Which package needs `aiohttp` as a dependency? Anyway, it was easier to downgrade than risk errors with Django.
+# charset-normalizer
+charset-normalizer
+click
+# cloud-init
+colorama
+# command-not-found
+ConfigArgParse
+configobj
+constantly
+cryptography==39.0.0
+# distro-info
+distlib
+distro
+Django
+django-appconf
+django-audit-log
+django-crispy-forms
+django-crontab
+# django-debug-toolbar
+django-filter
+django-mathfilters
+django-pgviews-redux
+django-reversion
+django-simple-history
+django-tables2
+django_debug_toolbar
+et-xmlfile
+fasteners
+fastjsonschema
+filelock
+future
+gunicorn
+httplib2
+hyperlink
+idna
+importlib-metadata
+incremental
+jaraco.classes
+jdcal
+jeepney
+Jinja2
+josepy
+jsonpatch
+jsonpointer
+jsonschema
+jupyter_core
+keyring
+keyrings.alt
+# language-selector
+# lynx @ file:///home/lynx-dev/lynx_dev_data_disk/dev/clones/slate-2/lynx
+MarkupSafe
+mock
+more-itertools
+nbformat
+ndg-httpsclient
+netifaces
+networkx
+oauthlib
+openpyxl
+pam
+parsedatetime
+pbr
+pexpect
+platformdirs
+psutil
+psycopg2-binary
+ptyprocess
+pyasn1
+pyasn1-modules
+pycairo
+pycparser
+pycrypto
+pydot
+pydotplus
+Pygments
+PyGObject==3.42.2
+PyICU
+PyJWT
+pyOpenSSL
+pyparsing
+pyRFC3339
+pyrsistent
+pyserial
+python-debian
+python-pam
+pytz
+pyxdg
+PyYAML
+pyzmq
+requests
+requests-toolbelt
+requests-unixsocket
+SecretStorage
+service-identity
+six
+sos
+sqlparse
+ssh-import-id
+systemd-python
+tqdm
+traitlets
+Twisted
+typing_extensions
+# ufw
+urllib3
+virtualenv
+# WALinuxAgent
+xxhash
+zipp
+zope.component
+zope.event
+zope.hookable
+zope.interface
