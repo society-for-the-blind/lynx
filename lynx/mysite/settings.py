@@ -166,6 +166,16 @@ DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/lynx/'
 
+# The default is `True`, but it doesn't  work,  even
+# if set explicitly, so set it to `False`.
+#
+# HISTORICAL NOTE:
+#     There was no `settings.py` before I took over,  so
+#     no  history  on  this.  Megan's  solution  to  avoid
+#     checking secrets into version control was to  simply
+#     omit it. The first version of this file  was  pulled
+#     from the production server, and  can't  remember  if
+#     this setting was there or not.
 APPEND_SLASH = False
 
 EMAIL_HOST = 'blizzard.mxrouting.net'
