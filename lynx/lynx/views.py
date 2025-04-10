@@ -2734,11 +2734,11 @@ def show_all_oib_service_events_per_client(request, contact_id):
                  )
 
 @login_required
-def show_oib_service_event(request, service_event_id):
+def show_oib_service_event(request, oib_service_event_id):
     service_event = \
         lm.OIBServiceEvent.objects \
         .select_related('oib_service_delivery_type') \
-        .get(id=service_event_id)
+        .get(id=oib_service_event_id)
     return render( request
                  , 'lynx/show_oib_service_event.html'
                  , { 'service_event': service_event
@@ -2751,7 +2751,9 @@ def add_oib_service_event(request):
         form = lfo.OIBServiceEventForm(request.POST)
         if form.is_valid():
             service_event = form.save()
-            return redirect('placeholder')
+            new_id = service_event.id
+            return redirect('lynx:show_oib_service_event', oib_service_event_id=new_id)
+            # return HttpResponseRedirect(reverse('lynx:show_oib_service_event', args=(new_id,)))
     else:
         form = lfo.OIBServiceEventForm()
     return render(request, "lynx/add_oib_service_event.html", {'form': form})

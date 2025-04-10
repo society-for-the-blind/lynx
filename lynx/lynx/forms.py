@@ -597,9 +597,23 @@ DURATION_CHOICES = [
 
 
 class OIBServiceEventForm(forms.ModelForm):
+    contact_queryset = lm.Contact.objects.filter(active=1).order_by(ddmf.Lower('last_name'), ddmf.Lower('first_name'))
+
+    def __init__(self, *args, **kwargs):
+        super(OIBServiceEventForm, self).__init__(*args, **kwargs)
+        # Customize the queryset for the 'contacts' field
+        self.fields['contacts'].queryset = self.contact_queryset
+        # Change the label for the 'contacts' field
+        self.fields['contacts'].label = "Clients"
     class Meta:
+
         model = lm.OIBServiceEvent
         fields = ["date", "length", "oib_service_delivery_type", "services", "note", "entered_by", "contacts", "instructors"]
+
+#     user_queryset = dca.User.objects.all().order_by(ddmf.Lower('last_name'), ddmf.Lower('first_name'))
+
+#     contact = forms.ModelChoiceField(queryset=contact_queryset, label='Contact')
+    
 
 # class OIBServiceEventForm(forms.ModelForm):
 #     instructors = forms.ModelChoiceField(

@@ -4,7 +4,7 @@
 {% block title %}Notes for {{ client.first_name }} {{ client.last_name }}{% endblock %}
 
 {% block content %}
-<h2>{{ program_name }} Notes for {{ client.first_name }} {{ client.last_name }}</h2>
+<h2>xNotes for {{ client.first_name }} {{ client.last_name }}</h2>
   {% if not request.GET.print %}
     <!--
     <a class="btn btn-success" aria-label="Add New {{ program_name }} Note" href="/lynx/add-{{ program_path_part }}-note/{{ client.id }}/?next={{ request.path }}">Add New {{ program_name }} Note</a>
