@@ -2,7 +2,7 @@
 {% load crispy_forms_tags %}
 
 {% block content %}
-<form action="/your-name/" method="post">
+<form action="{% url 'lynx:add_oib_service_event' %}" method="post">
   {% csrf_token %}
   {{ form }}
   <input type="submit" value="Submit">

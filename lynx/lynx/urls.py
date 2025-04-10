@@ -152,15 +152,15 @@ urlpatterns = [
     ################
     # OIB RE-WRITE #
     ################
-    path('client/<int:contact_id>/oib_service_events',
+    path('client/<int:contact_id>/oib-service-events',
          views.show_all_oib_service_events_per_client,
          name='show_all_oib_service_events_per_client'
         ),
-    path('oib_service_events/<int:oib_service_event_id>',
+    path('oib-service-events/<int:oib_service_event_id>',
          views.show_oib_service_event,
          name='show_oib_service_event'
         ),
-    path('oib_service_events/new',
+    path('oib-service-events/new',
          views.add_oib_service_event,
          name='add_oib_service_event'
         ),
