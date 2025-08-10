@@ -6,6 +6,7 @@ from . import cron
 app_name = "lynx"
 
 urlpatterns = [
+    path("", views.index, name='index'),
     # At the moment, this one pull all active clients into a dropdown, so the path name should probably reflect that (e.g., `clients/active`). Why not just list them with the ability to search all contacts at the top?
     path('clients/', views.client_result_view, name='contact_list'),
     # TODO The URL path scheme should be consistent:
