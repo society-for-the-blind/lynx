@@ -24,7 +24,7 @@ class Migration(migrations.Migration):
                 #      ===================================================================
                 #      VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
                 #      A client should only belong to one (1)  OIB  program
-                #      (SIP, ILP, CareersPlus, etc.).
+                #      (SIP, YIB, CareersPlus, etc.).
                 #      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                 #      Unfortunately, this  constraint  wasn't  taken  into
                 #      consideration when it was implemented; see `Contact`
