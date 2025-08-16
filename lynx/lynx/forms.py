@@ -595,20 +595,79 @@ DURATION_CHOICES = [
     ("08:00:00", "8 hours"),
 ]
 
+class OIBServiceMultipleChoiceField(forms.ModelMultipleChoiceField):
+    def label_from_instance(self, obj):
+        return obj.long_name
 
-class OIBServiceEventForm(forms.ModelForm):
-    contact_queryset = lm.Contact.objects.filter(active=1).order_by(ddmf.Lower('last_name'), ddmf.Lower('first_name'))
+class OIBServiceEventForm(forms.Form):
+    program = forms.ModelChoiceField(
+        queryset=lm.OIBProgram.objects.all().order_by('oib_program'),
+        initial=2,
+        required=True,
+        label='Program'
+    )
+    note_date = forms.DateField(
+        widget=forms.SelectDateWidget(years=list(range(1900, 2100))),
+        initial=timezone.now(),
+        required=True,
+        label='Note Date',
+    )
+    event_length = forms.ChoiceField(
+        choices=lm.SIP_UNITS,
+        required=True,
+        label='Event Length',
+    )
+    services = OIBServiceMultipleChoiceField(
+        queryset=lm.OIBService.objects.all().order_by('long_name'),
+        widget=forms.CheckboxSelectMultiple,
+        required=True,
+        label="Services",
+    )
+    note = forms.CharField(
+        widget=forms.Textarea(
+            attrs={
+                'rows': 6,
+                'cols': 80,
+                'style': 'resize: both;'  # allow horizontal + vertical resize
+            }
+        ),
+        required=True,
+        label='Note',
+    )
 
-    def __init__(self, *args, **kwargs):
-        super(OIBServiceEventForm, self).__init__(*args, **kwargs)
-        # Customize the queryset for the 'contacts' field
-        self.fields['contacts'].queryset = self.contact_queryset
-        # Change the label for the 'contacts' field
-        self.fields['contacts'].label = "Clients"
-    class Meta:
+# TODO DRY up - there is an (almost) exact dup of this class in `filters.py`
+class UserModelChoiceField(forms.ModelChoiceField):
+    def label_from_instance(self, obj):
+        return f"{obj.last_name}, {obj.first_name}"
 
-        model = lm.OIBServiceEvent
-        fields = ["date", "length", "oib_service_delivery_type", "services", "note", "entered_by", "contacts", "instructors"]
+class OIBServiceEventUserRoleForm(forms.Form):
+    instructor = UserModelChoiceField(
+        queryset=lm.User.objects.filter(is_active=True).order_by('last_name'),
+        label='Instructor',
+        empty_label="Select an instructor",
+        required=True,
+    )
+    role = forms.ModelChoiceField(
+        queryset=lm.OIBServiceEventInstructorRole.objects.all().order_by('oib_service_event_instructor_role'),
+        label='Role',
+        empty_label="Select a role",
+        required=True,
+    )
+
+# TODO DRY up, again - I'm pretty sure this has been duplicated elsewhere
+#      (I think in the Clients link there is a similar dropdown that uses the
+#       same parameters.)
+class ContactModelChoiceField(forms.ModelChoiceField):
+    def label_from_instance(self, obj):
+        return f"{obj.last_name}, {obj.first_name}"
+
+class OIBServiceEventContactForm(forms.Form):
+    client = ContactModelChoiceField(
+        queryset=lm.Contact.objects.filter(active=True).order_by('last_name'),
+        label='Client',
+        empty_label="Select a client",
+        required=True,
+    )
 
 #     user_queryset = dca.User.objects.all().order_by(ddmf.Lower('last_name'), ddmf.Lower('first_name'))
 

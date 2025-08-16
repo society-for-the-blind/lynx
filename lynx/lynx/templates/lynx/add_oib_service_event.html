@@ -1,10 +1,70 @@
 {% extends 'lynx/base.html' %}
 {% load crispy_forms_tags %}
 
+{% block javascript %}
+<script>
+function addFormSetInstance(prefix) {
+    const totalForms = document.getElementById('id_' + prefix + '-TOTAL_FORMS');
+    const formIdx = totalForms.value;
+    const newFormHtml = document.getElementById(prefix + '_form').innerHTML.replace(/__prefix__/g, formIdx);
+    const wrapper = document.createElement('div');
+    wrapper.innerHTML = newFormHtml;
+    document.getElementById(prefix + '_formset').appendChild(wrapper);
+    totalForms.value = parseInt(formIdx) + 1;
+}
+</script>
+{% endblock %}
+
+{% block style %}
+<style>
+  legend { all: unset; font-size: inherit; color: inherit; }
+</style>
+{% endblock %}
+
+{% block title %}Add new note{% endblock %}
+
 {% block content %}
+<h1>Add new note</h1>
 <form action="{% url 'lynx:add_oib_service_event' %}" method="post">
   {% csrf_token %}
   {{ form }}
+
+  <h2>Clients</h2>
+  {{ formsets.client_formset.management_form }}
+  <div>
+    <div id="{{ formsets.client_formset.prefix }}_formset">
+      {% for f in formsets.client_formset %}
+        <div class="row contact-role-row">
+          <div class="col-6">{{ f.client|as_crispy_field }}</div>
+        </div>
+      {% endfor %}
+    </div>
+    <div id="{{ formsets.client_formset.prefix }}_form" style="display:none;">
+      <div class="row contact-role-row">
+        <div class="col-6">{{ formsets.client_formset.empty_form.client|as_crispy_field }}</div>
+      </div>
+    </div>
+    <button type="button" onclick="addFormSetInstance('{{ formsets.client_formset.prefix }}')">Add another client</button>
+  </div>
+  <h2>Instructors</h2>
+  {{ formsets.user_role_formset.management_form }}
+  <div>
+    <div id="{{ formsets.user_role_formset.prefix }}_formset">
+      {% for f in formsets.user_role_formset %}
+        <div class="row contact-role-row">
+          <div class="col-6">{{ f.instructor|as_crispy_field }}</div>
+          <div class="col-6">{{ f.role|as_crispy_field }}</div>
+        </div>
+      {% endfor %}
+    </div>
+    <div id="{{ formsets.user_role_formset.prefix }}_form" style="display:none;">
+      <div class="row contact-role-row">
+        <div class="col-6">{{ formsets.user_role_formset.empty_form.instructor|as_crispy_field }}</div>
+        <div class="col-6">{{ formsets.user_role_formset.empty_form.role|as_crispy_field }}</div>
+      </div>
+    </div>
+    <button type="button" onclick="addFormSetInstance('{{ formsets.user_role_formset.prefix }}')">Add another instructor/role</button>
+  </div>
   <input type="submit" value="Submit">
 </form>
 {% endblock %}

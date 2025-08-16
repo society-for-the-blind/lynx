@@ -16,7 +16,6 @@ from django.db        import connection
 from django.db        import models    as ddm
 from django.db.models import functions as ddmf
 
-from django.forms.models  import model_to_dict
 from django.http          import HttpResponse         \
                                , HttpResponseRedirect \
                                , Http404              \
@@ -33,7 +32,7 @@ from django.views.generic import DetailView   \
 import csv, logging, os, re, time
 
 # lm  = lynx model
-# lfo = lynx form
+# lfo = lynx forms
 # lfi = lynx filter
 from . import models  as lm  \
             , forms   as lfo \
@@ -2747,16 +2746,44 @@ def show_oib_service_event(request, oib_service_event_id):
 
 @login_required
 def add_oib_service_event(request):
+    OIBServiceEventUserRoleFormSet = forms.formset_factory(lfo.OIBServiceEventUserRoleForm, extra=1, can_delete=True)
+    user_role_form_prefix = 'user_role'
+    OIBServiceEventContactFormSet = forms.formset_factory(lfo.OIBServiceEventContactForm, extra=1, can_delete=True)
+    client_form_prefix = 'client'
+
     if request.method == 'POST':
         form = lfo.OIBServiceEventForm(request.POST)
-        if form.is_valid():
+        user_role_formset = OIBServiceEventUserRoleFormSet(request.POST, prefix=user_role_form_prefix)
+        client_formset = OIBServiceEventContactFormSet(request.POST, prefix=client_form_prefix)
+
+        if form.is_valid() and user_role_formset.is_valid():
+            # TODO: create and save your OIBServiceEvent instance from form.cleaned_data
+            # then loop formset.cleaned_data and create related contact-role rows.
+            # Example (adapt to your models):
+            # service_event = lm.OIBServiceEvent.objects.create(...)
+            # for row in formset.cleaned_data:
+            #     if row and not row.get('DELETE', False):
+            #         lm.OIBServiceEventContact.objects.create(
+            #             service_event=service_event,
+            #             contact=row['contact'],
+            #             role=row['role'],
+            #         )
             service_event = form.save()
-            new_id = service_event.id
-            return redirect('lynx:show_oib_service_event', oib_service_event_id=new_id)
+            return redirect('lynx:show_oib_service_event', oib_service_event_id=service_event.id)
             # return HttpResponseRedirect(reverse('lynx:show_oib_service_event', args=(new_id,)))
     else:
         form = lfo.OIBServiceEventForm()
-    return render(request, "lynx/add_oib_service_event.html", {'form': form})
+        user_role_formset = OIBServiceEventUserRoleFormSet(prefix=user_role_form_prefix)
+        client_formset = OIBServiceEventContactFormSet(prefix=client_form_prefix)
+
+        context = {
+            'form': form,
+            'formsets': { 'user_role_formset': user_role_formset,
+                          'client_formset':    client_formset,
+                        },
+        }
+
+        return render(request, "lynx/add_oib_service_event.html", context)
 
 #     contact_qs = lfo.ContactRoleForm.base_fields['contact'].queryset
 #     user_qs = lfo.ContactRoleForm.base_fields['user'].queryset
