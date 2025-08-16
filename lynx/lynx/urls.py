@@ -165,6 +165,7 @@ urlpatterns = [
          views.add_oib_service_event,
          name='add_oib_service_event'
         ),
+    # QUESTION Does this one even make sense?
     # path('client/<int:contact_id>/oib_service_events/new',
     #      views.add_oib_service_event_for_single_client,
     #      name='add_oib_service_event_for_single_client'

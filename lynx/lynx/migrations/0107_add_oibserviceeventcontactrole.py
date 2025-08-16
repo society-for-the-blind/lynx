@@ -6,7 +6,7 @@ from django.db import migrations, models
 def add_initial_roles(apps, schema_editor):
     OIBServiceEventContactRole = apps.get_model('lynx', 'OIBServiceEventContactRole')
     OIBServiceEventContactRole.objects.bulk_create([
-        OIBServiceEventContactRole(id=0, oib_service_event_contact_role='participating_client'),
+        OIBServiceEventContactRole(id=0, oib_service_event_contact_role='participating client'),
         OIBServiceEventContactRole(id=1, oib_service_event_contact_role='presenter'),
         OIBServiceEventContactRole(id=2, oib_service_event_contact_role='guest'),
         OIBServiceEventContactRole(id=3, oib_service_event_contact_role='caregiver'),

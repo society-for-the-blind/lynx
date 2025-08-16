@@ -136,6 +136,10 @@ def get_sentinel_user():
 
 
 # Contact information. For Clients, Employees and Volunteers.
+# NOTE/TODO Both this model and the UI implementation are a mess.
+#       ---------------------------------------------------------------
+# For example, a generic Contact can't even be added because there is only
+# "Add New Client" under the Clients link which is an Intake form...
 class Contact(models.Model):
     first_name = models.CharField(max_length=150)
     middle_name = models.CharField(max_length=150, blank=True, null=True)
@@ -880,6 +884,14 @@ class OIBServiceEventOIBService(models.Model):
     def __str__(self):
         return f"{self.service_event} {self.oib_service}"
 
+# QUESTION Does this even make sense?
+#          ------------------------------------------------------------
+# Presenter, guest, family member, caregiver, etc. are valid roles, but
+# in order to use these, the participants to whom these roles apply must
+# be added as a Contact beforehand... So until the Contact/Intake model
+# is fixed, there is no point in adding other roles.
+#
+# The Contact model is a mess too, see NOTE/TODO there.
 class OIBServiceEventContactRole(models.Model):
     oib_service_event_contact_role = models.CharField(max_length=255)
     created = models.DateTimeField(auto_now_add=True)
@@ -921,9 +933,6 @@ class OIBServiceEventContact(models.Model):
     oib_service_event = models.ForeignKey(OIBServiceEvent, on_delete=models.PROTECT)
     contact = models.ForeignKey(Contact, on_delete=models.PROTECT)
     oib_service_event_contact_role = models.ForeignKey(OIBServiceEventContactRole, on_delete=models.PROTECT, default=0)
-    # NOTE See "0109_add_oibserviceeventcontact.py" for
-    #      the diff between `OIBServiceEvent.organizer` and `oib_program`
-    oib_program = models.ForeignKey(OIBProgram, on_delete=models.PROTECT, default=0)
     created = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)
     history = HistoricalRecords()
@@ -938,6 +947,29 @@ class OIBServiceEventContact(models.Model):
 
     def __str__(self):
         return f"{self.oib_service_event} {self.contact} {self.oib_service_event_contact_role}"
+
+# NOTE See "0109_add_oibserviceeventcontact.py" for
+#      the diff between `OIBServiceEvent.organizer` and `oib_program`
+# 2025_08_15_1854
+# The NOTE above does not make much sense (for one, there is no `organizer` field in OIBServiceEvent),
+# but the long-winded comment there does hit on important points, so leaving it here for now.
+class OIBServiceEventOIBProgram(models.Model):
+    oib_service_event = models.ForeignKey(OIBServiceEvent, on_delete=models.PROTECT)
+    oib_program = models.ForeignKey(OIBProgram, on_delete=models.PROTECT)
+    created = models.DateTimeField(auto_now_add=True)
+    modified = models.DateTimeField(auto_now=True)
+    history = HistoricalRecords()
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["oib_service_event", "oib_program"],
+                name="unique_oib_service_event_oib_program"
+            )
+        ]
+
+    def __str__(self):
+        return f"{self.oib_service_event} {self.oib_program}"
 
 class OibOutcomeType(models.Model):
     oib_outcome_type = models.CharField(max_length=255)
