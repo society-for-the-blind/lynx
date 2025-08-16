@@ -498,6 +498,7 @@ class ProgressReport(models.Model):
     month = models.CharField(max_length=25, choices=MONTHS, blank=True, null=True)
     year = models.CharField(max_length=25, blank=True, null=True)
     authorization = models.ForeignKey('Authorization', on_delete=models.CASCADE)
+    # TODO Remove as this is superfluous - there is already a ForeignKey to User.
     instructor = models.CharField(max_length=150, blank=True, null=True)
     accomplishments = models.TextField(blank=True, null=True)
     short_term_goals = models.TextField(blank=True, null=True)
@@ -572,6 +573,7 @@ class BasePlanNote(models.Model):
     fiscal_year = models.CharField(max_length=15, blank=True, null=True)
     quarter = models.IntegerField(blank=True, null=True)
     class_hours = models.FloatField(blank=True, null=True, choices=SIP_UNITS)
+    # TODO Remove as this is superfluous - there is already a ForeignKey to User.
     instructor = models.CharField(max_length=50, blank=True, null=True)
     created = models.DateTimeField(auto_now_add=True, null=True)
     modified = models.DateTimeField(auto_now=True, null=True)
@@ -756,6 +758,7 @@ class Assignment(models.Model):
     program = models.CharField(max_length=25, null=True, blank=True, default='SIP', choices=PROGRAM)
     priority = models.CharField(max_length=25, null=True, blank=True, default='New', choices=ASSIGNMENT_PRIORITY)
     contact = models.ForeignKey('Contact', on_delete=models.CASCADE)
+    # TODO Remove as this is superfluous - there is already a ForeignKey to User.
     instructor = models.ForeignKey(User, on_delete=models.CASCADE, related_name='instructors')
     assignment_date = models.DateField(auto_now_add=True, null=True)
     note = models.TextField(blank=True, null=True)
@@ -806,20 +809,21 @@ class OIBServiceDeliveryType(models.Model):
         with connection.cursor() as cursor:
             cursor.execute("""
                 WITH RECURSIVE cte AS (
-                    SELECT id, parent_id, oib_service_delivery_type
-                    FROM lynx_oibservicedeliverytype
-                    WHERE parent_id IS NULL
-                    UNION ALL
-                    SELECT id, parent_id, oib_service_delivery_type
+                    SELECT t.id, t.parent_id, t.oib_service_delivery_type
                     FROM lynx_oibservicedeliverytype t
-                    INNER JOIN cte ON t.parent_id = cte.id
+                    WHERE t.parent_id IS NULL
+                    UNION ALL
+                    SELECT t2.id, t2.parent_id, t2.oib_service_delivery_type
+                    FROM lynx_oibservicedeliverytype t2
+                    INNER JOIN cte ON t2.parent_id = cte.id
                 )
-                SELECT id, oib_service_delivery_type
-                FROM lynx_oibservicedeliverytype
-                WHERE id NOT IN (SELECT parent_id FROM lynx_oibservicedeliverytype WHERE parent_id IS NOT NULL);
+                SELECT t3.id, t3.oib_service_delivery_type
+                FROM lynx_oibservicedeliverytype t3
+                WHERE t3.id NOT IN (SELECT parent_id FROM lynx_oibservicedeliverytype WHERE parent_id IS NOT NULL);
             """)
             rows = cursor.fetchall()
-        return [row[0] for row in rows]  # Return list of leaf node IDs
+        # return choices: (id, label)
+        return [(row[0], row[1]) for row in rows]
 
     def __str__(self):
         return self.oib_service_delivery_type

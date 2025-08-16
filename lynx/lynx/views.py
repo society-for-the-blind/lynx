@@ -2756,7 +2756,9 @@ def add_oib_service_event(request):
         user_role_formset = OIBServiceEventUserRoleFormSet(request.POST, prefix=user_role_form_prefix)
         client_formset = OIBServiceEventContactFormSet(request.POST, prefix=client_form_prefix)
 
-        if form.is_valid() and user_role_formset.is_valid():
+        if  form.is_valid() \
+            and user_role_formset.is_valid() \
+            and client_formset.is_valid():
             # TODO: create and save your OIBServiceEvent instance from form.cleaned_data
             # then loop formset.cleaned_data and create related contact-role rows.
             # Example (adapt to your models):

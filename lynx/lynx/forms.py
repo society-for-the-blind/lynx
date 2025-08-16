@@ -606,6 +606,23 @@ class OIBServiceEventForm(forms.Form):
         required=True,
         label='Program'
     )
+    # A.k.a. service delivery type
+    # The narrative is that the note will be saved into
+    # the appropriate plan based on the date of the note
+    # and service delivery type - but the twist is that
+    # all plans are auto-generated on user query.
+    #
+    # Given that plans are hopelessly underspecified and
+    # not even DOR knows what they want, we settled on
+    #
+    #    1 plan / year / client / service delivery type
+    #
+    plan_type = forms.ChoiceField(
+        choices=lm.OIBServiceDeliveryType.get_leaf_nodes(),
+        initial=1,
+        required=True,
+        label='Plan Type',
+    )
     note_date = forms.DateField(
         widget=forms.SelectDateWidget(years=list(range(1900, 2100))),
         initial=timezone.now(),
