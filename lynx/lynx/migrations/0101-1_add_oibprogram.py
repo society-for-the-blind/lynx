@@ -4,7 +4,7 @@ def add_initial_programs(apps, schema_editor):
     OIBProgram = apps.get_model('lynx', 'OIBProgram')
     OIBProgram.objects.bulk_create([
         OIBProgram(id=0, oib_program='SIP', long_name='Senior Impact Program'),
-        OIBProgram(id=1, oib_program='YIB', long_name='Independent Living Program'),
+        OIBProgram(id=1, oib_program='YIB', long_name='Young Individuals who are Blind'),
     ])
 
 class Migration(migrations.Migration):

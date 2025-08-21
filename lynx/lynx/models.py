@@ -140,6 +140,8 @@ def get_sentinel_user():
 #       ---------------------------------------------------------------
 # For example, a generic Contact can't even be added because there is only
 # "Add New Client" under the Clients link which is an Intake form...
+#
+# See also TODO 2025_08_20_2057 about programs
 class Contact(models.Model):
     first_name = models.CharField(max_length=150)
     middle_name = models.CharField(max_length=150, blank=True, null=True)
@@ -839,8 +841,6 @@ class OIBService(models.Model):
         return self.oib_service
 
 class OIBServiceEvent(models.Model):
-    # NOTE This is the "plan" in the front-end.
-    oib_service_delivery_type = models.ForeignKey(OIBServiceDeliveryType, on_delete=models.PROTECT)
     # NOTE-1 See "0109_add_oibserviceeventcontact.py" for
     #        the diff between `organizer` and `OIBServiceEventContact.oib_program`
     # NOTE-2 The default OIB program is "SIP". 
@@ -851,7 +851,21 @@ class OIBServiceEvent(models.Model):
     #      `organizing_department`. In which case,  this  field
     #      is  just  plain  wrong.  Case  in  point,  I   think
     #      CareersPlus is its own department, for example.)
-    # organizer = models.ForeignKey(OIBProgram, on_delete=models.PROTECT, default=0)
+    #
+    # TODO 2025_08_20_2057
+    #      =================================================================
+    #      !!!        this should actually be part of `Contact`          !!!
+    #      =================================================================
+    #      which is a mess anyway.
+    #
+    #     Also: AUTOMATE OIB PROGRAM MEMBERSHIP
+    #           Clients can be members of CORE and an OIB program, but never
+    #           member of more than one OIB program, as those are based on age.    
+    organizing_program = models.ForeignKey(OIBProgram, on_delete=models.PROTECT, default=0)
+
+    # NOTE This is the "plan" in the front-end.
+    oib_service_delivery_type = models.ForeignKey(OIBServiceDeliveryType, on_delete=models.PROTECT)
+
     date = models.DateField(blank=True, default=date.today)
     # start_time = models.TimeField(blank=True, default="00:00:00")
     # end_time = models.TimeField(blank=True, default="00:00:00")
@@ -864,7 +878,7 @@ class OIBServiceEvent(models.Model):
 
     # many-to-many relationships
     contacts = models.ManyToManyField(Contact,    through='OIBServiceEventContact',    through_fields=('oib_service_event', 'contact'))
-    instructors = models.ManyToManyField(User,      through='OIBServiceEventInstructor', through_fields=('oib_service_event', 'instructor'))
+    instructors = models.ManyToManyField(User,    through='OIBServiceEventInstructor', through_fields=('oib_service_event', 'instructor'))
     services = models.ManyToManyField(OIBService, through='OIBServiceEventOIBService', through_fields=('oib_service_event', 'oib_service'))
 
     def __str__(self):
@@ -952,28 +966,25 @@ class OIBServiceEventContact(models.Model):
     def __str__(self):
         return f"{self.oib_service_event} {self.contact} {self.oib_service_event_contact_role}"
 
-# NOTE See "0109_add_oibserviceeventcontact.py" for
-#      the diff between `OIBServiceEvent.organizer` and `oib_program`
-# 2025_08_15_1854
-# The NOTE above does not make much sense (for one, there is no `organizer` field in OIBServiceEvent),
-# but the long-winded comment there does hit on important points, so leaving it here for now.
-class OIBServiceEventOIBProgram(models.Model):
-    oib_service_event = models.ForeignKey(OIBServiceEvent, on_delete=models.PROTECT)
-    oib_program = models.ForeignKey(OIBProgram, on_delete=models.PROTECT)
-    created = models.DateTimeField(auto_now_add=True)
-    modified = models.DateTimeField(auto_now=True)
-    history = HistoricalRecords()
+# NOTE 2025_08_20_2109
+#      Leaving here for now; at least, until the "bulk notes" module is implemented.
+#
+# class OIBServiceEventOIBProgram(models.Model):
+#     oib_service_event = models.ForeignKey(OIBServiceEvent, on_delete=models.PROTECT)
+#     created = models.DateTimeField(auto_now_add=True)
+#     modified = models.DateTimeField(auto_now=True)
+#     history = HistoricalRecords()
 
-    class Meta:
-        constraints = [
-            models.UniqueConstraint(
-                fields=["oib_service_event", "oib_program"],
-                name="unique_oib_service_event_oib_program"
-            )
-        ]
+#     class Meta:
+#         constraints = [
+#             models.UniqueConstraint(
+#                 fields=["oib_service_event", "oib_program"],
+#                 name="unique_oib_service_event_oib_program"
+#             )
+#         ]
 
-    def __str__(self):
-        return f"{self.oib_service_event} {self.oib_program}"
+#     def __str__(self):
+#         return f"{self.oib_service_event} {self.oib_program}"
 
 class OibOutcomeType(models.Model):
     oib_outcome_type = models.CharField(max_length=255)
