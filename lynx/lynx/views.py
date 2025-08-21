@@ -2756,7 +2756,7 @@ def add_oib_service_event(request):
         user_role_formset = OIBServiceEventUserRoleFormSet(request.POST, prefix=user_role_form_prefix)
         client_formset = OIBServiceEventContactFormSet(request.POST, prefix=client_form_prefix)
 
-        if  form.is_valid() \
+        if      form.is_valid() \
             and user_role_formset.is_valid() \
             and client_formset.is_valid():
             # TODO: create and save your OIBServiceEvent instance from form.cleaned_data
@@ -2770,7 +2770,37 @@ def add_oib_service_event(request):
             #             contact=row['contact'],
             #             role=row['role'],
             #         )
-            service_event = form.save()
+            # service_event = form.save()
+            service_event = lm.OIBServiceEvent.objects.create(
+                oib_service_delivery_type=lm.OIBServiceDeliveryType.objects.get(pk=form.cleaned_data['plan_type']),
+                organizing_program=form.cleaned_data['program'],
+                date=form.cleaned_data['note_date'],
+                length=form.cleaned_data['event_length'],
+                note=form.cleaned_data['note'],
+                entered_by=request.user,
+            )
+
+            for service in form.cleaned_data['services']:
+                lm.OIBServiceEventOIBService.objects.create(
+                    oib_service_event=service_event,
+                    oib_service=service,
+                )
+
+            for row in user_role_formset.cleaned_data:
+                if row and not row.get('DELETE', False):
+                    lm.OIBServiceEventInstructor.objects.create(
+                        oib_service_event=service_event,
+                        instructor=row['instructor'],
+                        oib_service_event_instructor_role=row['role'],
+                    )
+
+            for row in client_formset.cleaned_data:
+                if row and not row.get('DELETE', False):
+                    lm.OIBServiceEventContact.objects.create(
+                        oib_service_event=service_event,
+                        contact=row['client'],
+                        # You can add a role here if you add it to the form
+                    )
             return redirect('lynx:show_oib_service_event', oib_service_event_id=service_event.id)
             # return HttpResponseRedirect(reverse('lynx:show_oib_service_event', args=(new_id,)))
     else:
@@ -2786,36 +2816,5 @@ def add_oib_service_event(request):
         }
 
         return render(request, "lynx/add_oib_service_event.html", context)
-
-#     contact_qs = lfo.ContactRoleForm.base_fields['contact'].queryset
-#     user_qs = lfo.ContactRoleForm.base_fields['user'].queryset
-#     contact_and_user_qs = lfo.ContactRoleForm.base_fields['contact_and_user'].queryset
-#     role_qs = lfo.ContactRoleForm.base_fields['role'].queryset
-
-#     if request.method == 'POST':
-#         form = lfo.SipServiceEventForm(request.POST)
-#         formset = lfo.ContactRoleFormSet(request.POST, instance=form.instance)
-
-#         if form.is_valid() and formset.is_valid():
-#             service_event = form.save()
-#             formset.instance = service_event
-#             formset.save()
-#             return redirect('success_url')
-#     else:
-#         form = lfo.SipServiceEventForm()
-#         formset = lfo.ContactRoleFormSet(instance=form.instance)
-
-#     return render(
-#         request,
-#         'lynx/add_service_event.html',
-#         {
-#             'form': form,
-#             'formset': formset,
-#             'contact_and_user_qs': contact_and_user_qs,
-#             'contact_qs': contact_qs,
-#             'user_qs': user_qs,
-#             'role_qs': role_qs,
-#         }
-#     )
 
 # vim: set foldmethod=marker foldmarker={{-,}}-:

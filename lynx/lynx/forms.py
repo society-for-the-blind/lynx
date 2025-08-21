@@ -600,6 +600,11 @@ class OIBServiceMultipleChoiceField(forms.ModelMultipleChoiceField):
         return obj.long_name
 
 class OIBServiceEventForm(forms.Form):
+    # TODO 2025_08_20_2136
+    #      Get rid of this field once TODO 2025_08_20_2057 (fix Contact model)
+    #      is done. Or rename it to what it is called in the corresponding
+    #      `OIBServiceEvent` model: `organizing_program`. (Not sure why this
+    #      would be needed at all, so the former is more likely.))`
     program = forms.ModelChoiceField(
         queryset=lm.OIBProgram.objects.all().order_by('oib_program'),
         initial=2,
@@ -618,7 +623,7 @@ class OIBServiceEventForm(forms.Form):
     #    1 plan / year / client / service delivery type
     #
     plan_type = forms.ChoiceField(
-        choices=lm.OIBServiceDeliveryType.get_leaf_nodes(),
+        choices=lambda: lm.OIBServiceDeliveryType.get_leaf_nodes(),
         initial=1,
         required=True,
         label='Plan Type',
@@ -685,84 +690,3 @@ class OIBServiceEventContactForm(forms.Form):
         empty_label="Select a client",
         required=True,
     )
-
-#     user_queryset = dca.User.objects.all().order_by(ddmf.Lower('last_name'), ddmf.Lower('first_name'))
-
-#     contact = forms.ModelChoiceField(queryset=contact_queryset, label='Contact')
-    
-
-# class OIBServiceEventForm(forms.ModelForm):
-#     instructors = forms.ModelChoiceField(
-#         queryset=dca.User.objects.filter(groups__name='SIP').order_by(ddmf.Lower('last_name')),
-#         required=True,
-#         label="Instructor"
-#     )
-#     date = forms.DateField(
-#         widget=forms.SelectDateWidget(years=list(range(1900, 2100))),
-#         label='Note Date',
-#         initial=timezone.now(),
-#         required=True
-#     )
-#     length = forms.ChoiceField(
-#         choices=DURATION_CHOICES,
-#         label='Class Length',
-#         required=True
-#     )
-
-#     class Meta:
-#         model = lm.OIBServiceEvent
-#         fields = [ 'oib_service_delivery_type',
-#                    'oib_program',
-#                    'date',
-#                    'length',
-#                    'note',
-#                    'entered_by'
-#                  ]
-
-#     def __init__(self, *args, **kwargs):
-#         instructors = kwargs.pop('instructors', None)
-#         super(OIBServiceEventForm, self).__init__(*args, **kwargs)
-#         leaf_node_ids = lm.OIBServiceDeliveryType.get_leaf_nodes()
-#         self.fields['service_delivery_type'].queryset = lm.OIBServiceDeliveryType.objects.filter(id__in=leaf_node_ids)
-#         if instructors is not None:
-#             self.fields['entered_by'].queryset = instructors
-
-#     class Meta:
-#         model = lm.Assignment
-#         fields = ['instructor', 'note', 'priority']
-
-# class OIBServiceEventFormSet(forms.ModelForm):
-#     class Meta:
-#         model = lm.OIBServiceEvent
-#         fields = ['oib_service_delivery_type', 'oib_program', 'date', 'length', 'note', 'entered_by']
-
-# class SipServiceEventForm(forms.ModelForm):
-#     date = forms.DateField(widget=forms.SelectDateWidget(years=list(range(1900, 2100))), label='Note Date', initial=timezone.now())
-#     length = forms.ChoiceField(choices=DURATION_CHOICES, label='Length')
-
-#     class Meta:
-#         model = SipServiceEvent
-#         fields = ['service_delivery_type', 'date', 'length', 'note', 'entered_by']
-
-#     def __init__(self, *args, **kwargs):
-#         instructors = kwargs.pop('instructors', None)
-#         super(SipServiceEventForm, self).__init__(*args, **kwargs)
-#         leaf_node_ids = lm.SipServiceDeliveryType.get_leaf_nodes()
-#         self.fields['service_delivery_type'].queryset = lm.SipServiceDeliveryType.objects.filter(id__in=leaf_node_ids)
-#         if instructors is not None:
-#             self.fields['entered_by'].queryset = instructors
-
-# class ContactRoleForm(forms.ModelForm):
-#     contact_queryset = lm.Contact.objects.filter(active=1).order_by(ddmf.Lower('last_name'), ddmf.Lower('first_name'))
-#     user_queryset = dca.User.objects.all().order_by(ddmf.Lower('last_name'), ddmf.Lower('first_name'))
-
-#     contact = forms.ModelChoiceField(queryset=contact_queryset, label='Contact')
-#     user = forms.ModelChoiceField(queryset=user_queryset, label='User')
-#     contact_and_user = forms.ModelChoiceField(queryset=contact_queryset.union(user_queryset), label='Contact and User')
-#     # role = forms.ModelChoiceField(queryset=ServiceEventRole.objects.all(), label='Role')
-
-#     class Meta:
-#         model = SipServiceEventContact
-#         fields = ['contact', 'role', 'user', 'contact_and_user']
-
-# ContactRoleFormSet = forms.inlineformset_factory(SipServiceEvent, SipServiceEventContact, form=ContactRoleForm, extra=1, can_delete=True)
