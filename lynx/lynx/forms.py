@@ -640,7 +640,10 @@ class OIBServiceEventForm(forms.Form):
         label='Event Length',
     )
     services = OIBServiceMultipleChoiceField(
-        queryset=lm.OIBService.objects.all().order_by('long_name'),
+        # NOTE 2025_08_24_1631
+        #      The order of services is explicitly set in `__init__` below
+        #      as this is what users have gotten used to.
+        queryset=lm.OIBService.objects.none(),
         widget=forms.CheckboxSelectMultiple,
         required=True,
         label="Services",
@@ -656,6 +659,15 @@ class OIBServiceEventForm(forms.Form):
         required=True,
         label='Note',
     )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        desired_order = [0,1,2,3,4,5,7,8,6]
+        when_list = [ddm.When(id=pk, then=pos) for pos, pk in enumerate(desired_order)]
+        qs = lm.OIBService.objects.annotate(
+            ordering=ddm.Case(*when_list, default=9999, output_field=ddm.IntegerField())
+        ).order_by('ordering', 'long_name')
+        self.fields['services'].queryset = qs
 
 # TODO DRY up - there is an (almost) exact dup of this class in `filters.py`
 class UserModelChoiceField(forms.ModelChoiceField):
