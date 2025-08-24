@@ -1,20 +1,12 @@
-from django import forms
-from django.db.models import functions as ddmf
-from django.db.models.functions import Lower
+from django       import forms
 from django.utils import timezone
-# from django.db.models import Q, F
-from django.db.models import Value as V
-from django.db.models import DateField
-# from django.forms.models import ModelChoiceField
-from django.db.models.functions import Concat, Replace, Lower, Substr, StrIndex, Cast
+from datetime     import datetime
+from django.db           import models    as ddm
+from django.db.models    import functions as ddmf
+from django.contrib.auth import models    as dca
 
 # lm  = lynx model
 from . import models  as lm
-
-from datetime import datetime
-
-# from .models import SipServiceEvent, SipServiceEventContact
-from django.contrib.auth import models as dca
 
 months = (("1", "January"), ("2", "February"), ("3", "March"), ("4", "April"), ("5", "May"), ("6", "June"),
           ("7", "July"), ("8", "August"), ("9", "September"), ("10", "October"), ("11", "November"), ("12", "December"),
@@ -57,7 +49,7 @@ class IntakeForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(IntakeForm, self).__init__(*args, **kwargs)
         self.fields['intake_date'].label = "Intake Date (YYYY-MM-DD)"
-        self.fields['payment_source'].queryset = lm.Contact.objects.filter(payment_source=1).order_by(Lower('last_name'))
+        self.fields['payment_source'].queryset = lm.Contact.objects.filter(payment_source=1).order_by(ddmf.Lower('last_name'))
         self.fields['payment_source'].label = "Payment Sources"
         self.fields['eye_condition_date'].label = "Eye Condition Onset Date (YYYY-MM-DD)"
         self.fields['birth_date'].label = "Birthdate (YYYY-MM-DD)"
@@ -149,7 +141,7 @@ class AuthorizationForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(AuthorizationForm, self).__init__(*args, **kwargs)
-        self.fields['outside_agency'].queryset = lm.Contact.objects.filter(payment_source=1).order_by(Lower('last_name'))
+        self.fields['outside_agency'].queryset = lm.Contact.objects.filter(payment_source=1).order_by(ddmf.Lower('last_name'))
         self.fields['outside_agency'].label = "Payment Sources"
         self.fields['start_date'].label = "Start Date (YYYY-MM-DD)"
         self.fields['end_date'].label = "End Date (YYYY-MM-DD)"
@@ -260,7 +252,7 @@ class SipNoteForm(BasePlanNoteForm):
 
     def get_plan_queryset(self, contact_id):
         return lm.SipPlan.objects.filter(contact_id=contact_id).annotate(
-            date_substring=Cast(Substr('plan_name', 1, StrIndex('plan_name', V(' '))), DateField())
+            date_substring=ddmf.Cast(ddmf.Substr('plan_name', 1, ddmf.StrIndex('plan_name', ddm.Value(' '))), ddm.DateField())
         ).order_by('-date_substring')
 
 
@@ -270,7 +262,7 @@ class Sip1854NoteForm(BasePlanNoteForm):
 
     def get_plan_queryset(self, contact_id):
         return lm.Sip1854Plan.objects.filter(contact_id=contact_id).annotate(
-            date_substring=Cast(Substr('plan_name', 1, StrIndex('plan_name', V(' '))), DateField())
+            date_substring=ddmf.Cast(ddmf.Substr('plan_name', 1, ddmf.StrIndex('plan_name', ddm.Value(' '))), ddm.DateField())
         ).order_by('-date_substring')
 
 
