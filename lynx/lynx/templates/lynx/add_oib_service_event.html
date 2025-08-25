@@ -3,6 +3,34 @@
 
 {% block javascript %}
 <script>
+function prefix_to_select_classes() {
+    return { 'client': 'client-select',
+             'user_role': 'instructor-select'
+            };
+}
+
+function updateSelectOptions(formset_prefix_or_select_class) {
+    const select_class = 
+        formset_prefix_or_select_class.match(/-/) ? formset_prefix_or_select_class : prefix_to_select_classes()[formset_prefix_or_select_class];
+    const selects = Array.from( document.getElementsByClassName(select_class) );
+    const selectedValues =
+        selects
+        .map(sel => sel.value)
+        .filter(val => val !== "");
+
+    selects.forEach(select => {
+        Array.from(select.options).forEach(option => {
+            if (option.value === "") {
+                option.disabled = false; // Always allow the empty option
+            } else if (selectedValues.includes(option.value) && select.value !== option.value) {
+                option.disabled = true;
+            } else {
+                option.disabled = false;
+            }
+        });
+    });
+}
+
 function addFormSetInstance(prefix) {
     const totalForms = document.getElementById('id_' + prefix + '-TOTAL_FORMS');
     const formIdx = totalForms.value;
@@ -11,7 +39,18 @@ function addFormSetInstance(prefix) {
     wrapper.innerHTML = newFormHtml;
     document.getElementById(prefix + '_formset').appendChild(wrapper);
     totalForms.value = parseInt(formIdx) + 1;
+    updateSelectOptions(prefix);
 }
+
+document.addEventListener('change', function(e) {
+    Object.values(prefix_to_select_classes()).forEach(
+        (class_name) => {
+            if (e.target.classList.contains(class_name)) {
+                updateSelectOptions(class_name);
+            }
+        }
+    );
+});
 </script>
 {% endblock %}
 

@@ -672,6 +672,7 @@ class OIBServiceEventUserRoleForm(forms.Form):
         label='Instructor',
         empty_label="Select an instructor",
         required=True,
+        widget=forms.Select(attrs={'class': 'instructor-select'}),
     )
     role = forms.ModelChoiceField(
         queryset=lm.OIBServiceEventInstructorRole.objects.all().order_by('oib_service_event_instructor_role'),
@@ -693,4 +694,5 @@ class OIBServiceEventContactForm(forms.Form):
         label='Client',
         empty_label="Select a client",
         required=True,
+        widget=forms.Select(attrs={'class': 'client-select'}),
     )
