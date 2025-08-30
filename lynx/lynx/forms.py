@@ -627,7 +627,7 @@ class OIBServiceEventForm(forms.Form):
         label='Note Date',
     )
     event_length = forms.ChoiceField(
-        choices=lm.SIP_UNITS,
+        choices=DURATION_CHOICES,
         required=True,
         label='Event Length',
     )

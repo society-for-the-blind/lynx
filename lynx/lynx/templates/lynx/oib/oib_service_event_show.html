@@ -1,0 +1,50 @@
+{% extends 'lynx/base.html' %}
+{% load time_convert %}
+
+{% block title %}Service event: {{ service_event.oib_service_delivery_type.oib_service_delivery_type }} on {{ service_event.date|date:'F j, Y' }}{% endblock %}
+
+{% block content %}
+<h2>Service Event</h2>
+<ul>
+  <li><strong>Program:</strong> {{ service_event.organizing_program.long_name }}</li>
+  <li><strong>Plan Type:</strong> {{ service_event.oib_service_delivery_type.oib_service_delivery_type }}</li>
+  <li><strong>Date:</strong> {{ service_event.date|date:"F j, Y" }}</li>
+  <li><strong>Length:</strong> {{ service_event.length }}</li>
+  <li><strong>Note:</strong> {{ service_event.note|linebreaks }}</li>
+  <li><strong>Entered by:</strong> {{ service_event.entered_by.get_full_name|default:service_event.entered_by.username }}</li>
+  <li><strong>Created:</strong> {{ service_event.created }}</li>
+  <li><strong>Modified:</strong> {{ service_event.modified }}</li>
+</ul>
+
+<h3>Services</h3>
+<ul>
+  {% for service in service_event.services.all %}
+    <li>{{ service.long_name }}</li>
+  {% empty %}
+    <li>No services recorded.</li>
+  {% endfor %}
+</ul>
+
+<h3>Clients</h3>
+<ul>
+  {% for contact in service_event.contacts.all %}
+    <li>{{ contact.first_name }} {{ contact.last_name }}</li>
+  {% empty %}
+    <li>No contacts recorded.</li>
+  {% endfor %}
+</ul>
+
+<h3>Instructors</h3>
+<ul>
+  {% for ir in instructors_with_roles %}
+    <li>
+      {{ ir.instructor.get_full_name|default:ir.instructor.username }}
+      {% if ir.oib_service_event_instructor_role %}
+        ({{ ir.oib_service_event_instructor_role }})
+      {% endif %}
+    </li>
+  {% empty %}
+    <li>No instructors recorded.</li>
+  {% endfor %}
+</ul>
+{% endblock %}
