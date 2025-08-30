@@ -2739,13 +2739,14 @@ def show_oib_service_event(request, oib_service_event_id):
         .select_related('oib_service_delivery_type') \
         .get(id=oib_service_event_id)
     return render( request
-                 , 'lynx/show_oib_service_event.html'
+                 , 'lynx/oib/show_oib_service_event.html'
                  , { 'service_event': service_event
                    }
                  )
 
 @login_required
 def add_oib_service_event(request):
+    add_oib_service_event_template_path = "lynx/oib/add_oib_service_event.html"
     OIBServiceEventUserRoleFormSet = forms.formset_factory(
         lfo.OIBServiceEventUserRoleForm,
         extra=0,
@@ -2806,7 +2807,7 @@ def add_oib_service_event(request):
             # return HttpResponseRedirect(reverse('lynx:show_oib_service_event', args=(new_id,)))
 
         else:
-            return render(request, "lynx/add_oib_service_event.html", {
+            return render(request, add_oib_service_event_template_path, {
                 'form': form,
                 'formsets': {
                     'user_role_formset': user_role_formset,
@@ -2826,6 +2827,6 @@ def add_oib_service_event(request):
                         },
         }
 
-        return render(request, "lynx/add_oib_service_event.html", context)
+        return render(request, add_oib_service_event_template_path, context)
 
 # vim: set foldmethod=marker foldmarker={{-,}}-:
