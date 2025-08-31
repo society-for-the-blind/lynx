@@ -124,7 +124,6 @@ urlpatterns = [
     ###############
     path('sipnotes/<int:client_id>',       views.plan_note_list_view,          name='sip_note_list'     ),
     path('add-sip-note/<int:contact_id>/', views.add_plan_note,                name='sip_note_add'      ),
-    path('add-sip-note-bulk/',             views.add_sip_note_bulk,            name='sip_note_bulk_add' ),
     path('sip-note-edit/<int:pk>',         views.PlanNoteUpdateView.as_view(), name='sip_note_edit'     ),
     # TODO Why is the `client_id` parameter needed? The pk should be enough, doesn't it?
     path('sip-note-delete/<int:pk>',  views.PlanNoteDeleteView.as_view(), name='sip_note_delete' ),
@@ -134,7 +133,6 @@ urlpatterns = [
     #################
     path('sip1854notes/<int:client_id>',       views.plan_note_list_view,   name='sip1854_note_list'     ),
     path('add-sip1854-note/<int:contact_id>/', views.add_plan_note,         name='sip1854_note_add'      ),
-    path('add-sip1854-note-bulk/',             views.add_sip1854_note_bulk, name='sip1854_note_bulk_add' ),
     path('sip1854-note-edit/<int:pk>',         views.PlanNoteUpdateView.as_view(), name='sip1854_note_edit' ),
     # TODO Why is the `client_id` parameter needed? The pk should be enough, doesn't it?
     path('sip1854-note-delete/<int:pk>',  views.PlanNoteDeleteView.as_view(),  name='sip1854_note_delete' ),
