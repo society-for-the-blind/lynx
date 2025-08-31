@@ -882,7 +882,7 @@ class OIBServiceEvent(models.Model):
     services = models.ManyToManyField(OIBService, through='OIBServiceEventOIBService', through_fields=('oib_service_event', 'oib_service'))
 
     def __str__(self):
-        return f"{self.date} {self.service_delivery_type} {self.start_time}"
+        return f"{self.date} {self.oib_service_delivery_type} {self.date}"
 
 class OIBServiceEventOIBService(models.Model):
     oib_service_event = models.ForeignKey(OIBServiceEvent, on_delete=models.PROTECT)

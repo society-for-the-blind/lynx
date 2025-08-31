@@ -153,17 +153,17 @@ urlpatterns = [
     ################
     # OIB RE-WRITE #
     ################
-    path('client/<int:contact_id>/oib-service-events',
-         views.show_all_oib_service_events_per_client,
-         name='show_all_oib_service_events_per_client'
-        ),
+    # path('client/<int:contact_id>/oib-service-events',
+    #      views.show_all_oib_service_events_per_client,
+    #      name='show_all_oib_service_events_per_client'
+    #     ),
     path('oib-service-events/<int:oib_service_event_id>',
-         views.show_oib_service_event,
-         name='show_oib_service_event'
+         views.oib_service_event_show,
+         name='oib_service_event_show'
         ),
     path('oib-service-events/new',
-         views.add_oib_service_event,
-         name='add_oib_service_event'
+         views.oib_service_event_add,
+         name='oib_service_event_add'
         ),
     # QUESTION Does this one even make sense?
     # path('client/<int:contact_id>/oib_service_events/new',
@@ -171,11 +171,15 @@ urlpatterns = [
     #      name='add_oib_service_event_for_single_client'
     #     ),
     path('oib-service-events/<int:oib_service_event_id>/edit',
-         views.edit_oib_service_event,
-         name='edit_oib_service_event'
+         views.oib_service_event_edit,
+         name='oib_service_event_edit'
         ),
-    # path('oib_service_events/<int:oib_service_event_id>/delete',
-    #      views.delete_oib_service_event,
-    #      name='delete_oib_service_event'
-    #     )
+    path('oib-service-events/<int:oib_service_event_id>/delete',
+         views.oib_service_event_delete,
+         name='oib_service_event_delete'
+        ),
+    path('oib-service-events',
+         views.oib_service_event_list,
+         name='oib_service_event_list'
+        )
 ]

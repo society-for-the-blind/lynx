@@ -2734,7 +2734,7 @@ def show_all_oib_service_events_per_client(request, contact_id):
                  )
 
 @login_required
-def show_oib_service_event(request, oib_service_event_id):
+def oib_service_event_show(request, oib_service_event_id):
     service_event = \
         get_object_or_404(lm.OIBServiceEvent, pk=oib_service_event_id)
     instructors_with_roles = (
@@ -2750,21 +2750,37 @@ def show_oib_service_event(request, oib_service_event_id):
                    }
                  )
 
-# WORK IN PROGRESS
-# @login_required
-# def delete_oib_service_event(request, oib_service_event_id):
-#     service_event = get_object_or_404(OIBServiceEvent, pk=oib_service_event_id)
-#     if request.method == "POST":
-#         # Delete related records first
-#         OIBServiceEventInstructor.objects.filter(oib_service_event=service_event).delete()
-#         OIBServiceEventContact.objects.filter(oib_service_event=service_event).delete()
-#         OIBServiceEventOIBService.objects.filter(oib_service_event=service_event).delete()
-#         # Now delete the main event
-#         service_event.delete()
-#         return redirect('lynx:show_all_oib_service_events_per_client', contact_id=...)  # Adjust as needed
+@login_required
+def oib_service_event_delete(request, oib_service_event_id):
 
-#     # Render a confirmation page if needed
-#     return render(request, "lynx/oib/oib_service_event_confirm_delete.html", {"service_event": service_event})
+    service_event = get_object_or_404(lm.OIBServiceEvent, pk=oib_service_event_id)
+    contact = service_event.contacts.first()
+    contact_id = contact.id if contact else 1
+
+    if request.method == "POST":
+        lm.OIBServiceEventInstructor.objects.filter(oib_service_event=service_event).delete()
+        lm.OIBServiceEventContact.objects.filter(oib_service_event=service_event).delete()
+        lm.OIBServiceEventOIBService.objects.filter(oib_service_event=service_event).delete()
+        service_event.delete()
+
+        return redirect( 'lynx:oib_service_event_list')
+    return render( request \
+                 , "lynx/oib/oib_service_event_confirm_delete.html" \
+                 , {"service_event": service_event} \
+                 )
+
+@login_required
+def oib_service_event_list(request):
+    service_events = lm.OIBServiceEvent.objects.select_related(
+        "organizing_program",
+        "oib_service_delivery_type",
+        "entered_by"
+    ).order_by("-date", "-id")
+    return render(
+        request,
+        "lynx/oib/oib_service_event_list.html",
+        {"service_events": service_events},
+    )
 
 # TODO This should be in a utility module
 def parse_duration_string(s):
@@ -2772,8 +2788,8 @@ def parse_duration_string(s):
     return timedelta(hours=h, minutes=m, seconds=sec)
 
 @login_required
-def add_oib_service_event(request):
-    add_oib_service_event_template_path = "lynx/oib/oib_service_event_add.html"
+def oib_service_event_add(request):
+    oib_service_event_add_template_path = "lynx/oib/oib_service_event_add.html"
     OIBServiceEventUserRoleFormSet = forms.formset_factory(
         lfo.OIBServiceEventUserRoleForm,
         extra=0,
@@ -2830,11 +2846,9 @@ def add_oib_service_event(request):
                         contact=row['client'],
                     )
 
-            return redirect('lynx:show_oib_service_event', oib_service_event_id=service_event.id)
-            # return HttpResponseRedirect(reverse('lynx:show_oib_service_event', args=(new_id,)))
-
+            return redirect('lynx:oib_service_event_show', oib_service_event_id=service_event.id)
         else:
-            return render(request, add_oib_service_event_template_path, {
+            return render(request, oib_service_event_add_template_path, {
                 'form': form,
                 'formsets': {
                     'user_role_formset': user_role_formset,
@@ -2854,11 +2868,11 @@ def add_oib_service_event(request):
                         },
         }
 
-        return render(request, add_oib_service_event_template_path, context)
+        return render(request, oib_service_event_add_template_path, context)
 
 @login_required
-def edit_oib_service_event(request, oib_service_event_id):
-    add_oib_service_event_template_path = "lynx/oib/oib_service_event_add.html"
+def oib_service_event_edit(request, oib_service_event_id):
+    oib_service_event_add_template_path = "lynx/oib/oib_service_event_add.html"
     OIBServiceEventUserRoleFormSet = forms.formset_factory(
         lfo.OIBServiceEventUserRoleForm,
         extra=0,
@@ -2925,9 +2939,9 @@ def edit_oib_service_event(request, oib_service_event_id):
                         contact=row['client'],
                     )
 
-            return redirect('lynx:show_oib_service_event', oib_service_event_id=service_event.id)
+            return redirect('lynx:oib_service_event_show', oib_service_event_id=service_event.id)
         else:
-            return render(request, add_oib_service_event_template_path, {
+            return render(request, oib_service_event_add_template_path, {
                 'form': form,
                 'formsets': {
                     'user_role_formset': user_role_formset,
@@ -2964,6 +2978,6 @@ def edit_oib_service_event(request, oib_service_event_id):
             'service_event': service_event,
             'edit_mode': True,
         }
-        return render(request, add_oib_service_event_template_path, context)
+        return render(request, oib_service_event_add_template_path, context)
 
 # vim: set foldmethod=marker foldmarker={{-,}}-:

@@ -89,7 +89,7 @@ function removeFormRow(btn) {
 
 {% block content %}
 <h1>{% if edit_mode %}Edit{% else %}Add new{% endif %} note</h1>
-<form action="{% if edit_mode %}{% url 'lynx:edit_oib_service_event' service_event.id %}{% else %}{% url 'lynx:add_oib_service_event' %}{% endif %}" method="post">
+<form action="{% if edit_mode %}{% url 'lynx:oib_service_event_edit' service_event.id %}{% else %}{% url 'lynx:oib_service_event_add' %}{% endif %}" method="post">
   {% csrf_token %}
   {{ form }}
 
