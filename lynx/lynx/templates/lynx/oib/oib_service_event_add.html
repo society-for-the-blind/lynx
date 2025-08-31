@@ -1,6 +1,10 @@
 {% extends 'lynx/base.html' %}
 {% load crispy_forms_tags %}
 
+{% block title %}
+  {% if edit_mode %}Edit{% else %}Add new{% endif %} note
+{% endblock %}
+
 {% block javascript %}
 <script>
 function prefix_to_select_classes() {
@@ -81,10 +85,6 @@ function removeFormRow(btn) {
   legend { all: unset; font-size: inherit; color: inherit; }
   input[type="checkbox"][name$="-DELETE"] { visibility: hidden;}
 </style>
-{% endblock %}
-
-{% block title %}
-  {% if edit_mode %}Edit{% else %}Add new{% endif %} note
 {% endblock %}
 
 {% block content %}
