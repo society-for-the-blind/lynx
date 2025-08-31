@@ -9,9 +9,7 @@ function prefix_to_select_classes() {
             };
 }
 
-function updateSelectOptions(formset_prefix_or_select_class) {
-    const select_class = 
-        formset_prefix_or_select_class.match(/-/) ? formset_prefix_or_select_class : prefix_to_select_classes()[formset_prefix_or_select_class];
+function updateSelectOptions(select_class) {
     const selects = Array.from( document.getElementsByClassName(select_class) );
     const selectedValues =
         selects
@@ -31,6 +29,28 @@ function updateSelectOptions(formset_prefix_or_select_class) {
     });
 }
 
+function updateSelectOptionsBasedOnSelectClass(selectElement) {
+    Object.values(prefix_to_select_classes()).forEach(
+        (class_name) => {
+            if (selectElement.classList.contains(class_name)) {
+                updateSelectOptions(class_name);
+            }
+        }
+    );
+}
+
+// Exclude names once a client/instructor selection has been made
+// (i.e., dropdown selected and then navigated away)
+document.addEventListener('change', function(event) {
+  updateSelectOptionsBasedOnSelectClass( event.target );
+});
+
+document.addEventListener('DOMContentLoaded', function() {
+    Object.values(prefix_to_select_classes()).forEach(
+        (class_name) => updateSelectOptions(class_name)
+    );
+});
+
 function addFormSetInstance(prefix) {
     const totalForms = document.getElementById('id_' + prefix + '-TOTAL_FORMS');
     const formIdx = totalForms.value;
@@ -39,24 +59,27 @@ function addFormSetInstance(prefix) {
     wrapper.innerHTML = newFormHtml;
     document.getElementById(prefix + '_formset').appendChild(wrapper);
     totalForms.value = parseInt(formIdx) + 1;
-    updateSelectOptions(prefix);
+    updateSelectOptions( prefix_to_select_classes()[prefix] );
 }
 
-document.addEventListener('change', function(e) {
-    Object.values(prefix_to_select_classes()).forEach(
-        (class_name) => {
-            if (e.target.classList.contains(class_name)) {
-                updateSelectOptions(class_name);
-            }
-        }
-    );
-});
+function removeFormRow(btn) {
+    const row = btn.closest('.row');
+    const firstRowSelect = row.querySelector('select');
+    // `user_role` rows have two <select>s, but we only need to clear the first one,
+    // because only the names have to be unique.
+    firstRowSelect.value = "";
+    const delInput = row.querySelector('input[type="checkbox"][name$="-DELETE"]');
+    if (delInput) { delInput.checked = true; }
+    row.style.display = 'none';
+    updateSelectOptionsBasedOnSelectClass( firstRowSelect );
+}
 </script>
 {% endblock %}
 
 {% block style %}
 <style>
   legend { all: unset; font-size: inherit; color: inherit; }
+  input[type="checkbox"][name$="-DELETE"] { visibility: hidden;}
 </style>
 {% endblock %}
 
@@ -77,16 +100,29 @@ document.addEventListener('change', function(e) {
       {% for f in formsets.client_formset %}
         <div class="row contact-role-row">
           <div class="col-6">{{ f.client|as_crispy_field }}</div>
+          <div class="col-2">
+            {% if formsets.client_formset.can_delete %}
+              {{ f.DELETE }}
+              <button type="button" onclick="removeFormRow(this)">Remove</button>
+            {% endif %}
+          </div>
         </div>
       {% endfor %}
     </div>
     <div id="{{ formsets.client_formset.prefix }}_form" style="display:none;">
       <div class="row contact-role-row">
         <div class="col-6">{{ formsets.client_formset.empty_form.client|as_crispy_field }}</div>
+        <div class="col-2">
+          {% if formsets.client_formset.can_delete %}
+            {{ formsets.client_formset.empty_form.DELETE }}
+            <button type="button" onclick="removeFormRow(this)">Remove</button>
+          {% endif %}
+        </div>
       </div>
     </div>
     <button type="button" onclick="addFormSetInstance('{{ formsets.client_formset.prefix }}')">Add another client</button>
   </div>
+
   <h2>Instructors</h2>
   {{ formsets.user_role_formset.management_form }}
   <div>
@@ -94,14 +130,26 @@ document.addEventListener('change', function(e) {
       {% for f in formsets.user_role_formset %}
         <div class="row contact-role-row">
           <div class="col-6">{{ f.instructor|as_crispy_field }}</div>
-          <div class="col-6">{{ f.role|as_crispy_field }}</div>
+          <div class="col-4">{{ f.role|as_crispy_field }}</div>
+          <div class="col-2">
+            {% if formsets.user_role_formset.can_delete %}
+              {{ f.DELETE }}
+              <button type="button" onclick="removeFormRow(this)">Remove</button>
+            {% endif %}
+          </div>
         </div>
       {% endfor %}
     </div>
     <div id="{{ formsets.user_role_formset.prefix }}_form" style="display:none;">
       <div class="row contact-role-row">
         <div class="col-6">{{ formsets.user_role_formset.empty_form.instructor|as_crispy_field }}</div>
-        <div class="col-6">{{ formsets.user_role_formset.empty_form.role|as_crispy_field }}</div>
+        <div class="col-4">{{ formsets.user_role_formset.empty_form.role|as_crispy_field }}</div>
+        <div class="col-2">
+          {% if formsets.user_role_formset.can_delete %}
+            {{ formsets.user_role_formset.empty_form.DELETE }}
+            <button type="button" onclick="removeFormRow(this)">Remove</button>
+          {% endif %}
+        </div>
       </div>
     </div>
     <button type="button" onclick="addFormSetInstance('{{ formsets.user_role_formset.prefix }}')">Add another instructor/role</button>
