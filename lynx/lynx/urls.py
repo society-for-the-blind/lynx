@@ -151,10 +151,8 @@ urlpatterns = [
     ################
     # OIB RE-WRITE #
     ################
-    # path('client/<int:contact_id>/oib-service-events',
-    #      views.show_all_oib_service_events_per_client,
-    #      name='show_all_oib_service_events_per_client'
-    #     ),
+    
+    # OIB service events (aka. "notes")
     path('oib-service-events/<int:oib_service_event_id>',
          views.oib_service_event_show,
          name='oib_service_event_show'
@@ -163,11 +161,6 @@ urlpatterns = [
          views.oib_service_event_add,
          name='oib_service_event_add'
         ),
-    # QUESTION Does this one even make sense?
-    # path('client/<int:contact_id>/oib_service_events/new',
-    #      views.add_oib_service_event_for_single_client,
-    #      name='add_oib_service_event_for_single_client'
-    #     ),
     path('oib-service-events/<int:oib_service_event_id>/edit',
          views.oib_service_event_edit,
          name='oib_service_event_edit'
@@ -179,5 +172,15 @@ urlpatterns = [
     path('oib-service-events',
          views.oib_service_event_list,
          name='oib_service_event_list'
-        )
+        ),
+
+    # "plans" (one / client / grant year / service delivery type (aka. plan type))
+    path('clients/<int:contact_id>/plans',
+         views.oib_plan_list,
+         name='oib_plan_list'
+        ),
+    path('clients/<int:contact_id>/plans/<int:grant_year>/<int:service_delivery_type_id>/',
+         views.oib_plan_show,
+         name='oib_plan_show'
+        ),
 ]

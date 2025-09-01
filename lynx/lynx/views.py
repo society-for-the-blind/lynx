@@ -1,6 +1,5 @@
 from datetime    import datetime, date, timedelta
 from django      import forms
-from django.apps import apps
 from django.conf import settings
 
 from django.contrib.auth.decorators import login_required
@@ -2630,6 +2629,7 @@ def assignment_advanced_result_view(request):
 # OIB RE-WRITE                                     #
 ####################################################
 
+# SERVICE EVENTS (aka notes)
 @login_required
 def show_all_oib_service_events_per_client(request, contact_id):
     # notes = lm.SipNote.objects.filter(contact_id=contact_id).order_by('-note_date')
@@ -2784,6 +2784,8 @@ def oib_service_event_add(request):
 
         return render(request, oib_service_event_add_template_path, context)
 
+# TODO 2025_09_01_1524 This is almost the same as `oib_service_event_add`
+#                      Refactor to avoid code duplication
 @login_required
 def oib_service_event_edit(request, oib_service_event_id):
     oib_service_event_add_template_path = "lynx/oib/oib_service_event_add.html"
@@ -2820,7 +2822,10 @@ def oib_service_event_edit(request, oib_service_event_id):
         user_role_formset = OIBServiceEventUserRoleFormSet(request.POST, prefix=user_role_form_prefix)
         client_formset = OIBServiceEventContactFormSet(request.POST, prefix=client_form_prefix)
 
-        if form.is_valid() and user_role_formset.is_valid() and client_formset.is_valid():
+        if      form.is_valid() \
+            and user_role_formset.is_valid() \
+            and client_formset.is_valid():
+
             service_event.organizing_program = form.cleaned_data['program']
             service_event.oib_service_delivery_type = lm.OIBServiceDeliveryType.objects.get(pk=form.cleaned_data['plan_type'])
             service_event.date = form.cleaned_data['note_date']
@@ -2839,6 +2844,7 @@ def oib_service_event_edit(request, oib_service_event_id):
                     oib_service_event=service_event,
                     oib_service=service,
                 )
+
             for row in user_role_formset.cleaned_data:
                 if row and not row.get('DELETE', False):
                     lm.OIBServiceEventInstructor.objects.create(
@@ -2846,6 +2852,7 @@ def oib_service_event_edit(request, oib_service_event_id):
                         instructor=row['instructor'],
                         oib_service_event_instructor_role=row['role'],
                     )
+
             for row in client_formset.cleaned_data:
                 if row and not row.get('DELETE', False):
                     lm.OIBServiceEventContact.objects.create(
@@ -2894,4 +2901,57 @@ def oib_service_event_edit(request, oib_service_event_id):
         }
         return render(request, oib_service_event_add_template_path, context)
 
+# "PLANS" (virtual)
+@login_required
+def oib_plan_list(request, contact_id):
+    client = lm.Contact.objects.get(id=contact_id)
+
+    # Get all distinct combinations of grant year and service delivery type
+    plans = (
+        lm.OIBServiceEvent.objects
+        .filter(contacts__id=contact_id)
+        .values(
+            'id',
+            'oib_service_delivery_type__id',
+            'oib_service_delivery_type__oib_service_delivery_type'
+        )
+        .annotate(
+            grant_year=ddm.Case(
+                ddm.When(date__month__gte=10, then=ddm.F('date__year')),
+                default=ddm.F('date__year') - 1,
+                output_field=ddm.IntegerField()
+            )
+        )
+        .distinct()
+        .order_by('-grant_year', 'oib_service_delivery_type__oib_service_delivery_type')
+    )
+
+    plans = list(plans)
+    for plan in plans:
+        plan['plan_group'] = f"10/1/{plan['grant_year']} - {plan['oib_service_delivery_type__oib_service_delivery_type']}"
+
+    return render(request, "lynx/oib/oib_plan_list.html", {
+        "client": client,
+        "plans": list(plans),
+    })
+
+@login_required
+def oib_plan_show(request, contact_id, grant_year, service_delivery_type_id):
+    # Calculate grant year range (e.g., 2025 means 2025-10-01 to 2026-09-30)
+    start = date(grant_year, 10, 1)
+    end = date(grant_year + 1, 9, 30)
+
+    events = lm.OIBServiceEvent.objects.filter(
+        contacts__id=contact_id,
+        oib_service_delivery_type_id=service_delivery_type_id,
+        date__gte=start,
+        date__lte=end
+    ).distinct()
+
+    return render(request, "lynx/client_plan_detail.html", {
+        "events": events,
+        "contact_id": contact_id,
+        "grant_year": grant_year,
+        "service_delivery_type_id": service_delivery_type_id,
+    })
 # vim: set foldmethod=marker foldmarker={{-,}}-:

@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Client Plans</title>
+</head>
+<body>
+    <h1>Plans for {{ client }}</h1>
+    <ul>
+        {% regroup plans by plan_group as plans_by_group %}
+        {% for group in plans_by_group %}
+            <li>
+                <strong>{{ group.grouper }}</strong>
+                <ul>
+                    {% for plan in group.list %}
+                        <li>
+                            <a href="{% url 'lynx:oib_service_event_show' plan.id %}">{{ plan.id }}</a>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </li>
+        {% empty %}
+            <li>No plans found.</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
