@@ -4,6 +4,12 @@
     <title>Client Plans</title>
 </head>
 <body>
+    <!--
+    TODO 2025_09_01_1736 Add dropdowns to filter by
+                         + plan name,
+                         + service delivery type (i.e., "plan" type), and
+                         + grant year
+    -->
     <h1>Plans for {{ client }}</h1>
     <ul>
         {% regroup plans by plan_group as plans_by_group %}
