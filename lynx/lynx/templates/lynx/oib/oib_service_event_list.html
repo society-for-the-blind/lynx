@@ -7,6 +7,7 @@
 <table>
     <thead>
         <tr>
+            <th>TODO Plan Name</th>
             <th>Date</th>
             <th>Program</th>
             <th>Plan Type</th>
@@ -18,6 +19,10 @@
     <tbody>
     {% for event in service_events %}
         <tr>
+            <!--
+                TODO 2025_08_31_1627 Add plan name column
+            -->
+            <td>{{ event.date }}</td>
             <td>{{ event.date }}</td>
             <td>{{ event.organizing_program }}</td>
             <td>{{ event.oib_service_delivery_type }}</td>
