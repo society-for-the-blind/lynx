@@ -2938,6 +2938,7 @@ def oib_plan_list(request, contact_id):
 @login_required
 def oib_plan_show(request, contact_id, grant_year, service_delivery_type_id):
     client = lm.Contact.objects.get(id=contact_id)
+    service_delivery_type = lm.OIBServiceDeliveryType.objects.get(id=service_delivery_type_id)
     # Calculate grant year range (Oct 1 to Sep 30)
     start_date = date(grant_year, 10, 1)
     end_date = date(grant_year + 1, 9, 30)
@@ -2955,7 +2956,66 @@ def oib_plan_show(request, contact_id, grant_year, service_delivery_type_id):
         "client": client,
         "grant_year": grant_year,
         "service_delivery_type_id": service_delivery_type_id,
+        "service_delivery_type_name": service_delivery_type.oib_service_delivery_type,
         "service_events": service_events,
+    })
+
+@login_required
+def oib_plan_show(request, contact_id, grant_year, service_delivery_type_id):
+    client = lm.Contact.objects.get(id=contact_id)
+    service_delivery_type = lm.OIBServiceDeliveryType.objects.get(id=service_delivery_type_id)
+    # Calculate grant year range (Oct 1 to Sep 30)
+    start_date = date(grant_year, 10, 1)
+    end_date = date(grant_year + 1, 9, 30)
+    service_events = (
+        lm.OIBServiceEvent.objects
+        .filter(
+            contacts__id=contact_id,
+            oib_service_delivery_type__id=service_delivery_type_id,
+            date__gte=start_date,
+            date__lte=end_date
+        )
+        .order_by('-date')
+    )
+
+    # Get all outcome types
+    outcome_types = lm.OibOutcomeType.objects.all()
+
+    # Get outcomes for this client
+    client_outcomes = lm.OibOutcome.objects.filter(contact_id=contact_id)
+    # Map type_id to outcome_choice string
+    client_outcomes_map = {
+        o.oib_outcome_type_choice.oib_outcome_type_id:
+        o.oib_outcome_type_choice.oib_outcome_choice.oib_outcome_choice
+        for o in client_outcomes
+    }
+
+    # Default choices for each type (by id)
+    default_choices_per_outcome_type_id = {
+        # These IDs are from your migration 0110_add_oiboutcometype.py
+        0: "Not assessed",      # AT Goal Outcome
+        1: "Not assessed",      # IL/A Service Goal Outcome
+        2: "Plan not complete", # Living Situation Outcome
+        3: "Plan not complete", # Home and Community Involvement Outcome
+        4: "Not Interested in Employment", # Employment Outcome
+    }
+
+    # Build a list of (type, choice) for display
+    outcomes_display = []
+    for ot in outcome_types:
+        # No fallback default on `get` because all OIB outcome type should have
+        # a set of choices set already (either in migrations 110, 111, or 112,
+        # or added later via admin interface)
+        choice = client_outcomes_map.get(ot.id, default_choices_per_outcome_type_id.get(ot.id))
+        outcomes_display.append((ot.oib_outcome_type, choice))
+
+    return render(request, "lynx/oib/oib_plan_show.html", {
+        "client": client,
+        "grant_year": grant_year,
+        "service_delivery_type_id": service_delivery_type_id,
+        "service_delivery_type_name": service_delivery_type.oib_service_delivery_type,
+        "service_events": service_events,
+        "outcomes_display": outcomes_display,
     })
 
 # vim: set foldmethod=marker foldmarker={{-,}}-:

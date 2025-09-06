@@ -986,6 +986,8 @@ class OIBServiceEventContact(models.Model):
 #     def __str__(self):
 #         return f"{self.oib_service_event} {self.oib_program}"
 
+# TODO 2025_09_06_1520 Make OIB outcome model names conform to other OIB models.
+
 # OIB OUTCOMES
 # ------------
 # **OIB outcomes are independent of "plans".** They only appear as dropdowns on plans
