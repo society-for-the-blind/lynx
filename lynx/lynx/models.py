@@ -986,6 +986,11 @@ class OIBServiceEventContact(models.Model):
 #     def __str__(self):
 #         return f"{self.oib_service_event} {self.oib_program}"
 
+# OIB OUTCOMES
+# ------------
+# **OIB outcomes are independent of "plans".** They only appear as dropdowns on plans
+# because that was the case in previous versions of LYNX, but quarterly OIB reports
+# only have 4 outcomes per client and don't even mention "plans" once.
 class OibOutcomeType(models.Model):
     oib_outcome_type = models.CharField(max_length=255)
     created = models.DateTimeField(auto_now_add=True)
@@ -1006,6 +1011,15 @@ class OibOutcomeChoice(models.Model):
 
     def __str__(self):
         return self.oib_outcome_choice
+
+# TODO 2025_09_06_1254 Document models; especially ones that have pre-set values
+#                      in migrations.
+#      =======================================================================
+#      Added this one here before the OIB outcome-related models because they
+#      are the perfect example. For example, `OibOutcomeTypeChoice` has pre-set
+#      combinations of OIB outcome types and their choices as some outcome types
+#      have the same set of choices associated with them (see migration
+#      0112_add_oiboutcometypechoice.py).
 
 class OibOutcomeTypeChoice(models.Model):
     oib_outcome_type = models.ForeignKey(OibOutcomeType, on_delete=models.PROTECT)
