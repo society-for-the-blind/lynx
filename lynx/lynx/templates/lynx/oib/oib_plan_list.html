@@ -15,7 +15,9 @@
         {% regroup plans by plan_group as plans_by_group %}
         {% for group in plans_by_group %}
             <li>
-                <strong>{{ group.grouper }}</strong>
+                <a href="{% url 'lynx:oib_plan_show' client.id group.list.0.grant_year group.list.0.oib_service_delivery_type__id %}">
+                    <strong>{{ group.grouper }}</strong>
+                </a>
                 <ul>
                     {% for plan in group.list %}
                         <li>

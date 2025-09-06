@@ -179,9 +179,8 @@ urlpatterns = [
          views.oib_plan_list,
          name='oib_plan_list'
         ),
-    # See NOTE 2025_09_01_1733
-    # path('clients/<int:contact_id>/plans/<int:grant_year>/<int:service_delivery_type_id>/',
-    #      views.oib_plan_show,
-    #      name='oib_plan_show'
-    #     ),
+    path('clients/<int:contact_id>/plans/<int:grant_year>/<int:service_delivery_type_id>',
+         views.oib_plan_show,
+         name='oib_plan_show'
+        ),
 ]

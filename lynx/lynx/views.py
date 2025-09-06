@@ -2935,26 +2935,27 @@ def oib_plan_list(request, contact_id):
         "plans": list(plans),
     })
 
-# NOTE 2025_09_01_1733 I don't think this will be needed as "plans"
-#      (with their corresponging service events) can be filtered
-#      directly in `oib_plan_list` view.
-# @login_required
-# def oib_plan_show(request, contact_id, grant_year, service_delivery_type_id):
-#     # Calculate grant year range (e.g., 2025 means 2025-10-01 to 2026-09-30)
-#     start = date(grant_year, 10, 1)
-#     end = date(grant_year + 1, 9, 30)
+@login_required
+def oib_plan_show(request, contact_id, grant_year, service_delivery_type_id):
+    client = lm.Contact.objects.get(id=contact_id)
+    # Calculate grant year range (Oct 1 to Sep 30)
+    start_date = date(grant_year, 10, 1)
+    end_date = date(grant_year + 1, 9, 30)
+    service_events = (
+        lm.OIBServiceEvent.objects
+        .filter(
+            contacts__id=contact_id,
+            oib_service_delivery_type__id=service_delivery_type_id,
+            date__gte=start_date,
+            date__lte=end_date
+        )
+        .order_by('-date')
+    )
+    return render(request, "lynx/oib/oib_plan_show.html", {
+        "client": client,
+        "grant_year": grant_year,
+        "service_delivery_type_id": service_delivery_type_id,
+        "service_events": service_events,
+    })
 
-#     events = lm.OIBServiceEvent.objects.filter(
-#         contacts__id=contact_id,
-#         oib_service_delivery_type_id=service_delivery_type_id,
-#         date__gte=start,
-#         date__lte=end
-#     ).distinct()
-
-#     return render(request, "lynx/client_plan_detail.html", {
-#         "events": events,
-#         "contact_id": contact_id,
-#         "grant_year": grant_year,
-#         "service_delivery_type_id": service_delivery_type_id,
-#     })
 # vim: set foldmethod=marker foldmarker={{-,}}-:

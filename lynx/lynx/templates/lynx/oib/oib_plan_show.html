@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Plan Details</title>
+    </head>
+    <body>
+        <h1>Plan for {{ client }} (Grant Year: {{ grant_year }})</h1>
+        <ul>
+            {% for event in service_events %}
+                <li>
+                    <a href="{% url 'lynx:oib_service_event_show' event.id %}">Service Event #{{ event.id }}</a>
+                    - {{ event.date }} - {{ event.oib_service_delivery_type }}
+                </li>
+            {% empty %}
+                <li>No service events found for this plan.</li>
+            {% endfor %}
+        </ul>
+    </body>
+</html>
