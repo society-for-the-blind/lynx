@@ -1,4 +1,5 @@
 {% extends 'lynx/base.html' %}
+{% load get_item %}
 
 {% block title %}Plans for {{ client }}{% endblock %}
 
@@ -10,14 +11,49 @@
             <a href="{% url 'lynx:oib_service_event_show' event.id %}">Service Event #{{ event.id }}</a>
             - {{ event.date }} - {{ event.oib_service_delivery_type }}
         </li>
+    <!--
+        NOTE 2025_09_06_1646 Technically, this clause is unnecessary as plans are
+                             virtual (if there are no service events for a given
+                             grant year and service delivery type, then it won't
+                             even show up in the list of available plans), but it
+                             is possible that someone deletes an event and another
+                             user has a plan open that they refresh.
+    -->
     {% empty %}
         <li>No service events found for this plan.</li>
     {% endfor %}
 </ul>
+
 <h2>Outcomes</h2>
+{% if edit_mode %}
+<form method="post">
+    {% csrf_token %}
+    <ul>
+        {% for ot in outcome_types %}
+            <li>
+                <label><strong>{{ ot.oib_outcome_type }}</strong></label>
+                <select name="outcome_{{ ot.id }}">
+                    {% for choice in choices_by_type|get_item:ot.id %}
+                        <option value="{{ choice.oib_outcome_choice.id }}"
+                            {% if client_outcomes_map|get_item:ot.id == choice.oib_outcome_choice.id %}selected{% endif %}>
+                            {{ choice.oib_outcome_choice.oib_outcome_choice }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </li>
+        {% endfor %}
+    </ul>
+    <button type="submit" class="btn btn-success">Save Outcomes</button>
+    <a href="{% url 'lynx:oib_plan_show' client.id grant_year service_delivery_type_id %}" class="btn btn-secondary">Cancel</a>
+</form>
+{% else %}
 <ul>
     {% for outcome_type, outcome_choice in outcomes_display %}
         <li><strong>{{ outcome_type }}:</strong> {{ outcome_choice }}</li>
     {% endfor %}
 </ul>
+<a class="btn btn-primary" href="{% url 'lynx:oib_plan_edit' client.id grant_year service_delivery_type_id %}">
+    Edit Outcomes
+</a>
+{% endif %}
 {% endblock %}

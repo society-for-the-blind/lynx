@@ -183,4 +183,8 @@ urlpatterns = [
          views.oib_plan_show,
          name='oib_plan_show'
         ),
+    path('clients/<int:contact_id>/plans/<int:grant_year>/<int:service_delivery_type_id>/edit',
+         views.oib_plan_edit,
+         name='oib_plan_edit'
+        ),
 ]

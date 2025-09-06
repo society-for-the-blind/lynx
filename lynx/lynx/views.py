@@ -2983,6 +2983,15 @@ def oib_plan_show(request, contact_id, grant_year, service_delivery_type_id):
 
     # Get outcomes for this client
     client_outcomes = lm.OibOutcome.objects.filter(contact_id=contact_id)
+
+    # TODO 2025_09_06_1755 Once TODO 2025_09_061753 is taken care of, use this unused variable
+    #                      to fix `default_choices_per_outcome_type_id` below in order to avoid
+    #                      hardcoding the choices.
+    choices_by_type = {
+        ot.id: list(lm.OibOutcomeTypeChoice.objects.filter(oib_outcome_type=ot).select_related('oib_outcome_choice'))
+        for ot in outcome_types
+    }
+
     # Map type_id to outcome_choice string
     client_outcomes_map = {
         o.oib_outcome_type_choice.oib_outcome_type_id:
@@ -3016,6 +3025,66 @@ def oib_plan_show(request, contact_id, grant_year, service_delivery_type_id):
         "service_delivery_type_name": service_delivery_type.oib_service_delivery_type,
         "service_events": service_events,
         "outcomes_display": outcomes_display,
+        "edit_mode": False,
+    })
+
+# TODO 2025_09_06_1753 Same as TODO 2025_09_01_1524, only the view names need to be
+#                      replaced with `oib_plan_show` and `oib_plan_edit`, respectively.`
+@login_required
+def oib_plan_edit(request, contact_id, grant_year, service_delivery_type_id):
+    client = lm.Contact.objects.get(id=contact_id)
+    service_delivery_type = lm.OIBServiceDeliveryType.objects.get(id=service_delivery_type_id)
+    start_date = date(grant_year, 10, 1)
+    end_date = date(grant_year + 1, 9, 30)
+    service_events = (
+        lm.OIBServiceEvent.objects
+        .filter(
+            contacts__id=contact_id,
+            oib_service_delivery_type__id=service_delivery_type_id,
+            date__gte=start_date,
+            date__lte=end_date
+        )
+        .order_by('-date')
+    )
+
+    outcome_types = lm.OibOutcomeType.objects.all()
+    choices_by_type = {
+        ot.id: list(lm.OibOutcomeTypeChoice.objects.filter(oib_outcome_type=ot).select_related('oib_outcome_choice'))
+        for ot in outcome_types
+    }
+    client_outcomes = lm.OibOutcome.objects.filter(contact_id=contact_id)
+    client_outcomes_map = {
+        o.oib_outcome_type_choice.oib_outcome_type_id: o.oib_outcome_type_choice.oib_outcome_choice.id
+        for o in client_outcomes
+    }
+    default_choices_per_outcome_type_id = {
+        0: "Not assessed",
+        1: "Not assessed",
+        2: "Plan not complete",
+        3: "Plan not complete",
+        4: "Not Interested in Employment",
+    }
+
+    if request.method == "POST":
+        # Save selected choices for each outcome type
+        for ot in outcome_types:
+            choice_id = request.POST.get(f"outcome_{ot.id}")
+            if choice_id:
+                lm.OibOutcome.objects.filter(contact_id=contact_id, oib_outcome_type_choice__oib_outcome_type=ot).delete()
+                otc = lm.OibOutcomeTypeChoice.objects.get(oib_outcome_type=ot, oib_outcome_choice_id=choice_id)
+                lm.OibOutcome.objects.create(contact_id=contact_id, oib_outcome_type_choice=otc)
+        return redirect('lynx:oib_plan_show', contact_id, grant_year, service_delivery_type_id)
+
+    return render(request, "lynx/oib/oib_plan_show.html", {
+        "client": client,
+        "grant_year": grant_year,
+        "service_delivery_type_id": service_delivery_type_id,
+        "service_delivery_type_name": service_delivery_type.oib_service_delivery_type,
+        "service_events": service_events,
+        "outcome_types": outcome_types,
+        "choices_by_type": choices_by_type,
+        "client_outcomes_map": client_outcomes_map,
+        "edit_mode": True,
     })
 
 # vim: set foldmethod=marker foldmarker={{-,}}-:
