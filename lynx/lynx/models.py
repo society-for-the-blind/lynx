@@ -1070,6 +1070,8 @@ class OibOutcome(models.Model):
             raise ValueError("Updates are not allowed for OibOutcome records.")
         super(OibOutcome, self).save(*args, **kwargs)
 
+    # TODO 2025_09_07_1700 This clearly has no effect as the view was able to delete records like it was
+    #                      it was nothing.
     def delete(self, *args, **kwargs):
         raise ValueError("Deletions are not allowed for OibOutcome records.")
 

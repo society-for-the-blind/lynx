@@ -20,7 +20,7 @@ TODO 2025_09_01_1736 Add dropdowns to filter by
             <ul>
                 {% for plan in group.list %}
                     <li>
-                        <a href="{% url 'lynx:oib_service_event_show' plan.id %}">{{ plan.id }}</a>
+                        <a href="{% url 'lynx:oib_service_event_show' plan.id %}">{{ plan.date }}</a>
                     </li>
                 {% endfor %}
             </ul>
