@@ -986,14 +986,12 @@ class OIBServiceEventContact(models.Model):
 #     def __str__(self):
 #         return f"{self.oib_service_event} {self.oib_program}"
 
-# TODO 2025_09_06_1520 Make OIB outcome model names conform to other OIB models.
-
 # OIB OUTCOMES
 # ------------
 # **OIB outcomes are independent of "plans".** They only appear as dropdowns on plans
 # because that was the case in previous versions of LYNX, but quarterly OIB reports
 # only have 4 outcomes per client and don't even mention "plans" once.
-class OibOutcomeType(models.Model):
+class OIBOutcomeType(models.Model):
     oib_outcome_type = models.CharField(max_length=255)
     created = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)
@@ -1002,14 +1000,14 @@ class OibOutcomeType(models.Model):
     def __str__(self):
         return self.oib_outcome_type
 
-class OibOutcomeChoice(models.Model):
+class OIBOutcomeChoice(models.Model):
     oib_outcome_choice = models.CharField(max_length=255)
     created = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)
     history = HistoricalRecords()
 
     # many-to-many relationships
-    outcome_types = models.ManyToManyField(OibOutcomeType, through='OibOutcomeTypeChoice', through_fields=('oib_outcome_choice', 'oib_outcome_type'))
+    outcome_types = models.ManyToManyField(OIBOutcomeType, through='OIBOutcomeTypeChoice', through_fields=('oib_outcome_choice', 'oib_outcome_type'))
 
     def __str__(self):
         return self.oib_outcome_choice
@@ -1018,14 +1016,14 @@ class OibOutcomeChoice(models.Model):
 #                      in migrations.
 #      =======================================================================
 #      Added this one here before the OIB outcome-related models because they
-#      are the perfect example. For example, `OibOutcomeTypeChoice` has pre-set
+#      are the perfect example. For example, `OIBOutcomeTypeChoice` has pre-set
 #      combinations of OIB outcome types and their choices as some outcome types
 #      have the same set of choices associated with them (see migration
 #      0112_add_oiboutcometypechoice.py).
 
-class OibOutcomeTypeChoice(models.Model):
-    oib_outcome_type = models.ForeignKey(OibOutcomeType, on_delete=models.PROTECT)
-    oib_outcome_choice = models.ForeignKey(OibOutcomeChoice, on_delete=models.PROTECT)
+class OIBOutcomeTypeChoice(models.Model):
+    oib_outcome_type = models.ForeignKey(OIBOutcomeType, on_delete=models.PROTECT)
+    oib_outcome_choice = models.ForeignKey(OIBOutcomeChoice, on_delete=models.PROTECT)
     created = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)
     history = HistoricalRecords()
@@ -1052,8 +1050,8 @@ class OibOutcomeTypeChoice(models.Model):
 #      application level (Django models) and not on the DB
 #      level (i.e., migrations), in case some manual adjustments
 #      are needed in the future.
-class OibOutcome(models.Model):
-    oib_outcome_type_choice = models.ForeignKey(OibOutcomeTypeChoice, on_delete=models.PROTECT)
+class OIBOutcome(models.Model):
+    oib_outcome_type_choice = models.ForeignKey(OIBOutcomeTypeChoice, on_delete=models.PROTECT)
     contact = models.ForeignKey(Contact, on_delete=models.PROTECT)
     created = models.DateTimeField(auto_now_add=True)
     # This field may seem superfluous if the model is append-only
@@ -1067,13 +1065,13 @@ class OibOutcome(models.Model):
 
     def save(self, *args, **kwargs):
         if self.pk is not None:
-            raise ValueError("Updates are not allowed for OibOutcome records.")
-        super(OibOutcome, self).save(*args, **kwargs)
+            raise ValueError("Updates are not allowed for OIBOutcome records.")
+        super(OIBOutcome, self).save(*args, **kwargs)
 
     # TODO 2025_09_07_1700 This clearly has no effect as the view was able to delete records like it was
     #                      it was nothing.
     def delete(self, *args, **kwargs):
-        raise ValueError("Deletions are not allowed for OibOutcome records.")
+        raise ValueError("Deletions are not allowed for OIBOutcome records.")
 
     class Meta:
         verbose_name = "OIB Outcome"

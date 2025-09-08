@@ -2955,13 +2955,13 @@ def oib_plan_show(request, contact_id, grant_year, service_delivery_type_id):
     )
 
     # Get all outcome types
-    outcome_types = lm.OibOutcomeType.objects.all()
+    outcome_types = lm.OIBOutcomeType.objects.all()
 
     # NOTE 2025_09_06_1854 Outcomes will only be shown up to the end of the grant year - but they won't be
     #                      re-set at the start of the new grant year. (This also makes sense because a client's
     #                      won't be lost just because a new grant year has started.)
     client_outcomes_up_to_grant_year_end = (
-        lm.OibOutcome.objects
+        lm.OIBOutcome.objects
         .filter(contact_id=contact_id, created__lte=end_date)
         .order_by('oib_outcome_type_choice__oib_outcome_type_id', '-created')
     )
@@ -2970,7 +2970,7 @@ def oib_plan_show(request, contact_id, grant_year, service_delivery_type_id):
     #                      to fix `default_choices_per_outcome_type_id` below in order to avoid
     #                      hardcoding the choices.
     choices_by_type = {
-        ot.id: list(lm.OibOutcomeTypeChoice.objects.filter(oib_outcome_type=ot).select_related('oib_outcome_choice'))
+        ot.id: list(lm.OIBOutcomeTypeChoice.objects.filter(oib_outcome_type=ot).select_related('oib_outcome_choice'))
         for ot in outcome_types
     }
 
@@ -3029,14 +3029,14 @@ def oib_plan_edit(request, contact_id, grant_year, service_delivery_type_id):
         .order_by('-date')
     )
 
-    outcome_types = lm.OibOutcomeType.objects.all()
+    outcome_types = lm.OIBOutcomeType.objects.all()
     choices_by_type = {
-        ot.id: list(lm.OibOutcomeTypeChoice.objects.filter(oib_outcome_type=ot).select_related('oib_outcome_choice'))
+        ot.id: list(lm.OIBOutcomeTypeChoice.objects.filter(oib_outcome_type=ot).select_related('oib_outcome_choice'))
         for ot in outcome_types
     }
     # Get all outcomes up to the end of the grant year, ordered newest first
     client_outcomes_up_to_grant_year_end = (
-        lm.OibOutcome.objects
+        lm.OIBOutcome.objects
         .filter(contact_id=contact_id, created__lte=end_date)
         .order_by('oib_outcome_type_choice__oib_outcome_type_id', '-created')
     )
@@ -3053,8 +3053,8 @@ def oib_plan_edit(request, contact_id, grant_year, service_delivery_type_id):
             choice_id = request.POST.get(f"outcome_{ot.id}")
             latest_choice_id = client_outcomes_map.get(ot.id)
             if choice_id and str(choice_id) != str(latest_choice_id):
-                otc = lm.OibOutcomeTypeChoice.objects.get(oib_outcome_type=ot, oib_outcome_choice_id=choice_id)
-                lm.OibOutcome.objects.create(contact_id=contact_id, oib_outcome_type_choice=otc)
+                otc = lm.OIBOutcomeTypeChoice.objects.get(oib_outcome_type=ot, oib_outcome_choice_id=choice_id)
+                lm.OIBOutcome.objects.create(contact_id=contact_id, oib_outcome_type_choice=otc)
         return redirect('lynx:oib_plan_show', contact_id, grant_year, service_delivery_type_id)
 
     return render(request, "lynx/oib/oib_plan_show.html", {
