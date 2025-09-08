@@ -3,14 +3,16 @@
 {% block title %}All OIB notes{% endblock %}
 
 {% block content %}
-<h1>All OIB notes</h1>
+<h1>All notes</h1>
+
+<a href="{% url 'lynx:oib_service_event_add' %}" class="btn btn-primary" style="margin-bottom: 1em;">Add new note</a>
+
 <table>
     <thead>
         <tr>
-            <th>TODO Plan Name</th>
+            <th>Plan</th>
             <th>Date</th>
             <th>Program</th>
-            <th>Plan Type</th>
             <th>Note</th>
             <th>Entered By</th>
             <th>Actions</th>
@@ -20,12 +22,16 @@
     {% for event in service_events %}
         <tr>
             <!--
-                TODO 2025_08_31_1627 Add plan name column
+                TODO 2025_09_08_1935 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                                     The logic to create plan names should only at one place.
+                                     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+                                     Right now it is recreated at each place that has a plan
+                                     name.
             -->
-            <td>{{ event.date }}</td>
+            <td>10/1/{{ event.date|date:"Y" }} - {{ event.oib_service_delivery_type }}</td>
             <td>{{ event.date }}</td>
             <td>{{ event.organizing_program }}</td>
-            <td>{{ event.oib_service_delivery_type }}</td>
             <td>{{ event.note|truncatechars:40 }}</td>
             <td>{{ event.entered_by.get_full_name }}</td>
             <td>
