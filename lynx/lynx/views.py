@@ -2962,7 +2962,11 @@ def oib_plan_show(request, contact_id, grant_year, service_delivery_type_id):
     #                      won't be lost just because a new grant year has started.)
     client_outcomes_up_to_grant_year_end = (
         lm.OIBOutcome.objects
-        .filter(contact_id=contact_id, created__lte=end_date)
+        .filter(
+            contact_id=contact_id,
+            oib_service_delivery_type_id=service_delivery_type_id,
+            grant_year=grant_year
+        )
         .order_by('oib_outcome_type_choice__oib_outcome_type_id', '-created')
     )
 
@@ -3054,7 +3058,13 @@ def oib_plan_edit(request, contact_id, grant_year, service_delivery_type_id):
             latest_choice_id = client_outcomes_map.get(ot.id)
             if choice_id and str(choice_id) != str(latest_choice_id):
                 otc = lm.OIBOutcomeTypeChoice.objects.get(oib_outcome_type=ot, oib_outcome_choice_id=choice_id)
-                lm.OIBOutcome.objects.create(contact_id=contact_id, oib_outcome_type_choice=otc)
+                lm.OIBOutcome.objects.create(
+                    contact_id=contact_id,
+                    oib_outcome_type_choice=otc,
+                    user=request.user,
+                    oib_service_delivery_type=service_delivery_type,
+                    grant_year=grant_year
+                )
         return redirect('lynx:oib_plan_show', contact_id, grant_year, service_delivery_type_id)
 
     return render(request, "lynx/oib/oib_plan_show.html", {

@@ -1053,6 +1053,9 @@ class OIBOutcomeTypeChoice(models.Model):
 class OIBOutcome(models.Model):
     oib_outcome_type_choice = models.ForeignKey(OIBOutcomeTypeChoice, on_delete=models.PROTECT)
     contact = models.ForeignKey(Contact, on_delete=models.PROTECT)
+    user = models.ForeignKey(User, on_delete=models.PROTECT, null=True, blank=True)  # Active user
+    oib_service_delivery_type = models.ForeignKey(OIBServiceDeliveryType, on_delete=models.PROTECT, null=True, blank=True)
+    grant_year = models.IntegerField(null=True, blank=True)
     created = models.DateTimeField(auto_now_add=True)
     # This field may seem superfluous if the model is append-only
     # and immutable, but it is good to have in case someone
