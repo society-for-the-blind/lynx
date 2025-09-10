@@ -8,8 +8,9 @@
 <ul>
     {% for event in service_events %}
         <li>
-            <a href="{% url 'lynx:oib_service_event_show' event.id %}">Service Event #{{ event.id }}</a>
-            - {{ event.date }} - {{ event.oib_service_delivery_type }}
+            <a href="{% url 'lynx:oib_service_event_show' event.id %}">
+                {{ event.date }} - {{ event.oib_service_delivery_type }}
+            </a>
         </li>
     <!--
         NOTE 2025_09_06_1646 Technically, this clause is unnecessary as plans are

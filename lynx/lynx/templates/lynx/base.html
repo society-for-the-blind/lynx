@@ -37,9 +37,9 @@
             {% if user.is_authenticated %}
                 <a href="/lynx/clients/" title="Clients">Clients</a>
                 <a href="/lynx/instructors/" title="Assignments">Assignments</a>
-                <a href="/lynx/volunteers/" title="Volunteers">Volunteers</a>
-                <a href="/lynx/add-volunteer-hours/" title="Add Volunteer Hours">Add Volunteer Hours</a>
                 <a href="/lynx/manual" title="Lynx Manual">Lynx Manual</a>
+                <hr>
+                <a href="{% url 'lynx:oib_service_event_list' %}">OIB Notes</a>
                 <hr>
                 <a href="/admin/">Admin</a>
                 <a href="/lynx/reports/">Reports</a>

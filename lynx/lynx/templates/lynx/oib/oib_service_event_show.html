@@ -42,7 +42,11 @@
 <h3>Clients</h3>
 <ul>
   {% for contact in service_event.contacts.all %}
-    <li>{{ contact.first_name }} {{ contact.last_name }}</li>
+    <li>
+      <a href="{% url 'lynx:client' contact.id %}">
+        {{ contact.first_name }} {{ contact.last_name }}
+      </a>
+    </li>
   {% empty %}
     <li>No contacts recorded.</li>
   {% endfor %}
