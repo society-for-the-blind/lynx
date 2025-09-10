@@ -1,24 +1,19 @@
 from django.contrib import admin
+from django.db import models as dj_models
+from . import models as lm
 
-# Register your models here.
+class ShowIDAdmin(admin.ModelAdmin):
+    def get_list_display(self, request):
+        fields = [field.name for field in self.model._meta.fields if field.name != 'id']
+        return ['id'] + fields
 
-
-from .models import Contact, Intake, Address, Authorization, Email, EmergencyContact, SipPlan, SipNote, \
-    IntakeNote, IntakeServiceArea, Phone, ProgressReport, LessonNote, Assignment
-
-admin.site.register(Contact)
-admin.site.register(Intake)
-admin.site.register(Address)
-admin.site.register(Authorization)
-admin.site.register(SipPlan)
-admin.site.register(SipNote)
-admin.site.register(Email)
-admin.site.register(EmergencyContact)
-admin.site.register(IntakeNote)
-admin.site.register(IntakeServiceArea)
-# admin.site.register(OutsideAgency)
-admin.site.register(Phone)
-admin.site.register(ProgressReport)
-admin.site.register(LessonNote)
-# admin.site.register(Staff)
-admin.site.register(Assignment)
+for model in lm.__dict__.values():
+    if (
+        isinstance(model, type)
+        and issubclass(model, dj_models.Model)
+        and not getattr(model._meta, 'abstract', False)  # <-- skip abstract models
+    ):
+        try:
+            admin.site.register(model, ShowIDAdmin)
+        except admin.sites.AlreadyRegistered:
+            pass
