@@ -17,3 +17,7 @@ for model in lm.__dict__.values():
             admin.site.register(model, ShowIDAdmin)
         except admin.sites.AlreadyRegistered:
             pass
+
+# TODO 2025_09_14_1408 Add filters for certain models.
+#                      E.g., For HistoricalContact, allow filtering by Contact ID.
+#                            For ContactProgram, allow filtering by contact id and program.
