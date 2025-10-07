@@ -145,11 +145,11 @@ urlpatterns = [
          name='oib_service_event_show'
         ),
     path('oib-service-events/new',
-         views.oib_service_event_add,
+         views.oib_service_event_form,
          name='oib_service_event_add'
         ),
     path('oib-service-events/<int:oib_service_event_id>/edit',
-         views.oib_service_event_edit,
+         views.oib_service_event_form,
          name='oib_service_event_edit'
         ),
     path('oib-service-events/<int:oib_service_event_id>/delete',

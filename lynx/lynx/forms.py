@@ -579,7 +579,6 @@ class OIBServiceEventForm(forms.Form):
     )
     note_date = forms.DateField(
         widget=forms.SelectDateWidget(years=list(range(1900, 2100))),
-        initial=timezone.now(),
         required=True,
         label='Note Date',
     )
@@ -617,6 +616,7 @@ class OIBServiceEventForm(forms.Form):
             ordering=ddm.Case(*when_list, default=9999, output_field=ddm.IntegerField())
         ).order_by('ordering', 'long_name')
         self.fields['services'].queryset = qs
+        self.fields['note_date'].initial = timezone.localdate()
 
 # TODO DRY up - there is an (almost) exact dup of this class in `filters.py`
 class UserModelChoiceField(forms.ModelChoiceField):
@@ -637,6 +637,17 @@ class OIBServiceEventUserRoleForm(forms.Form):
         empty_label="Select a role",
         required=True,
     )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        desired_index = 0
+        qs = self.fields['role'].queryset
+        try:
+            role_obj = qs.order_by('pk')[desired_index]
+        except (IndexError, TypeError):
+            role_obj = qs.order_by('pk').first()
+        if role_obj:
+            self.fields['role'].initial = role_obj.pk
 
 # TODO DRY up, again - I'm pretty sure this has been duplicated elsewhere
 #      (I think in the Clients link there is a similar dropdown that uses the

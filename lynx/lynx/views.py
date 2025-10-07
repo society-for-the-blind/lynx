@@ -2483,8 +2483,12 @@ def parse_duration_string(s):
     return timedelta(hours=h, minutes=m, seconds=sec)
 
 @login_required
-def oib_service_event_add(request):
-    oib_service_event_add_template_path = "lynx/oib/oib_service_event_add.html"
+def oib_service_event_form(request, oib_service_event_id=None):
+    """Unified view for both adding and editing OIB service events."""
+    edit_mode = oib_service_event_id is not None
+    template_path = "lynx/oib/oib_service_event_add.html"
+    
+    # Set up formsets
     OIBServiceEventUserRoleFormSet = forms.formset_factory(
         lfo.OIBServiceEventUserRoleForm,
         extra=0,
@@ -2493,6 +2497,7 @@ def oib_service_event_add(request):
         validate_min=True
     )
     user_role_form_prefix = 'user_role'
+    
     OIBServiceEventContactFormSet = forms.formset_factory(
         lfo.OIBServiceEventContactForm,
         extra=0,
@@ -2501,157 +2506,31 @@ def oib_service_event_add(request):
         validate_min=True
     )
     client_form_prefix = 'client'
+    
+    # For edit mode, fetch the existing service event
+    service_event = None
+    initial_data = {}
+    user_role_initial = []
+    client_initial = []
+    
+    if edit_mode:
+        service_event = get_object_or_404(lm.OIBServiceEvent, pk=oib_service_event_id)
 
-    if request.method == 'POST':
-        form = lfo.OIBServiceEventForm(request.POST)
-        user_role_formset = OIBServiceEventUserRoleFormSet(request.POST, prefix=user_role_form_prefix)
-        client_formset = OIBServiceEventContactFormSet(request.POST, prefix=client_form_prefix)
-
-        if      form.is_valid() \
-            and user_role_formset.is_valid() \
-            and client_formset.is_valid():
-
-            service_event = lm.OIBServiceEvent.objects.create(
-                oib_service_delivery_type=lm.OIBServiceDeliveryType.objects.get(pk=form.cleaned_data['plan_type']),
-                date=form.cleaned_data['note_date'],
-                length=parse_duration_string( form.cleaned_data['event_length'] ),
-                note=form.cleaned_data['note'],
-                entered_by=request.user,
-            )
-
-            for service in form.cleaned_data['services']:
-                lm.OIBServiceEventOIBService.objects.create(
-                    oib_service_event=service_event,
-                    oib_service=service,
-                )
-
-            for row in user_role_formset.cleaned_data:
-                if row and not row.get('DELETE', False):
-                    lm.OIBServiceEventInstructor.objects.create(
-                        oib_service_event=service_event,
-                        instructor=row['instructor'],
-                        oib_service_event_instructor_role=row['role'],
-                    )
-
-            for row in client_formset.cleaned_data:
-                if row and not row.get('DELETE', False):
-                    lm.OIBServiceEventContact.objects.create(
-                        oib_service_event=service_event,
-                        contact=row['client'],
-                    )
-
-            return redirect('lynx:oib_service_event_show', oib_service_event_id=service_event.id)
-        else:
-            return render(request, oib_service_event_add_template_path, {
-                'form': form,
-                'formsets': {
-                    'user_role_formset': user_role_formset,
-                    'client_formset': client_formset,
-                },
-            })
-
-    else:
-        form = lfo.OIBServiceEventForm()
-        user_role_formset = OIBServiceEventUserRoleFormSet(prefix=user_role_form_prefix)
-        client_formset = OIBServiceEventContactFormSet(prefix=client_form_prefix)
-
-        context = {
-            'form': form,
-            'formsets': { 'user_role_formset': user_role_formset,
-                          'client_formset':    client_formset,
-                        },
+        def _timedelta_to_hms(td):
+            if not td:
+                return None
+            total_seconds = int(td.total_seconds())
+            hours = total_seconds // 3600
+            minutes = (total_seconds % 3600) // 60
+            seconds = total_seconds % 60
+            return f"{hours:02d}:{minutes:02d}:{seconds:02d}"
+        initial_data = {
+            'plan_type': service_event.oib_service_delivery_type.pk,
+            'note_date': service_event.date,
+            'event_length': _timedelta_to_hms(service_event.length),
+            'services': [s.oib_service.pk for s in service_event.oibserviceeventoibservice_set.all()],
+            'note': service_event.note,
         }
-
-        return render(request, oib_service_event_add_template_path, context)
-
-# TODO 2025_09_01_1524 This is almost the same as `oib_service_event_add`
-#                      Refactor to avoid code duplication
-@login_required
-def oib_service_event_edit(request, oib_service_event_id):
-    oib_service_event_add_template_path = "lynx/oib/oib_service_event_add.html"
-    OIBServiceEventUserRoleFormSet = forms.formset_factory(
-        lfo.OIBServiceEventUserRoleForm,
-        extra=0,
-        can_delete=True,
-        min_num=1,
-        validate_min=True
-    )
-    user_role_form_prefix = 'user_role'
-    OIBServiceEventContactFormSet = forms.formset_factory(
-        lfo.OIBServiceEventContactForm,
-        extra=0,
-        can_delete=True,
-        min_num=1,
-        validate_min=True
-    )
-    client_form_prefix = 'client'
-
-    service_event = get_object_or_404(lm.OIBServiceEvent, pk=oib_service_event_id)
-    initial_data = {
-        'plan_type': service_event.oib_service_delivery_type.pk,
-        'note_date': service_event.date,
-        'event_length': service_event.length,
-        'services': [s.oib_service.pk for s in service_event.oibserviceeventoibservice_set.all()],
-        'note': service_event.note,
-    }
-
-    # Prepare initial data for form and formsets
-    if request.method == 'POST':
-        form = lfo.OIBServiceEventForm(request.POST)
-        user_role_formset = OIBServiceEventUserRoleFormSet(request.POST, prefix=user_role_form_prefix)
-        client_formset = OIBServiceEventContactFormSet(request.POST, prefix=client_form_prefix)
-
-        if      form.is_valid() \
-            and user_role_formset.is_valid() \
-            and client_formset.is_valid():
-
-            service_event.oib_service_delivery_type = lm.OIBServiceDeliveryType.objects.get(pk=form.cleaned_data['plan_type'])
-            service_event.date = form.cleaned_data['note_date']
-            service_event.length = parse_duration_string( form.cleaned_data['event_length'] )
-            service_event.note = form.cleaned_data['note']
-            service_event.save()
-
-            # Remove old related objects
-            lm.OIBServiceEventInstructor.objects.filter(oib_service_event=service_event).delete()
-            lm.OIBServiceEventContact.objects.filter(oib_service_event=service_event).delete()
-            lm.OIBServiceEventOIBService.objects.filter(oib_service_event=service_event).delete()
-
-            # Add new related objects
-            for service in form.cleaned_data['services']:
-                lm.OIBServiceEventOIBService.objects.create(
-                    oib_service_event=service_event,
-                    oib_service=service,
-                )
-
-            for row in user_role_formset.cleaned_data:
-                if row and not row.get('DELETE', False):
-                    lm.OIBServiceEventInstructor.objects.create(
-                        oib_service_event=service_event,
-                        instructor=row['instructor'],
-                        oib_service_event_instructor_role=row['role'],
-                    )
-
-            for row in client_formset.cleaned_data:
-                if row and not row.get('DELETE', False):
-                    lm.OIBServiceEventContact.objects.create(
-                        oib_service_event=service_event,
-                        contact=row['client'],
-                    )
-
-            return redirect('lynx:oib_service_event_show', oib_service_event_id=service_event.id)
-        else:
-            return render(request, oib_service_event_add_template_path, {
-                'form': form,
-                'formsets': {
-                    'user_role_formset': user_role_formset,
-                    'client_formset': client_formset,
-                },
-                'service_event': service_event,
-                'edit_mode': True,
-            })
-    else:
-        # Prepare initial data for formsets from existing related objects
-        form = lfo.OIBServiceEventForm(initial=initial_data)
         user_role_initial = [
             {
                 'instructor': osei.instructor,
@@ -2665,19 +2544,96 @@ def oib_service_event_edit(request, oib_service_event_id):
             }
             for osec in lm.OIBServiceEventContact.objects.filter(oib_service_event=service_event)
         ]
-        user_role_formset = OIBServiceEventUserRoleFormSet(initial=user_role_initial, prefix=user_role_form_prefix)
-        client_formset = OIBServiceEventContactFormSet(initial=client_initial, prefix=client_form_prefix)
-
+    
+    if request.method == 'POST':
+        form = lfo.OIBServiceEventForm(request.POST)
+        user_role_formset = OIBServiceEventUserRoleFormSet(request.POST, prefix=user_role_form_prefix)
+        client_formset = OIBServiceEventContactFormSet(request.POST, prefix=client_form_prefix)
+        
+        if form.is_valid() and user_role_formset.is_valid() and client_formset.is_valid():
+            # Either update existing or create new service event
+            if edit_mode:
+                service_event.oib_service_delivery_type = lm.OIBServiceDeliveryType.objects.get(
+                    pk=form.cleaned_data['plan_type']
+                )
+                service_event.date = form.cleaned_data['note_date']
+                service_event.length = parse_duration_string(form.cleaned_data['event_length'])
+                service_event.note = form.cleaned_data['note']
+                service_event.save()
+                
+                # Clean up related objects
+                lm.OIBServiceEventInstructor.objects.filter(oib_service_event=service_event).delete()
+                lm.OIBServiceEventContact.objects.filter(oib_service_event=service_event).delete()
+                lm.OIBServiceEventOIBService.objects.filter(oib_service_event=service_event).delete()
+            else:
+                service_event = lm.OIBServiceEvent.objects.create(
+                    oib_service_delivery_type=lm.OIBServiceDeliveryType.objects.get(pk=form.cleaned_data['plan_type']),
+                    date=form.cleaned_data['note_date'],
+                    length=parse_duration_string(form.cleaned_data['event_length']),
+                    note=form.cleaned_data['note'],
+                    entered_by=request.user,
+                )
+            
+            # Create related objects for both add/edit modes
+            for service in form.cleaned_data['services']:
+                lm.OIBServiceEventOIBService.objects.create(
+                    oib_service_event=service_event,
+                    oib_service=service,
+                )
+            
+            for row in user_role_formset.cleaned_data:
+                if row and not row.get('DELETE', False):
+                    lm.OIBServiceEventInstructor.objects.create(
+                        oib_service_event=service_event,
+                        instructor=row['instructor'],
+                        oib_service_event_instructor_role=row['role'],
+                    )
+            
+            for row in client_formset.cleaned_data:
+                if row and not row.get('DELETE', False):
+                    lm.OIBServiceEventContact.objects.create(
+                        oib_service_event=service_event,
+                        contact=row['client'],
+                    )
+            
+            return redirect('lynx:oib_service_event_show', oib_service_event_id=service_event.id)
+        else:
+            # Form validation failed
+            context = {
+                'form': form,
+                'formsets': {
+                    'user_role_formset': user_role_formset,
+                    'client_formset': client_formset,
+                },
+            }
+            if edit_mode:
+                context['service_event'] = service_event
+                context['edit_mode'] = True
+            return render(request, template_path, context)
+    else:
+        # GET request - show the form
+        form = lfo.OIBServiceEventForm(initial=initial_data)
+        user_role_formset = OIBServiceEventUserRoleFormSet(
+            initial=user_role_initial, 
+            prefix=user_role_form_prefix
+        )
+        client_formset = OIBServiceEventContactFormSet(
+            initial=client_initial, 
+            prefix=client_form_prefix
+        )
+        
         context = {
             'form': form,
             'formsets': {
                 'user_role_formset': user_role_formset,
                 'client_formset': client_formset,
             },
-            'service_event': service_event,
-            'edit_mode': True,
         }
-        return render(request, oib_service_event_add_template_path, context)
+        if edit_mode:
+            context['service_event'] = service_event
+            context['edit_mode'] = True
+            
+        return render(request, template_path, context)
 
 # "PLANS" (virtual)
 @login_required
