@@ -5,6 +5,9 @@
 
 {% block content %}
 <h1>Plan 10/1/{{ grant_year }} - {{ service_delivery_type_name }} for {{ client }}</h1>
+<input type="button" class="btn btn-success" aria-label="SIP Notes" onclick="location.href='{% url 'lynx:oib_plan_list' client.id %}';" value="SIP Plans and Notes" />
+<a class="btn btn-success" href="{% url 'lynx:client_show' client.id %}">Back to client</a>
+<h2>Notes</h2>
 <ul>
     {% for event in service_events %}
         <li>
