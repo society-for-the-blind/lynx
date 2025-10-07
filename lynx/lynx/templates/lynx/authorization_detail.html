@@ -5,9 +5,9 @@
 {% block content %}
 
 <h1>Authorization for {{ object.contact.first_name }} {{ object.contact.last_name }}</h1>
-<!--<input type="button" onclick="location.href='/lynx/client/{{ object.contact_id }}';" value="" />-->
+<!--<input type="button" onclick="location.href='/lynx/clients/{{ object.contact_id }}';" value="" />-->
 <form>
-  <button class="btn btn-success" formaction="/lynx/client/{{ object.contact_id }}">Return to {{ object.contact.first_name }} {{ object.contact.last_name }}'s Information </button>
+  <button class="btn btn-success" formaction="/lynx/clients/{{ object.contact_id }}">Return to {{ object.contact.first_name }} {{ object.contact.last_name }}'s Information </button>
   {% if user.is_superuser %}
     <button class="btn btn-primary" formaction="/lynx/authorization-edit/{{ object.id }}"> Edit Authorization </button>
     <button class="btn btn-danger" formaction="/lynx/authorization-confirm/{{ object.id }}/{{ object.contact_id }}"> Delete Authorization </button>

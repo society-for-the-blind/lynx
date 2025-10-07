@@ -7,7 +7,7 @@
     $(document).ready(function(){
         $('#contactSelect').change(function(){
             var clientId = document.getElementById("contactSelect").value;
-            $('#viewClient').attr('action', '/lynx/client/' + clientId);
+            $('#viewClient').attr('action', '/lynx/clients/' + clientId);
         });
     });
 </script>
@@ -15,8 +15,8 @@
 
 {% block content %}
     <h1>Clients</h1>
-    <input type="button" onclick="location.href='/lynx/add-contact/';" value="Add New Client" />
-    <input type="button" onclick="location.href='/lynx/search';" value="Advanced Search" />
+    <input type="button" onclick="location.href='{% url 'lynx:contact_add' %}';" value="Add New Client" />
+    <input type="button" onclick="location.href='{% url 'lynx:contact_filter' %}';" value="Advanced Search" />
     <hr>
 
     <form id='viewClient' action="">
@@ -32,13 +32,13 @@
         <input type="submit" value="View Client" />
     </form>
 <hr>
-    <form id="searchClient" action="{% url 'lynx:client_search' %}" method="get">
-        <input name="q" type="text" placeholder="Search...">
+    <form id="searchClient" action="{% url 'lynx:contact_search' %}" method="get">
+        <input name="query" type="text" placeholder="Search...">
         <input type="submit" value="Search All Clients" />
     </form>
     <ul>
         {% for client in object_list %}
-            <li><a href="client/{{ client.id }}">{{ client.last_name }}, {{ client.first_name }} {% if client.middle_name %}{{ client.middle_name }} {% endif %} {{ client.intake_date }}</a></li>
+            <li><a href="clients/{{ client.id }}">{{ client.last_name }}, {{ client.first_name }} {% if client.middle_name %}{{ client.middle_name }} {% endif %} {{ client.intake_date }}</a></li>
         {% endfor %}
     </ul>
 {% endblock %}

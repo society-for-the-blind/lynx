@@ -8,7 +8,11 @@ app_name = "lynx"
 urlpatterns = [
     path("", views.index, name='index'),
     # At the moment, this one pull all active clients into a dropdown, so the path name should probably reflect that (e.g., `clients/active`). Why not just list them with the ability to search all contacts at the top?
-    path('clients/', views.client_result_view, name='contact_list'),
+    path('clients/search',        views.contact_search,              name='contact_search'),
+    path('clients/<int:pk>',      views.ContactDetailView.as_view(), name='client_show'),
+    path('clients/new',           views.ContactCreateView.as_view(), name='contact_add'),
+    path('clients/<int:pk>/edit', views.ContactUpdateView.as_view(), name='contact_edit'),
+    path('clients/filter',        views.contact_filter,              name='contact_filter'),
     # TODO The URL path scheme should be consistent:
     # clients/ should show a list of clients
     # clients/<int:pk> <- client/<int:pk>
@@ -20,17 +24,8 @@ urlpatterns = [
     # contacts/<int:pk>
     # contacts/search but this one is probably superfluous
 
-    # TODO Remove redundant views/templates/paths.
-    #      Case in point: `clients/` and `client-search`  pages
-    #      look the same and do the same,  but  there  are  two
-    #      distinct  templates  for  each  and  the  views  are
-    #      probably duplicates of each other as well.
-    path('client-search', views.client_result_view, name='client_search'),
-
-    path('client/<int:pk>', views.ContactDetailView.as_view(), name='client'),
 
     path('client-advanced-search', views.client_advanced_result_view, name='client_advanced_search'),
-    path('contact-edit/<int:pk>', views.ClientUpdateView.as_view(), name='contact-edit'),
     path('address-edit/<int:pk>', views.AddressUpdateView.as_view(), name='address-edit'),
     path('phone-edit/<int:pk>', views.PhoneUpdateView.as_view(), name='phone-edit'),
     path('email-edit/<int:pk>', views.EmailUpdateView.as_view(), name='email-edit'),
@@ -45,12 +40,11 @@ urlpatterns = [
     #                    is not accessible.
     # So, use it to manage entities that are rarely touched? (Was meaning to write non-client contacts, but those can be managed from `clients/` as well...)
 
-    path('volunteers/', views.volunteer_list_view, name='volunteer_list'),
     path('authorizations/<int:client_id>', views.authorization_list_view, name='auth_list'),
-    path('add-contact/', views.add_contact, name='add_contact'),
     path('add-authorization/<int:contact_id>/', views.add_authorization, name='add_authorization'),
     path('get-hour-validation/<int:authorization_id>/<int:billed_units>', views.get_hour_validation, name='get_hour_validation'),
     path('add-intake/<int:contact_id>/', views.add_intake, name='add_intake'),
+    path('intake/<int:pk>/confirm-birth-date/', views.IntakeBirthDateConfirmView.as_view(), name='intake_birthdate_confirm'),
     path('add-emergency/<int:contact_id>/', views.add_emergency, name='add_emergency'),
     path('add-address/<int:contact_id>/', views.add_address, name='add_address'),
     path('add-email/<int:contact_id>/', views.add_email, name='add_email'),
@@ -58,12 +52,8 @@ urlpatterns = [
     path('add-phone/<int:contact_id>/', views.add_phone, name='add_phone'),
     path('add-emergency-phone/<int:emergency_contact_id>/', views.add_emergency_phone, name='add_phone'),
     path('add-vaccination/<int:contact_id>/', views.add_vaccination_record, name='add_vaccination_record'),
-    path('add-volunteer-hours/', views.add_volunteer_hours, name='add_volunteer_hours'),
     path('add-progress-report/<int:authorization_id>/', views.add_progress_report, name='add_progress_report'),
-    path('add-volunteer/', views.add_volunteer, name='add_volunteer'),
     path('billing-report/', views.billing_report, name='billing_report'),
-    path('volunteer-report/', views.volunteers_report_month, name='volunteer-report-by-month'),
-    path('volunteer-report/by-program', views.volunteers_report_program, name='volunteer-report-by-program'),
     path('sip-demographic-report/', views.sip_demographic_report, name='sip_demo_report'),
     path('sip-quarterly-demo-report/', views.sip_csf_demographic_report, name='sip_quarterly_demo_report'),
     path('sip-quarterly-service-report/', views.sip_csf_services_report, name='sip_quarterly_service_report'),
@@ -71,22 +61,18 @@ urlpatterns = [
     path('authorization/<int:pk>', views.AuthorizationDetailView.as_view(), name='authorization_detail'),
     path('progress-report/<int:pk>/', views.ProgressReportDetailView.as_view(), name='progress_report_detail'),
     path('billing-review/<int:pk>/', views.BillingReviewDetailView.as_view(), name='billing_review'),
-    path('volunteer/<int:pk>/', views.VolunteerDetailView.as_view(), name='volunteer'),
     path('intake-edit/<int:pk>', views.IntakeUpdateView.as_view(), name='intake-edit'),
     path('progress-report-edit/<int:pk>', views.ProgressReportUpdateView.as_view(), name='progresss-report-edit'),
     path('emergency-contact-edit/<int:pk>', views.EmergencyContactUpdateView.as_view(), name='emergency-contact-edit'),
     path('authorization-edit/<int:pk>', views.AuthorizationUpdateView.as_view(), name='authorization-edit'),
-    path('volunteer-hour-edit/<int:pk>', views.VolunteerHourUpdateView.as_view(), name='volunteer-edit'),
     path('vaccine-edit/<int:pk>', views.VaccineUpdateView.as_view(), name='vaccine-edit'),
     path('progress-report-confirm/<int:pk>/<int:auth_id>', views.ProgressReportDeleteView.as_view(), name='pr-delete'),
     path('authorization-confirm/<int:pk>/<int:client_id>', views.AuthorizationDeleteView.as_view(), name='auth-delete'),
     path('phone-confirm/<int:pk>/<int:client_id>', views.PhoneDeleteView.as_view(), name='phone-delete'),
     path('vaccine-confirm/<int:pk>/<int:client_id>', views.VaccineDeleteView.as_view(), name='vaccine-delete'),
     path('contact-confirm/<int:pk>', views.ContactDeleteView.as_view(), name='contact-delete'),
-    path('volunteer-hour-confirm/<int:pk>', views.VolunteerHourDeleteView.as_view(), name='contact-delete'),
     path('document-confirm/<int:pk>/<int:client_id>', views.DocumentDeleteView.as_view(), name='document-delete'),
     path('report-search', views.progress_result_view, name='report_search'),
-    path('search', views.contact_list, name='searcher'),
     path('download/<path:path>', views.download, name='download'),
     path('manual', views.ManualView.as_view(), name='manual'),
     path('email', views.email_update, name='email'),
@@ -99,6 +85,7 @@ urlpatterns = [
     path('lesson-note-edit/<int:pk>', views.LessonNoteUpdateView.as_view(), name='lesson-note-edit'),
     path('intake-note-edit/<int:pk>', views.IntakeNoteUpdateView.as_view(), name='intake-note-edit'),
 
+    path('clients/<int:client_id>/historical-sip-plans', views.historical_sip_plans, name='historical_sip_plans'),
     ###############
     # SIP PLANS   #
     ###############

@@ -1,0 +1,24 @@
+{% extends 'lynx/base.html' %}
+
+{% block title %}Historical SIP plans - {{ client.first_name }} {{ client.last_name }}{% endblock %}
+
+{% block content %}
+<h1>Historical SIP plans for {{ client.first_name }} {{ client.last_name }}</h1>
+
+<ul>
+  {% if counts.sip_plans %}
+    <li><a href="{% url 'lynx:sip_plan_list' client.id %}">SIP Plans ({{ counts.sip_plans }})</a></li>
+  {% endif %}
+  {% if counts.sip1854_plans %}
+    <li><a href="{% url 'lynx:sip1854_plan_list' client.id %}">18-54 Plans ({{ counts.sip1854_plans }})</a></li>
+  {% endif %}
+  {% if counts.sip_notes %}
+    <li><a href="{% url 'lynx:sip_note_list' client.id %}">SIP Notes ({{ counts.sip_notes }})</a></li>
+  {% endif %}
+  {% if counts.sip1854_notes %}
+    <li><a href="{% url 'lynx:sip1854_note_list' client.id %}">18-54 Notes ({{ counts.sip1854_notes }})</a></li>
+  {% endif %}
+</ul>
+
+<p><a class="btn btn-success" href="{% url 'lynx:client_show' client.id %}">Back to client</a></p>
+{% endblock %}

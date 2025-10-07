@@ -1,15 +1,18 @@
 from django.db import models, connection
 from django import forms
+from django.apps import apps
 from django.contrib.auth import get_user_model
 from django.conf import settings
 from django.urls import reverse
 from django.utils.timezone import now
 from django.contrib.auth.models import User
 
+from django.core import exceptions as exc
 from django_pgviews import view as pg
 from datetime import datetime, date
 from simple_history.models import HistoricalRecords
 
+from . import kitchen_sink as lks
 
 STATES = (("Alabama", "Alabama"), ("Alaska", "Alaska"), ("Arizona", "Arizona"), ("Arkansas", "Arkansas"),
           ("California", "California"), ("Colorado", "Colorado"), ("Connecticut", "Connecticut"),
@@ -64,9 +67,20 @@ MAILINGS = (("N/A", "N/A"), ("Print", "Print"), ("Large Print", "Large Print"), 
 
 TRINARY = (('Yes', 'Yes'), ('No', 'No'), ('Other', 'Other'))
 
-# MONTHS = (("January", "January"), ("February", "February"), ("March", "March"), ("April", "April"),
-#             ("May", "May"), ("June", "June"), ("July", "July"), ("August", "August"), ("September", "September"),
-#             ("October", "October"), ("November", "November"), ("December", "December"))
+# single source of truth for age groups: (min_age_or_None, max_age_or_None, label)
+AGE_GROUP_BOUNDS = [
+    (None, 17, "younger than 18"),
+    (18, 24, "18-24"),
+    (25, 34, "25-34"),
+    (35, 44, "35-44"),
+    (45, 54, "45-54"),
+    (55, 64, "55-64"),
+    (65, 74, "65-74"),
+    (75, 84, "75-84"),
+    (85, None, "85 and older"),
+]
+# choices for forms/filters (derived from bounds so they can't drift)
+AGES = tuple((label, label) for (_min, _max, label) in AGE_GROUP_BOUNDS)
 
 MONTHS = (("1", "January"), ("2", "February"), ("3", "March"), ("4", "April"),
             ("5", "May"), ("6", "June"), ("7", "July"), ("8", "August"), ("9", "September"),
@@ -113,11 +127,6 @@ SALUTATIONS = (("Mr.", "Mr."), ("Mrs.", "Mrs."), ("Miss", "Miss"), ("Ms.", "Ms."
                ("Rev.", "Rev."))
 
 
-AGES = (("younger than 18", "younger than 18"),
-        ("18-24", "18-24"), ("25-34", "25-34"), ("35-44", "35-44"),
-        ("45-54", "45-54"), ("55-64", "55-64"), ("65-74", "65-74"),
-        ("75-84", "75-84"), ("85 and older", "85 and older"))
-
 TASKS = (('Visually', 'Visually'), ('Non-Visually', 'Non-Visually'),
          ('Both Visually and Non-Visually', 'Both Visually and Non-Visually'))
 
@@ -131,9 +140,9 @@ PROGRAM = (("SIP", "SIP"), ("1854", "1854"))
 
 ASSIGNMENT_PRIORITY = (("New", "New"), ("Returning", "Returning"))
 
+# TODO 2025_09_14_1221 What does this do?
 def get_sentinel_user():
     return get_user_model().objects.get_or_create(username='deleted')[0]
-
 
 # Contact information. For Clients, Employees and Volunteers.
 # NOTE/TODO Both this model and the UI implementation are a mess.
@@ -141,7 +150,6 @@ def get_sentinel_user():
 # For example, a generic Contact can't even be added because there is only
 # "Add New Client" under the Clients link which is an Intake form...
 #
-# See also TODO 2025_08_20_2057 about programs
 class Contact(models.Model):
     first_name = models.CharField(max_length=150)
     middle_name = models.CharField(max_length=150, blank=True, null=True)
@@ -149,18 +157,9 @@ class Contact(models.Model):
     salutation = models.CharField(max_length=25, choices=SALUTATIONS, blank=True, null=True)
     company = models.CharField(max_length=150, blank=True, null=True)
     do_not_contact = models.BooleanField(blank=True, default=False)
-    donor = models.BooleanField(blank=True, default=False)
     deceased = models.BooleanField(blank=True, default=False)
     remove_mailing = models.BooleanField(blank=True, default=False)
     active = models.BooleanField(blank=True, default=True)
-    sip_client = models.BooleanField(blank=True, default=False)
-    core_client = models.BooleanField(blank=True, default=False)
-    sip1854_client = models.BooleanField(blank=True, default=False)
-    careers_plus = models.BooleanField(blank=True, default=False)
-    careers_plus_youth = models.BooleanField(blank=True, default=False)
-    volunteer_check = models.BooleanField(blank=True, default=False)
-    access_news = models.BooleanField(blank=True, default=False)
-    other_services = models.BooleanField(blank=True, default=False)
     payment_source = models.BooleanField(blank=True, default=False)
     contact_notes = models.TextField(blank=True, null=True)
     created = models.DateTimeField(auto_now_add=True, null=True)
@@ -168,15 +167,235 @@ class Contact(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET(get_sentinel_user))
     history = HistoricalRecords()
 
+    programs = models.ManyToManyField(
+        'Program',
+        through='ContactProgram',
+        related_name='contacts',
+        blank=True,
+    )
+
     def __str__(self):
         return '%s, %s' % (self.last_name, self.first_name)
 
     def get_absolute_url(self):
-        return reverse('lynx:client', kwargs={'pk': self.id})
+        return reverse('lynx:client_show', kwargs={'pk': self.id})
 
     class Meta:
         ordering = ['last_name', 'first_name']
 
+class Program(models.Model):
+    program = models.CharField(max_length=64, unique=True)
+    long_name = models.CharField(max_length=255)
+    is_oib = models.BooleanField(default=False)
+    min_age = models.SmallIntegerField(default=-1, help_text='-1 = no minimum age')
+    max_age = models.SmallIntegerField(default=-1, help_text='-1 = no maximum age')
+    created = models.DateTimeField(auto_now_add=True)
+    modified = models.DateTimeField(auto_now=True)
+    history = HistoricalRecords()
+
+    def __str__(self):
+        return f"{self.program}"
+
+    @classmethod
+    def get_available_programs(cls):
+        return cls.objects.all()
+
+# NOTE 2025_09_18_1955 I was under the impression that CareersPlus was an OIB program and those
+#                      don't allow age overlap - but I was told that YIB and CareersPlus can
+#                      overlap, but CareersPlus is **not** an OIB program.
+
+# class ProgramOverlap(models.Model):
+#     """
+#     Allow programs (A,B) to overlap for clients whose age at the contact-program
+#     start_date falls within [min_age, max_age]. Use -1 for unbounded.
+#     Stored as an unordered pair: save() normalizes order so lookups can be simple.
+#     """
+#     program_a = models.ForeignKey('Program', on_delete=models.CASCADE, related_name='+')
+#     program_b = models.ForeignKey('Program', on_delete=models.CASCADE, related_name='+')
+#     min_age = models.SmallIntegerField(default=-1, help_text='-1 = no minimum age')
+#     max_age = models.SmallIntegerField(default=-1, help_text='-1 = no maximum age')
+#     created = models.DateTimeField(auto_now_add=True)
+#     modified = models.DateTimeField(auto_now=True)
+
+#     class Meta:
+#         constraints = [
+#             models.UniqueConstraint(fields=['program_a', 'program_b'], name='unique_program_overlap_pair'),
+#         ]
+
+#     def save(self, *args, **kwargs):
+#         # normalize order to enforce unordered pair uniqueness
+#         if self.program_a_id and self.program_b_id and self.program_a_id > self.program_b_id:
+#             self.program_a, self.program_b = self.program_b, self.program_a
+#         super().save(*args, **kwargs)
+
+#     def __str__(self):
+#         return f"Overlap {self.program_a} <-> {self.program_b} [{self.min_age},{self.max_age}]"
+
+class ContactProgram(models.Model):
+    contact = models.ForeignKey('Contact', on_delete=models.CASCADE)
+    program = models.ForeignKey('Program', on_delete=models.PROTECT)
+    # denormalized so we can use a partial unique constraint without joins
+    program_is_oib = models.BooleanField(editable=False, default=False)
+
+    # Client is ACTIVE in program if `start_date` is set and `end_date` is NULL;
+    # if both set, client has aged out of program.
+    #
+    # NOTE 2025_09_14_1315 `start_date` has to be set. (If client is checked for a program, they had to
+    #                      have started it at some point.)
+    start_date = models.DateField(blank=False)
+    end_date = models.DateField(blank=True, null=True)
+
+    # Conservative: mark whether we were able to validate age at save time
+    age_verified = models.BooleanField(default=True, help_text="False when no DOB available to validate against")
+
+
+    created = models.DateTimeField(auto_now_add=True)
+    modified = models.DateTimeField(auto_now=True)
+    history = HistoricalRecords()
+
+    class Meta:
+        constraints = [
+            # start <= end (if both present)
+            models.CheckConstraint(
+                name='cp_start_before_end',
+                check=models.Q(end_date__isnull=True) | models.Q(start_date__isnull=True) | models.Q(start_date__lte=models.F('end_date')),
+            ),
+        ]
+        indexes = [
+            models.Index(fields=['contact', 'program_is_oib', 'end_date']),
+        ]
+
+    # TODO 2025_09_21_1355 Not sure if this is used anywhere (or useful at all)
+    #                      Make sure it's not used/useful, then delete.
+    # @property
+    # def is_active(self):
+    #     return self.start_date is not None and self.end_date is None
+
+    def _latest_birth_date(self):
+        Intake = apps.get_model('lynx', 'Intake')
+        intake = (
+            Intake.objects
+            .filter(contact_id=self.contact_id)
+            .exclude(birth_date__isnull=True)
+            .order_by('-intake_date')
+            .first()
+        )
+        return intake.birth_date if intake else None
+
+    def clean(self):
+        """
+        Conservative age validation policy:
+         - If DOB missing -> set age_verified=False and allow save.
+         - If DOB present -> enforce program min/max_age (raise ValidationError on violation).
+        Interpret Program min/max_age == -1 as unbounded.
+        """
+        # need both sides to validate
+        if not (self.contact_id and self.program_id):
+            return
+
+        dob = self._latest_birth_date()
+        if not dob:
+            # cannot validate; mark unverified but do not raise
+            self.age_verified = False
+            return
+
+        # compute age on start_date (or today if start_date not set)
+        on_date = self.start_date or date.today()
+        age = on_date.year - dob.year - ((on_date.month, on_date.day) < (dob.month, dob.day))
+
+        min_age = self.program.min_age
+        max_age = self.program.max_age
+
+        # interpret -1 as no bound
+        if min_age != -1 and age < min_age:
+            raise exc.ValidationError(f"Client age {age} on {on_date} is below program minimum {min_age}.")
+        if max_age != -1 and age > max_age:
+            raise exc.ValidationError(f"Client age {age} on {on_date} is above program maximum {max_age}.")
+
+        # passed validation
+        self.age_verified = True
+
+        # """
+        # Enforce only one active OIB program at a time, unless ProgramOverlap allows it.
+        # """
+        # if not (self.contact_id and self.program_id):
+        #     return
+
+        # # only applies for active OIB rows
+        # is_active_now = self.end_date is None
+        # # ensure program_is_oib is available (it will be set in save(); here use program)
+        # if not is_active_now or not getattr(self.program, 'is_oib', None) and not self.program_id:
+        #     return
+
+        # # compute client's age on start_date (or today)
+        # on_date = self.start_date or date.today()
+        # # dob = self._latest_birth_date()
+        # if dob:
+        #     age = on_date.year - dob.year - ((on_date.month, on_date.day) < (dob.month, dob.day))
+        # else:
+        #     age = None  # age unknown
+
+        # # find other active OIB ContactProgram rows for this contact
+        # ContactProgramModel = apps.get_model('lynx', 'ContactProgram')
+        # existing_qs = ContactProgramModel.objects.filter(
+        #     contact_id=self.contact_id,
+        #     end_date__isnull=True,
+        #     program__is_oib=True,
+        # )
+        # if self.pk:
+        #     existing_qs = existing_qs.exclude(pk=self.pk)
+
+        # if not existing_qs.exists():
+        #     return  # no conflict
+
+        # # For each existing active OIB program, allow only if there is a ProgramOverlap row
+        # # whose age bounds include the client's age (or if age unknown, require explicit overlap permitted).
+        # ProgramOverlapModel = apps.get_model('lynx', 'ProgramOverlap')
+        # conflicts = []
+        # for other in existing_qs.select_related('program'):
+        #     a_id = min(self.program_id, other.program_id)
+        #     b_id = max(self.program_id, other.program_id)
+        #     try:
+        #         overlap = ProgramOverlapModel.objects.get(program_a_id=a_id, program_b_id=b_id)
+        #     except ProgramOverlapModel.DoesNotExist:
+        #         overlap = None
+
+        #     allowed = False
+        #     if overlap:
+        #         # if age unknown, require explicit overlap entry -> allow
+        #         if age is None:
+        #             allowed = True
+        #         else:
+        #             min_age = overlap.min_age
+        #             max_age = overlap.max_age
+        #             if (min_age == -1 or age >= min_age) and (max_age == -1 or age <= max_age):
+        #                 allowed = True
+
+        #     if not allowed:
+        #         conflicts.append(other.program.program)
+
+        # if conflicts:
+        #     raise exc.ValidationError(
+        #         f"Cannot create active OIB membership for {self.program.program}; "
+        #         f"contact already has active OIB program(s) that are not allowed to overlap at this age: {', '.join(conflicts)}. "
+        #         "Configure ProgramOverlap records or end the other memberships first."
+        #     )
+
+    def save(self, *args, **kwargs):
+        # keep program_is_oib in sync (handle unsaved/unsynced program instances)
+        if self.program_id:
+            try:
+                self.program_is_oib = bool(self.program.is_oib)
+            except Exception:
+                Program = apps.get_model('lynx', 'Program')
+                self.program_is_oib = bool(Program.objects.filter(pk=self.program_id).values_list('is_oib', flat=True).first() or False)
+
+        # run model validation (won't raise for missing DOB; will raise for age violations)
+        self.full_clean()
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return f"{self.contact_id} -> {self.program.program}"
 
 class Email (models.Model):
     EMAIL_TYPES = (("Work", "Work"), ("Personal", "Personal"))
@@ -200,9 +419,9 @@ class Email (models.Model):
     def get_absolute_url(self):
         # NOTE Why check `self.contact`? See note in class `Phone` below.
         if self.contact:
-            return reverse('lynx:client', kwargs={'pk': self.contact_id})
+            return reverse('lynx:client_show', kwargs={'pk': self.contact_id})
         else:
-            return reverse('lynx:client', kwargs={'pk': self.emergency_contact.contact_id})
+            return reverse('lynx:client_show', kwargs={'pk': self.emergency_contact.contact_id})
 
     def __str__(self):
         return self.email
@@ -232,9 +451,9 @@ class Phone (models.Model):
         #      column so it can be used to go back.
         # }}-
         if self.contact:
-            return reverse('lynx:client', kwargs={'pk': self.contact_id})
+            return reverse('lynx:client_show', kwargs={'pk': self.contact_id})
         else:
-            return reverse('lynx:client', kwargs={'pk': self.emergency_contact.contact_id})
+            return reverse('lynx:client_show', kwargs={'pk': self.emergency_contact.contact_id})
 
     def __str__(self):
         return self.phone
@@ -266,7 +485,7 @@ class Address(models.Model):
         verbose_name_plural = 'Addresses'
 
     def get_absolute_url(self):
-        return reverse('lynx:client', kwargs={'pk': self.contact_id})
+        return reverse('lynx:client_show', kwargs={'pk': self.contact_id})
 
 
 # Intake questionnaire
@@ -299,7 +518,6 @@ class Intake(models.Model):
     contact = models.ForeignKey('Contact', on_delete=models.CASCADE)
     intake_date = models.DateField(default=date.today)
     intake_type = models.CharField(max_length=150, blank=True, null=True)
-    age_group = models.CharField(max_length=50, blank=True, choices=AGES, null=True)
     gender = models.CharField(max_length=50, blank=True, choices=GENDERS, null=True)
     pronouns = models.CharField(max_length=150, blank=True, choices=PRONOUNS, null=True)
     birth_date = models.DateField(blank=True, null=True)
@@ -399,8 +617,39 @@ class Intake(models.Model):
     history = HistoricalRecords()
     updated = models.DateTimeField(auto_now=True, null=True)
 
+    def _compute_age_on(self, on_date):
+        if not self.birth_date:
+            return None
+        on_date = on_date or date.today()
+        age = on_date.year - self.birth_date.year - (
+            (on_date.month, on_date.day) < (self.birth_date.month, self.birth_date.day)
+        )
+        return age
+
+    def _age_group_label_for_age(self, age):
+        if age is None:
+            return None
+        for min_a, max_a, label in AGE_GROUP_BOUNDS:
+            if min_a is None and max_a is not None:
+                if age <= max_a:
+                    return label
+            elif max_a is None and min_a is not None:
+                if age >= min_a:
+                    return label
+            else:
+                if min_a <= age <= max_a:
+                    return label
+        return None
+
     def get_absolute_url(self):
-        return reverse('lynx:client', kwargs={'pk': self.contact_id})
+        # keep behavior consistent with other models: go to the contact's page
+        return reverse('lynx:client_show', kwargs={'pk': self.contact_id})
+
+    @property
+    def age_group(self):
+        on_date = date.today()
+        age = self._compute_age_on(on_date)
+        return self._age_group_label_for_age(age)
 
     def __str__(self):
         return '%s Intake' % (self.contact_id,)
@@ -416,7 +665,7 @@ class IntakeNote(models.Model):
     history = HistoricalRecords()
 
     def get_absolute_url(self):
-        return reverse('lynx:client', kwargs={'pk': self.contact_id})
+        return reverse('lynx:client_show', kwargs={'pk': self.contact_id})
 
 
 # Addresses for Contacts.
@@ -431,7 +680,7 @@ class EmergencyContact(models.Model):
     history = HistoricalRecords()
 
     def get_absolute_url(self):
-        return reverse('lynx:client', kwargs={'pk': self.contact_id})
+        return reverse('lynx:client_show', kwargs={'pk': self.contact_id})
 
 
 class Authorization(models.Model):
@@ -584,7 +833,7 @@ class BasePlanNote(models.Model):
     history = HistoricalRecords(inherit=True)
 
     def get_absolute_url(self):
-        return reverse('lynx:client', kwargs={'pk': self.contact_id})
+        return reverse('lynx:client_show', kwargs={'pk': self.contact_id})
 
     # TODO Add string representation methods to other models as well.
     def __str__(self):
@@ -676,7 +925,7 @@ class BasePlan(models.Model):
         return self.plan_name
 
     def get_absolute_url(self):
-        return reverse('lynx:client', kwargs={'pk': self.contact_id})
+        return reverse('lynx:client_show', kwargs={'pk': self.contact_id})
 
     class Meta:
             abstract = True
@@ -690,16 +939,48 @@ class Sip1854Plan(BasePlan):
 
 
 class ContactInfoView(pg.View):
-    sql = """SELECT c.id, concat(last_name, ', ', first_name) AS full_name, first_name, last_name, a.county, a.zip_code,
-         REPLACE (REPLACE(REPLACE(REPLACE(p.phone, ' ', ''), '-', ''), ')', ''), '(', '') as phone, e.email,
-         i.intake_date, i.age_group, a.address_one, a.address_two, a.suite, a.city, a.state, a.bad_address,
-         c.do_not_contact, c.deceased, c.remove_mailing, a.region, phone as full_phone, c.active, c.sip_client,
-         c.core_client, c.sip1854_client
+    sql = f"""
+        SELECT c.id,
+               concat(last_name, ', ', first_name) AS full_name,
+               first_name,
+               last_name,
+               a.county,
+               a.zip_code,
+               REPLACE(REPLACE(REPLACE(REPLACE(p.phone, ' ', ''), '-', ''), ')', ''), '(', '') as phone,
+               e.email,
+               i.intake_date,
+               -- compute age_group from the most recent intake.birth_date and CURRENT_DATE
+               { lks.age_group_case_sql() } as age_group,
+               a.address_one,
+               a.address_two,
+               a.suite,
+               a.city,
+               a.state,
+               a.bad_address,
+               c.do_not_contact,
+               c.deceased,
+               c.remove_mailing,
+               a.region,
+               phone as full_phone,
+               c.active,
+               array_to_string(array_agg(pr.program), ',') as programs
         FROM lynx_contact AS c
-        LEFT JOIN lynx_intake AS i ON c.id = i.contact_id
+        LEFT JOIN LATERAL (
+            SELECT ii.intake_date, ii.birth_date
+            FROM lynx_intake ii
+            WHERE ii.contact_id = c.id AND ii.birth_date IS NOT NULL
+            ORDER BY ii.intake_date DESC NULLS LAST
+            LIMIT 1
+        ) i ON TRUE
         LEFT JOIN lynx_address AS a ON a.contact_id = c.id
         LEFT JOIN lynx_phone  AS p ON p.contact_id = c.id
-        LEFT JOIN lynx_email AS e ON e.contact_id = c.id"""
+        LEFT JOIN lynx_email AS e ON e.contact_id = c.id
+        LEFT JOIN lynx_contactprogram cp ON cp.contact_id = c.id
+        LEFT JOIN lynx_program pr ON cp.program_id = pr.id
+        GROUP BY c.id, a.county, a.zip_code, p.phone, e.email, i.intake_date, i.birth_date,
+                 a.address_one, a.address_two, a.suite, a.city, a.state, a.bad_address,
+                 c.do_not_contact, c.deceased, c.remove_mailing, a.region, phone, c.active
+    """
 
     full_name = models.CharField(max_length=255, null=True)
     first_name = models.CharField(max_length=255, null=True)
@@ -720,11 +1001,9 @@ class ContactInfoView(pg.View):
     deceased = models.BooleanField(blank=True, default=False)
     remove_mailing = models.BooleanField(blank=True, default=False)
     active = models.BooleanField(blank=True, default=False)
-    sip_client = models.BooleanField(blank=True, default=False)
-    core_client = models.BooleanField(blank=True, default=False)
-    sip1854_client = models.BooleanField(blank=True, default=False)
     region = models.CharField(max_length=255, null=True)
     full_phone = models.CharField(max_length=255, null=True)
+    programs = models.CharField(max_length=255, null=True)
     history = HistoricalRecords()
 
     class Meta:
@@ -775,15 +1054,13 @@ class Assignment(models.Model):
 
 # === OIB RE-DESIGN =========================================================
 
-class OIBProgram(models.Model):
-    oib_program = models.CharField(max_length=255)
-    long_name = models.CharField(max_length=255)
-    created = models.DateTimeField(auto_now_add=True)
-    modified = models.DateTimeField(auto_now=True)
-    history = HistoricalRecords()
-
-    def __str__(self):
-        return self.oib_program
+# TODO 2025_09_28_1759 OIB Quarterly Report reminder with OIBProgram model gone
+#                      ========================================================
+#      There is going to be *one* SIP plan per client - and "SIP" here means the
+#      department and not the OIB program. If a client ages into the OIB program
+#      "SIP" from YIB, then they would count into both programs for that year. 
+#
+#      TODO-TODO Make sure.
 
 # NOTE "service delivery type" === "plan type"
 #      ----------------------------------------------------
@@ -852,16 +1129,6 @@ class OIBServiceEvent(models.Model):
     #      is  just  plain  wrong.  Case  in  point,  I   think
     #      CareersPlus is its own department, for example.)
     #
-    # TODO 2025_08_20_2057
-    #      =================================================================
-    #      !!!        this should actually be part of `Contact`          !!!
-    #      =================================================================
-    #      which is a mess anyway.
-    #
-    #     Also: AUTOMATE OIB PROGRAM MEMBERSHIP
-    #           Clients can be members of CORE and an OIB program, but never
-    #           member of more than one OIB program, as those are based on age.    
-    organizing_program = models.ForeignKey(OIBProgram, on_delete=models.PROTECT, default=0)
 
     # NOTE This is the "plan" in the front-end.
     oib_service_delivery_type = models.ForeignKey(OIBServiceDeliveryType, on_delete=models.PROTECT)
@@ -965,26 +1232,6 @@ class OIBServiceEventContact(models.Model):
 
     def __str__(self):
         return f"{self.oib_service_event} {self.contact} {self.oib_service_event_contact_role}"
-
-# NOTE 2025_08_20_2109
-#      Leaving here for now; at least, until the "bulk notes" module is implemented.
-#
-# class OIBServiceEventOIBProgram(models.Model):
-#     oib_service_event = models.ForeignKey(OIBServiceEvent, on_delete=models.PROTECT)
-#     created = models.DateTimeField(auto_now_add=True)
-#     modified = models.DateTimeField(auto_now=True)
-#     history = HistoricalRecords()
-
-#     class Meta:
-#         constraints = [
-#             models.UniqueConstraint(
-#                 fields=["oib_service_event", "oib_program"],
-#                 name="unique_oib_service_event_oib_program"
-#             )
-#         ]
-
-#     def __str__(self):
-#         return f"{self.oib_service_event} {self.oib_program}"
 
 # OIB OUTCOMES
 # ------------

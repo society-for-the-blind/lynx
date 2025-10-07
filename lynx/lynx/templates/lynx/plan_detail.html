@@ -6,7 +6,7 @@
 <h1>{{ program_name }} Plan for {{ object.contact.first_name}} {{ object.contact.last_name}}: {{ object.plan_name}}</h1>
 
   <!--
-    <a class="btn btn-success" href="/lynx/client/{{ object.contact_id }}">Return to {{ object.contact.first_name }} {{ object.contact.last_name }}'s Information</a>
+    <a class="btn btn-success" href="/lynx/clients/{{ object.contact_id }}">Return to {{ object.contact.first_name }} {{ object.contact.last_name }}'s Information</a>
     <a class="btn btn-success" href="/lynx/sip-plan-edit/{{ object.id }}?next={{ request.path }}">Edit</a>
     <a class="btn btn-success" href="/lynx/sip-plan-confirm/{{ object.id }}/{{ object.contact_id }}">Delete</a>
     <a class="btn btn-success" href="/lynx/add-sip-note/{{ object.contact_id }}/?plan_id={{ object.id }}&next={{ request.path }}">Add new note to {{ program_name }} plan</a>
@@ -15,14 +15,14 @@
   -->
 
 {% if program_name == 'SIP' %}
-  <input type="button" class="btn btn-success" onclick="location.href='{% url 'lynx:client' object.contact_id %}';" value="Return to {{ object.contact.first_name }} {{ object.contact.last_name }}'s Information" />
+  <input type="button" class="btn btn-success" onclick="location.href='{% url 'lynx:client_show' object.contact_id %}';" value="Return to {{ object.contact.first_name }} {{ object.contact.last_name }}'s Information" />
   <input type="button" class="btn btn-success" onclick="location.href='{% url 'lynx:sip_plan_edit' object.id %}?next={{ request.path }}';" value="Edit" />
   <input type="button" class="btn btn-success" onclick="location.href='{% url 'lynx:sip_plan_delete' object.id object.contact_id %}';" value="Delete" />
   <input type="button" class="btn btn-success" onclick="location.href='{% url 'lynx:sip_note_add' object.contact_id %}?plan_id={{ object.id }}&next={{ request.path }}';" value="Add new note to {{ program_name }} plan" />
   <input type="button" class="btn btn-success" onclick="location.href='{% url 'lynx:sip_note_list' object.contact_id %}';" value="Show all {{ program_name }} notes" />
   <input type="button" class="btn btn-success" onclick="location.href='{% url 'lynx:sip_plan_list' object.contact_id %}';" value="Show all {{ program_name }} plans" />
 {% elif program_name == '18-54' %}
-  <input type="button" class="btn btn-success" onclick="location.href='{% url 'lynx:client' object.contact_id %}';" value="Return to {{ object.contact.first_name }} {{ object.contact.last_name }}'s Information" />
+  <input type="button" class="btn btn-success" onclick="location.href='{% url 'lynx:client_show' object.contact_id %}';" value="Return to {{ object.contact.first_name }} {{ object.contact.last_name }}'s Information" />
   <input type="button" class="btn btn-success" onclick="location.href='{% url 'lynx:sip1854_plan_edit' object.id %}?next={{ request.path }}';" value="Edit" />
   <input type="button" class="btn btn-success" onclick="location.href='{% url 'lynx:sip1854_plan_delete' object.id  object.contact_id %}';" value="Delete" />
   <input type="button" class="btn btn-success" onclick="location.href='{% url 'lynx:sip1854_note_add' object.contact_id %}?plan_id={{ object.id }}&next={{ request.path }}';" value="Add new note to {{ program_name }} plan" />

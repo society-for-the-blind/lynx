@@ -33,22 +33,25 @@
     <nav role="navigation">
         <div class="sidenav">
             <img src="{% static 'lynx/images/logo.jpg' %}" alt="" style="width:170px;">
-            <a href="/lynx/" title="Home">Home</a>
+            <a href="{% url 'lynx:index' %}" title="Home">Home</a>
             {% if user.is_authenticated %}
-                <a href="/lynx/clients/" title="Clients">Clients</a>
-                <a href="/lynx/instructors/" title="Assignments">Assignments</a>
-                <a href="/lynx/manual" title="Lynx Manual">Lynx Manual</a>
+                <a href="{% url 'lynx:contact_search' %}" title="Clients">Clients</a>
+                <a href="{% url 'lynx:instructors' %}" title="Assignments">Assignments</a>
+                <a href="{% url 'lynx:manual' %}" title="Lynx Manual">Lynx Manual</a>
                 <hr>
                 <a href="{% url 'lynx:oib_service_event_list' %}">OIB Notes</a>
                 <hr>
-                <a href="/admin/">Admin</a>
-                <a href="/lynx/reports/">Reports</a>
+                <a href="{% url 'admin:index' %}">Admin</a>
+                <a href="{% url 'lynx:reports' %}">Reports</a>
                 <hr>
                 <div id="signed_in_user">
                     Signed in as: </br> <span>{{ user.last_name }}, {{user.first_name}}</span>
                 </div>
-                <a href="/accounts/password_change/" title="Update Password">Update Password</a>
-                <a href="/accounts/logout/">Logout</a>
+                <a href="{% url 'password_change' %}" title="Update Password">Update Password</a>
+                <form id="logout-form" action="{% url 'logout' %}" method="post" style="display:none;">
+                    {% csrf_token %}
+                </form>
+                <a href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">Logout</a>
             {% endif %}
         </div>
 

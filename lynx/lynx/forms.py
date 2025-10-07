@@ -1,6 +1,6 @@
 from django       import forms
 from django.utils import timezone
-from datetime     import datetime
+from datetime     import datetime, date
 from django.db           import models    as ddm
 from django.db.models    import functions as ddmf
 from django.contrib.auth import models    as dca
@@ -17,17 +17,51 @@ quarters = (("1", "Q1"), ("2", "Q2"), ("3", "Q3"), ("4", "Q4"))
 
 class ContactForm(forms.ModelForm):
     first_name = forms.CharField(widget=forms.TextInput(attrs={'aria-required': 'true'}))
-    last_name = forms.CharField(widget=forms.TextInput(attrs={'aria-required': 'true'}))
+    last_name  = forms.CharField(widget=forms.TextInput(attrs={'aria-required': 'true'}))
 
-    class Meta:
-
-        model = lm.Contact
-        exclude = ('created', 'modified', 'user')
+    programs = forms.ModelMultipleChoiceField(
+        queryset = lm.Program.objects.all(),
+        widget   = forms.CheckboxSelectMultiple,
+        required = False,
+        label    = "Programs"
+    )
 
     def __init__(self, *args, **kwargs):
-        super(ContactForm, self).__init__(*args, **kwargs)
-        self.fields['volunteer_check'].label = "Volunteer"
+        super().__init__(*args, **kwargs)
+        contact = self.instance
+        # Try to get birth_date from Intake
+        birth_date = None
+        if contact.pk:
+            intake = contact.intake_set.exclude(birth_date__isnull=True).order_by('-intake_date').first()
+            if intake:
+                birth_date = intake.birth_date
+        # Compute age
+        age = None
+        if birth_date:
+            today = date.today()
+            age = today.year - birth_date.year - ((today.month, today.day) < (birth_date.month, birth_date.day))
+        # Filter programs by age
+        qs = lm.Program.objects.all()
+        if age is not None:
+            qs = qs.filter(
+                ddm.Q(min_age=-1) | ddm.Q(min_age__lte=age),
+                ddm.Q(max_age=-1) | ddm.Q(max_age__gte=age)
+            )
+        self.fields['programs'].queryset = qs
 
+        # --- Set initial checked programs to active memberships ---
+        if contact.pk:
+            active_programs = lm.Program.objects.filter(
+                contactprogram__contact=contact,
+                contactprogram__end_date__isnull=True
+            )
+            self.initial['programs'] = list(active_programs.values_list('pk', flat=True))
+            # This line ensures the field does not use instance's related objects
+            self.fields['programs'].initial = list(active_programs.values_list('pk', flat=True))
+
+    class Meta:
+        model = lm.Contact
+        fields = '__all__'
 
 class IntakeForm(forms.ModelForm):
     intake_date = forms.DateField( widget=forms.SelectDateWidget(years=list(range(1900, 2100))), label='Intake Date', initial=timezone.now())
@@ -81,6 +115,30 @@ class IntakeForm(forms.ModelForm):
         self.fields['communication'].label = "Communication Impairments"
         self.fields['communication_notes'].label = "Communication Impairment Notes"
 
+    def clean(self):
+        cleaned_data = super().clean()
+        birth_date = cleaned_data.get('birth_date')
+        contact = self.instance.contact if self.instance.pk else self.initial.get('contact')
+
+        # Only check if birth_date is being changed
+        if contact and birth_date:
+            # Get the previous birth_date from the DB
+            prev_intake = contact.intake_set.exclude(birth_date__isnull=True).order_by('-intake_date').first()
+            prev_birth_date = prev_intake.birth_date if prev_intake else None
+            if prev_birth_date and birth_date != prev_birth_date:
+                invalid_programs = []
+                for cp in contact.contactprogram_set.filter(end_date__isnull=True):
+                    age = cp.start_date.year - birth_date.year - ((cp.start_date.month, cp.start_date.day) < (birth_date.month, birth_date.day))
+                    min_age = cp.program.min_age
+                    max_age = cp.program.max_age
+                    if (min_age != -1 and age < min_age) or (max_age != -1 and age > max_age):
+                        invalid_programs.append(cp.program.program)
+                if invalid_programs and not self.data.get('confirm_birth_date_change'):
+                    raise forms.ValidationError(
+                        f"Changing birth date will make client ineligible for: {', '.join(invalid_programs)}. "
+                        "Please confirm to proceed."
+                    )
+        return cleaned_data
 
 class AddressForm(forms.ModelForm):
 
@@ -205,7 +263,7 @@ class LessonNoteForm(forms.ModelForm):
 
 
 class BasePlanNoteForm(forms.ModelForm):
-    client_list = lm.Contact.objects.filter(sip_client=1).order_by('last_name')
+    client_list = lm.Contact.objects.filter(programs__program='SIP').order_by('last_name')
     clients = forms.ModelMultipleChoiceField(queryset=client_list, required=False)
     note_date = forms.DateField(widget=forms.SelectDateWidget(years=list(range(1900, 2100))), label='Note Date', initial=timezone.now())
 
@@ -371,30 +429,6 @@ class SipCSFReportForm(forms.Form):
         self.fields['year'].label = "Year (Start of Fiscal Year)"
 
 
-class VolunteerReportForm(forms.Form):
-    start_date = forms.DateField()
-    end_date = forms.DateField()
-
-    def __init__(self, *args, **kwargs):
-        super(VolunteerReportForm, self).__init__(*args, **kwargs)
-
-
-class VolunteerForm(forms.ModelForm):
-
-    class Meta:
-        model = lm.Volunteer
-        exclude = ('created', 'modified', 'user')
-
-
-class VolunteerHoursForm(forms.ModelForm):
-    volunteer_list = lm.Contact.objects.filter(volunteer_check=1).order_by('last_name')
-    contact = forms.ModelChoiceField(queryset=volunteer_list)
-
-    class Meta:
-        model = lm.Volunteer
-        exclude = ('created', 'modified', 'user')
-
-
 class DocumentForm(forms.ModelForm):
 
     class Meta:
@@ -526,17 +560,6 @@ class OIBServiceMultipleChoiceField(forms.ModelMultipleChoiceField):
         return obj.long_name
 
 class OIBServiceEventForm(forms.Form):
-    # TODO 2025_08_20_2136
-    #      Get rid of this field once TODO 2025_08_20_2057 (fix Contact model)
-    #      is done. Or rename it to what it is called in the corresponding
-    #      `OIBServiceEvent` model: `organizing_program`. (Not sure why this
-    #      would be needed at all, so the former is more likely.))`
-    program = forms.ModelChoiceField(
-        queryset=lm.OIBProgram.objects.all().order_by('oib_program'),
-        initial=2,
-        required=True,
-        label='Program'
-    )
     # A.k.a. service delivery type
     # The narrative is that the note will be saved into
     # the appropriate plan based on the date of the note

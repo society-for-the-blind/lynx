@@ -5,7 +5,7 @@
 
 {% block content %}
     <h2>Authorizations for {{ client.first_name }} {{ client.last_name }}</h2>
-    {% if not request.GET.print %}<input type="button" class="btn btn-success" aria-label="Add New Authorization" onclick="location.href='/lynx/add-authorization/{{ client.id }}/';" value="Add New Authorization" />   <input type="button" class="btn btn-success" aria-label="Back to Client" onclick="location.href='/lynx/client/{{ client.id }}';" value="Return to {{ client.first_name }} {{ client.last_name }}'s Information" />
+    {% if not request.GET.print %}<input type="button" class="btn btn-success" aria-label="Add New Authorization" onclick="location.href='/lynx/add-authorization/{{ client.id }}/';" value="Add New Authorization" />   <input type="button" class="btn btn-success" aria-label="Back to Client" onclick="location.href='/lynx/clients/{{ client.id }}';" value="Return to {{ client.first_name }} {{ client.last_name }}'s Information" />
 {% endif %}
     <ul>
         {% for auth in authorizations %}

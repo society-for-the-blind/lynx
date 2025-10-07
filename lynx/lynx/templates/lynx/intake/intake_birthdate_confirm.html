@@ -1,0 +1,20 @@
+{% extends 'lynx/base.html' %}
+{% block content %}
+  {% if invalid %}
+    <p>No pending birth date change.</p>
+    <a href="{% url 'lynx:intake_edit' pk=view.kwargs.pk %}">Back</a>
+  {% else %}
+    <h2>Confirm Birth Date Change</h2>
+    <p>New DOB: {{ new_birth_date }} will end these active memberships:</p>
+    <ul>
+      {% for v in violations %}
+        <li>{{ v.program }} (needs {{ v.requirements }}, age at start = {{ v.age_on_start }})</li>
+      {% endfor %}
+    </ul>
+    <form method="post">
+      {% csrf_token %}
+      <button type="submit" name="action" value="confirm">Confirm</button>
+      <button type="submit" name="action" value="cancel">Cancel</button>
+    </form>
+  {% endif %}
+{% endblock %}

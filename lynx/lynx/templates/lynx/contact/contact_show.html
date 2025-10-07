@@ -1,15 +1,43 @@
 {% extends 'lynx/base.html' %}
 {% load time_convert %}
+{% load has_program %}
 
 {% block title %}Client info - {{ object.first_name }} {{ object.last_name }}{% endblock %}
 
 {% block content %}
 
-<h1>{{ object.first_name }} {{ object.last_name }}</h1>
+<h1>
+  {{ object.first_name }} {{ object.last_name }}
+  {% if client_age %}
+    <small>(Age: {{ client_age }})</small>
+  {% endif %}
+</h1>
+
+{% if program_age_autoended %}
+  <div class="alert alert-warning">
+    <strong>Program membership mismatch:</strong>
+    {{ program_age_autoended|join:", " }}
+    {% if messages %}
+    <div class="container mt-2">
+        {% for message in messages %}
+        {% comment %} Map Django's 'error' -> bootstrap 'danger' {% endcomment %}
+        {% if message.level_tag == 'error' %}
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        {% else %}
+            <div class="alert alert-{{ message.level_tag }} alert-dismissible fade show" role="alert">
+        {% endif %}
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+  </div>
+{% endif %}
 
 {% if not request.GET.print %}
 
-  {% if object.core_client %}
+  {% if object.programs.all|has_program:"CORE" %}
     <!--
     <a class="btn btn-success" aria-label="Core Authorizations" href="/lynx/authorizations/{{ object.id }}">
       Core Authorizations
@@ -18,26 +46,17 @@
     <input type="button" class="btn btn-success" aria-label="Core Authorizations" onclick="location.href='/lynx/authorizations/{{ object.id }}';" value="Core Authorizations" />
   {% endif %}
 
-  {% if object.sip_client or object.sip1854_client %}
+  {% if object.programs.all|has_program:"SIP" or object.programs.all|has_program:"YIB" %}
     <input type="button" class="btn btn-success" aria-label="Assignments" onclick="location.href='/lynx/assignments/{{ object.id }}';" value="Assignments" />
-  {% endif %}
-
-  {% if object.sip_client %}
     <!--
     <a class="btn btn-success" aria-label="SIP Plans" href="/lynx/sipplans/{{ object.id }}">SIP Plans</a>
     <a class="btn btn-success" aria-label="SIP Notes" href="/lynx/sipnotes/{{ object.id }}">SIP Notes</a>
     -->
-    <input type="button" class="btn btn-success" aria-label="SIP Plans" onclick="location.href='/lynx/sipplans/{{ object.id }}';" value="SIP Plans" />
-    <input type="button" class="btn btn-success" aria-label="SIP Notes" onclick="location.href='/lynx/sipnotes/{{ object.id }}';" value="SIP Notes" />
+    <input type="button" class="btn btn-success" aria-label="SIP Notes" onclick="location.href='{% url 'lynx:oib_plan_list' object.id %}';" value="SIP Plans and Notes" />
   {% endif %}
 
-  {% if object.sip1854_client %}
-    <!--
-    <a class="btn btn-success" aria-label="18-54 Plans" href="/lynx/sip1854plans/{{ object.id }}">18-54 Plans</a>
-    <a class="btn btn-success" aria-label="18-54 Notes" href="/lynx/sip1854notes/{{ object.id }}">18-54 Notes</a>
-    -->
-    <input type="button" class="btn btn-success" aria-label="18-54 Plans" onclick="location.href='/lynx/sip1854plans/{{ object.id }}';" value="18-54 Plans" />
-    <input type="button" class="btn btn-success" aria-label="18-54 Notes" onclick="location.href='/lynx/sip1854notes/{{ object.id }}';" value="18-54 Notes" />
+  {% if has_historical_sip_plans %}
+    <input type="button" class="btn btn-success" aria-label="Historical SIP plans" onclick="location.href='{% url 'lynx:historical_sip_plans' object.id %}';" value="Historical SIP plans" />
   {% endif %}
 
   <!--
@@ -61,16 +80,12 @@
 {% if object.deceased %}<p class="tab"><strong>Deceased</strong></p>{% endif %}
 
 <p class="tab">
-  <strong>Services:</strong>
-  {%  if object.donor %}Donor,                              {%  endif %}
-  {%  if object.sip_client %}SIP Client,                    {%  endif %}
-  {%  if object.core_client %}Core Client,                  {%  endif %}
-  {%  if object.sip1854_client %}18-54 Client,              {%  endif %}
-  {%  if object.careers_plus %}Careers Plus,                {%  endif %}
-  {%  if object.careers_plus_youth %}Careers Plus Youth,    {%  endif %}
-  {%  if object.volunteer %}Volunteer,                      {%  endif %}
-  {%  if object.access_news %}Access News,                  {%  endif %}
-  {%  if object.other_services %} {{object.other_services}} {%  endif %}
+  <strong>Programs:</strong>
+  {% for membership in program_memberships %}
+    {{ membership.program.program }}{% if not forloop.last %}, {% endif %}
+  {% empty %}
+    No associated programs.
+  {% endfor %}
 </p>
 
 {% if not request.GET.print and user.is_superuser %}
@@ -79,7 +94,7 @@
     <a aria-label="Edit Client Information" class="btn btn-primary" href="/lynx/contact-edit/{{ object.id }}">Edit Client Information</a>
     <a aria-label="Delete Client" class="btn btn-danger" href="/lynx/contact-confirm/{{ object.id }}">Delete Client</a>
     -->
-    <input type="button" aria-label="Edit Client Information" class="btn btn-primary" onclick="location.href='/lynx/contact-edit/{{ object.id }}';" value="Edit Client Information" />
+    <input type="button" aria-label="Edit Client Information" class="btn btn-primary" onclick="location.href='{% url 'lynx:contact_edit' object.id %}';" value="Edit Client Information" />
     <input type="button" aria-label="Delete Client" class="btn btn-danger" onclick="location.href='/lynx/contact-confirm/{{ object.id }}';" value="Delete Client" />
   </p>
 {% endif %}
@@ -296,7 +311,7 @@
 <br><br>
 {% if not request.GET.print %}
 <h3>Add New Client Note</h3>
-<form action="/lynx/client/{{ object.id }}" method="post">
+<form action="/lynx/clients/{{ object.id }}" method="post">
 <!--    <p>These notes are for high level client information. Please don't record lesson or service information here.</p>-->
     {% csrf_token %}
     {{ form.as_p }}
@@ -317,13 +332,13 @@
 </ul>
 <br>
 <h3 id="upload">Upload Files</h3>
-<form action="/lynx/client/{{ object.id }}" method="post" enctype="multipart/form-data">
+<form action="/lynx/clients/{{ object.id }}" method="post" enctype="multipart/form-data">
     {% csrf_token %}
     {{ upload_form.as_p }}
     <input type="submit" class="btn btn-success" value="Upload">
 </form>
 <br><br>
-<form action="/lynx/client/{{ object.id }}" method="GET">
+<form action="/lynx/clients/{{ object.id }}" method="GET">
   <input type="hidden" name="print" value="true" />
   <input type="submit" value="Print View" class="btn btn-primary" />
 </form>

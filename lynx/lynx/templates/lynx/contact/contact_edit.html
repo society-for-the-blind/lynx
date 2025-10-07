@@ -1,0 +1,33 @@
+{% extends 'lynx/base.html' %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<h1>{% if object %}Edit Client{% else %}Intake Page 1 (Client Information){% endif %}</h1>
+<br>
+<h2>Client Contact Information</h2>
+<form method="post">
+    {% csrf_token %}
+    {{ form|crispy }}
+    {{ form.errors }}
+
+    {% if address_form %}
+      <h2>Address</h2>
+      {{ address_form|crispy }}
+      {{ address_form.errors }}
+    {% endif %}
+
+    {% if email_form %}
+      <h2>Email</h2>
+      {{ email_form|crispy }}
+      {{ email_form.errors }}
+    {% endif %}
+
+    {% if phone_form %}
+      <h2>Phone</h2>
+      {{ phone_form|crispy }}
+      {{ phone_form.errors }}
+    {% endif %}
+
+    <input type="submit" value="{% if object %}Update{% else %}Submit{% endif %}">
+</form>
+{% endblock %}
