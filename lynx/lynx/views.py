@@ -2735,6 +2735,42 @@ def _default_oib_outcome_choices_map():
         defaults[ot.id] = label_match
     return defaults
 
+def _default_oib_outcome_choice_ids_map():
+    """
+    Return dict outcome_type_id -> default oib_outcome_choice.id.
+    Uses the same heuristics as _default_oib_outcome_choices_map but returns IDs
+    so the edit form can preselect defaults when no current outcomes exist.
+    """
+    wanted_labels = {
+        "AT": "Not assessed",
+        "IL/A": "Not assessed",
+        "Living": "Plan not complete",
+        "Home": "Plan not complete",
+        "Employment": "Not Interested in Employment",
+    }
+    defaults = {}
+    for ot in lm.OIBOutcomeType.objects.all():
+        qs = (
+            lm.OIBOutcomeTypeChoice.objects
+            .filter(oib_outcome_type=ot)
+            .select_related('oib_outcome_choice')
+        )
+        chosen = None
+        # try to match canonical label first
+        for otc in qs:
+            lbl = otc.oib_outcome_choice.oib_outcome_choice
+            for key, wanted in wanted_labels.items():
+                if key.lower() in ot.oib_outcome_type.lower() and lbl == wanted:
+                    chosen = otc
+                    break
+            if chosen:
+                break
+        # fallback to first available choice
+        if not chosen and qs.exists():
+            chosen = qs.first()
+        defaults[ot.id] = chosen.oib_outcome_choice.id if chosen else None
+    return defaults
+
 # NOTE 2025_09_30_2124 There are 5 rolling outcomes / client / grant year / service delivery type,
 #                      which are not re-set when a new grant year starts. (The client wouldn't
 #                      magically loose their progress just because a new grant year started.)
@@ -2803,6 +2839,10 @@ def oib_plan_edit(request, contact_id, grant_year, service_delivery_type_id):
         for ot in outcome_types
     }
     current_ids_map = _current_oib_outcomes(contact_id, service_delivery_type_id, grant_year, return_ids=True)
+    defaults_ids_map = _default_oib_outcome_choice_ids_map()
+    
+    # Start with defaults, then override with any existing outcomes
+    client_outcomes_map = {**defaults_ids_map, **(current_ids_map or {})}
 
     if request.method == "POST":
         for ot in outcome_types:
@@ -2830,9 +2870,8 @@ def oib_plan_edit(request, contact_id, grant_year, service_delivery_type_id):
         "service_events": service_events,
         "outcome_types": outcome_types,
         "choices_by_type": choices_by_type,
-        "client_outcomes_map": current_ids_map,
+        "client_outcomes_map": client_outcomes_map,
         "edit_mode": True,
     })
-# ...existing code...
 
 # vim: set foldmethod=marker foldmarker={{-,}}-:
