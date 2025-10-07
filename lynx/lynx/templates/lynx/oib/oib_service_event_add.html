@@ -43,7 +43,7 @@ function updateSelectOptionsBasedOnSelectClass(selectElement) {
     );
 }
 
-// Exclude names once a client/instructor selection has been made
+// Exclude names once a clients/instructor selection has been made
 // (i.e., dropdown selected and then navigated away)
 document.addEventListener('change', function(event) {
   updateSelectOptionsBasedOnSelectClass( event.target );

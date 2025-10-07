@@ -21,7 +21,6 @@
     TODO 2025_08_31_1849 Meke single items editable on this page (HTMX?)
 -->
 <ul>
-  <li><strong>Program:</strong> {{ service_event.organizing_program.long_name }}</li>
   <li><strong>Plan Type:</strong> {{ service_event.oib_service_delivery_type.oib_service_delivery_type }}</li>
   <li><strong>Date:</strong> {{ service_event.date|date:"F j, Y" }}</li>
   <li><strong>Length:</strong> {{ service_event.length }}</li>
@@ -43,7 +42,7 @@
 <ul>
   {% for contact in service_event.contacts.all %}
     <li>
-      <a href="{% url 'lynx:client' contact.id %}">
+      <a href="{% url 'lynx:client_show' contact.id %}">
         {{ contact.first_name }} {{ contact.last_name }}
       </a>
     </li>
