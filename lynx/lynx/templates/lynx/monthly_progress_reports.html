@@ -47,6 +47,7 @@
     {% if request.GET.selMonth %}
         <hr>
         <h2>Reports and Invoices for {{request.GET.selMonth}} {{request.GET.selYear}}</h2>
+        <a href="{% url 'lynx:download_monthly_pdfs' %}?selMonth={{request.GET.selMonth}}&selYear={{request.GET.selYear}}" class="btn btn-primary">Download All as ZIP</a>
         <ul>
             {% for report in object_list %}
                 <li><a href="progress-report/{{ report.id }}/?print=true">{{ report.authorization.contact.last_name }}, {{ report.authorization.contact.first_name }} Progress Report - {{ report.authorization.intake_service_area.agency }} </a></li>

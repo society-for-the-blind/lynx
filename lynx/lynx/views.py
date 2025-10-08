@@ -1,3 +1,10 @@
+import io
+import zipfile
+from django.template.loader import render_to_string
+from weasyprint import HTML  # You'll need to install this package
+import base64, urllib.request, urllib.parse
+from PIL import Image
+
 from collections import defaultdict
 from datetime    import datetime, date, timedelta
 from django      import forms
@@ -641,6 +648,102 @@ def progress_result_view(request):
     return render(request, 'lynx/monthly_progress_reports.html', {'object_list': object_list, 'givenMonth': given_month,
                                                                   'givenYear': request.GET.get('selYear')})
 
+def _convert_cmyk_images_to_rgb_datauris(html_text, base_url):
+    """
+    Replace <img src="..."> references with data:image/png;base64,... for any
+    images that are CMYK (convert to RGB PNG on-the-fly). Silently leaves other
+    images untouched.
+    """
+    img_re = re.compile(r'(<img[^>]+src=["\'])([^"\']+)(["\'])', re.I)
+
+    def _replace(match):
+        prefix, src, suffix = match.group(1), match.group(2), match.group(3)
+        if src.startswith('data:'):
+            return match.group(0)  # already data URI
+        full_url = urllib.parse.urljoin(base_url, src)
+        try:
+            with urllib.request.urlopen(full_url) as resp:
+                data = resp.read()
+            img = Image.open(io.BytesIO(data))
+            if img.mode == 'CMYK':
+                img = img.convert('RGB')
+                out = io.BytesIO()
+                img.save(out, format='PNG')
+                b64 = base64.b64encode(out.getvalue()).decode('ascii')
+                new_src = f'data:image/png;base64,{b64}'
+                return f'{prefix}{new_src}{suffix}'
+        except Exception:
+            # If anything goes wrong, keep original src
+            return match.group(0)
+        return match.group(0)
+
+    return img_re.sub(_replace, html_text)
+
+@login_required
+def download_monthly_pdfs_zip(request):
+    """Generate all PDFs for selected month/year and provide as a single ZIP download"""
+    if request.GET.get('selMonth') and request.GET.get('selYear'):
+        MONTHS = {"January": 1, "February": 2, "March": 3, "April": 4, "May": 5, "June": 6, "July": 7,
+                  "August": 8, "September": 9, "October": 10, "November": 11, "December": 12}
+        given_month = MONTHS[request.GET.get('selMonth')]
+        reports = lm.ProgressReport.objects.filter(month=given_month).filter(
+            year=request.GET.get('selYear')).order_by(ddmf.Lower('authorization__contact__last_name'))
+        
+        # Create in-memory ZIP file
+        mem_zip = io.BytesIO()
+        with zipfile.ZipFile(mem_zip, mode='w', compression=zipfile.ZIP_DEFLATED) as zf:
+            for report in reports:
+                # Generate progress report PDF
+                context = {'object': report, 'request': request}
+                context['request'] = request._request if hasattr(request, '_request') else request
+                context['request'].GET = context['request'].GET.copy()
+                context['request'].GET['print'] = 'true'  # Add print=true parameter
+                
+                html = render_to_string('lynx/progressreport_detail.html', context)
+                try:
+                    pdf_bytes = HTML(string=html, base_url=request.build_absolute_uri('/')).write_pdf()
+                except OSError as e:
+                    # Pillow will raise "cannot write mode CMYK as PNG" when Weasy tries to
+                    # convert a CMYK image; try converting referenced images to RGB data-URIs.
+                    if "CMYK" in str(e) or "cannot write mode CMYK" in str(e):
+                        base_url = request.build_absolute_uri('/')
+                        html_fixed = _convert_cmyk_images_to_rgb_datauris(html, base_url)
+                        pdf_bytes = HTML(string=html_fixed, base_url=base_url).write_pdf()
+                    else:
+                        raise
+
+                filename = f"{report.authorization.contact.last_name}_{report.authorization.contact.first_name}_progress.pdf"
+                zf.writestr(filename, pdf_bytes)
+
+                # Generate invoice PDF
+                invoice_context = {
+                    'object': report.authorization,
+                    'month': given_month,
+                    'year': request.GET.get('selYear'),
+                    'request': context['request'],
+                    'givenMonth': given_month
+                }
+                invoice_html = render_to_string('lynx/billing_review.html', invoice_context)
+                try:
+                    invoice_pdf = HTML(string=invoice_html, base_url=request.build_absolute_uri('/')).write_pdf()
+                except OSError as e:
+                    if "CMYK" in str(e) or "cannot write mode CMYK" in str(e):
+                        base_url = request.build_absolute_uri('/')
+                        invoice_html_fixed = _convert_cmyk_images_to_rgb_datauris(invoice_html, base_url)
+                        invoice_pdf = HTML(string=invoice_html_fixed, base_url=base_url).write_pdf()
+                    else:
+                        raise
+                invoice_filename = f"{report.authorization.contact.last_name}_{report.authorization.contact.first_name}_invoice.pdf"
+                zf.writestr(invoice_filename, invoice_pdf)
+        
+        # Return the ZIP file
+        mem_zip.seek(0)
+        response = HttpResponse(mem_zip.read(), content_type='application/zip')
+        response['Content-Disposition'] = f'attachment; filename=reports_{request.GET.get("selMonth")}_{request.GET.get("selYear")}.zip'
+        return response
+    
+    # If no month/year, redirect to the main view
+    return redirect('lynx:report_search')
 
 @login_required
 def assignment_detail(request, contact_id):

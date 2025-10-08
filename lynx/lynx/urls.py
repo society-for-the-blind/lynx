@@ -73,6 +73,7 @@ urlpatterns = [
     path('contact-confirm/<int:pk>', views.ContactDeleteView.as_view(), name='contact-delete'),
     path('document-confirm/<int:pk>/<int:client_id>', views.DocumentDeleteView.as_view(), name='document-delete'),
     path('report-search', views.progress_result_view, name='report_search'),
+    path('reports/download-monthly-pdfs/', views.download_monthly_pdfs_zip, name='download_monthly_pdfs'),
     path('download/<path:path>', views.download, name='download'),
     path('manual', views.ManualView.as_view(), name='manual'),
     path('email', views.email_update, name='email'),

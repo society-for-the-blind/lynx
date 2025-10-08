@@ -108,6 +108,7 @@ in
       gobject-introspection
       icu
       python3
+      python3Packages.weasyprint
 
       # debug
       schemaspy
