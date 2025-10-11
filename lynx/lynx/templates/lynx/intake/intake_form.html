@@ -222,7 +222,7 @@
         <a class="btn btn-secondary" href="{{ object.get_absolute_url }}">Cancel</a>
       {% else %}
         {% if contact_id %}
-          <a class="btn btn-secondary" href="{% url 'lynx:client_show' contact_id %}">Cancel</a>
+          <a class="btn btn-secondary" href="{% url 'lynx:contact_show' contact_id %}">Cancel</a>
         {% endif %}
       {% endif %}
   </form>

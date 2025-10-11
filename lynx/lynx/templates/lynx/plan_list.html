@@ -26,7 +26,7 @@
       <p class="error">No program with the name {{ program_name }}</p>
     {% endif %}
 
-    <input type="button" class="btn btn-success" aria-label="Back to Client" onclick="location.href='{% url 'lynx:client_show' client.id %}';" value="Return to {{ client.first_name }} {{ client.last_name }}'s Information" />
+    <input type="button" class="btn btn-success" aria-label="Back to Client" onclick="location.href='{% url 'lynx:contact_show' client.id %}';" value="Return to {{ client.first_name }} {{ client.last_name }}'s Information" />
   {% endif %}
 
   <div class="container-fluid">

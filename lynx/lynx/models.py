@@ -187,7 +187,7 @@ class Contact(models.Model):
         return '%s, %s' % (self.last_name, self.first_name)
 
     def get_absolute_url(self):
-        return reverse('lynx:client_show', kwargs={'pk': self.id})
+        return reverse('lynx:contact_show', kwargs={'pk': self.id})
 
     class Meta:
         ordering = ['last_name', 'first_name']
@@ -428,9 +428,9 @@ class Email (models.Model):
     def get_absolute_url(self):
         # NOTE Why check `self.contact`? See note in class `Phone` below.
         if self.contact:
-            return reverse('lynx:client_show', kwargs={'pk': self.contact_id})
+            return reverse('lynx:contact_show', kwargs={'pk': self.contact_id})
         else:
-            return reverse('lynx:client_show', kwargs={'pk': self.emergency_contact.contact_id})
+            return reverse('lynx:contact_show', kwargs={'pk': self.emergency_contact.contact_id})
 
     def __str__(self):
         return self.email
@@ -460,9 +460,9 @@ class Phone (models.Model):
         #      column so it can be used to go back.
         # }}-
         if self.contact:
-            return reverse('lynx:client_show', kwargs={'pk': self.contact_id})
+            return reverse('lynx:contact_show', kwargs={'pk': self.contact_id})
         else:
-            return reverse('lynx:client_show', kwargs={'pk': self.emergency_contact.contact_id})
+            return reverse('lynx:contact_show', kwargs={'pk': self.emergency_contact.contact_id})
 
     def __str__(self):
         return self.phone
@@ -494,7 +494,7 @@ class Address(models.Model):
         verbose_name_plural = 'Addresses'
 
     def get_absolute_url(self):
-        return reverse('lynx:client_show', kwargs={'pk': self.contact_id})
+        return reverse('lynx:contact_show', kwargs={'pk': self.contact_id})
 
 
 # Intake questionnaire
@@ -652,7 +652,7 @@ class Intake(models.Model):
 
     def get_absolute_url(self):
         # keep behavior consistent with other models: go to the contact's page
-        return reverse('lynx:client_show', kwargs={'pk': self.contact_id})
+        return reverse('lynx:contact_show', kwargs={'pk': self.contact_id})
 
     @property
     def age_group(self):
@@ -674,7 +674,7 @@ class IntakeNote(models.Model):
     history = HistoricalRecords()
 
     def get_absolute_url(self):
-        return reverse('lynx:client_show', kwargs={'pk': self.contact_id})
+        return reverse('lynx:contact_show', kwargs={'pk': self.contact_id})
 
 
 # Addresses for Contacts.
@@ -689,7 +689,7 @@ class EmergencyContact(models.Model):
     history = HistoricalRecords()
 
     def get_absolute_url(self):
-        return reverse('lynx:client_show', kwargs={'pk': self.contact_id})
+        return reverse('lynx:contact_show', kwargs={'pk': self.contact_id})
 
 
 class Authorization(models.Model):
@@ -842,7 +842,7 @@ class BasePlanNote(models.Model):
     history = HistoricalRecords(inherit=True)
 
     def get_absolute_url(self):
-        return reverse('lynx:client_show', kwargs={'pk': self.contact_id})
+        return reverse('lynx:contact_show', kwargs={'pk': self.contact_id})
 
     # TODO Add string representation methods to other models as well.
     def __str__(self):
@@ -934,7 +934,7 @@ class BasePlan(models.Model):
         return self.plan_name
 
     def get_absolute_url(self):
-        return reverse('lynx:client_show', kwargs={'pk': self.contact_id})
+        return reverse('lynx:contact_show', kwargs={'pk': self.contact_id})
 
     class Meta:
             abstract = True

@@ -42,7 +42,7 @@
 <ul>
   {% for contact in service_event.contacts.all %}
     <li>
-      <a href="{% url 'lynx:client_show' contact.id %}">
+      <a href="{% url 'lynx:contact_show' contact.id %}">
         {{ contact.first_name }} {{ contact.last_name }}
       </a>
     </li>

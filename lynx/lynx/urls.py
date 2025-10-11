@@ -9,7 +9,7 @@ urlpatterns = [
     path("", views.index, name='index'),
     # At the moment, this one pull all active clients into a dropdown, so the path name should probably reflect that (e.g., `clients/active`). Why not just list them with the ability to search all contacts at the top?
     path('clients/search',        views.contact_search,              name='contact_search'),
-    path('clients/<int:pk>',      views.ContactDetailView.as_view(), name='client_show'),
+    path('clients/<int:pk>',      views.ContactDetailView.as_view(), name='contact_show'),
     path('clients/new',           views.ContactCreateView.as_view(), name='contact_add'),
     path('clients/<int:pk>/edit', views.ContactUpdateView.as_view(), name='contact_edit'),
     path('clients/filter',        views.contact_filter,              name='contact_filter'),
