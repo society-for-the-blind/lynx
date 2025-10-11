@@ -1,10 +1,10 @@
 {% extends 'lynx/base.html' %}
 {% load time_convert %}
 
-{% block title %}Service event: {{ service_event.oib_service_delivery_type.oib_service_delivery_type }} on {{ service_event.date|date:'F j, Y' }}{% endblock %}
+{% block title %}SIP note: {{ service_event.oib_service_delivery_type.oib_service_delivery_type }} on {{ service_event.date|date:'F j, Y' }}{% endblock %}
 
 {% block content %}
-<h2>Service Event</h2>
+<h2>SIP/ILP group note</h2>
 <a href="{% url 'lynx:oib_service_event_edit' service_event.id %}" class="btn btn-primary">
   Edit
 </a>

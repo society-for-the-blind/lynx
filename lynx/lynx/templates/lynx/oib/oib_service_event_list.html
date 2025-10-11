@@ -1,9 +1,9 @@
 {% extends "lynx/base.html" %}
 
-{% block title %}All OIB notes{% endblock %}
+{% block title %}All SIP/ILP group notes{% endblock %}
 
 {% block content %}
-<h1>All notes</h1>
+<h1>All SIP/ILP group notes</h1>
 
 <a href="{% url 'lynx:oib_service_event_add' %}" class="btn btn-primary" style="margin-bottom: 1em;">Add new note</a>
 
@@ -20,6 +20,9 @@
     <tbody>
     {% for event in service_events %}
         <tr>
+            <td>
+                <a href="{% url 'lynx:oib_service_event_show' event.id %}">{{ event.date }}</a>
+            </td>
             <!--
                 TODO 2025_09_08_1935 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                                      The logic to create plan names should only at one place.
@@ -28,9 +31,6 @@
                                      Right now it is recreated at each place that has a plan
                                      name.
             -->
-            <td>
-                <a href="{% url 'lynx:oib_service_event_show' event.id %}">{{ event.date }}</a>
-            </td>
             <td>10/1/{{ event.date|date:"Y" }} - {{ event.oib_service_delivery_type }}</td>
             </td>
             <td>{{ event.note|truncatechars:40 }}</td>

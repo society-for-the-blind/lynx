@@ -563,8 +563,6 @@ def get_date_validation(request, authorization_id, note_date): #check if they ar
     else:
         return JsonResponse({"result": 'true'})
 
-
-
 @login_required
 def contact_search(request):
     query = request.GET.get('query')
@@ -582,7 +580,6 @@ def contact_search(request):
     else:
         object_list = None
     return render(request, 'lynx/contact/contact_search.html', {'object_list': object_list, 'clients': clients})
-
 
 @login_required
 def client_advanced_result_view(request):
