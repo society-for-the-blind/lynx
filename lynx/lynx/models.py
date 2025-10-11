@@ -174,6 +174,15 @@ class Contact(models.Model):
         blank=True,
     )
 
+    @classmethod
+    def active_oib_qs(cls):
+        """Contacts active in an OIB program (currently active memberships)."""
+        return cls.objects.filter(
+            active=True,
+            contactprogram__program__is_oib=True,
+            contactprogram__end_date__isnull=True
+        ).distinct().order_by('last_name', 'first_name')
+
     def __str__(self):
         return '%s, %s' % (self.last_name, self.first_name)
 

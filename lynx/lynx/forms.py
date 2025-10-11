@@ -657,8 +657,10 @@ class ContactModelChoiceField(forms.ModelChoiceField):
         return f"{obj.last_name}, {obj.first_name}"
 
 class OIBServiceEventContactForm(forms.Form):
+    # Show only contacts that have an active membership in an OIB program.
+    # If you want to include past memberships remove the end_date__isnull filter.
     client = ContactModelChoiceField(
-        queryset=lm.Contact.objects.filter(active=True).order_by('last_name'),
+        queryset=lm.Contact.active_oib_qs(),
         label='Client',
         empty_label="Select a client",
         required=True,
