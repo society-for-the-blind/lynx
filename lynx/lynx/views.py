@@ -2480,6 +2480,37 @@ def parse_duration_string(s):
     return timedelta(hours=h, minutes=m, seconds=sec)
 
 @login_required
+def active_oib_clients(request):
+    """
+    Return HTML <option> items for client selects.
+    GET params:
+      - q: optional text to filter (first/last) - inactive for now
+      - selected: optional id to include selected at top
+    """
+    # q = (request.GET.get('q') or '').strip()
+    selected = request.GET.get('selected')
+    qs = lm.Contact.active_oib_qs()
+    # if q:
+    #     qs = qs.filter(Q(last_name__icontains=q) | Q(first_name__icontains=q))
+    # qs = qs[:100]  # limit to avoid huge responses
+
+    parts = []
+    # Ensure selected appears first (if provided)
+    if selected:
+        try:
+            sel = lm.Contact.objects.get(pk=selected)
+            parts.append(f'<option value="{sel.pk}">{sel.last_name}, {sel.first_name}</option>')
+        except lm.Contact.DoesNotExist:
+            pass
+
+    for c in qs:
+        if selected and str(c.pk) == str(selected):
+            continue
+        parts.append(f'<option value="{c.pk}">{c.last_name}, {c.first_name}</option>')
+
+    return HttpResponse('\n'.join(parts), content_type='text/html')
+
+@login_required
 def oib_service_event_form(request, oib_service_event_id=None):
     """Unified view for both adding and editing OIB service events."""
     edit_mode = oib_service_event_id is not None
@@ -2619,6 +2650,21 @@ def oib_service_event_form(request, oib_service_event_id=None):
             prefix=client_form_prefix
         )
         
+        # minimize select rendering cost: keep only selected option(s) in each form's queryset
+        for form_inst, init in zip(client_formset.forms, client_initial + [None] * max(0, len(client_formset.forms) - len(client_initial))):
+            selected_id = None
+            if init and init.get('client'):
+                # initial provided as model instance in client_initial
+                ci = init.get('client')
+                selected_id = getattr(ci, 'pk', ci)
+            # for safety: if POST or no selected, use empty queryset to avoid rendering thousands of options
+            if selected_id:
+                form_inst.fields['client'].queryset = lm.Contact.objects.filter(pk=selected_id)
+            else:
+                form_inst.fields['client'].queryset = lm.Contact.objects.none()
+        # ensure the empty_form renders no full list
+        client_formset.empty_form.fields['client'].queryset = lm.Contact.objects.none()
+
         context = {
             'form': form,
             'formsets': {

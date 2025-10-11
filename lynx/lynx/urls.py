@@ -13,6 +13,8 @@ urlpatterns = [
     path('clients/new',           views.ContactCreateView.as_view(), name='contact_add'),
     path('clients/<int:pk>/edit', views.ContactUpdateView.as_view(), name='contact_edit'),
     path('clients/filter',        views.contact_filter,              name='contact_filter'),
+    # HTMX endpoint for dynamically loading active OIB clients in a select field
+    path('htmx/active-oib-clients/', views.active_oib_clients, name='active_oib_clients'),
     # TODO The URL path scheme should be consistent:
     # clients/ should show a list of clients
     # clients/<int:pk> <- client/<int:pk>
