@@ -179,6 +179,7 @@ class Contact(models.Model):
         """Contacts active in an OIB program (currently active memberships)."""
         return cls.objects.filter(
             active=True,
+            deceased=False,
             contactprogram__program__is_oib=True,
             contactprogram__end_date__isnull=True
         ).distinct().order_by('last_name', 'first_name')
