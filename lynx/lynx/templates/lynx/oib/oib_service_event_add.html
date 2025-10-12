@@ -79,39 +79,6 @@ function removeFormRow(btn) {
 }
 </script>
 <script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.7/dist/htmx.min.js"></script>
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-  const url = "{% url 'lynx:active_oib_clients' %}";
-  const hidden_client_select = document.getElementById('id_client-__prefix__-client');
-  hidden_client_select.setAttribute('hx-get', url);
-  hidden_client_select.setAttribute('hx-trigger', 'mousedown'); // request before menu opens
-  hidden_client_select.setAttribute('hx-swap', 'innerHTML');
-  hidden_client_select.setAttribute('hx-target', 'this');
-
-  async function populate_select(select){
-    const selected = select.value || '';
-    try {
-      const res = await fetch(url, { credentials: 'same-origin' });
-      if (!res.ok) return;
-      const body = await res.text();
-      // keep the placeholder option first
-      select.innerHTML = '<option value="">Select a client</option>' + body;
-      // update client-side disabling logic if present
-      if (selected) { select.value = selected; }
-      try { updateSelectOptionsBasedOnSelectClass(select); } catch(e){ /* noop */ }
-    } catch (err) {
-      console.warn('Failed to populate client select', err);
-    }
-  }
-
-  const initial_client_select = document.getElementById('id_client-0-client');
-  populate_select(initial_client_select);
-
-  document.querySelectorAll('select.client-select').forEach( (select) => {
-    select.addEventListener('mousedown', (e) => populate_select(e.target) );
-  });
-});
-</script>
 {% endblock %}
 
 {% block style %}

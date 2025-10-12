@@ -1,5 +1,6 @@
 from collections import defaultdict
 from datetime    import datetime, date, timedelta
+from urllib.parse import quote
 from django      import forms
 from django.conf import settings
 
@@ -2552,6 +2553,7 @@ def oib_service_event_form(request, oib_service_event_id=None):
             minutes = (total_seconds % 3600) // 60
             seconds = total_seconds % 60
             return f"{hours:02d}:{minutes:02d}:{seconds:02d}"
+
         initial_data = {
             'plan_type': service_event.oib_service_delivery_type.pk,
             'note_date': service_event.date,
@@ -2573,10 +2575,55 @@ def oib_service_event_form(request, oib_service_event_id=None):
             for osec in lm.OIBServiceEventContact.objects.filter(oib_service_event=service_event)
         ]
     
+    def _attach_client_htmx_attrs(formset):
+        """Attach HTMX attrs to client selects in a formset (called before rendering)."""
+        base = reverse('lynx:active_oib_clients')
+        for form_inst in formset.forms:
+            field = form_inst.fields.get('client')
+            if not field:
+                continue
+            # prefer bound value, fall back to initial model pk if present
+            selected = ''
+            try:
+                val = form_inst['client'].value()
+                if val:
+                    selected = str(val)
+                else:
+                    init_val = form_inst.initial.get('client') if getattr(form_inst, 'initial', None) else None
+                    if init_val:
+                        selected = str(getattr(init_val, 'pk', init_val))
+            except Exception:
+                selected = ''
+            name = f"{form_inst.prefix}-client"
+            q = f"?name={quote(name)}"
+            if selected:
+                q += f"&selected={quote(selected)}"
+            field.widget.attrs.update({
+                'hx-get': base + q,
+                'hx-trigger': 'mousedown',
+                'hx-swap': 'innerHTML',
+                'hx-target': 'this',
+                # keep existing classes etc.
+            })
+
+        # empty_form: use __prefix__ placeholder so client-side add works
+        empty = formset.empty_form
+        if empty and 'client' in empty.fields:
+            name = f"{formset.prefix}-__prefix__-client"
+            q = f"?name={quote(name)}"
+            empty.fields['client'].widget.attrs.update({
+                'hx-get': base + q,
+                'hx-trigger': 'mousedown',
+                'hx-swap': 'innerHTML',
+                'hx-target': 'this',
+            })
+
     if request.method == 'POST':
         form = lfo.OIBServiceEventForm(request.POST)
         user_role_formset = OIBServiceEventUserRoleFormSet(request.POST, prefix=user_role_form_prefix)
+
         client_formset = OIBServiceEventContactFormSet(request.POST, prefix=client_form_prefix)
+        _attach_client_htmx_attrs(client_formset)
         
         if form.is_valid() and user_role_formset.is_valid() and client_formset.is_valid():
             # Either update existing or create new service event
@@ -2649,7 +2696,8 @@ def oib_service_event_form(request, oib_service_event_id=None):
             initial=client_initial, 
             prefix=client_form_prefix
         )
-        
+        _attach_client_htmx_attrs(client_formset)
+
         # minimize select rendering cost: keep only selected option(s) in each form's queryset
         for form_inst, init in zip(client_formset.forms, client_initial + [None] * max(0, len(client_formset.forms) - len(client_initial))):
             selected_id = None
