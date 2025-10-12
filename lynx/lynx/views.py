@@ -2620,7 +2620,15 @@ def oib_service_event_form(request, oib_service_event_id=None):
 
     if request.method == 'POST':
         form = lfo.OIBServiceEventForm(request.POST)
+
         user_role_formset = OIBServiceEventUserRoleFormSet(request.POST, prefix=user_role_form_prefix)
+        # Only show SIP instructors in the dropdown
+        instructor_qs = dca.User.objects\
+            .filter(groups__name='SIP', is_active=True)\
+            .order_by(ddmf.Lower('last_name'), ddmf.Lower('first_name'))
+        for fr in user_role_formset.forms:
+            if 'instructor' in fr.fields:
+                fr.fields['instructor'].queryset = instructor_qs
 
         client_formset = OIBServiceEventContactFormSet(request.POST, prefix=client_form_prefix)
         _attach_client_htmx_attrs(client_formset)
@@ -2692,6 +2700,14 @@ def oib_service_event_form(request, oib_service_event_id=None):
             initial=user_role_initial, 
             prefix=user_role_form_prefix
         )
+        # Only show SIP instructors in the dropdown
+        instructor_qs = dca.User.objects\
+            .filter(groups__name='SIP', is_active=True)\
+            .order_by(ddmf.Lower('last_name'), ddmf.Lower('first_name'))
+        for fr in user_role_formset.forms:
+            if 'instructor' in fr.fields:
+                fr.fields['instructor'].queryset = instructor_qs
+
         client_formset = OIBServiceEventContactFormSet(
             initial=client_initial, 
             prefix=client_form_prefix
