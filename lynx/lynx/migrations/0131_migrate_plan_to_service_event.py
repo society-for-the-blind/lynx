@@ -4,6 +4,11 @@ from itertools import chain
 from django.db import migrations
 from datetime import timedelta, date
 
+# === WARNING ===========================================================
+# This migration will fail when applying to a pre-service event db dump
+# AFTER the old implementation models (i.e., SipNote, Sip1854Note, SipPlan,
+# Sip1854Plan) have been removed.
+# =======================================================================
 
 def migrate_legacy_plans(apps, schema_editor):
     """
