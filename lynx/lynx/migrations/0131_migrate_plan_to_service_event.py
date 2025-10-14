@@ -242,7 +242,7 @@ def migrate_legacy_plans(apps, schema_editor):
 
     # --- Consolidate notes by identical text --------------------------------
 
-    # Groups keyed by exact note text (after strip)
+    # Groups keyed by exact note text AND note_date (after strip)
     # Each payload keeps representative fields + all notes/contacts
     groups = {}
 
@@ -255,17 +255,22 @@ def migrate_legacy_plans(apps, schema_editor):
                 continue
 
             note_text = (note.note or "").strip()
+            # normalize the note date used for grouping
+            note_date = note.note_date or (note.created.date() if getattr(note, 'created', None) else date.today())
 
-            if note_text not in groups:
+            # use (note_text, note_date) as the group key so both must match
+            key = (note_text, note_date)
+
+            if key not in groups:
                 # Determine delivery type from related plan, else default to "support group" (id 2)
                 delivery_type = delivery_type_cache.get(2)
                 if getattr(note, 'sip_plan', None) and getattr(note.sip_plan, 'plan_name', None):
                     delivery_type = map_plan_name_to_delivery_type(note.sip_plan.plan_name) or delivery_type
 
-                groups[note_text] = {
+                groups[key] = {
                     'representative': note,                     # first note encountered
                     'delivery_type_id': getattr(delivery_type, 'id', None),
-                    'date': note.note_date or (note.created.date() if getattr(note, 'created', None) else date.today()),
+                    'date': note_date,
                     'class_hours': note.class_hours,
                     'entered_by_id': getattr(note, 'user_id', None),
                     'instructor_name': (note.instructor or "").strip(),
@@ -273,7 +278,7 @@ def migrate_legacy_plans(apps, schema_editor):
                     'notes': [],                                # all notes in this group
                 }
 
-            g = groups[note_text]
+            g = groups[key]
             g['contact_ids'].add(note.contact_id)
             g['notes'].append(note)
 
@@ -293,7 +298,7 @@ def migrate_legacy_plans(apps, schema_editor):
             continue
 
     # Create one service event per group and attach all participants and services
-    for note_text, g in groups.items():
+    for (note_text, note_date), g in groups.items():
         try:
             delivery_type = delivery_type_cache.get(g['delivery_type_id']) if g['delivery_type_id'] is not None else delivery_type_cache.get(2)
             entered_by = User.objects.filter(pk=g['entered_by_id']).first() if g['entered_by_id'] else None
@@ -302,7 +307,7 @@ def migrate_legacy_plans(apps, schema_editor):
 
             service_event = OIBServiceEvent.objects.create(
                 oib_service_delivery_type=delivery_type,
-                date=g['date'],
+                date=note_date,  # use the normalized note_date from the group key
                 length=convert_class_hours_to_duration(g['class_hours']),
                 note=note_text,  # consolidated note text
                 entered_by=entered_by
