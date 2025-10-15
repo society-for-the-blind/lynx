@@ -155,7 +155,11 @@ add_django_superuser:                  # {{-
   just m createsuperuser
 # }}-
 
+# `sqlsequencereset` is needed after a manual `pg_restore`,
+# otherwise adding rows on the admin page will try adding
+# them from id=1.
 prep:                                  # {{-
+  python lynx/manage.py sqlsequencereset lynx | python lynx/manage.py dbshell
   just m collectstatic
   just m check --deploy
 # }}-
