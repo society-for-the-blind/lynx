@@ -87,45 +87,6 @@ urlpatterns = [
     path('lesson-note-edit/<int:pk>', views.LessonNoteUpdateView.as_view(), name='lesson-note-edit'),
     path('intake-note-edit/<int:pk>', views.IntakeNoteUpdateView.as_view(), name='intake-note-edit'),
 
-    path('clients/<int:client_id>/historical-sip-plans', views.historical_sip_plans, name='historical_sip_plans'),
-    ###############
-    # SIP PLANS   #
-    ###############
-    path('sipplans/<int:client_id>',       views.plan_list_view,           name='sip_plan_list'   ),
-    path('add-sip-plan/<int:contact_id>/', views.add_plan,                 name='sip_plan_add'    ),
-    path('sip-plan/<int:pk>',              views.PlanDetailView.as_view(), name='sip_plan_detail' ),
-    path('sip-plan-edit/<int:pk>',         views.PlanUpdateView.as_view(), name='sip_plan_edit'   ),
-    # TODO Why is the `client_id` parameter needed? The pk should be enough, doesn't it?
-    path('sip-plan-delete/<int:pk>/<int:client_id>', views.PlanDeleteView.as_view(), name='sip_plan_delete' ),
-
-    ###############
-    # 18-54 PLANS #
-    ###############
-    path('sip1854plans/<int:client_id>',       views.plan_list_view,           name='sip1854_plan_list'   ),
-    path('add-sip1854-plan/<int:contact_id>/', views.add_plan,                 name='sip1854_plan_add'    ),
-    path('sip1854-plan/<int:pk>',              views.PlanDetailView.as_view(), name='sip1854_plan_detail' ),
-    path('sip1854-plan-edit/<int:pk>',         views.PlanUpdateView.as_view(), name='sip1854_plan_edit'   ),
-    # TODO Why is the `client_id` parameter needed? The pk should be enough, doesn't it?
-    path('sip1854-plan-delete/<int:pk>/<int:client_id>', views.PlanDeleteView.as_view(), name='sip1854_plan_delete' ),
-
-    ###############
-    # SIP NOTES   #
-    ###############
-    path('sipnotes/<int:client_id>',       views.plan_note_list_view,          name='sip_note_list'     ),
-    path('add-sip-note/<int:contact_id>/', views.add_plan_note,                name='sip_note_add'      ),
-    path('sip-note-edit/<int:pk>',         views.PlanNoteUpdateView.as_view(), name='sip_note_edit'     ),
-    # TODO Why is the `client_id` parameter needed? The pk should be enough, doesn't it?
-    path('sip-note-delete/<int:pk>',  views.PlanNoteDeleteView.as_view(), name='sip_note_delete' ),
-
-    #################
-    # 18-54 NOTES   #
-    #################
-    path('sip1854notes/<int:client_id>',       views.plan_note_list_view,   name='sip1854_note_list'     ),
-    path('add-sip1854-note/<int:contact_id>/', views.add_plan_note,         name='sip1854_note_add'      ),
-    path('sip1854-note-edit/<int:pk>',         views.PlanNoteUpdateView.as_view(), name='sip1854_note_edit' ),
-    # TODO Why is the `client_id` parameter needed? The pk should be enough, doesn't it?
-    path('sip1854-note-delete/<int:pk>',  views.PlanNoteDeleteView.as_view(),  name='sip1854_note_delete' ),
-
     ###############
     # ASSIGNMENTS #
     ###############

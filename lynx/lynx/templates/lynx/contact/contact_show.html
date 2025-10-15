@@ -55,10 +55,6 @@
     <input type="button" class="btn btn-success" aria-label="SIP Notes" onclick="location.href='{% url 'lynx:oib_plan_list' object.id %}';" value="SIP Plans and Notes" />
   {% endif %}
 
-  {% if has_historical_sip_plans %}
-    <input type="button" class="btn btn-success" aria-label="Historical SIP plans" onclick="location.href='{% url 'lynx:historical_sip_plans' object.id %}';" value="Historical SIP plans" />
-  {% endif %}
-
   <!--
   <a class="btn btn-success" aria-label="Jump to Client Notes" href="#notes">Jump to Client Notes</a>
   <a class="btn btn-success" aria-label="Jump to File Upload" href="#upload">Jump to File Upload</a>
