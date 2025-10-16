@@ -52,7 +52,6 @@
     <a class="btn btn-success" aria-label="SIP Plans" href="/lynx/sipplans/{{ object.id }}">SIP Plans</a>
     <a class="btn btn-success" aria-label="SIP Notes" href="/lynx/sipnotes/{{ object.id }}">SIP Notes</a>
     -->
-    <input type="button" class="btn btn-success" aria-label="SIP Notes" onclick="location.href='{% url 'lynx:oib_plan_list' object.id %}';" value="SIP Plans and Notes" />
   {% endif %}
 
   <!--

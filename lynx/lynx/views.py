@@ -2484,7 +2484,7 @@ def oib_service_event_form(request, oib_service_event_id=None):
 
 # "PLANS" (virtual)
 @login_required
-def oib_plan_list(request, contact_id):
+def oib_plan_list_with_notes(request, contact_id):
     client = lm.Contact.objects.get(id=contact_id)
 
     # Get all distinct combinations of grant year and service delivery type
@@ -2512,7 +2512,7 @@ def oib_plan_list(request, contact_id):
     for plan in plans:
         plan['plan_group'] = f"10/1/{plan['grant_year']} - {plan['oib_service_delivery_type__oib_service_delivery_type']}"
 
-    return render(request, "lynx/oib/oib_plan_list.html", {
+    return render(request, "lynx/oib/oib_plan_list_with_notes.html", {
         "client": client,
         "plans": list(plans),
     })
