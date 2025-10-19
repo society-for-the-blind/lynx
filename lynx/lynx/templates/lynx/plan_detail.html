@@ -21,7 +21,7 @@
   <input type="button" class="btn btn-success" onclick="location.href='{% url 'lynx:sip_note_add' object.contact_id %}?plan_id={{ object.id }}&next={{ request.path }}';" value="Add new note to {{ program_name }} plan" />
   <input type="button" class="btn btn-success" onclick="location.href='{% url 'lynx:sip_note_list' object.contact_id %}';" value="Show all {{ program_name }} notes" />
   <input type="button" class="btn btn-success" onclick="location.href='{% url 'lynx:sip_plan_list' object.contact_id %}';" value="Show all {{ program_name }} plans" />
-{% elif program_name == '18-54' %}
+{% elif program_name == 'ILP' %}
   <input type="button" class="btn btn-success" onclick="location.href='{% url 'lynx:contact_show' object.contact_id %}';" value="Return to {{ object.contact.first_name }} {{ object.contact.last_name }}'s Information" />
   <input type="button" class="btn btn-success" onclick="location.href='{% url 'lynx:sip1854_plan_edit' object.id %}?next={{ request.path }}';" value="Edit" />
   <input type="button" class="btn btn-success" onclick="location.href='{% url 'lynx:sip1854_plan_delete' object.id  object.contact_id %}';" value="Delete" />
@@ -93,7 +93,7 @@
         {% if program_name == 'SIP' %}
         <!-- TODO/NOTE `sip_plan_id` is a column for both note tables: `lynx_sipnote` and `lynx_sip1854note`; this should be taken care of -->
           <a href='{% url 'lynx:sip_note_edit' note.id %}?contact_id={{ note.contact_id }}&plan_id={{ note.sip_plan_id }}&next={{ request.path }}'>
-        {% elif program_name == '18-54' %}
+        {% elif program_name == 'ILP' %}
         <!-- TODO/NOTE `sip_plan_id` is a column for both note tables: `lynx_sipnote` and `lynx_sip1854note`; this should be taken care of -->
           <a href='{% url 'lynx:sip1854_note_edit' note.id %}?contact_id={{ note.contact_id }}&plan_id={{ note.sip_plan_id }}&next={{ request.path }}'>
         {% endif %}
@@ -103,7 +103,7 @@
       <div class="col-12">
         {% if program_name == 'SIP' %}
           <a href='{% url 'lynx:sip_note_delete' note.id  %}?next={{ request.path }}'>
-        {% elif program_name == '18-54' %}
+        {% elif program_name == 'ILP' %}
           <a href='{% url 'lynx:sip1854_note_delete' note.id  %}?next={{ request.path }}'>
         {% endif %}
             Delete {{ note.note_date|date:'F j, Y' }}

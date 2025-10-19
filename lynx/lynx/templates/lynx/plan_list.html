@@ -20,7 +20,7 @@
 
     {% if program_name == 'SIP' %}
       <input type="button" class="btn btn-success" aria-label="Add New {{ program_name }} Plan" onclick="location.href='{% url 'lynx:sip_plan_add' client.id %}';" value="Add New {{ program_name }} Plan" />
-    {% elif program_name == '18-54' %}
+    {% elif program_name == 'ILP' %}
       <input type="button" class="btn btn-success" aria-label="Add New {{ program_name }} Plan" onclick="location.href='{% url 'lynx:sip1854_plan_add' client.id %}';" value="Add New {{ program_name }} Plan" />
     {% else %}
       <p class="error">No program with the name {{ program_name }}</p>
@@ -39,7 +39,7 @@
           <a href='
             {% if program_name == 'SIP' %}
               {% url 'lynx:sip_plan_detail' program_plan.id %}
-            {% elif program_name == '18-54' %}
+            {% elif program_name == 'ILP' %}
               {% url 'lynx:sip1854_plan_detail' program_plan.id %}
             {% endif %}
           '>
@@ -83,7 +83,7 @@
             <a href="{% url 'lynx:sip_plan_edit' program_plan.id %}?next={{ request.path }}">Edit</a>
             |
             <a href='{% url 'lynx:sip_plan_delete'  program_plan.id client.id %}'>Delete</a>
-          {% elif program_name == '18-54' %}
+          {% elif program_name == 'ILP' %}
             <a href="{% url 'lynx:sip1854_plan_edit' program_plan.id %}?next={{ request.path }}">Edit</a>
             |
             <a href='{% url 'lynx:sip1854_plan_delete'  program_plan.id client.id %}'>Delete</a>

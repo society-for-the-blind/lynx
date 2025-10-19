@@ -46,7 +46,7 @@
     <input type="button" class="btn btn-success" aria-label="Core Authorizations" onclick="location.href='/lynx/authorizations/{{ object.id }}';" value="Core Authorizations" />
   {% endif %}
 
-  {% if object.programs.all|has_program:"SIP" or object.programs.all|has_program:"YIB" %}
+  {% if object.programs.all|has_program:"SIP" or object.programs.all|has_program:"ILP" %}
     <input type="button" class="btn btn-success" aria-label="Assignments" onclick="location.href='/lynx/assignments/{{ object.id }}';" value="Assignments" />
     <input type="button" class="btn btn-success" aria-label="SIP Plans" onclick="location.href='/lynx/clients/{{ object.id }}/plans';" value="SIP Plans" />
     <!--

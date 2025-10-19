@@ -817,7 +817,7 @@ class Assignment(models.Model):
 #                      ========================================================
 #      There is going to be *one* SIP plan per client - and "SIP" here means the
 #      department and not the OIB program. If a client ages into the OIB program
-#      "SIP" from YIB, then they would count into both programs for that year. 
+#      "SIP" from ILP, then they would count into both programs for that year. 
 #
 #      TODO-TODO Make sure.
 

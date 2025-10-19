@@ -52,7 +52,7 @@
         <div class="col-12">
           {% if program_name == 'SIP' %}
             <a href='{% url 'lynx:sip_note_delete' note.id  %}?next={{ request.path }}'>
-          {% elif program_name == '18-54' %}
+          {% elif program_name == 'ILP' %}
             <a href='{% url 'lynx:sip1854_note_delete' note.id  %}?next={{ request.path }}'>
           {% endif %}
               Delete {{ note.note_date|date:'F j, Y' }}

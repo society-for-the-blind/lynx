@@ -101,7 +101,7 @@ def parse_path_for_program(request):
 
     elif program_path_part == 'sip1854':
 
-        program_name    = '18-54'
+        program_name    = 'ILP'
         plan_model      = lm.Sip1854Plan
         plan_form_model = lfo.Sip1854PlanForm
         note_model      = lm.Sip1854Note
@@ -880,7 +880,7 @@ class ContactDetailView(LoginRequiredMixin, DetailView):
         context['form'] = lfo.IntakeNoteForm
         context['upload_form'] = lfo.DocumentForm
 
-        # add historical SIP / 18-54 existence flag and counts
+        # add historical SIP / ILP existence flag and counts
         client_id = self.kwargs['pk']
         sip_exists = lm.SipPlan.objects.filter(contact_id=client_id).exists()
         sip1854_exists = lm.Sip1854Plan.objects.filter(contact_id=client_id).exists()
@@ -1987,7 +1987,7 @@ def get_current_grant_year_startdate():
 #     NOTE Why `ab2480_plan_id` and not `sip1854_plan_id`?
 #
 #          Because the `sip1854` prefix  has been a mistake all
-#          along.  The "18-54"  program is  an unofficial  name
+#          along.  The "ILP"  program is  an unofficial  name
 #          using a mnemonic to make  it easier to remember that
 #          clients in the  AB2480 have to be between  18 and 54
 #          years  of age.  (It doesn't  help that  even in  the
@@ -2910,4 +2910,4 @@ def oib_plan_edit(request, contact_id, grant_year, service_delivery_type_id):
         "edit_mode": True,
     })
 
-# vim: set foldmethod=marker foldmarker={{-,}}-:
+# vim: set foldmethod=marker foldmarker={{-,}}- tabstop=4 shiftwidth=4 softtabstop=4 expandtab:

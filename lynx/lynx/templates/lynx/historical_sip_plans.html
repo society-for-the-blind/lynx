@@ -10,13 +10,13 @@
     <li><a href="{% url 'lynx:sip_plan_list' client.id %}">SIP Plans ({{ counts.sip_plans }})</a></li>
   {% endif %}
   {% if counts.sip1854_plans %}
-    <li><a href="{% url 'lynx:sip1854_plan_list' client.id %}">18-54 Plans ({{ counts.sip1854_plans }})</a></li>
+    <li><a href="{% url 'lynx:sip1854_plan_list' client.id %}">ILP Plans ({{ counts.sip1854_plans }})</a></li>
   {% endif %}
   {% if counts.sip_notes %}
     <li><a href="{% url 'lynx:sip_note_list' client.id %}">SIP Notes ({{ counts.sip_notes }})</a></li>
   {% endif %}
   {% if counts.sip1854_notes %}
-    <li><a href="{% url 'lynx:sip1854_note_list' client.id %}">18-54 Notes ({{ counts.sip1854_notes }})</a></li>
+    <li><a href="{% url 'lynx:sip1854_note_list' client.id %}">ILP Notes ({{ counts.sip1854_notes }})</a></li>
   {% endif %}
 </ul>
 

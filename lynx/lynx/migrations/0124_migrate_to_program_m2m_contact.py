@@ -5,24 +5,24 @@ from datetime import date
 
 BOOL_TO_PROGRAM = {
     'sip_client': 'SIP',
-    'sip1854_client': 'YIB',
+    'sip1854_client': 'ILP',
     'core_client': 'CORE',
     'careers_plus': 'CareersPlus',
     # 'careers_plus_youth': 'CareersPlus Youth',  # REMOVED: see below
 }
 
-OIB_PROGRAMS = {'SIP', 'YIB'}
+OIB_PROGRAMS = {'SIP', 'ILP'}
 
 PROGRAM_LONG_NAMES = {
     'SIP': 'Senior Impact Program',
-    'YIB': 'Young Individuals who are Blind',
+    'ILP': 'Independent Living Program',
     'CORE': 'Core Skills Program',
     'CareersPlus': 'CareersPlus',
 }
 
 PROGRAM_AGES = {
     'SIP': (55, -1),
-    'YIB': (18, 54),
+    'ILP': (18, 54),
     'CORE': (-1, -1),
     'CareersPlus': (-1, 22),
 }
@@ -51,7 +51,7 @@ def ensure_programs(apps, schema_editor):
 #     Program = apps.get_model('lynx', 'Program')
 #     ProgramOverlap = apps.get_model('lynx', 'ProgramOverlap')
 #     # Get program IDs
-#     yib = Program.objects.filter(program='YIB').first()
+#     yib = Program.objects.filter(program='ILP').first()
 #     cp = Program.objects.filter(program='CareersPlus').first()
 #     if yib and cp:
 #         a_id, b_id = sorted([yib.id, cp.id])
