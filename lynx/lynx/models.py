@@ -209,42 +209,9 @@ class Program(models.Model):
     def get_available_programs(cls):
         return cls.objects.all()
 
-# NOTE 2025_09_18_1955 I was under the impression that CareersPlus was an OIB program and those
-#                      don't allow age overlap - but I was told that YIB and CareersPlus can
-#                      overlap, but CareersPlus is **not** an OIB program.
-
-# class ProgramOverlap(models.Model):
-#     """
-#     Allow programs (A,B) to overlap for clients whose age at the contact-program
-#     start_date falls within [min_age, max_age]. Use -1 for unbounded.
-#     Stored as an unordered pair: save() normalizes order so lookups can be simple.
-#     """
-#     program_a = models.ForeignKey('Program', on_delete=models.CASCADE, related_name='+')
-#     program_b = models.ForeignKey('Program', on_delete=models.CASCADE, related_name='+')
-#     min_age = models.SmallIntegerField(default=-1, help_text='-1 = no minimum age')
-#     max_age = models.SmallIntegerField(default=-1, help_text='-1 = no maximum age')
-#     created = models.DateTimeField(auto_now_add=True)
-#     modified = models.DateTimeField(auto_now=True)
-
-#     class Meta:
-#         constraints = [
-#             models.UniqueConstraint(fields=['program_a', 'program_b'], name='unique_program_overlap_pair'),
-#         ]
-
-#     def save(self, *args, **kwargs):
-#         # normalize order to enforce unordered pair uniqueness
-#         if self.program_a_id and self.program_b_id and self.program_a_id > self.program_b_id:
-#             self.program_a, self.program_b = self.program_b, self.program_a
-#         super().save(*args, **kwargs)
-
-#     def __str__(self):
-#         return f"Overlap {self.program_a} <-> {self.program_b} [{self.min_age},{self.max_age}]"
-
 class ContactProgram(models.Model):
     contact = models.ForeignKey('Contact', on_delete=models.CASCADE)
     program = models.ForeignKey('Program', on_delete=models.PROTECT)
-    # denormalized so we can use a partial unique constraint without joins
-    program_is_oib = models.BooleanField(editable=False, default=False)
 
     # Client is ACTIVE in program if `start_date` is set and `end_date` is NULL;
     # if both set, client has aged out of program.
@@ -271,14 +238,12 @@ class ContactProgram(models.Model):
             ),
         ]
         indexes = [
-            models.Index(fields=['contact', 'program_is_oib', 'end_date']),
+            models.Index(fields=['contact', 'start_date', 'end_date']),
         ]
 
-    # TODO 2025_09_21_1355 Not sure if this is used anywhere (or useful at all)
-    #                      Make sure it's not used/useful, then delete.
-    # @property
-    # def is_active(self):
-    #     return self.start_date is not None and self.end_date is None
+    @property
+    def is_active(self):
+        return self.start_date is not None and self.end_date is None
 
     def _latest_birth_date(self):
         Intake = apps.get_model('lynx', 'Intake')
@@ -324,81 +289,7 @@ class ContactProgram(models.Model):
         # passed validation
         self.age_verified = True
 
-        # """
-        # Enforce only one active OIB program at a time, unless ProgramOverlap allows it.
-        # """
-        # if not (self.contact_id and self.program_id):
-        #     return
-
-        # # only applies for active OIB rows
-        # is_active_now = self.end_date is None
-        # # ensure program_is_oib is available (it will be set in save(); here use program)
-        # if not is_active_now or not getattr(self.program, 'is_oib', None) and not self.program_id:
-        #     return
-
-        # # compute client's age on start_date (or today)
-        # on_date = self.start_date or date.today()
-        # # dob = self._latest_birth_date()
-        # if dob:
-        #     age = on_date.year - dob.year - ((on_date.month, on_date.day) < (dob.month, dob.day))
-        # else:
-        #     age = None  # age unknown
-
-        # # find other active OIB ContactProgram rows for this contact
-        # ContactProgramModel = apps.get_model('lynx', 'ContactProgram')
-        # existing_qs = ContactProgramModel.objects.filter(
-        #     contact_id=self.contact_id,
-        #     end_date__isnull=True,
-        #     program__is_oib=True,
-        # )
-        # if self.pk:
-        #     existing_qs = existing_qs.exclude(pk=self.pk)
-
-        # if not existing_qs.exists():
-        #     return  # no conflict
-
-        # # For each existing active OIB program, allow only if there is a ProgramOverlap row
-        # # whose age bounds include the client's age (or if age unknown, require explicit overlap permitted).
-        # ProgramOverlapModel = apps.get_model('lynx', 'ProgramOverlap')
-        # conflicts = []
-        # for other in existing_qs.select_related('program'):
-        #     a_id = min(self.program_id, other.program_id)
-        #     b_id = max(self.program_id, other.program_id)
-        #     try:
-        #         overlap = ProgramOverlapModel.objects.get(program_a_id=a_id, program_b_id=b_id)
-        #     except ProgramOverlapModel.DoesNotExist:
-        #         overlap = None
-
-        #     allowed = False
-        #     if overlap:
-        #         # if age unknown, require explicit overlap entry -> allow
-        #         if age is None:
-        #             allowed = True
-        #         else:
-        #             min_age = overlap.min_age
-        #             max_age = overlap.max_age
-        #             if (min_age == -1 or age >= min_age) and (max_age == -1 or age <= max_age):
-        #                 allowed = True
-
-        #     if not allowed:
-        #         conflicts.append(other.program.program)
-
-        # if conflicts:
-        #     raise exc.ValidationError(
-        #         f"Cannot create active OIB membership for {self.program.program}; "
-        #         f"contact already has active OIB program(s) that are not allowed to overlap at this age: {', '.join(conflicts)}. "
-        #         "Configure ProgramOverlap records or end the other memberships first."
-        #     )
-
     def save(self, *args, **kwargs):
-        # keep program_is_oib in sync (handle unsaved/unsynced program instances)
-        if self.program_id:
-            try:
-                self.program_is_oib = bool(self.program.is_oib)
-            except Exception:
-                Program = apps.get_model('lynx', 'Program')
-                self.program_is_oib = bool(Program.objects.filter(pk=self.program_id).values_list('is_oib', flat=True).first() or False)
-
         # run model validation (won't raise for missing DOB; will raise for age violations)
         self.full_clean()
         super().save(*args, **kwargs)
