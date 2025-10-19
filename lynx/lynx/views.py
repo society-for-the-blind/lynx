@@ -2483,122 +2483,39 @@ def oib_service_event_form(request, oib_service_event_id=None):
             
         return render(request, template_path, context)
 
-# "PLANS" (virtualj
+# "PLANS" (virtual)
 @login_required
 def oib_plan_list(request, contact_id):
     client = lm.Contact.objects.get(id=contact_id)
-    events_qs = (
-        lm.OIBServiceEvent.objects
-        .filter(contacts__id=contact_id)
-        .select_related('oib_service_delivery_type')
-        .annotate(
-            grant_year=ddm.Case(
-                ddm.When(date__month__gte=10, then=ddm.F('date__year')),
-                default=ddm.F('date__year') - 1,
-                output_field=ddm.IntegerField()
-            )
-        )
-        .order_by('-grant_year', 'oib_service_delivery_type__oib_service_delivery_type')
-    )
+    service_events_qs = lm.OIBServiceEvent.for_contact_with_grant_year(contact_id)
 
-    # Group by (grant_year, delivery_type_id) and preserve order
-    groups = OrderedDict()
-    for ev in events_qs:
-        key = (ev.grant_year, ev.oib_service_delivery_type_id)
-        if key not in groups:
-            dt_name = ev.oib_service_delivery_type.oib_service_delivery_type if ev.oib_service_delivery_type else ""
-            groups[key] = {
-                'grant_year': ev.grant_year,
-                'service_delivery_type_id': ev.oib_service_delivery_type_id,
+    # Build an in-memory mapping (grant_year, sdt_id) -> list(OIBServiceEvent)
+    service_events_by_plan = defaultdict(list)
+    # Deduplicated plan names; Group by (grant_year, delivery_type_id) and preserve order
+    virtual_plans = OrderedDict()
+
+    for service_event in service_events_qs:
+        key = (service_event.grant_year, service_event.oib_service_delivery_type_id)
+        service_events_by_plan[key].append(service_event)
+        if key not in virtual_plans:
+            dt_name = service_event.oib_service_delivery_type.oib_service_delivery_type if service_event.oib_service_delivery_type else ""
+            virtual_plans[key] = {
+                'grant_year': service_event.grant_year,
+                'service_delivery_type_id': service_event.oib_service_delivery_type_id,
                 'service_delivery_type_name': dt_name,
                 # plan_name-like label used in plan_list template
-                'plan_name': f"10/1/{ev.grant_year} - {dt_name}",
+                'plan_name': f"10/1/{service_event.grant_year} - {dt_name}",
             }
 
-    # Build a mapping (grant_year, sdt_id) -> set(service long_names) using the prefetched services
-    services_map = {}
-    for ev in events_qs:
-        key = (ev.grant_year, ev.oib_service_delivery_type_id)
-        if key not in services_map:
-            services_map[key] = set()
-        for svc in ev.services.all():
-            # prefer long_name, fall back to oib_service
-            name = getattr(svc, 'long_name', None) or getattr(svc, 'oib_service', None)
-            if name:
-                services_map[key].add(name)
-
-    # Helper: aggregate service flags for a (contact, sdt_id, grant_year) group
-    def _aggregate_service_flags(contact_id, sdt_id, grant_year):
-        flags = {
-            'at_services': False,
-            'at_devices': False,
-            'independent_living': False,
-            'orientation': False,
-            'communications': False,
-            'dls': False,
-            'advocacy': False,
-            'counseling': False,
-            'information': False,
-            'services': False,
-        }
-        start_date = date(grant_year, 10, 1)
-        end_date = date(grant_year + 1, 9, 30)
-        ev_qs = (
-            lm.OIBServiceEvent.objects
-            .filter(
-                contacts__id=contact_id,
-                oib_service_delivery_type__id=sdt_id,
-                date__gte=start_date,
-                date__lte=end_date
-            )
-            .prefetch_related('services')
-        )
-
-        for ev in ev_qs:
-            for svc in ev.services.all():
-                name = (getattr(svc, 'oib_service', '') or '').lower()
-                # heuristic keyword matching
-                if 'device' in name or 'assist' in name or 'at device' in name:
-                    flags['at_devices'] = True
-                    flags['at_services'] = True
-                if 'at' == name or name.startswith('at '):
-                    flags['at_services'] = True
-                if 'independent' in name or 'il/a' in name or 'il/a' in name or 'dls' in name:
-                    flags['independent_living'] = True
-                    if 'dls' in name:
-                        flags['dls'] = True
-                if 'orientation' in name or 'o&m' in name or 'o&m' in name:
-                    flags['orientation'] = True
-                if 'commun' in name:
-                    flags['communications'] = True
-                if 'advoc' in name:
-                    flags['advocacy'] = True
-                if 'counsel' in name:
-                    flags['counseling'] = True
-                if 'information' in name or 'info' in name or 'referral' in name:
-                    flags['information'] = True
-                # generic fallback: if service name contains 'service' or 'support' mark services
-                if 'service' in name or 'support' in name or 'other' in name:
-                    flags['services'] = True
-        return flags
-
-    # Collect distinct OIBService names for the virtual plan
-    def _collect_service_names(contact_id, sdt_id, grant_year):
-        start_date = date(grant_year, 10, 1)
-        end_date = date(grant_year + 1, 9, 30)
+    # -- HELPERS -------
+    # Collect service name for a virtual plan
+    # That is, the set of services checked on the service events for each "plan"
+    #          will become the services listed for that virtual plan.
+    def _collect_service_names(sdt_id, grant_year):
         names = set()
-        ev_qs = (
-            lm.OIBServiceEvent.objects
-            .filter(
-                contacts__id=contact_id,
-                oib_service_delivery_type__id=sdt_id,
-                date__gte=start_date,
-                date__lte=end_date
-            )
-            .prefetch_related('services')
-        )
-        for ev in ev_qs:
-            for svc in ev.services.all():
+
+        for service_event in service_events_by_plan.get((grant_year, sdt_id), []):
+            for svc in service_event.services.all():
                 name = getattr(svc, 'long_name', None) or getattr(svc, 'oib_service', None)
                 if name:
                     names.add(name)
@@ -2623,16 +2540,11 @@ def oib_plan_list(request, contact_id):
         return None
 
     program_plans = []
-    for (grant_year, sdt_id), meta in groups.items():
+    for (grant_year, sdt_id), meta in virtual_plans.items():
         # get outcomes summary for this client / delivery type / grant_year
         outcomes_map = _current_oib_outcomes(contact_id, sdt_id, grant_year, return_ids=False)
-
-        # aggregate service flags for the virtual plan (grant_year + sdt)
-        service_flags = _aggregate_service_flags(contact_id, sdt_id, grant_year)
-
         # collect service names to display in the template
-        service_names = _collect_service_names(contact_id, sdt_id, grant_year)
-
+        service_names = _collect_service_names(sdt_id, grant_year)
         # resolve outcomes by matching outcome type names instead of numeric ids
         at_outcome = _outcome_for_keywords(outcomes_map, defaults_map, ['at', 'assistive', 'assistive technology'])
         ila_outcome = _outcome_for_keywords(outcomes_map, defaults_map, ['il/a', 'independent', 'ila'])
@@ -2648,17 +2560,6 @@ def oib_plan_list(request, contact_id):
             'living_plan_progress': living_outcome or "",
             'community_plan_progress': community_outcome or "",
             'employment_outcomes': employment_outcome or "",
-            # aggregated service flags
-            'at_services': service_flags['at_services'],
-            'at_devices': service_flags['at_devices'],
-            'independent_living': service_flags['independent_living'],
-            'orientation': service_flags['orientation'],
-            'communications': service_flags['communications'],
-            'dls': service_flags['dls'],
-            'advocacy': service_flags['advocacy'],
-            'counseling': service_flags['counseling'],
-            'information': service_flags['information'],
-            'services': service_flags['services'],
             # service names for display
             'service_names': service_names,
             # stash routing params so template can link to oib_plan_show
@@ -2814,18 +2715,7 @@ def _default_oib_outcome_choice_ids_map():
 def oib_plan_show(request, contact_id, grant_year, service_delivery_type_id):
     client = lm.Contact.objects.get(id=contact_id)
     service_delivery_type = lm.OIBServiceDeliveryType.objects.get(id=service_delivery_type_id)
-    start_date = date(grant_year, 10, 1)
-    end_date   = date(grant_year + 1, 9, 30)
-    service_events = (
-        lm.OIBServiceEvent.objects
-        .filter(
-            contacts__id=contact_id,
-            oib_service_delivery_type__id=service_delivery_type_id,
-            date__gte=start_date,
-            date__lte=end_date
-        )
-        .order_by('-date')
-    )
+    service_events = lm.OIBServiceEvent.in_grant_year(contact_id, service_delivery_type_id, grant_year)
 
     outcome_types = lm.OIBOutcomeType.objects.all()
     current_map   = _current_oib_outcomes(contact_id, service_delivery_type_id, grant_year, return_ids=False)
@@ -2851,18 +2741,7 @@ def oib_plan_show(request, contact_id, grant_year, service_delivery_type_id):
 def oib_plan_edit(request, contact_id, grant_year, service_delivery_type_id):
     client = lm.Contact.objects.get(id=contact_id)
     service_delivery_type = lm.OIBServiceDeliveryType.objects.get(id=service_delivery_type_id)
-    start_date = date(grant_year, 10, 1)
-    end_date   = date(grant_year + 1, 9, 30)
-    service_events = (
-        lm.OIBServiceEvent.objects
-        .filter(
-            contacts__id=contact_id,
-            oib_service_delivery_type__id=service_delivery_type_id,
-            date__gte=start_date,
-            date__lte=end_date
-        )
-        .order_by('-date')
-    )
+    service_events = lm.OIBServiceEvent.in_grant_year(contact_id, service_delivery_type_id, grant_year)
 
     outcome_types = lm.OIBOutcomeType.objects.all()
     choices_by_type = {

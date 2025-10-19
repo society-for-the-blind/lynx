@@ -910,6 +910,52 @@ class OIBServiceEvent(models.Model):
     def __str__(self):
         return f"{self.date} {self.oib_service_delivery_type} {self.date}"
 
+    @classmethod
+    def base_for_contact(cls, contact_id):
+        """
+        Base queryset for a contact with useful joins for repeated use.
+        """
+        return cls.objects.filter(contacts__id=contact_id) \
+                   .select_related('oib_service_delivery_type') \
+                   .prefetch_related('services')
+
+    @classmethod
+    def with_grant_year_annotation(cls, qs=None):
+        """
+        Annotate queryset with `grant_year` (Oct-Sep fiscal year).
+        """
+        qs = qs if qs is not None else cls.objects.all()
+        return qs.annotate(
+            grant_year=models.Case(
+                models.When(date__month__gte=10, then=models.F('date__year')),
+                default=models.F('date__year') - 1,
+                output_field=models.IntegerField()
+            )
+        )
+
+    @classmethod
+    def for_contact_with_grant_year(cls, contact_id):
+        """
+        Full queryset used by oib_plan_list: filtered to contact, annotated and ordered.
+        """
+        return cls.with_grant_year_annotation(cls.base_for_contact(contact_id)) \
+                  .order_by('-grant_year', 'oib_service_delivery_type__oib_service_delivery_type')
+
+    @classmethod
+    def in_grant_year(cls, contact_id, sdt_id, grant_year):
+        """
+        Events for a single contact + service_delivery_type in the provided grant_year (date range).
+        Returns a queryset with select_related/prefetch applied.
+        """
+        start = date(grant_year, 10, 1)
+        end = date(grant_year + 1, 9, 30)
+        return cls.objects.filter(
+            contacts__id=contact_id,
+            oib_service_delivery_type__id=sdt_id,
+            date__gte=start,
+            date__lte=end
+        ).select_related('oib_service_delivery_type').prefetch_related('services').order_by('-date')
+
 class OIBServiceEventOIBService(models.Model):
     oib_service_event = models.ForeignKey(OIBServiceEvent, on_delete=models.PROTECT)
     oib_service = models.ForeignKey(OIBService, on_delete=models.PROTECT)
