@@ -179,7 +179,7 @@ def add_intake(request, contact_id):
             form.contact_id = contact_id
             form.active = 1
             form.save()
-            return HttpResponseRedirect(reverse('lynx:client_show', args=(contact_id,)))
+            return HttpResponseRedirect(reverse('lynx:contact_show', args=(contact_id,)))
     return render(request, 'lynx/intake/intake_form.html', {'form': form})
 
 
@@ -257,7 +257,7 @@ def add_plan_note(request, contact_id):
             return HttpResponseRedirect(next_url)
         else:
             # If 'next' parameter isn't provided, redirect to a default location
-            return HttpResponseRedirect(reverse('lynx:client_show', args=(contact_id,)))
+            return HttpResponseRedirect(reverse('lynx:contact_show', args=(contact_id,)))
 
     return render( request                              \
                  , 'lynx/add_plan_note.html'            \
@@ -377,7 +377,7 @@ def add_emergency(request, contact_id):
                     phone_form.emergency_contact_id = emergency_contact_id
                     phone_form.save()
 
-            return HttpResponseRedirect(reverse('lynx:client_show', args=(contact_id,)))
+            return HttpResponseRedirect(reverse('lynx:contact_show', args=(contact_id,)))
     return render(request, 'lynx/add_emergency.html',
                   {'phone_form': phone_form, 'form': form})
 
@@ -393,7 +393,7 @@ def add_address(request, contact_id):
             form.user_id = request.user.id
             form.active = 1
             form.save()
-            return HttpResponseRedirect(reverse('lynx:client_show', args=(contact_id,)))
+            return HttpResponseRedirect(reverse('lynx:contact_show', args=(contact_id,)))
     return render(request, 'lynx/add_address.html', {'form': form})
 
 
@@ -408,7 +408,7 @@ def add_email(request, contact_id):
             form.user_id = request.user.id
             form.active = 1
             form.save()
-            return HttpResponseRedirect(reverse('lynx:client_show', args=(contact_id,)))
+            return HttpResponseRedirect(reverse('lynx:contact_show', args=(contact_id,)))
     return render(request, 'lynx/add_email.html', {'form': form})
 
 
@@ -425,7 +425,7 @@ def add_emergency_email(request, emergency_contact_id):
             form.save()
             emergency = lm.EmergencyContact.objects.get(id=emergency_contact_id)
             contact_id = int(emergency.contact_id)
-            return HttpResponseRedirect(reverse('lynx:client_show', args=(contact_id,)))
+            return HttpResponseRedirect(reverse('lynx:contact_show', args=(contact_id,)))
     return render(request, 'lynx/add_email.html', {'form': form})
 
 
@@ -440,7 +440,7 @@ def add_phone(request, contact_id):
             form.user_id = request.user.id
             form.active = 1
             form.save()
-            return HttpResponseRedirect(reverse('lynx:client_show', args=(contact_id,)))
+            return HttpResponseRedirect(reverse('lynx:contact_show', args=(contact_id,)))
     return render(request, 'lynx/add_phone.html', {'form': form})
 
 
@@ -457,7 +457,7 @@ def add_emergency_phone(request, emergency_contact_id):
             form.save()
             emergency = lm.EmergencyContact.objects.get(id=emergency_contact_id)
             contact_id = int(emergency.contact_id)
-            return HttpResponseRedirect(reverse('lynx:client_show', args=(contact_id,)))
+            return HttpResponseRedirect(reverse('lynx:contact_show', args=(contact_id,)))
     return render(request, 'lynx/add_phone.html', {'form': form})
 
 
@@ -528,7 +528,7 @@ def add_vaccination_record(request, contact_id):
             form.contact_id = contact_id
             form.user_id = request.user.id
             form.save()
-            return HttpResponseRedirect(reverse('lynx:client_show', args=(contact_id,)))
+            return HttpResponseRedirect(reverse('lynx:contact_show', args=(contact_id,)))
     return render(request, 'lynx/add_vaccine_record.html', {'form': form})
 
 
@@ -1032,7 +1032,7 @@ class ContactUpdateView(ContactFormView, UpdateView):
                     end_date=None
                 )
 
-        return HttpResponseRedirect(reverse('lynx:client_show', args=(self.object.pk,)))
+        return HttpResponseRedirect(reverse('lynx:contact_show', args=(self.object.pk,)))
 
 class AddressUpdateView(LoginRequiredMixin, UpdateView):
     model = lm.Address
@@ -1174,7 +1174,7 @@ class IntakeBirthDateConfirmView(LoginRequiredMixin, TemplateView):
             # User cancelled: DOB stays old; other edits already saved.
             # Clear the pending session payload and return to the client detail view.
             request.session.pop(session_key, None)
-            return redirect('lynx:client_show', pk=intake.contact_id)
+            return redirect('lynx:contact_show', pk=intake.contact_id)
 
         if action == 'confirm':
             new_birth_date = date.fromisoformat(pending['new_birth_date'])
@@ -1193,7 +1193,7 @@ class IntakeBirthDateConfirmView(LoginRequiredMixin, TemplateView):
             intake.save()
 
             request.session.pop(session_key, None)
-            return redirect('lynx:client_show', pk=intake.contact_id)
+            return redirect('lynx:contact_show', pk=intake.contact_id)
 
         return redirect('lynx:intake_edit', pk=intake.pk)
 
@@ -1283,7 +1283,7 @@ class IntakeNoteDeleteView(LoginRequiredMixin, DeleteView):
 
     def get_success_url(self):
         client_id = self.kwargs['client_id']
-        return reverse_lazy('lynx:client_show', kwargs={'pk': client_id})
+        return reverse_lazy('lynx:contact_show', kwargs={'pk': client_id})
 
 
 class ProgressReportDeleteView(UserPassesTestMixin, DeleteView):
@@ -1305,7 +1305,7 @@ class AuthorizationDeleteView(UserPassesTestMixin, DeleteView):
 
     def get_success_url(self):
         client_id = self.kwargs['client_id']
-        return reverse_lazy('lynx:client_show', kwargs={'pk': client_id})
+        return reverse_lazy('lynx:contact_show', kwargs={'pk': client_id})
 
 
 class ContactDeleteView(UserPassesTestMixin, DeleteView):
@@ -1332,7 +1332,7 @@ class PhoneDeleteView(LoginRequiredMixin, DeleteView):
 
     def get_success_url(self):
         client_id = self.kwargs['client_id']
-        return reverse_lazy('lynx:client_show', kwargs={'pk': client_id})
+        return reverse_lazy('lynx:contact_show', kwargs={'pk': client_id})
 
 
 class VaccineDeleteView(LoginRequiredMixin, DeleteView):
@@ -1340,7 +1340,7 @@ class VaccineDeleteView(LoginRequiredMixin, DeleteView):
 
     def get_success_url(self):
         client_id = self.kwargs['client_id']
-        return reverse_lazy('lynx:client_show', kwargs={'pk': client_id})
+        return reverse_lazy('lynx:contact_show', kwargs={'pk': client_id})
 
 
 class DocumentDeleteView(LoginRequiredMixin, DeleteView):
@@ -1348,7 +1348,7 @@ class DocumentDeleteView(LoginRequiredMixin, DeleteView):
 
     def get_success_url(self):
         client_id = self.kwargs['client_id']
-        return reverse_lazy('lynx:client_show', kwargs={'pk': client_id})
+        return reverse_lazy('lynx:contact_show', kwargs={'pk': client_id})
 
 
 @login_required
