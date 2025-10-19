@@ -1,0 +1,66 @@
+{% extends 'lynx/base.html' %}
+{% block title %}SIP Plans for {{ client.first_name }} {{ client.last_name }}{% endblock %}
+
+{% block style %}
+<style>
+.service-tags { display:flex; flex-wrap:wrap; gap:.25rem; margin-top:.25rem; }
+.service-tag {
+  font-size:.85rem;
+  padding:.25rem .5rem;
+  border-radius:0.5rem;
+  white-space:normal;        /* allow wrapping */
+  word-break:break-word;     /* break very long words */
+  max-width:40rem;           /* optional: limit width per tag */
+}
+.service-tag.light { background-color:#f8f9fa; color:#212529; border:1px solid #e0e0e0; }
+</style>
+{% endblock %}
+
+{% block content %}
+  <h2>SIP Plans for {{ client.first_name }} {{ client.last_name }}</h2>
+
+  <input type="button" class="btn btn-success" aria-label="Back to Client" onclick="location.href='/lynx/clients/{{ client.id }}';" value="Return to Client" />
+
+  <div class="container-fluid">
+    {% for program_plan in plans %}
+      <div class="container-fluid mb-3 p-2 border">
+        <div><strong>Plan Name: </strong>
+          <a href="{% url 'lynx:oib_plan_show' client.id program_plan.grant_year program_plan.service_delivery_type_id %}">
+            {{ program_plan.plan_name }}
+          </a>
+        </div>
+
+        <div><strong>AT Outcome:</strong> {{ program_plan.at_outcomes }}</div>
+        <div><strong>IL/A Outcome:</strong> {{ program_plan.ila_outcomes }}</div>
+        <div><strong>Living Situation Outcome:</strong> {{ program_plan.living_plan_progress }}</div>
+        <div><strong>Community Involvement Outcome:</strong> {{ program_plan.community_plan_progress }}</div>
+        <div><strong>Employment Outcome:</strong> {{ program_plan.employment_outcomes }}</div>
+
+        <div>
+        <strong>Services:</strong>
+        {% if program_plan.service_names %}
+            <div class="service-tags mt-1">
+            {% for svc in program_plan.service_names %}
+                <span
+                class="badge bg-primary text-white service-tag"
+                title="{{ svc }}"
+                aria-label="Service {{ svc }}"
+                >
+                {{ svc }}
+                </span>
+            {% endfor %}
+            </div>
+        {% else %}
+            <span class="text-muted">None recorded</span>
+        {% endif %}
+        </div>
+
+        <div class="mt-2">
+          <a href="{% url 'lynx:oib_plan_show' client.id program_plan.grant_year program_plan.service_delivery_type_id %}">View events</a>
+        </div>
+      </div>
+    {% empty %}
+      <p>No OIB plans (service-event groups) found for this client.</p>
+    {% endfor %}
+  </div>
+{% endblock %}

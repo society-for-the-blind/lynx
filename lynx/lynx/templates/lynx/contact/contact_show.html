@@ -48,6 +48,7 @@
 
   {% if object.programs.all|has_program:"SIP" or object.programs.all|has_program:"YIB" %}
     <input type="button" class="btn btn-success" aria-label="Assignments" onclick="location.href='/lynx/assignments/{{ object.id }}';" value="Assignments" />
+    <input type="button" class="btn btn-success" aria-label="SIP Plans" onclick="location.href='/lynx/clients/{{ object.id }}/plans';" value="SIP Plans" />
     <!--
     <a class="btn btn-success" aria-label="SIP Plans" href="/lynx/sipplans/{{ object.id }}">SIP Plans</a>
     <a class="btn btn-success" aria-label="SIP Notes" href="/lynx/sipnotes/{{ object.id }}">SIP Notes</a>
