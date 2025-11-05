@@ -9,11 +9,12 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins     import LoginRequiredMixin  \
                                          , UserPassesTestMixin
 
-from django.contrib import messages
+from django.contrib      import messages
 from django.contrib.auth import models as dca
 
 from django.core.mail      import send_mail
 from django.core.paginator import Paginator
+from django.core           import signing
 
 from django.db        import connection
 from django.db        import models    as ddm
@@ -2257,7 +2258,7 @@ def oib_service_event_form(request, oib_service_event_id=None):
     """Unified view for both adding and editing OIB service events."""
     edit_mode = oib_service_event_id is not None
     template_path = "lynx/oib/oib_service_event_add.html"
-    
+
     # Set up formsets
     OIBServiceEventUserRoleFormSet = forms.formset_factory(
         lfo.OIBServiceEventUserRoleForm,
@@ -2267,7 +2268,7 @@ def oib_service_event_form(request, oib_service_event_id=None):
         validate_min=True
     )
     user_role_form_prefix = 'user_role'
-    
+
     OIBServiceEventContactFormSet = forms.formset_factory(
         lfo.OIBServiceEventContactForm,
         extra=0,
@@ -2276,13 +2277,13 @@ def oib_service_event_form(request, oib_service_event_id=None):
         validate_min=True
     )
     client_form_prefix = 'client'
-    
+
     # For edit mode, fetch the existing service event
     service_event = None
     initial_data = {}
     user_role_initial = []
     client_initial = []
-    
+
     if edit_mode:
         service_event = get_object_or_404(lm.OIBServiceEvent, pk=oib_service_event_id)
 
@@ -2315,7 +2316,7 @@ def oib_service_event_form(request, oib_service_event_id=None):
             }
             for osec in lm.OIBServiceEventContact.objects.filter(oib_service_event=service_event)
         ]
-    
+
     def _attach_client_htmx_attrs(formset):
         """Attach HTMX attrs to client selects in a formset (called before rendering)."""
         base = reverse('lynx:active_oib_clients')
@@ -2373,7 +2374,7 @@ def oib_service_event_form(request, oib_service_event_id=None):
 
         client_formset = OIBServiceEventContactFormSet(request.POST, prefix=client_form_prefix)
         _attach_client_htmx_attrs(client_formset)
-        
+
         if form.is_valid() and user_role_formset.is_valid() and client_formset.is_valid():
             # Either update existing or create new service event
             if edit_mode:
@@ -2384,7 +2385,7 @@ def oib_service_event_form(request, oib_service_event_id=None):
                 service_event.length = parse_duration_string(form.cleaned_data['event_length'])
                 service_event.note = form.cleaned_data['note']
                 service_event.save()
-                
+
                 # Clean up related objects
                 lm.OIBServiceEventInstructor.objects.filter(oib_service_event=service_event).delete()
                 lm.OIBServiceEventContact.objects.filter(oib_service_event=service_event).delete()
@@ -2397,14 +2398,14 @@ def oib_service_event_form(request, oib_service_event_id=None):
                     note=form.cleaned_data['note'],
                     entered_by=request.user,
                 )
-            
+
             # Create related objects for both add/edit modes
             for service in form.cleaned_data['services']:
                 lm.OIBServiceEventOIBService.objects.create(
                     oib_service_event=service_event,
                     oib_service=service,
                 )
-            
+
             for row in user_role_formset.cleaned_data:
                 if row and not row.get('DELETE', False):
                     lm.OIBServiceEventInstructor.objects.create(
@@ -2412,14 +2413,14 @@ def oib_service_event_form(request, oib_service_event_id=None):
                         instructor=row['instructor'],
                         oib_service_event_instructor_role=row['role'],
                     )
-            
+
             for row in client_formset.cleaned_data:
                 if row and not row.get('DELETE', False):
                     lm.OIBServiceEventContact.objects.create(
                         oib_service_event=service_event,
                         contact=row['client'],
                     )
-            
+
             return redirect('lynx:oib_service_event_show', oib_service_event_id=service_event.id)
         else:
             # Form validation failed
@@ -2438,7 +2439,7 @@ def oib_service_event_form(request, oib_service_event_id=None):
         # GET request - show the form
         form = lfo.OIBServiceEventForm(initial=initial_data)
         user_role_formset = OIBServiceEventUserRoleFormSet(
-            initial=user_role_initial, 
+            initial=user_role_initial,
             prefix=user_role_form_prefix
         )
         # Only show SIP instructors in the dropdown
@@ -2450,7 +2451,7 @@ def oib_service_event_form(request, oib_service_event_id=None):
                 fr.fields['instructor'].queryset = instructor_qs
 
         client_formset = OIBServiceEventContactFormSet(
-            initial=client_initial, 
+            initial=client_initial,
             prefix=client_form_prefix
         )
         _attach_client_htmx_attrs(client_formset)
@@ -2480,99 +2481,11 @@ def oib_service_event_form(request, oib_service_event_id=None):
         if edit_mode:
             context['service_event'] = service_event
             context['edit_mode'] = True
-            
+
         return render(request, template_path, context)
 
 # "PLANS" (virtual)
-@login_required
-def oib_plan_list(request, contact_id):
-    client = lm.Contact.objects.get(id=contact_id)
-    service_events_qs = lm.OIBServiceEvent.for_contact_with_grant_year(contact_id)
-
-    # Build an in-memory mapping (grant_year, sdt_id) -> list(OIBServiceEvent)
-    service_events_by_plan = defaultdict(list)
-    # Deduplicated plan names; Group by (grant_year, delivery_type_id) and preserve order
-    virtual_plans = OrderedDict()
-
-    for service_event in service_events_qs:
-        key = (service_event.grant_year, service_event.oib_service_delivery_type_id)
-        service_events_by_plan[key].append(service_event)
-        if key not in virtual_plans:
-            dt_name = service_event.oib_service_delivery_type.oib_service_delivery_type if service_event.oib_service_delivery_type else ""
-            virtual_plans[key] = {
-                'grant_year': service_event.grant_year,
-                'service_delivery_type_id': service_event.oib_service_delivery_type_id,
-                'service_delivery_type_name': dt_name,
-                # plan_name-like label used in plan_list template
-                'plan_name': f"10/1/{service_event.grant_year} - {dt_name}",
-            }
-
-    # -- HELPERS -------
-    # Collect service name for a virtual plan
-    # That is, the set of services checked on the service events for each "plan"
-    #          will become the services listed for that virtual plan.
-    def _collect_service_names(sdt_id, grant_year):
-        names = set()
-
-        for service_event in service_events_by_plan.get((grant_year, sdt_id), []):
-            for svc in service_event.services.all():
-                name = getattr(svc, 'long_name', None) or getattr(svc, 'oib_service', None)
-                if name:
-                    names.add(name)
-        return sorted(names, key=lambda s: s.lower())
-
-    # Build list that mirrors what plan_list.html expects (but fields are adapted),
-    # now with aggregated service flags per virtual plan.
-    # Precompute defaults & outcome types to look up by name rather than hard-coded ids
-    defaults_map = _default_oib_outcome_choices_map()
-    outcome_types = list(lm.OIBOutcomeType.objects.all())
-
-    def _outcome_for_keywords(current_map, defaults_map, keywords):
-        """
-        Find first outcome_type whose name contains any of `keywords` (case-insensitive)
-        and return the current_map value (or default) for that type.
-        """
-        kws = [k.lower() for k in keywords]
-        for ot in outcome_types:
-            name = (ot.oib_outcome_type or "").lower()
-            if any(k in name for k in kws):
-                return current_map.get(ot.id, defaults_map.get(ot.id))
-        return None
-
-    program_plans = []
-    for (grant_year, sdt_id), meta in virtual_plans.items():
-        # get outcomes summary for this client / delivery type / grant_year
-        outcomes_map = _current_oib_outcomes(contact_id, sdt_id, grant_year, return_ids=False)
-        # collect service names to display in the template
-        service_names = _collect_service_names(sdt_id, grant_year)
-        # resolve outcomes by matching outcome type names instead of numeric ids
-        at_outcome = _outcome_for_keywords(outcomes_map, defaults_map, ['at', 'assistive', 'assistive technology'])
-        ila_outcome = _outcome_for_keywords(outcomes_map, defaults_map, ['il/a', 'independent', 'ila'])
-        living_outcome = _outcome_for_keywords(outcomes_map, defaults_map, ['living', 'living situation', 'plan progress'])
-        community_outcome = _outcome_for_keywords(outcomes_map, defaults_map, ['community', 'community involvement'])
-        employment_outcome = _outcome_for_keywords(outcomes_map, defaults_map, ['employment', 'work'])
-
-        program_plans.append({
-            'id': f"{grant_year}-{sdt_id}",
-            'plan_name': meta['plan_name'],
-            'at_outcomes': at_outcome or "",
-            'ila_outcomes': ila_outcome or "",
-            'living_plan_progress': living_outcome or "",
-            'community_plan_progress': community_outcome or "",
-            'employment_outcomes': employment_outcome or "",
-            # service names for display
-            'service_names': service_names,
-            # stash routing params so template can link to oib_plan_show
-            'grant_year': grant_year,
-            'service_delivery_type_id': sdt_id,
-            'service_delivery_type_name': meta['service_delivery_type_name'],
-        })
-
-    return render(request, "lynx/oib/oib_plan_list.html", {
-        "client": client,
-        "plans": program_plans,
-    })
-
+# Outdated, but still useful for listing notes per program-agnostic plan
 @login_required
 def oib_plan_list_with_notes(request, contact_id):
     client = lm.Contact.objects.get(id=contact_id)
@@ -2607,13 +2520,31 @@ def oib_plan_list_with_notes(request, contact_id):
         "plans": list(plans),
     })
 
-def _current_oib_outcomes(contact_id, service_delivery_type_id, grant_year, *, return_ids=False):
+def _get_plan_outcomes(contact_id, service_delivery_type_id, grant_year):
     """
-    Return dict: outcome_type_id -> (choice_label or choice_id)
-    constrained to the given grant_year and service_delivery_type_id.
-    Picks the newest (created desc) per type.
+    Returns: { OIBOutcomeType.id: OIBOutcomeChoice.id }
     """
-    qs = (
+    # preload all outcome types (IDs) so result always contains all keys
+    outcome_types = lm.OIBOutcomeType.objects.all()
+    outcome_type_ids = list(lm.OIBOutcomeType.objects.values_list('id', flat=True))
+
+    # build defaults map from OIBOutcomeTypeChoice.default_choice == True
+    defaults = {}
+    default_choices_qs = (
+        lm.OIBOutcomeTypeChoice.objects
+        .filter(default_choice=True)
+        .select_related('oib_outcome_choice')
+    )
+    for otc in default_choices_qs:
+        ot_id = otc.oib_outcome_type_id
+        choice_obj = otc.oib_outcome_choice
+        defaults[ot_id] = choice_obj.id
+
+    # start seeding with defaults (ensure all types present)
+    otc_id_dict = {ot_id: defaults.get(ot_id, None) for ot_id in outcome_type_ids}
+
+    # fetch existing outcomes (newest first per type via ordering)
+    oib_outcome_qs = (
         lm.OIBOutcome.objects
         .filter(
             contact_id=contact_id,
@@ -2628,145 +2559,153 @@ def _current_oib_outcomes(contact_id, service_delivery_type_id, grant_year, *, r
         .order_by('oib_outcome_type_choice__oib_outcome_type_id', '-created')
     )
 
-    result = {}
-    for o in qs:
-        type_id = o.oib_outcome_type_choice.oib_outcome_type_id
-        if type_id in result:
+    seen = set()
+    for outcome in oib_outcome_qs:
+        type_id = outcome.oib_outcome_type_choice.oib_outcome_type_id
+        if type_id in seen:
             continue  # already captured newest for this type
-        choice_obj = o.oib_outcome_type_choice.oib_outcome_choice
-        result[type_id] = choice_obj.id if return_ids else choice_obj.oib_outcome_choice
-    return result
+        choice_obj = outcome.oib_outcome_type_choice.oib_outcome_choice
+        otc_id_dict[type_id] = choice_obj.id
+        seen.add(type_id)
 
-def _default_oib_outcome_choices_map():
-    """
-    Build a fallback map: outcome_type_id -> default choice label.
-    Tries to infer by matching canonical strings; if not found picks first available choice.
-    """
-    wanted_labels = {
-        "AT": "Not assessed",
-        "IL/A": "Not assessed",
-        "Living": "Plan not complete",
-        "Home": "Plan not complete",
-        "Employment": "Not Interested in Employment",
-    }
-    # Build per type
-    defaults = {}
-    for ot in lm.OIBOutcomeType.objects.all():
-        choices = (
-            lm.OIBOutcomeTypeChoice.objects
-            .filter(oib_outcome_type=ot)
-            .select_related('oib_outcome_choice')
-        )
-        label_match = None
-        for otc in choices:
-            lbl = otc.oib_outcome_choice.oib_outcome_choice
-            # naive heuristic: look for a substring key
-            for key, wanted in wanted_labels.items():
-                if key.lower() in ot.oib_outcome_type.lower() and lbl == wanted:
-                    label_match = lbl
-                    break
-            if label_match:
-                break
-        if not label_match and choices:
-            label_match = choices.first().oib_outcome_choice.oib_outcome_choice
-        defaults[ot.id] = label_match
-    return defaults
+    outcome_choices_map = {o.id: o for o in lm.OIBOutcomeChoice.objects.all()}
+    outcome_type_choice_tuples = []
+    for ot in outcome_types:
+        choice = outcome_choices_map.get(otc_id_dict.get(ot.id))
+        outcome_type_choice_tuples.append(( ot.oib_outcome_type, choice ))
 
-def _default_oib_outcome_choice_ids_map():
-    """
-    Return dict outcome_type_id -> default oib_outcome_choice.id.
-    Uses the same heuristics as _default_oib_outcome_choices_map but returns IDs
-    so the edit form can preselect defaults when no current outcomes exist.
-    """
-    wanted_labels = {
-        "AT": "Not assessed",
-        "IL/A": "Not assessed",
-        "Living": "Plan not complete",
-        "Home": "Plan not complete",
-        "Employment": "Not Interested in Employment",
-    }
-    defaults = {}
-    for ot in lm.OIBOutcomeType.objects.all():
-        qs = (
-            lm.OIBOutcomeTypeChoice.objects
-            .filter(oib_outcome_type=ot)
-            .select_related('oib_outcome_choice')
+    return otc_id_dict, outcome_types, outcome_type_choice_tuples
+
+@login_required
+def oib_plan_list(request, contact_id):
+    client = lm.Contact.objects.get(id=contact_id)
+    service_events_qs = lm.OIBServiceEvent.for_client_with_grant_year(contact_id)
+
+    # Group events by the plan key (grant_year, service_delivery_type_id, program) preserving first-seen order.
+    # Keep one OrderedDict mapping each key -> list[OIBServiceEvent].
+    service_events_by_plan = OrderedDict()
+    for service_event in service_events_qs:
+        client_age_at_event = client.maybe_age_on(service_event.date)
+        program = lm.Program.get_age_appropriate_oib_program(client_age_at_event)
+        # normalize program to a simple code/string for the key (avoid model instances as dict keys)
+        program = getattr(program, 'program', program) if program is not None else None
+        key = (service_event.grant_year, service_event.oib_service_delivery_type_id, program)
+        service_events_by_plan.setdefault(key, []).append(service_event)
+
+    plans = []
+    for (grant_year, service_delivery_type_id, program), service_events in service_events_by_plan.items():
+        # use the first event as representative for names / labels
+        first_service_event = service_events[0]
+        maybe_sdt = first_service_event.oib_service_delivery_type
+        service_delivery_type_name = maybe_sdt.oib_service_delivery_type if maybe_sdt.oib_service_delivery_type else ""
+        plan_name = first_service_event.get_plan_name(grant_year, program, service_delivery_type_name)
+
+        service_names = set().union(*(se.collect_service_names() for se in service_events))
+        _otc_id_dict, _outcome_types, otc_tuples = _get_plan_outcomes(contact_id, service_delivery_type_id, grant_year)
+
+        # `service_events_by_plan` contains exactly what the name says, but don't want to
+        # recreate that on each plan load, so added the concrete service event IDs to each
+        # plan link to be read by the appropriate plan view.
+        service_event_ids_for_plan = [se.id for se in service_events]
+        plan_token = signing.dumps(service_event_ids_for_plan)
+
+        plans.append({
+            'id': plan_name,
+            'grant_year': grant_year,
+            'service_delivery_type_id': service_delivery_type_id,
+            'service_delivery_type_name': service_delivery_type_name,
+            'plan_name': plan_name,
+            'program': program,
+            'outcomes': otc_tuples,
+            'service_names': sorted(service_names, key=str.lower),
+            'plan_token': plan_token,
+        })
+
+    return render(request, "lynx/oib/oib_plan_list.html", {
+        "client": client,
+        "plans": plans,
+    })
+
+def _oib_plan_dict(request, contact_id, program, grant_year, service_delivery_type_id, edit_mode):
+    token = request.GET.get('token')
+    if token:
+        try:
+            event_ids = signing.loads(token)
+        except signing.BadSignature:
+            # invalid token — fallback to default behaviour or raise
+            event_ids = None
+    else:
+        event_ids = None
+
+    service_events = []
+    if event_ids:
+        # fetch only the events referenced by the token, preserve original order
+        service_events = list(
+            lm.OIBServiceEvent.objects
+            .filter(id__in=event_ids)
+            .select_related('oib_service_delivery_type')
+            .prefetch_related('services', 'contacts')
+            .order_by('-date')
         )
-        chosen = None
-        # try to match canonical label first
-        for otc in qs:
-            lbl = otc.oib_outcome_choice.oib_outcome_choice
-            for key, wanted in wanted_labels.items():
-                if key.lower() in ot.oib_outcome_type.lower() and lbl == wanted:
-                    chosen = otc
-                    break
-            if chosen:
-                break
-        # fallback to first available choice
-        if not chosen and qs.exists():
-            chosen = qs.first()
-        defaults[ot.id] = chosen.oib_outcome_choice.id if chosen else None
-    return defaults
+    else:
+        # fallback: existing behaviour
+        service_events = lm.OIBServiceEvent.in_grant_year(contact_id, service_delivery_type_id, grant_year)
+
+    client = lm.Contact.objects.get(id=contact_id)
+    service_delivery_type = lm.OIBServiceDeliveryType.objects.get(id=service_delivery_type_id)
+    otc_id_dict, outcome_types, otc_tuples = _get_plan_outcomes(contact_id, service_delivery_type_id, grant_year)
+
+    choices_by_type = {}
+    if edit_mode:
+        choices_by_type = {
+            outcome_type.id: list(
+                lm.OIBOutcomeTypeChoice.objects
+                .filter(oib_outcome_type=outcome_type)
+                .select_related('oib_outcome_choice')
+                .order_by('oib_outcome_choice__oib_outcome_choice')
+            )
+            for outcome_type in outcome_types
+        }
+
+    return {
+        "client": client,
+        "grant_year": grant_year,
+        "service_delivery_type": service_delivery_type,
+        "service_delivery_type_id": service_delivery_type_id,
+        "service_delivery_type_name": service_delivery_type.oib_service_delivery_type,
+        "service_events": service_events,
+        "outcome_types": outcome_types,
+        "choices_by_type": choices_by_type,
+        "program": program,
+        "plan_name": service_events[0].get_plan_name(grant_year, program, service_delivery_type.oib_service_delivery_type),
+        "plan_outcomes": otc_id_dict if edit_mode else otc_tuples,
+        "edit_mode": edit_mode,
+    }
 
 # NOTE 2025_09_30_2124 There are 5 rolling outcomes / client / grant year / service delivery type,
 #                      which are not re-set when a new grant year starts. (The client wouldn't
 #                      magically loose their progress just because a new grant year started.)
 @login_required
-def oib_plan_show(request, contact_id, grant_year, service_delivery_type_id):
-    client = lm.Contact.objects.get(id=contact_id)
-    service_delivery_type = lm.OIBServiceDeliveryType.objects.get(id=service_delivery_type_id)
-    service_events = lm.OIBServiceEvent.in_grant_year(contact_id, service_delivery_type_id, grant_year)
-
-    outcome_types = lm.OIBOutcomeType.objects.all()
-    current_map   = _current_oib_outcomes(contact_id, service_delivery_type_id, grant_year, return_ids=False)
-    defaults_map  = _default_oib_outcome_choices_map()
-
-    outcomes_display = []
-    for ot in outcome_types:
-        outcomes_display.append(
-            (ot.oib_outcome_type, current_map.get(ot.id, defaults_map.get(ot.id)))
-        )
-
-    return render(request, "lynx/oib/oib_plan_show.html", {
-        "client": client,
-        "grant_year": grant_year,
-        "service_delivery_type_id": service_delivery_type_id,
-        "service_delivery_type_name": service_delivery_type.oib_service_delivery_type,
-        "service_events": service_events,
-        "outcomes_display": outcomes_display,
-        "edit_mode": False,
-    })
+def oib_plan_show(request, contact_id, program, grant_year, service_delivery_type_id):
+    opd = _oib_plan_dict( request, contact_id, program, grant_year, service_delivery_type_id, edit_mode=False )
+    return render(request, "lynx/oib/oib_plan_show.html", opd)
 
 @login_required
-def oib_plan_edit(request, contact_id, grant_year, service_delivery_type_id):
-    client = lm.Contact.objects.get(id=contact_id)
-    service_delivery_type = lm.OIBServiceDeliveryType.objects.get(id=service_delivery_type_id)
-    service_events = lm.OIBServiceEvent.in_grant_year(contact_id, service_delivery_type_id, grant_year)
-
-    outcome_types = lm.OIBOutcomeType.objects.all()
-    choices_by_type = {
-        ot.id: list(
-            lm.OIBOutcomeTypeChoice.objects
-            .filter(oib_outcome_type=ot)
-            .select_related('oib_outcome_choice')
-            .order_by('oib_outcome_choice__oib_outcome_choice')
-        )
-        for ot in outcome_types
-    }
-    current_ids_map = _current_oib_outcomes(contact_id, service_delivery_type_id, grant_year, return_ids=True)
-    defaults_ids_map = _default_oib_outcome_choice_ids_map()
-    
-    # Start with defaults, then override with any existing outcomes
-    client_outcomes_map = {**defaults_ids_map, **(current_ids_map or {})}
+def oib_plan_edit(request, contact_id, program, grant_year, service_delivery_type_id):
+    opd = _oib_plan_dict( request, contact_id, program, grant_year, service_delivery_type_id, edit_mode=True )
 
     if request.method == "POST":
+        otc_id_dict = opd.get('plan_outcomes', {})      # in edit_mode this is the otc_id_dict
+        outcome_types = opd.get('outcome_types', [])
+        service_delivery_type = opd.get('service_delivery_type')
+
         for ot in outcome_types:
-            choice_id = request.POST.get(f"outcome_{ot.id}")
-            latest_choice_id = current_ids_map.get(ot.id)
-            if choice_id and str(choice_id) != str(latest_choice_id):
+            otc_id_from_post = request.POST.get(f"outcome_{ot.id}")
+            latest_otc_id = otc_id_dict.get(ot.id)
+            if otc_id_from_post and str(otc_id_from_post) != str(latest_otc_id):
                 otc = lm.OIBOutcomeTypeChoice.objects.get(
                     oib_outcome_type=ot,
-                    oib_outcome_choice_id=choice_id
+                    oib_outcome_choice_id=otc_id_from_post
                 )
                 lm.OIBOutcome.objects.create(
                     contact_id=contact_id,
@@ -2775,18 +2714,8 @@ def oib_plan_edit(request, contact_id, grant_year, service_delivery_type_id):
                     oib_service_delivery_type=service_delivery_type,
                     grant_year=grant_year
                 )
-        return redirect('lynx:oib_plan_show', contact_id, grant_year, service_delivery_type_id)
+        return redirect('lynx:oib_plan_show', contact_id, program, grant_year, service_delivery_type_id)
 
-    return render(request, "lynx/oib/oib_plan_show.html", {
-        "client": client,
-        "grant_year": grant_year,
-        "service_delivery_type_id": service_delivery_type_id,
-        "service_delivery_type_name": service_delivery_type.oib_service_delivery_type,
-        "service_events": service_events,
-        "outcome_types": outcome_types,
-        "choices_by_type": choices_by_type,
-        "client_outcomes_map": client_outcomes_map,
-        "edit_mode": True,
-    })
+    return render(request, "lynx/oib/oib_plan_show.html", opd)
 
 # vim: set foldmethod=marker foldmarker={{-,}}- tabstop=4 shiftwidth=4 softtabstop=4 expandtab:

@@ -1,12 +1,27 @@
 {% extends 'lynx/base.html' %}
-{% load get_item %}
 
-{% block title %}Plan 10/1/{{ grant_year }} - {{ service_delivery_type_name }} for {{ client }}{% endblock %}
+{% block title %}{{ program }} Plan for {{ client }}: {{ plan_name }}{% endblock %}
 
 {% block content %}
-<h1>Plan 10/1/{{ grant_year }} - {{ service_delivery_type_name }} for {{ client }}</h1>
-<input type="button" class="btn btn-success" aria-label="SIP Notes" onclick="location.href='{% url 'lynx:oib_plan_list' client.id %}';" value="SIP Plans and Notes" />
+<h1>{{ program }} Plan for {{ client }}: {{ plan_name }}</h1>
+
+<input type="button" class="btn btn-success" aria-label="Back to Client" onclick="location.href='/lynx/clients/{{ client.id }}';" value="Return to Client" />
+<!-- <input type="button" class="btn btn-success" aria-label="Edit outcomes" onclick="location.href='{% url 'lynx:oib_plan_list' client.id %}';" value="Edit" /> -->
+<input type="button" class="btn btn-success" aria-label="SIP Plans" onclick="location.href='{% url 'lynx:oib_plan_list' client.id %}';" value="Show all SIP plans" />
 <a class="btn btn-success" href="{% url 'lynx:contact_show' client.id %}">Back to client</a>
+
+<h2>Outcomes</h2>
+{% if edit_mode %}
+    {% include "lynx/oib/fragments/_plan_outcomes_edit.html" with client_outcomes=plan_outcomes %}
+{% else %}
+<ul>
+    {% include "lynx/oib/fragments/_plan_outcomes_show.html" %}
+</ul>
+<a class="btn btn-primary" href="{% url 'lynx:oib_plan_edit' client.id program grant_year service_delivery_type_id %}">
+    Edit Outcomes
+</a>
+{% endif %}
+
 <h2>Notes</h2>
 <ul>
     {% for event in service_events %}
@@ -28,36 +43,4 @@
     {% endfor %}
 </ul>
 
-<h2>Outcomes</h2>
-{% if edit_mode %}
-<form method="post">
-    {% csrf_token %}
-    <ul>
-        {% for ot in outcome_types %}
-            <li>
-                <label><strong>{{ ot.oib_outcome_type }}</strong></label>
-                <select name="outcome_{{ ot.id }}">
-                    {% for choice in choices_by_type|get_item:ot.id %}
-                        <option value="{{ choice.oib_outcome_choice.id }}"
-                            {% if client_outcomes_map|get_item:ot.id == choice.oib_outcome_choice.id %}selected{% endif %}>
-                            {{ choice.oib_outcome_choice.oib_outcome_choice }}
-                        </option>
-                    {% endfor %}
-                </select>
-            </li>
-        {% endfor %}
-    </ul>
-    <button type="submit" class="btn btn-success">Save Outcomes</button>
-    <a href="{% url 'lynx:oib_plan_show' client.id grant_year service_delivery_type_id %}" class="btn btn-secondary">Cancel</a>
-</form>
-{% else %}
-<ul>
-    {% for outcome_type, outcome_choice in outcomes_display %}
-        <li><strong>{{ outcome_type }}:</strong> {{ outcome_choice }}</li>
-    {% endfor %}
-</ul>
-<a class="btn btn-primary" href="{% url 'lynx:oib_plan_edit' client.id grant_year service_delivery_type_id %}">
-    Edit Outcomes
-</a>
-{% endif %}
 {% endblock %}

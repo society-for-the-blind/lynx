@@ -133,11 +133,11 @@ urlpatterns = [
          views.oib_plan_list_with_notes,
          name='oib_plan_list_with_notes'
         ),
-    path('clients/<int:contact_id>/plans/<int:grant_year>/<int:service_delivery_type_id>',
+    path('clients/<int:contact_id>/plans/<str:program>/<int:grant_year>/<int:service_delivery_type_id>',
          views.oib_plan_show,
          name='oib_plan_show'
         ),
-    path('clients/<int:contact_id>/plans/<int:grant_year>/<int:service_delivery_type_id>/edit',
+    path('clients/<int:contact_id>/plans/<str:program>/<int:grant_year>/<int:service_delivery_type_id>/edit',
          views.oib_plan_edit,
          name='oib_plan_edit'
         ),

@@ -1,0 +1,21 @@
+{% load get_item %}
+<form method="post">
+    {% csrf_token %}
+    <ul>
+        {% for ot in outcome_types %}
+            <li>
+                <label><strong>{{ ot.oib_outcome_type }}</strong></label>
+                <select name="outcome_{{ ot.id }}">
+                    {% for choice in choices_by_type|get_item:ot.id %}
+                        <option value="{{ choice.oib_outcome_choice.id }}"
+                            {% if client_outcomes|get_item:ot.id == choice.oib_outcome_choice.id %}selected{% endif %}>
+                            {{ choice.oib_outcome_choice.oib_outcome_choice }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </li>
+        {% endfor %}
+    </ul>
+    <button type="submit" class="btn btn-success">Save Outcomes</button>
+    <a href="{% url 'lynx:oib_plan_show' client.id program grant_year service_delivery_type_id %}" class="btn btn-secondary">Cancel</a>
+</form>

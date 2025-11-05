@@ -25,16 +25,12 @@
     {% for program_plan in plans %}
       <div class="container-fluid mb-3 p-2 border">
         <div><strong>Plan Name: </strong>
-          <a href="{% url 'lynx:oib_plan_show' client.id program_plan.grant_year program_plan.service_delivery_type_id %}">
+          <a href="{% url 'lynx:oib_plan_show' client.id program_plan.program program_plan.grant_year program_plan.service_delivery_type_id %}?token={{ program_plan.plan_token|urlencode }}">
             {{ program_plan.plan_name }}
           </a>
         </div>
 
-        <div><strong>AT Outcome:</strong> {{ program_plan.at_outcomes }}</div>
-        <div><strong>IL/A Outcome:</strong> {{ program_plan.ila_outcomes }}</div>
-        <div><strong>Living Situation Outcome:</strong> {{ program_plan.living_plan_progress }}</div>
-        <div><strong>Community Involvement Outcome:</strong> {{ program_plan.community_plan_progress }}</div>
-        <div><strong>Employment Outcome:</strong> {{ program_plan.employment_outcomes }}</div>
+        {% include "lynx/oib/fragments/_plan_outcomes_show.html" with plan_outcomes=program_plan.outcomes %}
 
         <div>
         <strong>Services:</strong>
@@ -56,7 +52,7 @@
         </div>
 
         <div class="mt-2">
-          <a href="{% url 'lynx:oib_plan_show' client.id program_plan.grant_year program_plan.service_delivery_type_id %}">View events</a>
+          <a href="{% url 'lynx:oib_plan_show' client.id program_plan.program program_plan.grant_year program_plan.service_delivery_type_id %}">View events</a>
         </div>
       </div>
     {% empty %}

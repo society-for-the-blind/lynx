@@ -12,6 +12,8 @@ from django_pgviews import view as pg
 from datetime import datetime, date
 from simple_history.models import HistoricalRecords
 
+from collections import OrderedDict
+
 from . import kitchen_sink as lks
 
 STATES = (("Alabama", "Alabama"), ("Alaska", "Alaska"), ("Arizona", "Arizona"), ("Arkansas", "Arkansas"),
@@ -183,6 +185,23 @@ class Contact(models.Model):
             contactprogram__end_date__isnull=True
         ).distinct().order_by('last_name', 'first_name')
 
+    def maybe_birth_date(self):
+        """
+        Return the most-recent non-null intake.birth_date for this contact, or None.
+        """
+        intake = (
+            self.intake_set
+            .exclude(birth_date__isnull=True)
+            .order_by('-intake_date')
+            .first()
+        )
+        return intake.birth_date if intake else None
+
+    def maybe_age_on(self, on_date):
+        dob = self.maybe_birth_date()
+        if not dob or not on_date:
+            return None
+        return on_date.year - dob.year - ((on_date.month, on_date.day) < (dob.month, dob.day))
     def __str__(self):
         return '%s, %s' % (self.last_name, self.first_name)
 
@@ -208,6 +227,29 @@ class Program(models.Model):
     @classmethod
     def get_available_programs(cls):
         return cls.objects.all()
+
+    # NOTE 2025_11_02_1505 Why is this under the Program model and not under Contact?
+    #
+    #      Because if it would be under Contact, the semantics would imply that we are
+    #      looking for the OIB program of the client's current age, whereas we need to
+    #      find the appropriate OIB program for arbitrary ages (e.g., at service event
+    #      dates).
+    @classmethod
+    def get_age_appropriate_oib_program(cls, contact_age):
+        """
+        Return the appropriate OIB Program for a contact of a given age - no matter if
+        contact is an OIB client or not.
+        """
+        oib_programs = cls.objects.filter(is_oib=True)
+        qs = oib_programs.filter(
+            models.Q(min_age__lte=contact_age) | models.Q(min_age=-1),
+            models.Q(max_age__gte=contact_age) | models.Q(max_age=-1),
+        )
+        # OIB programs should be mutually exclusive by age, so there should be at most
+        # one match - but wwho knows what gets misconfigured in the admin page or what
+        # the DOR future brings.
+        program = qs.first()
+        return program
 
 class ContactProgram(models.Model):
     contact = models.ForeignKey('Contact', on_delete=models.CASCADE)
@@ -910,8 +952,29 @@ class OIBServiceEvent(models.Model):
     def __str__(self):
         return f"{self.date} {self.oib_service_delivery_type} {self.date}"
 
+    def get_grant_year(self):
+        """
+        Compute the Oct-Sep fiscal year for this event's date.
+        """
+        if self.date.month >= 10:
+            return self.date.year
+        else:
+            return self.date.year - 1
+
+    def get_plan_name(self, grant_year, program, servide_delivery_type_name):
+        return f"{program or ''} 10/1/{grant_year} - {servide_delivery_type_name or ''}"
+
+    def collect_service_names(self):
+        service_names = set()
+        for svc in self.services.all():
+            name = getattr(svc, 'long_name', None) or getattr(svc, 'oib_service', None)
+            if name:
+                service_names.add(name)
+        return service_names
+
+    # TODO 2025_10_02_1540 Evaluate if these can be deleted once views.oib_plan_(show|edit) are refactored
     @classmethod
-    def base_for_contact(cls, contact_id):
+    def for_client(cls, contact_id):
         """
         Base queryset for a contact with useful joins for repeated use.
         """
@@ -934,27 +997,30 @@ class OIBServiceEvent(models.Model):
         )
 
     @classmethod
-    def for_contact_with_grant_year(cls, contact_id):
+    def for_client_with_grant_year(cls, contact_id):
         """
         Full queryset used by oib_plan_list: filtered to contact, annotated and ordered.
         """
-        return cls.with_grant_year_annotation(cls.base_for_contact(contact_id)) \
+        client_services_and_related = cls.for_client(contact_id)
+        return cls.with_grant_year_annotation(client_services_and_related) \
                   .order_by('-grant_year', 'oib_service_delivery_type__oib_service_delivery_type')
 
     @classmethod
     def in_grant_year(cls, contact_id, sdt_id, grant_year):
         """
-        Events for a single contact + service_delivery_type in the provided grant_year (date range).
+        Events for a single contact + service_delivery_type in the provided grant_year.
+        Use explicit date-range filtering (can use a date index) and then annotate with grant_year.
         Returns a queryset with select_related/prefetch applied.
         """
         start = date(grant_year, 10, 1)
         end = date(grant_year + 1, 9, 30)
-        return cls.objects.filter(
+        qs = cls.objects.filter(
             contacts__id=contact_id,
             oib_service_delivery_type__id=sdt_id,
             date__gte=start,
             date__lte=end
         ).select_related('oib_service_delivery_type').prefetch_related('services').order_by('-date')
+        return qs
 
 class OIBServiceEventOIBService(models.Model):
     oib_service_event = models.ForeignKey(OIBServiceEvent, on_delete=models.PROTECT)
@@ -1076,6 +1142,7 @@ class OIBOutcomeChoice(models.Model):
 class OIBOutcomeTypeChoice(models.Model):
     oib_outcome_type = models.ForeignKey(OIBOutcomeType, on_delete=models.PROTECT)
     oib_outcome_choice = models.ForeignKey(OIBOutcomeChoice, on_delete=models.PROTECT)
+    default_choice = models.BooleanField(default=False)  # new field
     created = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)
     history = HistoricalRecords()
@@ -1085,11 +1152,29 @@ class OIBOutcomeTypeChoice(models.Model):
             models.UniqueConstraint(
                 fields=["oib_outcome_type", "oib_outcome_choice"],
                 name="unique_oib_outcome_type_choice"
-            )
+            ),
+            # enforce at most one row with default_choice=True per outcome type
+            models.UniqueConstraint(
+                fields=["oib_outcome_type"],
+                condition=models.Q(default_choice=True),
+                name="one_default_per_outcome_type"
+            ),
         ]
 
+    def clean(self):
+        # application-level guard with a readable ValidationError
+        if self.default_choice:
+            qs = OIBOutcomeTypeChoice.objects.filter(
+                oib_outcome_type=self.oib_outcome_type,
+                default_choice=True
+            )
+            if self.pk:
+                qs = qs.exclude(pk=self.pk)
+            if qs.exists():
+                raise exc.ValidationError("Only one default choice is allowed per outcome type.")
+
     def __str__(self):
-        return f"{self.outcome_type} {self.outcome_choice}"
+        return f"{self.oib_outcome_type} {self.oib_outcome_choice}"
 
 # NOTE Why no FK to `OIBServiceEvent` or other models?
 #      ----------------------------------------------------
