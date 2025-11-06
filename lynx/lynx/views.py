@@ -2361,7 +2361,8 @@ def oib_service_event_form(request, oib_service_event_id=None):
             })
 
     if request.method == 'POST':
-        form = lfo.OIBServiceEventForm(request.POST)
+        # pass user into form so it can honor admin override
+        form = lfo.OIBServiceEventForm(request.POST, user=request.user)
 
         user_role_formset = OIBServiceEventUserRoleFormSet(request.POST, prefix=user_role_form_prefix)
         # Only show SIP instructors in the dropdown
@@ -2436,8 +2437,8 @@ def oib_service_event_form(request, oib_service_event_id=None):
                 context['edit_mode'] = True
             return render(request, template_path, context)
     else:
-        # GET request - show the form
-        form = lfo.OIBServiceEventForm(initial=initial_data)
+        # GET request - show the form (pass user so template/widget knows admin availability)
+        form = lfo.OIBServiceEventForm(initial=initial_data, user=request.user)
         user_role_formset = OIBServiceEventUserRoleFormSet(
             initial=user_role_initial,
             prefix=user_role_form_prefix

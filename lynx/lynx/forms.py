@@ -481,7 +481,9 @@ class OIBServiceEventForm(forms.Form):
         label='Note',
     )
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, user=None, **kwargs):
+        # accept `user` so validation can allow admin override
+        self.user = user
         super().__init__(*args, **kwargs)
         desired_order = [0,1,2,3,4,5,7,8,6]
         when_list = [ddm.When(id=pk, then=pos) for pos, pk in enumerate(desired_order)]
@@ -489,7 +491,83 @@ class OIBServiceEventForm(forms.Form):
             ordering=ddm.Case(*when_list, default=9999, output_field=ddm.IntegerField())
         ).order_by('ordering', 'long_name')
         self.fields['services'].queryset = qs
-        self.fields['note_date'].initial = timezone.localdate()
+
+        # compute current grant-year start (Oct 1 of the grant that contains today)
+        today = timezone.localdate()
+        if today.month >= 10:
+            grant_start = date(today.year, 10, 1)
+        else:
+            grant_start = date(today.year - 1, 10, 1)
+
+        # years to show: from grant_start.year up to current year (inclusive)
+        years = list(range(grant_start.year, today.year + 1))
+
+        # if an initial note_date is provided and its year is outside the above range
+        # (editing an old event), include that year so the widget can render the existing value
+        initial_note_date = None
+        if 'initial' in kwargs and isinstance(kwargs['initial'], dict):
+            initial_note_date = kwargs['initial'].get('note_date')
+        if not initial_note_date and hasattr(self, 'initial'):
+            initial_note_date = self.initial.get('note_date')
+        if initial_note_date:
+            try:
+                y = initial_note_date.year
+                if y not in years:
+                    years.append(y)
+                    years.sort()
+            except Exception:
+                pass
+
+        # set the widget with the compact year list and default initial to today
+        self.fields['note_date'].widget = forms.SelectDateWidget(years=years)
+        # expose grant start and latest-allowed date to the client (ISO format)
+        latest_allowed = today  # allow up to today (no future dates)
+        widget_attrs = {
+            'data-grant-start': grant_start.isoformat(),
+            'data-latest-allowed': latest_allowed.isoformat(),
+            'data-field-name': 'note_date',
+        }
+        # tell the client script we can override when the current user is staff
+        if getattr(self, 'user', None) and getattr(self.user, 'is_staff', False):
+            widget_attrs['data-admin-override-available'] = '1'
+        else:
+            widget_attrs['data-admin-override-available'] = '0'
+        self.fields['note_date'].widget.attrs.update(widget_attrs)
+        if not self.initial.get('note_date'):
+            self.fields['note_date'].initial = today
+
+    def clean_note_date(self):
+        """
+        Enforce note_date ∈ [current grant-year start (Oct 1), today].
+        Allow preserving an existing initial date if present (editing old events).
+        """
+        note_date = self.cleaned_data.get('note_date')
+        if not note_date:
+            return note_date
+
+        # allow preserving existing initial date when editing
+        initial_note_date = self.initial.get('note_date')
+        if initial_note_date and note_date == initial_note_date:
+            return note_date
+
+        # admin override bypass: staff users may set the hidden admin_override input
+        admin_override_flag = (self.data.get('admin_override') in ('1', 'true', 'on'))
+        if getattr(self, 'user', None) and getattr(self.user, 'is_staff', False) and admin_override_flag:
+            return note_date
+
+        today = timezone.localdate()
+        if today.month >= 10:
+            grant_start = date(today.year, 10, 1)
+        else:
+            grant_start = date(today.year - 1, 10, 1)
+
+        latest_allowed = today  # explicitly disallow future dates
+
+        if note_date < grant_start or note_date > latest_allowed:
+            raise forms.ValidationError(
+                f"Note date must be between {grant_start.isoformat()} and {latest_allowed.isoformat()} (no future dates)."
+            )
+        return note_date
 
 # TODO DRY up - there is an (almost) exact dup of this class in `filters.py`
 class UserModelChoiceField(forms.ModelChoiceField):
