@@ -56,6 +56,8 @@ document.addEventListener('DOMContentLoaded', function () {
       Array.from(monthSel.options).forEach(opt => { opt.disabled = false; opt.hidden = false; });
       return;
     }
+    // Preserve the current selection if still valid; otherwise choose the earliest allowed month.
+    const prevMonth = parseInt(monthSel.value, 10);
     const selectedYear = parseInt(yearSel.value, 10);
     const minMonth = (selectedYear === grantStart.getFullYear()) ? (grantStart.getMonth() + 1) : 1;
     const maxMonth = (selectedYear === latestAllowed.getFullYear()) ? (latestAllowed.getMonth() + 1) : 12;
@@ -66,8 +68,9 @@ document.addEventListener('DOMContentLoaded', function () {
         opt.hidden = opt.disabled;
       }
     });
-    const curMonth = parseInt(monthSel.value, 10);
-    if (isNaN(curMonth) || curMonth < minMonth || curMonth > maxMonth) {
+    if (!isNaN(prevMonth) && prevMonth >= minMonth && prevMonth <= maxMonth) {
+      monthSel.value = String(prevMonth);
+    } else {
       monthSel.value = String(minMonth);
     }
   }
@@ -91,20 +94,39 @@ document.addEventListener('DOMContentLoaded', function () {
     const y = parseInt(yearSel.value, 10);
     const m = parseInt(monthSel.value, 10);
     if (isNaN(y) || isNaN(m)) return;
+
+    // Preserve previously selected day if still valid
+    const prevDay = parseInt(daySel.value, 10);
+
     let minDay = 1;
     let maxDay = daysInMonth(y, m);
+
     if (y === grantStart.getFullYear() && m === (grantStart.getMonth() + 1)) {
       minDay = grantStart.getDate();
     }
     if (y === latestAllowed.getFullYear() && m === (latestAllowed.getMonth() + 1)) {
       maxDay = latestAllowed.getDate();
     }
+
     daySel.innerHTML = '';
     for (let d = minDay; d <= maxDay; d++) {
       const opt = document.createElement('option');
       opt.value = String(d);
       opt.text = String(d);
+      if (!isNaN(prevDay) && prevDay >= minDay && prevDay <= maxDay && d === prevDay) {
+        opt.selected = true;
+      }
       daySel.appendChild(opt);
+    }
+
+    // If no option was selected (e.g. new form), prefer latestAllowed day when month/year match today,
+    // otherwise pick the first allowed day.
+    if (!daySel.value) {
+      if (y === latestAllowed.getFullYear() && m === (latestAllowed.getMonth() + 1)) {
+        daySel.value = String(latestAllowed.getDate());
+      } else {
+        daySel.value = String(minDay);
+      }
     }
   }
 
