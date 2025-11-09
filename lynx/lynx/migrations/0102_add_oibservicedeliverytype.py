@@ -21,11 +21,9 @@ def add_initial_delivery_types(apps, schema_editor):
         OIBServiceDeliveryType(id=2, parent_id=0, oib_service_delivery_type='support group'),
         OIBServiceDeliveryType(id=3, parent_id=0, oib_service_delivery_type='training seminar'),
         OIBServiceDeliveryType(id=4, parent_id=0, oib_service_delivery_type='community integration'),
-        OIBServiceDeliveryType(id=5, parent_id=0, oib_service_delivery_type='retreat'),
-        OIBServiceDeliveryType(id=6, parent_id=2, oib_service_delivery_type='Spanish Support Group'),
-        OIBServiceDeliveryType(id=7, parent_id=2, oib_service_delivery_type='Asian Support Group'),
-        OIBServiceDeliveryType(id=8, parent_id=2, oib_service_delivery_type='BASS'),
-        OIBServiceDeliveryType(id=9, parent_id=0, oib_service_delivery_type='one-time event'),
+        OIBServiceDeliveryType(id=5, parent_id=2, oib_service_delivery_type='Spanish Support Group'),
+        OIBServiceDeliveryType(id=6, parent_id=2, oib_service_delivery_type='Asian Support Group'),
+        OIBServiceDeliveryType(id=7, parent_id=2, oib_service_delivery_type='BASS Support Group'),
     ])
 
 class Migration(migrations.Migration):

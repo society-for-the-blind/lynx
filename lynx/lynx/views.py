@@ -2342,10 +2342,12 @@ def oib_service_event_form(request, oib_service_event_id=None):
                 q += f"&selected={quote(selected)}"
             field.widget.attrs.update({
                 'hx-get': base + q,
-                'hx-trigger': 'mousedown',
+                # fetch options when the user first focuses the select; avoid repeated mousedown storms
+                'hx-trigger': 'focus once',
                 'hx-swap': 'innerHTML',
                 'hx-target': 'this',
-                # keep existing classes etc.
+                # show a simple inline indicator while loading (optional)
+                'hx-indicator': '.htmx-indicator',
             })
 
         # empty_form: use __prefix__ placeholder so client-side add works
@@ -2355,7 +2357,7 @@ def oib_service_event_form(request, oib_service_event_id=None):
             q = f"?name={quote(name)}"
             empty.fields['client'].widget.attrs.update({
                 'hx-get': base + q,
-                'hx-trigger': 'mousedown',
+                'hx-trigger': 'focus once',
                 'hx-swap': 'innerHTML',
                 'hx-target': 'this',
             })
