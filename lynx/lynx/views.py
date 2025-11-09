@@ -2162,7 +2162,7 @@ def assignment_advanced_result_view(request):
         assignment_condensed = {}
 
     # import pdb; pdb.set_trace()
-    return render(request, 'lynx/instructor_search.html', {'filter': f, 'assignment_list': assignment_condensed})
+    return render(request, 'lynx/assignment_list.html', {'filter': f, 'assignment_list': assignment_condensed})
 
 ####################################################
 # OIB RE-WRITE                                     #

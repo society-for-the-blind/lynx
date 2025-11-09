@@ -36,7 +36,7 @@
             <a href="{% url 'lynx:index' %}" title="Home">Home</a>
             {% if user.is_authenticated %}
                 <a href="{% url 'lynx:contact_search' %}" title="Clients">Clients</a>
-                <a href="{% url 'lynx:instructors' %}" title="Assignments">Assignments</a>
+                <a href="{% url 'lynx:assignments' %}" title="SIP/ILP Assignments">SIP/ILP Assignments</a>
                 <a href="{% url 'lynx:oib_service_event_list' %}">SIP Notes</a>
                 <a href="{% url 'admin:index' %}">Admin</a>
                 <a href="{% url 'lynx:reports' %}">Reports</a>
