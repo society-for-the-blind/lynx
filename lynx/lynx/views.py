@@ -2207,14 +2207,67 @@ def oib_service_event_delete(request, oib_service_event_id):
 
 @login_required
 def oib_service_event_list(request):
-    service_events = lm.OIBServiceEvent.objects.select_related(
-        "oib_service_delivery_type",
-        "entered_by"
-    ).order_by("-date", "-id")
+    today = date.today()
+    initial = {'start_date': today, 'end_date': today}
+
+    if request.GET:
+        form = lfo.OIBServiceEventFilterForm(request.GET)
+        qs = lm.OIBServiceEvent.objects.none()
+        highlight_tokens = []
+        if form.is_valid():
+            cd = form.cleaned_data
+            # consider the form "active" only when at least one filter value is present
+            any_filter = any([
+                bool((cd.get('client') or '').strip()),
+                bool(cd.get('program')),
+                bool(cd.get('service_delivery_type')),
+                bool(cd.get('entered_by')),
+                bool(cd.get('start_date')),
+                bool(cd.get('end_date')),
+                bool((cd.get('keyword') or '').strip()),
+            ])
+            if any_filter:
+                qs = lm.OIBServiceEvent.objects.select_related(
+                    "oib_service_delivery_type",
+                    "entered_by"
+                ).order_by("-date", "-id")
+
+                client_q = (cd.get('client') or '').strip()
+                if client_q:
+                    # tokenise client query and filter (existing logic)
+                    tokens = [t for t in re.split(r'\s+', client_q) if t]
+                    q_obj = None
+                    for tok in tokens:
+                        cond = ddm.Q(contacts__last_name__icontains=tok) | ddm.Q(contacts__first_name__icontains=tok)
+                        q_obj = cond if q_obj is None else (q_obj & cond)
+                    if q_obj is not None:
+                        qs = qs.filter(q_obj)
+                    highlight_tokens.extend(tokens)
+
+                kw = (cd.get('keyword') or '').strip()
+                if kw:
+                    # filter notes (existing logic)
+                    qs = qs.filter(note__icontains=kw)
+                    # also include keyword tokens for highlighting
+                    highlight_tokens.extend([t for t in re.split(r'\s+', kw) if t])
+
+        # avoid duplicates because of M2M joins
+        qs = qs.distinct()
+    else:
+        # initial page load: show filter form prefilled (start/end default to today)
+        form = lfo.OIBServiceEventFilterForm(initial=initial)
+        qs = lm.OIBServiceEvent.objects.none()
+        highlight_tokens = []
+
     return render(
         request,
         "lynx/oib/oib_service_event_list.html",
-        {"service_events": service_events},
+        {
+            "form": form,
+            "service_events": qs,
+            "page_title": "SIP/ILP Group Notes",
+            "highlight_tokens": highlight_tokens,
+        },
     )
 
 # TODO This should be in a utility module

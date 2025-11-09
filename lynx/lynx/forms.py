@@ -617,3 +617,30 @@ class OIBServiceEventContactForm(forms.Form):
         required=True,
         widget=forms.Select(attrs={'class': 'client-select'}),
     )
+
+class OIBServiceEventFilterForm(forms.Form):
+    client = forms.CharField(required=False, label="Client name (first or last)")
+    program = forms.ModelChoiceField(
+        queryset=lm.Program.objects.filter(is_oib=True).order_by('program'),
+        required=False,
+        label="Program"
+    )
+    service_delivery_type = forms.ModelChoiceField(
+        queryset=lm.OIBServiceDeliveryType.objects.order_by('oib_service_delivery_type'),
+        required=False,
+        label="Plan / service delivery type"
+    )
+    entered_by = forms.ModelChoiceField(
+        queryset=dca.User.objects.filter(is_active=True).order_by('last_name', 'first_name'),
+        required=False,
+        label="Entered by"
+    )
+    start_date = forms.DateField(required=False, label="Start date")
+    end_date = forms.DateField(required=False, label="End date")
+    keyword = forms.CharField(required=False, label="Keyword in note")
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        years = list(range(2000, 2101))
+        self.fields['start_date'].widget = forms.SelectDateWidget(years=years)
+        self.fields['end_date'].widget = forms.SelectDateWidget(years=years)

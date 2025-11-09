@@ -1,17 +1,49 @@
 {% extends "lynx/base.html" %}
+{% load search_highlight %}
 
-{% block title %}All SIP/ILP group notes{% endblock %}
+{% block title %}{{ page_title }}{% endblock %}
 
 {% block content %}
-<h1>All SIP/ILP group notes</h1>
+<h1>{{ page_title }}</h1>
+
+<form method="get" class="form-inline" style="margin-bottom:1em;">
+  <div style="display:flex; flex-wrap:wrap; gap:0.5rem;">
+    <div>
+      {{ form.client.label_tag }}<br>{{ form.client }}
+    </div>
+    <div>
+      {{ form.program.label_tag }}<br>{{ form.program }}
+    </div>
+    <div>
+      {{ form.service_delivery_type.label_tag }}<br>{{ form.service_delivery_type }}
+    </div>
+    <div>
+      {{ form.entered_by.label_tag }}<br>{{ form.entered_by }}
+    </div>
+    <div>
+      {{ form.start_date.label_tag }}<br>{{ form.start_date }}
+    </div>
+    <div>
+      {{ form.end_date.label_tag }}<br>{{ form.end_date }}
+    </div>
+    <div style="min-width:220px;">
+      {{ form.keyword.label_tag }}<br>{{ form.keyword }}
+    </div>
+    <div style="align-self:end;">
+      <button type="submit" class="btn btn-primary">Filter</button>
+      <a href="{% url 'lynx:oib_service_event_list' %}" class="btn btn-secondary">Reset</a>
+    </div>
+  </div>
+</form>
 
 <a href="{% url 'lynx:oib_service_event_add' %}" class="btn btn-primary" style="margin-bottom: 1em;">Add new note</a>
 
-<table>
+<table class="table table-sm table-striped">
     <thead>
         <tr>
             <th>Date</th>
             <th>Plan Type</th>
+            <th>Client(s)</th>
             <th>Note</th>
             <th>Entered By</th>
             <th>Actions</th>
@@ -20,20 +52,18 @@
     <tbody>
     {% for event in service_events %}
         <tr>
-            <td>
-                <a href="{% url 'lynx:oib_service_event_show' event.id %}">{{ event.date }}</a>
-            </td>
-            <!--
-                TODO 2025_09_08_1935 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-                                     The logic to create plan names should only at one place.
-                                     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
-                                     Right now it is recreated at each place that has a plan
-                                     name.
-            -->
+            <td><a href="{% url 'lynx:oib_service_event_show' event.id %}">{{ event.date }}</a></td>
             <td>{{ event.oib_service_delivery_type }}</td>
+            <td>
+                {% for c in event.contacts.all %}
+                {{ c.last_name|highlight:highlight_tokens }}{% if c.first_name %}, {{ c.first_name|highlight:highlight_tokens }}{% endif %}
+                {% if not forloop.last %}; {% endif %}
+                {% empty %}
+                (no clients)
+                {% endfor %}
             </td>
-            <td>{{ event.note|truncatechars:40 }}</td>
+            <td>{{ event.note|truncatechars:80|highlight:highlight_tokens }}</td>
+            <td>{{ event.entered_by.get_full_name }}</td>
             <td>{{ event.entered_by.get_full_name }}</td>
             <td>
                 <a href="{% url 'lynx:oib_service_event_show' event.id %}">Show</a>
