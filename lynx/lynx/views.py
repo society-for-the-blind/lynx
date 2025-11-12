@@ -2230,6 +2230,9 @@ def oib_service_event_list(request):
                 qs = lm.OIBServiceEvent.objects.select_related(
                     "oib_service_delivery_type",
                     "entered_by"
+                ).prefetch_related(
+                    "contacts",
+                    "instructors"
                 ).order_by("-date", "-id")
 
                 client_q = (cd.get('client') or '').strip()
@@ -2250,6 +2253,31 @@ def oib_service_event_list(request):
                     qs = qs.filter(note__icontains=kw)
                     # also include keyword tokens for highlighting
                     highlight_tokens.extend([t for t in re.split(r'\s+', kw) if t])
+
+                sdt = cd.get('service_delivery_type')
+                if sdt:
+                    qs = qs.filter(oib_service_delivery_type=sdt)
+
+                instructor = cd.get('instructor')
+                if instructor:
+                    qs = qs.filter(instructors=instructor)
+
+                entered_by = cd.get('entered_by')
+                if entered_by:
+                    qs = qs.filter(entered_by=entered_by)
+
+                start = cd.get('start_date')
+                end = cd.get('end_date')
+                # Validate date range: only run DB query when range is valid.
+                if start and end and start > end:
+                    # attach a non-field error so the template can show it via form.non_field_errors
+                    form.add_error(None, "Start date cannot be later than end date.")
+                    qs = lm.OIBServiceEvent.objects.none()
+                else:
+                    if start:
+                        qs = qs.filter(date__gte=start)
+                    if end:
+                        qs = qs.filter(date__lte=end)
 
         # avoid duplicates because of M2M joins
         qs = qs.distinct()

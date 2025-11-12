@@ -11,14 +11,17 @@
     <div>
       {{ form.client.label_tag }}<br>{{ form.client }}
     </div>
-    <div>
+    <!-- <div>
       {{ form.program.label_tag }}<br>{{ form.program }}
-    </div>
+    </div> -->
     <div>
       {{ form.service_delivery_type.label_tag }}<br>{{ form.service_delivery_type }}
     </div>
     <div>
       {{ form.entered_by.label_tag }}<br>{{ form.entered_by }}
+    </div>
+    <div>
+      {{ form.instructor.label_tag }}<br>{{ form.instructor }}
     </div>
     <div>
       {{ form.start_date.label_tag }}<br>{{ form.start_date }}
@@ -46,6 +49,7 @@
             <th>Client(s)</th>
             <th>Note</th>
             <th>Entered By</th>
+            <th>Instructor(s)</th>
             <th>Actions</th>
         </tr>
     </thead>
@@ -64,7 +68,13 @@
             </td>
             <td>{{ event.note|truncatechars:80|highlight:highlight_tokens }}</td>
             <td>{{ event.entered_by.get_full_name }}</td>
-            <td>{{ event.entered_by.get_full_name }}</td>
+            <td>
+                {% for inst in event.instructors.all %}
+                    {{ inst.last_name }}, {{ inst.first_name }}{% if not forloop.last %}; {% endif %}
+                {% empty %}
+                    (no instructors)
+                {% endfor %}
+            </td>
             <td>
                 <a href="{% url 'lynx:oib_service_event_show' event.id %}">Show</a>
                 |

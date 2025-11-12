@@ -619,19 +619,25 @@ class OIBServiceEventContactForm(forms.Form):
     )
 
 class OIBServiceEventFilterForm(forms.Form):
-    client = forms.CharField(required=False, label="Client name (first or last)")
-    program = forms.ModelChoiceField(
-        queryset=lm.Program.objects.filter(is_oib=True).order_by('program'),
-        required=False,
-        label="Program"
-    )
+    client = forms.CharField(required=False, label="Client name (keyword)")
+    # program = forms.ModelChoiceField(
+    #     queryset=lm.Program.objects.filter(is_oib=True).order_by('program'),
+    #     required=False,
+    #     label="Program"
+    # )
     service_delivery_type = forms.ModelChoiceField(
-        queryset=lm.OIBServiceDeliveryType.objects.order_by('oib_service_delivery_type'),
+        # exclude the ROOT
+        queryset=lm.OIBServiceDeliveryType.objects.exclude(pk=0).order_by('oib_service_delivery_type'),
         required=False,
-        label="Plan / service delivery type"
+        label="Plan type"
     )
-    entered_by = forms.ModelChoiceField(
-        queryset=dca.User.objects.filter(is_active=True).order_by('last_name', 'first_name'),
+    instructor = UserModelChoiceField(
+        queryset=dca.User.objects.filter(groups__name='SIP', is_active=True).order_by(ddmf.Lower('last_name'), ddmf.Lower('first_name')),
+        required=False,
+        label="Instructor"
+    )
+    entered_by = UserModelChoiceField(
+        queryset=dca.User.objects.filter(groups__name='SIP', is_active=True).order_by(ddmf.Lower('last_name'), ddmf.Lower('first_name')),
         required=False,
         label="Entered by"
     )
