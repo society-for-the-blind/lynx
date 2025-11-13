@@ -1191,12 +1191,22 @@ class IntakeBirthDateConfirmView(LoginRequiredMixin, TemplateView):
                 .filter(end_date__isnull=True, program__program__in=violating_program_codes)
                 .select_related('program')
             )
-            for m in memberships:
-                m.end_date = today
-                m.save()
+            # Bulk end offending memberships to avoid running model.full_clean() on each instance
+            memberships_qs = (
+                intake.contact.contactprogram_set
+                .filter(end_date__isnull=True, program__program__in=violating_program_codes)
+                .select_related('program')
+            )
+            program_names = list(memberships_qs.values_list('program__program', flat=True))
+            updated_count = memberships_qs.update(end_date=today)
+            if updated_count:
+                messages.warning(
+                    request,
+                    "Automatically ended program membership(s) due to DOB / age mismatch: " + ", ".join(program_names)
+                )
 
             intake.birth_date = new_birth_date
-            intake.save()
+            lm.Intake.objects.filter(pk=intake.pk).update(birth_date=new_birth_date)
 
             request.session.pop(session_key, None)
             return redirect('lynx:contact_show', pk=intake.contact_id)
