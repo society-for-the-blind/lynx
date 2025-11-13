@@ -881,6 +881,11 @@ class ContactDetailView(LoginRequiredMixin, DetailView):
         context['form'] = lfo.IntakeNoteForm
         context['upload_form'] = lfo.DocumentForm
 
+        oib_plans = _get_plans(self.object)
+        oib_programs = sorted(list({plan['program'] for plan in oib_plans}))
+        context['oib_programs'] = oib_programs
+        # import pdb; pdb.set_trace()
+
         # add historical SIP / ILP existence flag and counts
         client_id = self.kwargs['pk']
         sip_exists = lm.SipPlan.objects.filter(contact_id=client_id).exists()
@@ -2663,7 +2668,20 @@ def _get_plan_outcomes(contact_id, service_delivery_type_id, grant_year):
 @login_required
 def oib_plan_list(request, contact_id):
     client = lm.Contact.objects.get(id=contact_id)
-    service_events_qs = lm.OIBServiceEvent.for_client_with_grant_year(contact_id)
+    plans = _get_plans(client)
+
+    program_filter = (request.GET.get('program') or '').strip()
+
+    if program_filter:
+        plans = [plan for plan in plans if plan['program'] == program_filter]
+
+    return render(request, "lynx/oib/oib_plan_list.html", {
+        "client": client,
+        "plans": plans,
+    })
+
+def _get_plans(client):
+    service_events_qs = lm.OIBServiceEvent.for_client_with_grant_year(client.id)
 
     # Group events by the plan key (grant_year, service_delivery_type_id, program) preserving first-seen order.
     # Keep one OrderedDict mapping each key -> list[OIBServiceEvent].
@@ -2685,7 +2703,7 @@ def oib_plan_list(request, contact_id):
         plan_name = first_service_event.get_plan_name(grant_year, program, service_delivery_type_name)
 
         service_names = set().union(*(se.collect_service_names() for se in service_events))
-        _otc_id_dict, _outcome_types, otc_tuples = _get_plan_outcomes(contact_id, service_delivery_type_id, grant_year)
+        _otc_id_dict, _outcome_types, otc_tuples = _get_plan_outcomes(client.id, service_delivery_type_id, grant_year)
 
         # `service_events_by_plan` contains exactly what the name says, but don't want to
         # recreate that on each plan load, so added the concrete service event IDs to each
@@ -2705,10 +2723,7 @@ def oib_plan_list(request, contact_id):
             'plan_token': plan_token,
         })
 
-    return render(request, "lynx/oib/oib_plan_list.html", {
-        "client": client,
-        "plans": plans,
-    })
+    return plans
 
 def _oib_plan_dict(request, contact_id, program, grant_year, service_delivery_type_id, edit_mode):
     token = request.GET.get('token')
