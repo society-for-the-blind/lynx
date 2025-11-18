@@ -24,6 +24,7 @@ def add_initial_delivery_types(apps, schema_editor):
         OIBServiceDeliveryType(id=5, parent_id=2, oib_service_delivery_type='Spanish Support Group'),
         OIBServiceDeliveryType(id=6, parent_id=2, oib_service_delivery_type='Asian Support Group'),
         OIBServiceDeliveryType(id=7, parent_id=2, oib_service_delivery_type='BASS Support Group'),
+        OIBServiceDeliveryType(id=8, parent_id=2, oib_service_delivery_type='Coffee and Connect'),
     ])
 
 class Migration(migrations.Migration):
