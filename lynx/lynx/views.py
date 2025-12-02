@@ -56,14 +56,15 @@ logger = logging.getLogger(__name__)
 @login_required
 def index(request):
     context = {
-        "message": "Welcome to Lynx, the Client Management Tool for Society for the Blind"
+        "message": "Welcome to Lynx, the Client Management Tool for Society for the Blind",
+        "page_title": "LYNX Home Page",
     }
     return render(request, 'lynx/index.html', context)
 
 @login_required
 def reports(request):
     context = {
-        "message": "All Lynx Reports"
+        "page_title": "Reports",
     }
     return render(request, 'lynx/reports.html', context)
 
@@ -71,7 +72,11 @@ def reports(request):
 def authorization_list_view(request, client_id):
     authorizations = lm.Authorization.objects.filter(contact_id=client_id).order_by('-start_date')
     client = lm.Contact.objects.get(id=client_id)
-    return render(request, 'lynx/authorization_list.html', {'authorizations': authorizations, 'client': client})
+    context = { 'authorizations': authorizations,
+                'client': client,
+                'page_title': 'Core Authorizations'
+              }
+    return render(request, 'lynx/authorization_list.html', context)
 
 @login_required
 def add_intake(request, contact_id):
