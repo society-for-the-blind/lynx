@@ -1625,17 +1625,23 @@ def oib_assignment_list(request):
         # initial page load have to  be discerned: if the page
         # load input  (i.e., `requet.GET`) is empty,  then the
         # page is being loaded the first time.
+        qs = lm.Assignment.objects.all().order_by('-assignment_date')
+
         if request.GET:
-            f = lfi.AssignmentFilter(request.GET, queryset=lm.Assignment.objects.all().order_by('-assignment_date'))
+            # user submitted filters -> apply them
+            f = lfi.AssignmentFilter(request.GET, queryset=qs)
+            assignment_qs = f.qs
         else:
-            initial_data = {
-                'assignment_date_gt': grant_year_start_date()
-            ,   'instructor': request.user.id
-            }
-            f = lfi.AssignmentFilter(initial_data, queryset=lm.Assignment.objects.all().order_by('-assignment_date'))
+            # initial page load: show form prefilled but DO NOT apply defaults
+            f = lfi.AssignmentFilter(data=None, queryset=qs)
+            f.form.initial.update({
+                'assignment_date_gt': grant_year_start_date(),
+                'instructor': request.user.id,
+            })
+            assignment_qs = lm.Assignment.objects.none()
 
         assignment_condensed = {}
-        for assignment in f.qs:
+        for assignment in assignment_qs:
             assignment_condensed[assignment.id] = {}
 
             program_code = getattr(assignment.program, 'program', '') if assignment.program else ''
