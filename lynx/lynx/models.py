@@ -136,12 +136,6 @@ CONDITIONS = (('Cataracts', 'Cataracts'), ('Diabetic Retinopathy', 'Diabetic Ret
               ('Glaucoma', 'Glaucoma'), ('Macular Degeneration', 'Macular Degeneration'),
               ('Other causes of visual impairment', 'Other causes of visual impairment'))
 
-STATUSES = (("Assigned", "Assigned"), ("In Progress", "In Progress"), ("Completed", "Completed"))
-
-PROGRAM = (("SIP", "SIP"), ("1854", "1854"))
-
-ASSIGNMENT_PRIORITY = (("New", "New"), ("Returning", "Returning"))
-
 # TODO 2025_09_14_1221 What does this do?
 def get_sentinel_user():
     return get_user_model().objects.get_or_create(username='deleted')[0]
@@ -835,16 +829,56 @@ class Vaccine(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET(get_sentinel_user))
     history = HistoricalRecords()
 
+class AssignmentStatus(models.Model):
+    name = models.CharField(max_length=50, unique=True)
+    created = models.DateTimeField(auto_now_add=True)
+    modified = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.name
+
+class AssignmentPriority(models.Model):
+    name = models.CharField(max_length=50, unique=True)
+    created = models.DateTimeField(auto_now_add=True)
+    modified = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.name
 
 class Assignment(models.Model):
-    program = models.CharField(max_length=25, null=True, blank=True, default='SIP', choices=PROGRAM)
-    priority = models.CharField(max_length=25, null=True, blank=True, default='New', choices=ASSIGNMENT_PRIORITY)
+    program = models.ForeignKey(
+        'Program',
+        null=False,
+        blank=False,
+        on_delete=models.PROTECT,
+        related_name='assignments',
+        default=1
+    )
+
+    priority = models.ForeignKey(
+        AssignmentPriority,
+        null=False,
+        blank=False,
+        on_delete=models.PROTECT,
+        related_name='assignments',
+        default=1
+    )
+
     contact = models.ForeignKey('Contact', on_delete=models.CASCADE)
-    # TODO Remove as this is superfluous - there is already a ForeignKey to User.
+    # TODO/QUESTION: Why is there both a `user` and an `instructor` field?
     instructor = models.ForeignKey(User, on_delete=models.CASCADE, related_name='instructors')
     assignment_date = models.DateField(auto_now_add=True, null=True)
     note = models.TextField(blank=True, null=True)
-    assignment_status = models.CharField(max_length=25, blank=True, null=True, choices=STATUSES, default='Assigned', )
+
+    assignment_status = models.ForeignKey(
+        AssignmentStatus,
+        null=False,
+        blank=False,
+        on_delete=models.PROTECT,
+        related_name='assignments',
+        default=1
+    )
+
     created = models.DateTimeField(auto_now_add=True, null=True)
     modified = models.DateTimeField(auto_now=True, null=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET(get_sentinel_user))

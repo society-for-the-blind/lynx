@@ -331,7 +331,7 @@ class AssignmentForm(forms.ModelForm):
 
     class Meta:
         model = lm.Assignment
-        exclude = ('created', 'modified', 'user', 'assignment_date')
+        exclude = ('created', 'modified', 'user', 'assignment_date', 'assignment_status')
         widgets = {
             # "assignment_date": forms.DateInput(attrs={'type': 'date'})
         };

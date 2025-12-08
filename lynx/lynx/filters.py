@@ -49,7 +49,11 @@ class FullNameUserChoiceFilter(django_filters.ModelChoiceFilter):
     field_class = FullNameUserChoiceField
 
 class AssignmentFilter(django_filters.FilterSet):
-    program = django_filters.ChoiceFilter(choices=lm.PROGRAM, empty_label='All programs')
+    program = django_filters.ModelChoiceFilter(
+        field_name='program',
+        queryset=lm.Program.objects.filter(is_oib=True).order_by('program'),
+        empty_label='All programs'
+    )
     instructors = User.objects.filter(groups__name='SIP').order_by(Lower('last_name'))
     instructor = FullNameUserChoiceFilter(queryset=instructors)
     assignment_date_gt = CustomDateTimeFilter(field_name='assignment_date', lookup_expr='gt', widget=forms.SelectDateWidget(years=list(range(1900, 2100))), label='Assignments after date')
@@ -61,14 +65,3 @@ class AssignmentFilter(django_filters.FilterSet):
 
     def __init__(self, *args, **kwargs):
         super(AssignmentFilter, self).__init__(*args, **kwargs)
-        if self.data == {}:
-            self.queryset = self.queryset.none()
-        else:
-            # Prefetch the related SipNote objects through the Contact model
-            sipnotes_prefetch = Prefetch('contact__sipnote_set', queryset=lm.SipNote.objects.select_related('user').all(), to_attr='related_sipnotes')
-            sip1854notes_prefetch = Prefetch('contact__sip1854note_set', queryset=lm.Sip1854Note.objects.select_related('user').all(), to_attr='related_sip1854notes')
-            sipplans_prefetch = Prefetch('contact__sipplan_set', queryset=lm.SipPlan.objects.select_related('user').all(), to_attr='related_sipplans')
-            sip1854plans_prefetch = Prefetch('contact__sip1854plan_set', queryset=lm.Sip1854Plan.objects.select_related('user').all(), to_attr='related_sip1854plans')
-            # users_prefetch = Prefetch('contact__user_set', queryset=User.objects.select_related('user').all(), to_attr='related_users')
-            intakenotes_prefetch = Prefetch('contact__intakenote_set', queryset=lm.IntakeNote.objects.select_related('user').all(), to_attr='related_intakenotes')
-            self.queryset = self.queryset.prefetch_related(sipnotes_prefetch, intakenotes_prefetch, sip1854notes_prefetch, sipplans_prefetch, sip1854plans_prefetch)

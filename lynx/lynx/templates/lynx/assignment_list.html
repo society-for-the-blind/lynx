@@ -35,10 +35,10 @@
         <tbody>
         {% for key, assignment in assignment_list.items %}
             <tr id="assignment-{{ assignment.assignment_id }}">
-                <td class="short-cells" data-timestamp="{{ assignment.timestamp}}"><a href="/lynx/assignments/{{ assignment.client_id }}#assignment-{{ assignment.assignment_id }}">{{ assignment.assignment_date }}</a></td>
+                <td class="short-cells" data-timestamp="{{ assignment.timestamp}}"><a href="/lynx/oib-assignments/{{ assignment.client_id }}#assignment-{{ assignment.assignment_id }}">{{ assignment.assignment_date }}</a></td>
                     <!--
                 <td class="short-cells" data-timestamp="{{ assignment.timestamp}}">
-                    <a href="/lynx/assignments/{{ assignment.client_id }}#assignment-{{ assignment.assignment_id }}">{{ assignment.assignment_date }}</a>
+                    <a href="/lynx/oib-assignments/{{ assignment.client_id }}#assignment-{{ assignment.assignment_id }}">{{ assignment.assignment_date }}</a>
                     &nbsp;
                     <a href="/lynx/sip-plan/{{ assignment.most_recent_in_home_plan_for_assignee_plan_id }}">{{ assignment.most_recent_in_home_plan_for_assignee_plan_name }}</a>
                 </td>
@@ -48,34 +48,12 @@
                 <td class="short-cells">{{ assignment.assignment_priority }}</td>
                 <td class="long-cells expandable">{{ assignment.note }}</td>
                 <td class="long-cells expandable">
-                    <!-- NOTE
-                         This  was a  good idea,  but probably  confusing for
-                         many users, so deactivating  them and the ability to
-                         add new plan with a new note for now.
-                    -->
-                    {% if assignment.most_recent_in_home_id == '' %}
-                        <a class="btn btn-success" aria-label="Go to SIP plans" href="/lynx/{% if assignment.program == 'SIP' %}sip{% else %}sip1854{% endif %}plans/{{ assignment.client_id }}">
-                          Go to {% if assignment.program == 'SIP' %}SIP{% else %}ILP{% endif %} plans
+                    {% if assignment.most_recent_in_home_note == '' %}
+                        <a class="btn btn-success" aria-label="Go to {{ assignment.program }} plans" href="{% url 'lynx:oib_plan_list' assignment.client_id %}?program={{ assignment.program|urlencode }}">
+                          Go to {{ assignment.program }} plans
                         </a>
-                    <!-- If there is no In-home plan, there's no note, so create a new plan with a new note  -->
-                    <!--
-                        <a class="btn btn-success" aria-label="Add New {% if assignment.program == 'SIP' %}SIP{% else %}ILP{% endif %} Note" href='/lynx/add-{% if assignment.program == 'SIP' %}sip{% else %}sip1854{% endif %}-note/{{ assignment.client_id }}/?plan_id=In-home&next={{ request.get_full_path|urlencode }}'>
-                            Add new {% if assignment.program == 'SIP' %}SIP{% else %}ILP{% endif %} in-home plan and note
-                        </a>
-                    -->
-                    {% elif assignment.most_recent_in_home_note == '' %}
-                        <a class="btn btn-success" aria-label="Go to SIP plans" href="/lynx/{% if assignment.program == 'SIP' %}sip{% else %}sip1854{% endif %}plans/{{ assignment.client_id }}">
-                          Go to {% if assignment.program == 'SIP' %}SIP{% else %}ILP{% endif %} plans
-                        </a>
-                    <!-- There is an in-home plan, but it has no notes, so let the user create one in that plan -->
-                    <!--
-                        <a class="btn btn-success" aria-label="Add New {% if assignment.program == 'SIP' %}SIP{% else %}ILP{% endif %} Note" href='/lynx/add-{% if assignment.program == 'SIP' %}sip{% else %}sip1854{% endif %}-note/{{ assignment.client_id }}/?plan_id={{ assignment.most_recent_in_home_id }}&next={{ request.get_full_path|urlencode }}'>
-                            Add {% if assignment.program == 'SIP' %}SIP{% else %}ILP{% endif %} note
-                        </a>
-                    -->
                     {% else %}
-                    <!-- link to most_recent_in_home_note_plan_id where the most recent note is on top -->
-                        <a href="/lynx/{% if assignment.program == 'SIP' %}sip{% else %}sip1854{% endif %}-plan/{{ assignment.most_recent_in_home_id }}">
+                        <a href="{% url 'lynx:oib_service_event_show' assignment.most_recent_in_home_note_id %}">
                             {{ assignment.most_recent_in_home_note_date }}
                             , {{assignment.most_recent_in_home_note_instructor}}
                             , {{assignment.most_recent_in_home_note}}
@@ -116,7 +94,7 @@
           the  submit  button  will clear  that  URL  fragment
           (otherwise the browser will retain it).
         */
-        document.getElementById('get-assignments').addEventListener('submit', function() {
+        document.getElementById('get-oib-assignments').addEventListener('submit', function() {
             if (window.location.hash) {
                 history.replaceState(null, null, ' ');
             }

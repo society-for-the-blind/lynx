@@ -38,7 +38,7 @@
                     <select name="program" id="program" aria-required="true">
                         <option value="">----------</option>
                         {% for program in program_options %}
-                            <option value="{{ program }}">{{ program }}</option>
+                            <option value="{{ program.id }}">{{ program.program }}</option>
                         {% endfor %}
                     </select>
                 </div>
@@ -47,7 +47,7 @@
                     <select name="priority" id="priority" aria-required="true">
                         <option value="">----------</option>
                         {% for priority in assignment_priorities %}
-                            <option value="{{ priority }}">{{ priority }}</option>
+                            <option value="{{ priority.id }}">{{ priority.name }}</option>
                         {% endfor %}
                     </select>
                 </div>

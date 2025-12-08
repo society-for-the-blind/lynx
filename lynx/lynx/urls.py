@@ -90,7 +90,7 @@ urlpatterns = [
     ###############
     # ASSIGNMENTS #
     ###############
-    path('assignments/<int:contact_id>', views.assignment_detail, name='assignment'),
+    path('oib-assignments/<int:contact_id>', views.oib_assignment_list_for_client, name='oib_assignment_for_client'),
     path('add-assignment/<int:contact_id>', views.add_assignments, name='add_assignment'),
     path('assignment-edit/<int:pk>', views.AssignmentUpdateView.as_view(), name='assignment-edit'),
     path('assignment-confirm/<int:pk>/<int:client_id>', views.AssignmentDeleteView.as_view(), name='assignment-delete'),

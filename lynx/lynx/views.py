@@ -318,8 +318,9 @@ def add_assignments(request, contact_id):
     form = lfo.AssignmentForm()
     # import pdb; pdb.set_trace()
     instructors = dca.User.objects.filter(groups__name='SIP').order_by(ddmf.Lower('last_name'))
-    program_options = ["SIP", "1854"]
-    assignment_priorities = ["New", "Returning"]
+    program_options = lm.Program.objects.filter(is_oib=True).order_by('program')
+    assignment_priorities = lm.AssignmentPriority.objects.all().order_by('name')
+    assignment_statuses = lm.AssignmentStatus.objects.all().order_by('name')
 
     if request.method == 'POST':
         form = lfo.AssignmentForm(request.POST)
@@ -328,6 +329,8 @@ def add_assignments(request, contact_id):
             form = form.save(commit=False)
             form.contact_id = contact_id
             form.user_id = request.user.id
+            # assignment_status not shown in form — assign default id 1 explicitly
+            form.assignment_status_id = 1
             form.save()
 
             username = 'SIP Assignments <' + settings.EMAIL_HOST_USER + '>'
@@ -352,9 +355,9 @@ def add_assignments(request, contact_id):
                    , 'contact_id': contact_id                       \
                    , 'program_options': program_options             \
                    , 'assignment_priorities': assignment_priorities \
+                   , 'assignment_statuses': assignment_statuses     \
                    }                                                \
                  )
-
 
 @login_required
 def add_emergency(request, contact_id):
@@ -641,14 +644,6 @@ def progress_result_view(request):
     return render(request, 'lynx/monthly_progress_reports.html', {'object_list': object_list, 'givenMonth': given_month,
                                                                   'givenYear': request.GET.get('selYear')})
 
-
-@login_required
-def assignment_detail(request, contact_id):
-    instructor_list = lm.Assignment.objects.filter(contact_id=contact_id).order_by('-assignment_date')
-    # contact = lm.Contact.objects.get(id=contact_id).first()
-    contact = lm.Contact.objects.filter(pk=contact_id).first()
-    # import pdb; pdb.set_trace()
-    return render(request, 'lynx/assignment_detail.html', {'instructor_list': instructor_list, "contact_id": contact_id, 'contact': contact})
 
 class AuthorizationDetailView(LoginRequiredMixin, DetailView):
     model = lm.Authorization
@@ -2010,7 +2005,7 @@ def get_current_grant_year_startdate():
 #          official forms it is sometimes referred to as "Under
 #          55 7-OB" or simply just as "7-OB" program...)
 @login_required
-def assignment_advanced_result_view(request):
+def oib_assignment_list(request):
     # import pdb; pdb.set_trace()
     if request.method == 'GET':
         strict = True
@@ -2023,14 +2018,10 @@ def assignment_advanced_result_view(request):
         # load input  (i.e., `requet.GET`) is empty,  then the
         # page is being loaded the first time.
         if request.GET:
-            # initial_data = {'assignment_date_lt': timezone.now()}
-            # f = lfi.AssignmentFilter(request.GET, queryset=lm.Assignment.objects.all())
-            # f = lfi.AssignmentFilter(request.GET or initial_data, queryset=lm.Assignment.objects.all().order_by('-assignment_date'))
             f = lfi.AssignmentFilter(request.GET, queryset=lm.Assignment.objects.all().order_by('-assignment_date'))
-            # notes = lm.SipNote.objects.all()
         else:
             initial_data = {
-                'assignment_date_gt': get_current_date_minus_one_year()
+                'assignment_date_gt': grant_year_start_date()
             ,   'instructor': request.user.id
             }
             f = lfi.AssignmentFilter(initial_data, queryset=lm.Assignment.objects.all().order_by('-assignment_date'))
@@ -2038,11 +2029,14 @@ def assignment_advanced_result_view(request):
         assignment_condensed = {}
         for assignment in f.qs:
             assignment_condensed[assignment.id] = {}
-            assignment_condensed[assignment.id]['program'] = assignment.program if assignment.program is not None else ''
+
+            program_code = getattr(assignment.program, 'program', '') if assignment.program else ''
+            assignment_condensed[assignment.id]['program'] = program_code
+
             assignment_condensed[assignment.id]['assignment_id'] = assignment.id if assignment.id is not None else ''
             assignment_condensed[assignment.id]['assignment_date'] = assignment.assignment_date if assignment.assignment_date is not None else ''
             assignment_condensed[assignment.id]['timestamp'] = timestamp = int(time.mktime(assignment.assignment_date.timetuple())) if assignment.assignment_date is not None else ''
-            assignment_condensed[assignment.id]['assignment_priority'] = assignment.priority if assignment.priority is not None else ''
+            assignment_condensed[assignment.id]['assignment_priority'] = getattr(assignment.priority, 'name', '') if assignment.priority else ''
             assignment_condensed[assignment.id]['client_id'] = assignment.contact_id if assignment.contact_id is not None else ''
             assignment_condensed[assignment.id]['client_first_name'] = assignment.contact.first_name if assignment.contact.first_name is not None else ''
             assignment_condensed[assignment.id]['client_last_name'] = assignment.contact.last_name if assignment.contact.last_name is not None else ''
@@ -2053,93 +2047,39 @@ def assignment_advanced_result_view(request):
             assignment_condensed[assignment.id]['instructor_first_name'] = assignment.instructor.first_name if assignment.instructor.first_name is not None else ''
             assignment_condensed[assignment.id]['instructor_last_name'] = assignment.instructor.last_name if assignment.instructor.last_name is not None else ''
 
-            # Get the most recent notes of the most recent in-home plans
-            # ==========================================================
-            match assignment_condensed[assignment.id]['program']:
-                case "SIP":
-                    plans = getattr(assignment.contact, 'related_sipplans', [])
-                    notes = getattr(assignment.contact, 'related_sipnotes', [])
-                    # same as
-                    # notes = assignment.contact.related_sipnotes
-                    # but the above form is safer when there are no results
-                case "1854":
-                    plans = getattr(assignment.contact, 'related_sip1854plans', [])
-                    # import pdb; pdb.set_trace()
-                    notes = getattr(assignment.contact, 'related_sip1854notes', [])
+            most_recent_in_home_service_event = (
+                lm.OIBServiceEvent.objects
+                .filter(
+                    contacts__id=assignment.contact_id,
+                    oib_service_delivery_type__oib_service_delivery_type__iexact='In-home'
+                )
+                .select_related('oib_service_delivery_type')  # keep FK joins
+                .prefetch_related(
+                    # Prefetch the through-model so we also have role info if needed
+                    ddm.Prefetch(
+                        'oibserviceeventinstructor_set',
+                        queryset=lm.OIBServiceEventInstructor.objects.select_related('instructor', 'oib_service_event_instructor_role'),
+                        to_attr='instructor_roles'
+                    )
+                    # alternatively: .prefetch_related('instructors') to get User instances only
+                )
+                .order_by('-date', '-id')
+                .first()
+            )
 
-            # Filter related_sipplans for "In-Home" where instructor_id matches SipPlan's user_id
-            in_home_plans_for_assignee = [
-                plan for plan in plans
-                if      "In-home" in plan.plan_name
-                    and plan.user_id == assignment.instructor_id
-
-                    # HISTORICAL NOTE
-                    #
-                    # The note below was for `get_current_grant_year_startdate`
-                    # (before switching to `get_current_date_minus_one_year`),
-                    # and   I   remember   the  pain   of   getting   this
-                    # one   right,  so   leaving   it   here  until   this
-                    # whole   shebang  will   be  ripped   out.  I   think
-                    # `get_current_date_minus_one_year` will get the right
-                    # results,  but then  the whole  solution is  "ad hoc"
-                    # given the current DB structure.
-                    #
-                    # > Every instructor has  one in-home plan per
-                    # > grant year per client, but sometimes more,
-                    # > so  show the  latest  one  in the  current
-                    # > grant year
-
-                    and plan.created.date() >= get_current_date_minus_one_year()
-
-                    # FAILED ATTEMPS
-                    #
-                    # # 1. This will only pick plans for the grant year the assignment was created.
-                    # and plan.created.date() >= date(assignment.assignment_date.year - 1, 10, 1)
-                    # and plan.created.date() <= date(assignment.assignment_date.year, 9, 30)
-                    #
-                    # # 2. This won't work because of how different past plan names were...
-                    # and datetime.strptime(plan.plan_name.split(' - ')[0], '%m/%d/%Y').date() >= assignment.assignment_date
-            ]
-
-            # import pdb; pdb.set_trace()
-
-            if in_home_plans_for_assignee:
-                # Find the most recent plan
-                most_recent_in_home_for_assignee = max(in_home_plans_for_assignee, key=lambda plan: plan.created)
-                assignment_condensed[assignment.id]['most_recent_in_home_id'] = most_recent_in_home_for_assignee.id
-
-                notes_of_most_recent_in_home = [
-                    note for note in notes
-                    if      note.sip_plan_id == most_recent_in_home_for_assignee.id
-                        # Subtracting  1 day  from  the assignment  date is  a
-                        # quick and dirty workaround  for the fact that adding
-                        # a new assignments sets the  assignment date 1 day in
-                        # the future, breaking this conditional...
-                        # TODO Figure out why assignment dates are saved 1 day ahead.
-                        and note.note_date   >= (assignment.assignment_date - timedelta(days=1))
-                ]
-                if notes_of_most_recent_in_home:
-                    most_recent_in_home_note = max(notes_of_most_recent_in_home, key=lambda note: note.note_date)
-                    # import pdb; pdb.set_trace()
-                    # Add details from most_recent_in_home_for_assignee to assignment_condensed
-                    assignment_condensed[assignment.id]['most_recent_in_home_note_date'] = most_recent_in_home_note.note_date
-                    assignment_condensed[assignment.id]['most_recent_in_home_note'] = most_recent_in_home_note.note
-                    assignment_condensed[assignment.id]['most_recent_in_home_note_instructor'] = most_recent_in_home_note.instructor
-                    # If there is a most recent in-home plan note,
-                    # then its plan's id is the same as `most_recent_in_home_id`
-                    # above.
-                    # assignment_condensed[assignment.id]['most_recent_in_home_note_plan_id'] = most_recent_in_home_note.sip_plan_id
-                else:
-                    assignment_condensed[assignment.id]['most_recent_in_home_note_date']       = ''
-                    assignment_condensed[assignment.id]['most_recent_in_home_note']            = ''
-                    assignment_condensed[assignment.id]['most_recent_in_home_note_instructor'] = ''
-                    # assignment_condensed[assignment.id]['most_recent_in_home_note_plan_id']    = ''
+            if most_recent_in_home_service_event:
+                mrihse = most_recent_in_home_service_event
+                assignment_condensed[assignment.id]['most_recent_in_home_note_id']         = mrihse.id
+                assignment_condensed[assignment.id]['most_recent_in_home_note_date']       = mrihse.date
+                assignment_condensed[assignment.id]['most_recent_in_home_note']            = mrihse.note
+                instructors = [ir.instructor for ir in getattr(mrihse, 'instructor_roles', [])]
+                instructor_names = [f"{u.first_name} {u.last_name}".strip() for u in instructors]
+                assignment_condensed[assignment.id]['most_recent_in_home_note_instructor'] = ", ".join(instructor_names) if instructor_names else 'n/a'
             else:
+                assignment_condensed[assignment.id]['most_recent_in_home_note_id']         = ''
                 assignment_condensed[assignment.id]['most_recent_in_home_note_date']       = ''
                 assignment_condensed[assignment.id]['most_recent_in_home_note']            = ''
                 assignment_condensed[assignment.id]['most_recent_in_home_note_instructor'] = ''
-                # assignment_condensed[assignment.id]['most_recent_in_home_note_plan_id']    = ''
-                assignment_condensed[assignment.id]['most_recent_in_home_id']              = ''
 
             # ==========================================================
 
@@ -2147,7 +2087,6 @@ def assignment_advanced_result_view(request):
             # Again, same as above, but got burned by this form a couple times
             # intakenotes = assignment.contact.related_intakenotes
 
-            # Filter related_sipplans for "In-Home" where instructor_id matches SipPlan's user_id
             client_notes_for_assignee = [
                 note for note in intakenotes
                 if      note.user_id == assignment.instructor_id
@@ -2176,9 +2115,15 @@ def assignment_advanced_result_view(request):
         f = lfi.AssignmentFilter()
         assignment_condensed = {}
 
-    # import pdb; pdb.set_trace()
     return render(request, 'lynx/assignment_list.html', {'filter': f, 'assignment_list': assignment_condensed})
 
+@login_required
+def oib_assignment_list_for_client(request, contact_id):
+    instructor_list = lm.Assignment.objects.filter(contact_id=contact_id).order_by('-assignment_date')
+    # contact = lm.Contact.objects.get(id=contact_id).first()
+    contact = lm.Contact.objects.filter(pk=contact_id).first()
+    # import pdb; pdb.set_trace()
+    return render(request, 'lynx/assignment_detail.html', {'instructor_list': instructor_list, "contact_id": contact_id, 'contact': contact})
 ####################################################
 # OIB RE-WRITE                                     #
 ####################################################
