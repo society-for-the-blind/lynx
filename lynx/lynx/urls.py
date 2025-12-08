@@ -94,9 +94,7 @@ urlpatterns = [
     path('add-assignment/<int:contact_id>', views.add_assignments, name='add_assignment'),
     path('assignment-edit/<int:pk>', views.AssignmentUpdateView.as_view(), name='assignment-edit'),
     path('assignment-confirm/<int:pk>/<int:client_id>', views.AssignmentDeleteView.as_view(), name='assignment-delete'),
-    # TODO This should be named `assignments`
-    path('assignments', views.assignment_advanced_result_view, name='assignments'),
-    # --- END ASSGNMENTS ---
+    path('oib-assignments', views.oib_assignment_list, name='oib_assignment_list'),
 
     ################
     # OIB RE-WRITE #

@@ -732,81 +732,6 @@ class LessonNote(models.Model):
     def get_absolute_url(self):
         return reverse('lynx:authorization_detail', kwargs={'pk': self.authorization_id})
 
-
-class ContactInfoView(pg.View):
-    sql = f"""
-        SELECT c.id,
-               concat(last_name, ', ', first_name) AS full_name,
-               first_name,
-               last_name,
-               a.county,
-               a.zip_code,
-               REPLACE(REPLACE(REPLACE(REPLACE(p.phone, ' ', ''), '-', ''), ')', ''), '(', '') as phone,
-               e.email,
-               i.intake_date,
-               -- compute age_group from the most recent intake.birth_date and CURRENT_DATE
-               { lks.age_group_case_sql() } as age_group,
-               a.address_one,
-               a.address_two,
-               a.suite,
-               a.city,
-               a.state,
-               a.bad_address,
-               c.do_not_contact,
-               c.deceased,
-               c.remove_mailing,
-               a.region,
-               phone as full_phone,
-               c.active,
-               array_to_string(array_agg(pr.program), ',') as programs
-        FROM lynx_contact AS c
-        LEFT JOIN LATERAL (
-            SELECT ii.intake_date, ii.birth_date
-            FROM lynx_intake ii
-            WHERE ii.contact_id = c.id AND ii.birth_date IS NOT NULL
-            ORDER BY ii.intake_date DESC NULLS LAST
-            LIMIT 1
-        ) i ON TRUE
-        LEFT JOIN lynx_address AS a ON a.contact_id = c.id
-        LEFT JOIN lynx_phone  AS p ON p.contact_id = c.id
-        LEFT JOIN lynx_email AS e ON e.contact_id = c.id
-        LEFT JOIN lynx_contactprogram cp ON cp.contact_id = c.id
-        LEFT JOIN lynx_program pr ON cp.program_id = pr.id
-        GROUP BY c.id, a.county, a.zip_code, p.phone, e.email, i.intake_date, i.birth_date,
-                 a.address_one, a.address_two, a.suite, a.city, a.state, a.bad_address,
-                 c.do_not_contact, c.deceased, c.remove_mailing, a.region, phone, c.active
-    """
-
-    full_name = models.CharField(max_length=255, null=True)
-    first_name = models.CharField(max_length=255, null=True)
-    last_name = models.CharField(max_length=255, null=True)
-    county = models.CharField(max_length=255, null=True)
-    zip_code = models.CharField(max_length=255, null=True)
-    phone = models.CharField(max_length=255, null=True)
-    email = models.CharField(max_length=255, null=True)
-    intake_date = models.DateField(blank=True, null=True)
-    age_group = models.CharField(max_length=255, null=True)
-    address_one = models.CharField(max_length=255, null=True)
-    address_two = models.CharField(max_length=255, null=True)
-    suite = models.CharField(max_length=255, null=True)
-    city = models.CharField(max_length=255, null=True)
-    state = models.CharField(max_length=255, null=True)
-    bad_address = models.BooleanField(blank=True, default=False)
-    do_not_contact = models.BooleanField(blank=True, default=False)
-    deceased = models.BooleanField(blank=True, default=False)
-    remove_mailing = models.BooleanField(blank=True, default=False)
-    active = models.BooleanField(blank=True, default=False)
-    region = models.CharField(max_length=255, null=True)
-    full_phone = models.CharField(max_length=255, null=True)
-    programs = models.CharField(max_length=255, null=True)
-    history = HistoricalRecords()
-
-    class Meta:
-        app_label = 'lynx'
-        db_table = 'lynx_contactinfoview'
-        managed = False
-
-
 class Document(models.Model):
     contact = models.ForeignKey('Contact', on_delete=models.CASCADE)
     description = models.CharField(max_length=255, blank=True)
@@ -815,7 +740,6 @@ class Document(models.Model):
     modified = models.DateTimeField(auto_now=True, null=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET(get_sentinel_user))
     history = HistoricalRecords()
-
 
 class Vaccine(models.Model):
     VACCINES = (("P or M Dose 2", "P or M Dose 2"), ("J&J Single", "J&J Single"), ("Booster", "Booster"))
@@ -1375,7 +1299,5 @@ class SipPlan(BasePlan):
 
 class Sip1854Plan(BasePlan):
     pass
-
-
 
 # vim: set foldmethod=marker foldmarker={{-,}}-:

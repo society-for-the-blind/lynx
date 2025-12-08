@@ -1,5 +1,5 @@
 {% extends 'lynx/base.html' %}
-{% block title %}SIP Plans for {{ client.first_name }} {{ client.last_name }}{% endblock %}
+{% block title %}{{ program }} Plans for {{ client.first_name }} {{ client.last_name }}{% endblock %}
 
 {% block style %}
 <style>
@@ -17,7 +17,7 @@
 {% endblock %}
 
 {% block content %}
-  <h2>SIP Plans for {{ client.first_name }} {{ client.last_name }}</h2>
+  <h2>{{ program }} Plans for {{ client.first_name }} {{ client.last_name }}</h2>
 
   <input type="button" class="btn btn-success" aria-label="Back to Client" onclick="location.href='/lynx/clients/{{ client.id }}';" value="Return to Client" />
 
@@ -56,7 +56,7 @@
         </div>
       </div>
     {% empty %}
-      <p>No OIB plans (service-event groups) found for this client.</p>
+      <p>No plans for this client yet.</p>
     {% endfor %}
   </div>
 {% endblock %}

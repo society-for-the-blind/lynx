@@ -2,36 +2,39 @@
 {% load crispy_forms_tags %}
 
 {% block content %}
-    <form method="get">
-        {{ filter.form|crispy }}
-        <input class="btn btn-success" type="submit" />
-        <input type="button" class="btn btn-success" onclick="location.href='{{ request.get_full_path }}&excel=true';" value="Download Results" />
-    </form>
-<br>
-<hr>
-<br>
-    <table class="table">
+  <h1>Client filter</h1>
+
+  <form method="get" class="mb-3">
+    {{ filter.form|crispy }}
+    <button type="submit" class="btn btn-primary">Search</button>
+    <a href="{% url 'lynx:contact_filter' %}" class="btn btn-secondary">Reset</a>
+  </form>
+
+  <h2>Results ({{ clients|length }})</h2>
+  <table class="table table-sm">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Phone</th>
+        <th>County</th>
+        <th>Programs</th>
+        <th>Active</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for c in clients %}
         <tr>
-            <th scope="col">Client Name</th>
-            <th scope="col">Intake Date</th>
-            <th scope="col">First Name</th>
-            <th scope="col">Last Name</th>
-            <th scope="col">Phone Number</th>
-            <th scope="col">Zip Code</th>
-            <th scope="col">County</th>
-            <th scope="col">Email</th>
+          <td><a href="{% url 'lynx:contact_show' c.id %}">{{ c.full_name }}</a></td>
+          <td>{{ c.email }}</td>
+          <td>{{ c.phone }}</td>
+          <td>{{ c.county }}</td>
+          <td>{{ c.programs }}</td>
+          <td>{{ c.active }}</td>
         </tr>
-        {% for key, client in client_list.items %}
-            <tr>
-                <td><a href="clients/{{ key }}">{{ client.full_name }}</a></td>
-                <td>{{ client.intake_date }}</td>
-                <td>{{ client.first_name }}</td>
-                <td>{{ client.last_name }}</td>
-                <td>{{ client.phone }}</td>
-                <td>{{ client.zip_code }}</td>
-                <td>{{ client.county }}</td>
-                <td>{{ client.email_address }}</td>
-            </tr>
-        {% endfor %}
-    </table>
+      {% empty %}
+        <tr><td colspan="6">No clients matched.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
 {% endblock %}

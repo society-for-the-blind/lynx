@@ -47,9 +47,11 @@
   {% endif %}
 
   {% if object.programs.all|has_any_oib %}
-    <input type="button" class="btn btn-success" aria-label="SIP/ILP Assignments" onclick="location.href='/lynx/assignments/{{ object.id }}';" value="SIP/ILP Assignments" />
+    <input type="button" class="btn btn-success" aria-label="SIP/ILP Assignments" onclick="location.href='/lynx/oib-assignments/{{ object.id }}';" value="SIP/ILP Assignments" />
     {% for program in oib_programs %}
-      <input type="button" class="btn btn-success" aria-label="{{ program }} Plans" onclick="location.href='/lynx/clients/{{ object.id }}/plans?program={{ program|urlencode }}';" value="{{ program }} Plans" />
+        <input type="button" class="btn btn-success" aria-label="{{ program }} Plans"
+                     onclick="location.href='{% url 'lynx:oib_plan_list' object.id %}?program={{ program|urlencode }}';"
+                     value="{{ program }} Plans" />
     {% endfor %}
     <!--
     <a class="btn btn-success" aria-label="SIP Plans" href="/lynx/sipplans/{{ object.id }}">SIP Plans</a>

@@ -59,7 +59,6 @@ def index(request):
     }
     return render(request, 'lynx/index.html', context)
 
-
 @login_required
 def reports(request):
     context = {
@@ -67,107 +66,11 @@ def reports(request):
     }
     return render(request, 'lynx/reports.html', context)
 
-
 @login_required
 def authorization_list_view(request, client_id):
     authorizations = lm.Authorization.objects.filter(contact_id=client_id).order_by('-start_date')
     client = lm.Contact.objects.get(id=client_id)
     return render(request, 'lynx/authorization_list.html', {'authorizations': authorizations, 'client': client})
-
-
-# TODO RESTify  `urls.py` to  get  rid  of the  `path_part`
-#      duplication in the views below
-#
-# E.g., `sipplans` and `sip1854plans` should simply be
-# `plans` with  and added program identifier  as input
-# before/after the client  id. Does Django's `urls.py`
-# allow specifying parameters to be passed to views?
-
-def parse_path_for_program(request):
-    # (Pdb) request.path
-    # '/lynx/...sip1854...../11469'
-    # (Pdb) request.path.split('/')
-    # ['', 'lynx', '...sip1854.....', '11469']
-    path_part = request.path.split('/')[2]
-    # program_path_part = path_part[:-5]
-    program_path_part = re.search('(?P<program>sip(\d{4})?)', path_part).group('program')
-
-    if   program_path_part == 'sip':
-
-        program_name    = 'SIP'
-        plan_model      = lm.SipPlan
-        plan_form_model = lfo.SipPlanForm
-        note_model      = lm.SipNote
-        note_form       = lfo.SipNoteForm
-
-    elif program_path_part == 'sip1854':
-
-        program_name    = 'ILP'
-        plan_model      = lm.Sip1854Plan
-        plan_form_model = lfo.Sip1854PlanForm
-        note_model      = lm.Sip1854Note
-        note_form       = lfo.Sip1854NoteForm
-
-    else:
-        raise ValueError(f"Only `sip` and `sip1854` prefixes are supported. \
-                           Got: '{ program_path_part }'.")
-
-    return { 'program_name':      program_name      \
-           , 'program_path_part': program_path_part \
-           , 'plan_model':        plan_model        \
-           , 'plan_form_model':   plan_form_model   \
-           , 'note_model':        note_model        \
-           , 'note_form':         note_form         \
-           }
-
-@login_required
-def plan_list_view(request, client_id):
-    # import pdb; pdb.set_trace()
-    client = lm.Contact.objects.get(id=client_id)
-
-    p = parse_path_for_program( request )
-    plans = p['plan_model']               \
-            .objects                      \
-            .filter(contact_id=client_id) \
-            .annotate( date_substring=ddmf.Cast( ddmf.Substr( 'plan_name'                      \
-                                                  , 1                                          \
-                                                  , ddmf.StrIndex('plan_name', ddm.Value(' ')) \
-                                                  )
-                                          , ddm.DateField() \
-                                          )                 \
-                     )                                      \
-            .order_by('-date_substring')
-
-    return render( request                                       \
-                 , 'lynx/plan_list.html'                         \
-                 , { 'plans':             plans                  \
-                   , 'client':            client                 \
-                   , 'program_name':      p['program_name']      \
-                   , 'program_path_part': p['program_path_part'] \
-                   }                                             \
-                 )
-
-
-@login_required
-def plan_note_list_view(request, client_id):
-    # notes = lm.SipNote.objects.filter(contact_id=client_id).order_by('-note_date')
-    client = lm.Contact.objects.get(id=client_id)
-
-    p = parse_path_for_program( request )
-    notes = p['note_model']               \
-            .objects                      \
-            .filter(contact_id=client_id) \
-            .select_related('sip_plan')   \
-            .order_by('-note_date')
-
-    return render( request
-                 , 'lynx/plan_note_list.html'
-                 , { 'notes': notes
-                   , 'client': client
-                   , 'program_name':      p['program_name']      \
-                   , 'program_path_part': p['program_path_part'] \
-                   }
-                 )
 
 @login_required
 def add_intake(request, contact_id):
@@ -182,136 +85,6 @@ def add_intake(request, contact_id):
             form.save()
             return HttpResponseRedirect(reverse('lynx:contact_show', args=(contact_id,)))
     return render(request, 'lynx/intake/intake_form.html', {'form': form})
-
-
-@login_required
-def add_plan_note(request, contact_id):
-    contact = {'contact_id': contact_id}
-    client = lm.Contact.objects.get(id=contact_id)
-    plan_id = request.GET.get('plan_id')
-    # import pdb; pdb.set_trace()
-
-    p = parse_path_for_program( request )
-    form_class = p['note_form']
-
-    if plan_id:
-        form = form_class(initial={'plan': plan_id}, **contact, plan_id=plan_id)
-    else:
-        form = form_class(**contact)
-
-    # form = form_class(request, contact_id=contact_id)
-    if request.method == 'POST':
-
-        # NOTE deactivate creating new plan with a new note (it will confuse users)
-        #      See also forms.py if re-activation needed. {{-
-
-        # if request.POST['sip_plan'].isnumeric():
-        #     post = request.POST
-        # else:
-        #     post_with_new_plan = request.POST.copy()
-        #     post_with_new_plan['plan_type'] = post_with_new_plan['sip_plan']
-        #     post_with_new_plan['plan_date_month'] = post_with_new_plan['note_date_month']
-        #     post_with_new_plan['plan_date_day'] = post_with_new_plan['note_date_day']
-        #     post_with_new_plan['plan_date_year'] = post_with_new_plan['note_date_year']
-        #     post_with_new_plan['note'] = ''
-        #     if 'at_devices' in post_with_new_plan:
-        #         post_with_new_plan['at_services'] = post_with_new_plan['at_devices']
-        #     if 'support' in post_with_new_plan:
-        #         post_with_new_plan['support_services'] = post_with_new_plan['support']
-        #     if 'services' in post_with_new_plan:
-        #         post_with_new_plan['other_services']   = post_with_new_plan['services']
-        #     plan_form = lfo.SipPlanForm(post_with_new_plan)
-        #     # Not sure what happens if this fails, but then this should never fail.
-        #     if plan_form.is_valid():
-        #         # import pdb; pdb.set_trace()
-        #         new_plan_id = save_plan(plan_form, request.user, post_with_new_plan, contact_id)
-        #         post_with_new_plan['sip_plan'] = str(new_plan_id)
-        #         post_with_new_plan['note'] = request.POST['note']
-        #         post = post_with_new_plan
-        # }}-
-
-        post = request.POST
-        form = form_class(post, contact_id=contact_id)
-
-        if form.is_valid():
-            form = form.save(commit=False)
-            form.contact_id = contact_id
-            note_date = form.note_date
-            note_month = note_date.month
-            note_year = note_date.year
-            quarter = get_quarter(note_month)
-            if quarter == 1:
-                fiscal_year = get_fiscal_year(note_year)
-            else:
-                f_year = note_year - 1
-                fiscal_year = get_fiscal_year(f_year)
-            form.quarter = quarter
-            form.fiscal_year = fiscal_year
-            form.instructor = request.user.first_name + request.user.last_name
-            form.user_id = request.user.id
-            form.save()
-
-        next_url = request.GET.get('next', '')  # Fallback to an empty string if 'next' is not present
-        # import pdb; pdb.set_trace()
-        if next_url:
-            # Optional: Validate next_url before redirecting
-            return HttpResponseRedirect(next_url)
-        else:
-            # If 'next' parameter isn't provided, redirect to a default location
-            return HttpResponseRedirect(reverse('lynx:contact_show', args=(contact_id,)))
-
-    return render( request                              \
-                 , 'lynx/add_plan_note.html'            \
-                 , { 'form':          form              \
-                   , 'contact_id':    contact_id        \
-                   , 'client':        client            \
-                   , 'program_name':  p['program_name'] \
-                   }                                    \
-                 )
-
-
-def save_plan(form, request_user, request_post, contact_id):
-    form = form.save(commit=False)
-    form.instructor = request_user.first_name + request_user.last_name
-    form.plan_name =   request_post.get('plan_date_month') \
-                     + '/'                                 \
-                     + request_post.get('plan_date_day')   \
-                     + '/'                                 \
-                     + request_post.get('plan_date_year')  \
-                   + ' - '                                 \
-                   + request_post.get('plan_type')         \
-                   + ' - '                                 \
-                   + form.instructor
-    # form.plan_date = request.POST.get('start_date')
-    form.contact_id = contact_id
-    form.user_id = request_user.id
-    form.save()
-    return form.pk
-
-@login_required
-def add_plan(request, contact_id):
-    p = parse_path_for_program( request )
-    # import pdb; pdb.set_trace()
-    form = p['plan_form_model']()
-
-    if request.method == 'POST':
-        form = p['plan_form_model'](request.POST)
-
-        if form.is_valid():
-            new_plan_id = save_plan(form, request.user, request.POST, contact_id)
-            return HttpResponseRedirect( reverse( f"lynx:{ p['program_path_part'] }_plan_detail" \
-                                                , kwargs={'pk': new_plan_id}                     \
-                                                )                                                \
-                                       )
-
-    return render( request                                       \
-                 , 'lynx/add_plan.html'                          \
-                 , { 'form': form                                \
-                   , 'program_name':      p['program_name']      \
-                   , 'program_path_part': p['program_path_part'] \
-                   }                                             \
-                 )
-
 
 @login_required
 def add_assignments(request, contact_id):
@@ -644,7 +417,6 @@ def progress_result_view(request):
     return render(request, 'lynx/monthly_progress_reports.html', {'object_list': object_list, 'givenMonth': given_month,
                                                                   'givenYear': request.GET.get('selYear')})
 
-
 class AuthorizationDetailView(LoginRequiredMixin, DetailView):
     model = lm.Authorization
 
@@ -844,7 +616,6 @@ class BillingReviewDetailView(LoginRequiredMixin, DetailView):
 
         return context
 
-
 class ContactDetailView(LoginRequiredMixin, DetailView):
     model = lm.Contact
     template_name = 'lynx/contact/contact_show.html'
@@ -883,10 +654,6 @@ class ContactDetailView(LoginRequiredMixin, DetailView):
 
         # add historical SIP / ILP existence flag and counts
         client_id = self.kwargs['pk']
-        sip_exists = lm.SipPlan.objects.filter(contact_id=client_id).exists()
-        sip1854_exists = lm.Sip1854Plan.objects.filter(contact_id=client_id).exists()
-        sip_note_exists = lm.SipNote.objects.filter(contact_id=client_id).exists()
-        sip1854_note_exists = lm.Sip1854Note.objects.filter(contact_id=client_id).exists()
 
         # compute warnings / optionally auto-end offending memberships
         birth_date = intake.birth_date if intake else None
@@ -1740,13 +1507,6 @@ def units_to_hours(units):
     hours = minutes / 60
     return hours
 
-
-def hours_to_units(hours):
-    minutes = hours * 60
-    units = minutes / 15
-    return units
-
-
 def dictfetchall(cursor):
     """Return all rows from a cursor as a dict"""
     columns = [col[0] for col in cursor.description]
@@ -1754,7 +1514,6 @@ def dictfetchall(cursor):
         dict(zip(columns, row))
         for row in cursor.fetchall()
     ]
-
 
 # This will not work past 2099 ;)
 def get_fiscal_year(year):
@@ -1769,156 +1528,44 @@ def get_fiscal_year(year):
         fiscal_year = year_str + '-' + year_inc
     return fiscal_year
 
-
-def get_quarter(month):
-    if month:
-        month = int(month)
-        if month == 10 or month == 11 or month == 12:
-            q = 1
-        elif month == 1 or month == 2 or month == 3:
-            q = 2
-        elif month == 4 or month == 5 or month == 6:
-            q = 3
-        elif month == 7 or month == 8 or month == 9:
-            q = 4
-        else:
-            return 0
-        return q
-    else:
-        return 0
-
-
-def boolean_transform(var):
-    if var == 1 or var == '1' or var:
-        value = "Yes"
-    else:
-        value = "No"
-
-    return value
-
-
-def plan_evaluation(progress, previous=None):
-    if progress == "Plan complete, feeling more confident in ability to maintain living situation":
-        status = "Increased"
-        rank = 3
-    elif progress == "Plan complete, no difference in ability to maintain living situation":
-        status = "Maintained"
-        rank = 2
-    elif progress == "Plan complete, feeling less confident in ability to maintain living situation":
-        status = "Decreased"
-        rank = 1
-    else:
-        status = "Not Assessed"
-        rank = 0
-
-    if previous == "Increased":
-        p_rank = 3
-    elif previous == "Maintained":
-        p_rank = 2
-    elif previous == "Decreased":
-        p_rank = 1
-    else:
-        p_rank = 0
-
-    if rank < p_rank:
-        status = previous
-
-    return status
-
-
-def assess_evaluation(progress, previous=None):
-    status = progress
-    if progress == "Assessed, improved independence" or progress == 'Assessed with improved independence':
-        rank = 3
-    elif progress == "Assessed, maintained independence" or progress == 'Assessed and maintained independence':
-        rank = 2
-    elif progress == "Assessed, decreased independence" or progress == 'Assessed with decreased independence':
-        rank = 1
-    else:
-        rank = 0
-
-    if previous == "Assessed, improved independence" or previous == 'Assessed with improved independence':
-        p_rank = 3
-    elif previous == "Assessed, maintained independence" or previous == 'Assessed and maintained independence':
-        p_rank = 2
-    elif previous == "Assessed, decreased independence" or previous == 'Assessed with decreased independence':
-        p_rank = 1
-    else:
-        p_rank = 0
-
-    if rank < p_rank:
-        status = previous
-
-    return status
-
-
-def replace_characters(a_string, remove_characters):
-    if a_string:
-        for character in remove_characters:
-            a_string = a_string.replace(character, "")
-
-    return a_string
-
-
 @login_required
 def contact_filter(request):
-    if request.method == 'GET':
-        excel = request.GET.get('excel', False)
-        # Use Contact model instead of ContactInfoView
-        f = lfi.ContactFilter(request.GET, queryset=lm.ContactInfoView.objects.all().order_by('last_name'))
-
-        client_condensed = {}
-        for client in f.qs:
-            client_condensed[client.id] = {
-                'full_name': f"{client.last_name}, {client.first_name}",
-                'first_name': client.first_name,
-                'last_name': client.last_name,
-                'email': client.email_set.first().email if client.email_set.exists() else '',
-                'phone': client.phone_set.first().phone if client.phone_set.exists() else '',
-                'intake_date': getattr(client, 'intake_date', ''),
-                'age_group': getattr(client, 'age_group', ''),
-                'zip_code': client.address_set.first().zip_code if client.address_set.exists() else '',
-                'county': client.address_set.first().county if client.address_set.exists() else '',
-                'address_one': client.address_set.first().address_one if client.address_set.exists() else '',
-                'address_two': client.address_set.first().address_two if client.address_set.exists() else '',
-                'suite': client.address_set.first().suite if client.address_set.exists() else '',
-                'city': client.address_set.first().city if client.address_set.exists() else '',
-                'state': client.address_set.first().state if client.address_set.exists() else '',
-                'region': client.address_set.first().region if client.address_set.exists() else '',
-                'bad_address': str(client.address_set.first().bad_address) if client.address_set.exists() else '',
-                'do_not_contact': str(client.do_not_contact),
-                'deceased': str(client.deceased),
-                'remove_mailing': str(client.remove_mailing),
-                'active': str(client.active),
-                # Programs as comma-separated string
-                'programs': ", ".join([p.program for p in client.programs.all()]),
-            }
-
-        if excel == 'true':
-            filename = "Lynx Search Results"
-            response = HttpResponse(content_type='text/csv')
-            response['Content-Disposition'] = f'attachment; filename="{filename}.csv"'
-
-            writer = csv.writer(response)
-            writer.writerow([
-                "Full Name", "First Name", "Last Name", "Intake Date", "Age Group", "County", "Email", "Phone",
-                "Address 1", "Address 2", "Suite", "City", "State", "Zip Code", "Region", "Bad Address",
-                "Do Not Contact", "Deceased", "Remove Mailing", "Active", "Programs"
-            ])
-            for client in client_condensed.values():
-                writer.writerow([
-                    client['full_name'], client['first_name'], client['last_name'], client['intake_date'],
-                    client['age_group'], client['county'], client['email'], client['phone'],
-                    client['address_one'], client['address_two'], client['suite'], client['city'], client['state'],
-                    client['zip_code'], client['region'], client['bad_address'], client['do_not_contact'],
-                    client['deceased'], client['remove_mailing'], client['active'], client['programs']
-                ])
-            return response
-
+    """
+    Filter Contacts by intake dates, age group, email/county/phone substrings,
+    active flag and program membership.
+    """
+    # default intake_after -> current grant year start
+    if request.GET:
+        f = lfi.ContactFilter(request.GET, queryset=lm.Contact.objects.all().order_by('last_name', 'first_name'))
     else:
-        f = lfi.ContactFilter()
-        client_condensed = {}
-    return render(request, 'lynx/contact/contact_filter.html', {'filter': f, 'client_list': client_condensed})
+        initial = {
+            'intake_after': grant_year_start_date(),
+            'is_active': True,
+        }
+        f = lfi.ContactFilter(initial, queryset=lm.Contact.objects.all().order_by('last_name', 'first_name'))
+
+    # annotate/prefetch to reduce per-row queries in template
+    qs = f.qs.select_related().prefetch_related('programs', 'email_set', 'address_set', 'phone_set').distinct()
+
+    # build condensed results for simple template consumption (optional)
+    clients = []
+    for c in qs:
+        clients.append({
+            'id': c.id,
+            'full_name': f"{c.last_name}, {c.first_name}",
+            'first_name': c.first_name,
+            'last_name': c.last_name,
+            'email': c.email_set.first().email if c.email_set.exists() else '',
+            'phone': c.phone_set.first().phone if c.phone_set.exists() else '',
+            'county': c.address_set.first().county if c.address_set.exists() else '',
+            'active': c.active,
+            'programs': ", ".join([p.program for p in c.programs.all()]),
+        })
+
+    return render(request, 'lynx/contact/contact_filter.html', {
+        'filter': f,
+        'clients': clients,
+    })
 
 @login_required
 def download(request, path):
@@ -1948,62 +1595,16 @@ def email_update(request):
 
     return HttpResponse('Mail successfully sent')
 
-
-def is_assessed(ila_outcomes, at_outcomes):
-    ila_assessed = False
-    at_assessed = False
-    if ila_outcomes and ila_outcomes != "Not assessed":
-        ila_assessed = True
-    if at_outcomes and at_outcomes != "Not assessed":
-        at_assessed = True
-    if at_assessed and ila_assessed:
-        return "Assessed"
+def grant_year_start_date():
+    grant_start_month = 10  # October
+    grant_start_day = 1
+    today = date.today()
+    if today.month >= grant_start_month:
+        start_date = date(today.year, grant_start_month, grant_start_day)
     else:
-        return "Not Assessed"
+        start_date = date(today.year - 1, grant_start_month, grant_start_day)
+    return start_date
 
-
-def get_current_date_minus_one_year():
-    now = datetime.now()
-    return date(now.year -1, now.month, now.day)
-
-# DEPRECATION NOTE
-# The original idea was  that the default "Assignments
-# after date"  will always  be the current  grant year
-# start date,  but then  this turned out  to be  a bad
-# idea  as  assignments  don't simply  vanish  when  a
-# new  grant year  starts.  Still, the  list needs  to
-# be  limited,  so  a  compromise  was  made  to  show
-# assignments 1 year back.
-
-def get_current_grant_year_startdate():
-    now = datetime.now()
-    grant_year_start = date(now.year, 10, 1)
-
-    if grant_year_start < now.date():
-        return grant_year_start
-    else:
-        return date(now.year - 1, 10, 1)
-
-
-# TODO Replace `sip1845` prefixes with `ab2480`
-#          AND
-#      Change `sip_plan_id` foreign key in `lynx_sip1854note` table
-#      (plus also the table names with that prefix...)
-#
-#      `lynx_sipnote`  and `lynx_sip1845note`  both have  a
-#      foreign key  called `sip_plan_id`  but it  should be
-#      `ab2480_plan_id`  to make  relationships  in the  DB
-#      unambiguous (even if it is more work in the app).
-#
-#     NOTE Why `ab2480_plan_id` and not `sip1854_plan_id`?
-#
-#          Because the `sip1854` prefix  has been a mistake all
-#          along.  The "ILP"  program is  an unofficial  name
-#          using a mnemonic to make  it easier to remember that
-#          clients in the  AB2480 have to be between  18 and 54
-#          years  of age.  (It doesn't  help that  even in  the
-#          official forms it is sometimes referred to as "Under
-#          55 7-OB" or simply just as "7-OB" program...)
 @login_required
 def oib_assignment_list(request):
     # import pdb; pdb.set_trace()
@@ -2124,6 +1725,7 @@ def oib_assignment_list_for_client(request, contact_id):
     contact = lm.Contact.objects.filter(pk=contact_id).first()
     # import pdb; pdb.set_trace()
     return render(request, 'lynx/assignment_detail.html', {'instructor_list': instructor_list, "contact_id": contact_id, 'contact': contact})
+
 ####################################################
 # OIB RE-WRITE                                     #
 ####################################################
@@ -2633,6 +2235,7 @@ def oib_plan_list(request, contact_id):
     return render(request, "lynx/oib/oib_plan_list.html", {
         "client": client,
         "plans": plans,
+        "program": request.GET.get('program')
     })
 
 def _get_plans(client):
