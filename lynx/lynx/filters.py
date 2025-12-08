@@ -86,7 +86,7 @@ class ContactFilter(django_filters.FilterSet):
     )
     program = django_filters.ModelChoiceFilter(
         field_name='programs',
-        queryset=lm.Program.objects.filter(is_oib=True).order_by('program'),
+        queryset=lm.Program.objects.order_by('program'),
         to_field_name='id',
         label='Program',
     )

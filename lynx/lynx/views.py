@@ -1533,34 +1533,41 @@ def contact_filter(request):
     """
     Filter Contacts by intake dates, age group, email/county/phone substrings,
     active flag and program membership.
+
+    Behavior:
+    - initial link click (no GET params) shows the form pre-filled with sensible defaults
+      but does NOT apply any filters or load results.
+    - when the user submits the form (GET with params) the filters are applied and
+      results are returned.
     """
-    # default intake_after -> current grant year start
+    qs_base = lm.Contact.objects.all().order_by('last_name', 'first_name')
+
     if request.GET:
-        f = lfi.ContactFilter(request.GET, queryset=lm.Contact.objects.all().order_by('last_name', 'first_name'))
+        # apply user-supplied filters
+        f = lfi.ContactFilter(request.GET, queryset=qs_base)
+        qs = f.qs.select_related().prefetch_related('programs', 'email_set', 'address_set', 'phone_set').distinct()
+
+        clients = []
+        for c in qs:
+            clients.append({
+                'id': c.id,
+                'full_name': f"{c.last_name}, {c.first_name}",
+                'first_name': c.first_name,
+                'last_name': c.last_name,
+                'email': c.email_set.first().email if c.email_set.exists() else '',
+                'phone': c.phone_set.first().phone if c.phone_set.exists() else '',
+                'county': c.address_set.first().county if c.address_set.exists() else '',
+                'active': c.active,
+                'programs': ", ".join([p.program for p in c.programs.all()]),
+            })
     else:
-        initial = {
+        # initial page load: show form with defaults but DO NOT filter / load results
+        f = lfi.ContactFilter(data=None, queryset=qs_base)
+        f.form.initial.update({
             'intake_after': grant_year_start_date(),
             'is_active': True,
-        }
-        f = lfi.ContactFilter(initial, queryset=lm.Contact.objects.all().order_by('last_name', 'first_name'))
-
-    # annotate/prefetch to reduce per-row queries in template
-    qs = f.qs.select_related().prefetch_related('programs', 'email_set', 'address_set', 'phone_set').distinct()
-
-    # build condensed results for simple template consumption (optional)
-    clients = []
-    for c in qs:
-        clients.append({
-            'id': c.id,
-            'full_name': f"{c.last_name}, {c.first_name}",
-            'first_name': c.first_name,
-            'last_name': c.last_name,
-            'email': c.email_set.first().email if c.email_set.exists() else '',
-            'phone': c.phone_set.first().phone if c.phone_set.exists() else '',
-            'county': c.address_set.first().county if c.address_set.exists() else '',
-            'active': c.active,
-            'programs': ", ".join([p.program for p in c.programs.all()]),
         })
+        clients = []  # no results until user submits
 
     return render(request, 'lynx/contact/contact_filter.html', {
         'filter': f,
