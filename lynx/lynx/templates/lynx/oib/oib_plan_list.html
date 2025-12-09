@@ -50,10 +50,6 @@
             <span class="text-muted">None recorded</span>
         {% endif %}
         </div>
-
-        <div class="mt-2">
-          <a href="{% url 'lynx:oib_plan_show' client.id program_plan.program program_plan.grant_year program_plan.service_delivery_type_id %}">View events</a>
-        </div>
       </div>
     {% empty %}
       <p>No plans for this client yet.</p>
