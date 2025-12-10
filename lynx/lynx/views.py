@@ -948,28 +948,65 @@ class IntakeBirthDateConfirmView(LoginRequiredMixin, TemplateView):
             new_birth_date = date.fromisoformat(pending['new_birth_date'])
             violating_program_codes = {v['program'] for v in pending['violations']}
             today = date.today()
-            memberships = (
-                intake.contact.contactprogram_set
-                .filter(end_date__isnull=True, program__program__in=violating_program_codes)
-                .select_related('program')
-            )
-            # Bulk end offending memberships to avoid running model.full_clean() on each instance
+
+            # End offending active memberships (bulk update)
             memberships_qs = (
                 intake.contact.contactprogram_set
                 .filter(end_date__isnull=True, program__program__in=violating_program_codes)
                 .select_related('program')
             )
-            program_names = list(memberships_qs.values_list('program__program', flat=True))
+            ended_program_names = list(memberships_qs.values_list('program__program', flat=True))
             updated_count = memberships_qs.update(end_date=today)
             if updated_count:
                 messages.warning(
                     request,
-                    "Automatically ended program membership(s) due to DOB / age mismatch: " + ", ".join(program_names)
+                    "Automatically ended program membership(s) due to DOB / age mismatch: " + ", ".join(ended_program_names)
                 )
 
+            # Persist new DOB before creating any new ContactProgram rows (so validation can find the DOB)
             intake.birth_date = new_birth_date
             lm.Intake.objects.filter(pk=intake.pk).update(birth_date=new_birth_date)
 
+            # For ended OIB programs, create age-appropriate OIB membership(s) if applicable.
+            # Example: leaving ILP at age 55 -> create SIP membership if that program matches the new age.
+            added_programs = []
+            for ended_code in ended_program_names:
+                try:
+                    ended_prog = lm.Program.objects.get(program=ended_code)
+                except lm.Program.DoesNotExist:
+                    continue
+
+                # only consider OIB programs for automatic re-assignment
+                if not ended_prog.is_oib:
+                    continue
+
+                # compute client's age on today using the new DOB
+                age_on_today = None
+                if new_birth_date:
+                    age_on_today = today.year - new_birth_date.year - ((today.month, today.day) < (new_birth_date.month, new_birth_date.day))
+
+                # find the age-appropriate OIB program for that age
+                if age_on_today is not None:
+                    candidate = lm.Program.get_age_appropriate_oib_program(age_on_today)
+                    if candidate and candidate.program != ended_code:
+                        # don't create duplicate active membership
+                        exists = intake.contact.contactprogram_set.filter(program=candidate, end_date__isnull=True).exists()
+                        if not exists:
+                            lm.ContactProgram.objects.create(
+                                contact=intake.contact,
+                                program=candidate,
+                                start_date=today,
+                                end_date=None
+                            )
+                            added_programs.append(candidate.program)
+
+            if added_programs:
+                messages.info(
+                    request,
+                    "Automatically started membership(s): " + ", ".join(added_programs)
+                )
+
+            # cleanup and return to client page
             request.session.pop(session_key, None)
             return redirect('lynx:contact_show', pk=intake.contact_id)
 
