@@ -37,26 +37,3 @@ def program_age_violations(contact, proposed_birth_date):
                 'contactprogram_id': cp.pk,
             })
     return violations
-
-def age_group_case_sql():
-    """
-    Build a CASE ... END snippet that mirrors AGE_GROUP_BOUNDS.
-    Compute age against CURRENT_DATE and birth_date only (no intake_date).
-    """
-    lines = []
-    lines.append("CASE")
-    lines.append("  WHEN i.birth_date IS NULL THEN NULL")
-    # compute age via date_part('year', age(CURRENT_DATE, i.birth_date))
-    age_expr = "date_part('year', age(CURRENT_DATE, i.birth_date))"
-
-    for min_a, max_a, label in lm.AGE_GROUP_BOUNDS:
-        if min_a is None:
-            cond = f"{age_expr} < {max_a + 1}"
-        elif max_a is None:
-            cond = f"{age_expr} >= {min_a}"
-        else:
-            cond = f"{age_expr} BETWEEN {min_a} AND {max_a}"
-        lines.append(f"  WHEN {cond} THEN '{label}'")
-
-    lines.append("END")
-    return "\n               ".join(lines)

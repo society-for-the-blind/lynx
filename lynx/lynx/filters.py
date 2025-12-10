@@ -60,6 +60,24 @@ class ContactFilter(django_filters.FilterSet):
         widget=forms.SelectDateWidget(years=list(range(1900, 2100))),
         label='Intake after'
     )
+    # Exact intake date (single date)
+    intake_date = django_filters.DateFilter(
+        field_name='intake__intake_date',
+        lookup_expr='exact',
+        widget=forms.SelectDateWidget(years=list(range(1900, 2100))),
+        label='Intake date'
+    )
+    # Name substring filters
+    first_name = django_filters.CharFilter(
+        field_name='first_name',
+        lookup_expr='icontains',
+        label='First name contains'
+    )
+    last_name = django_filters.CharFilter(
+        field_name='last_name',
+        lookup_expr='icontains',
+        label='Last name contains'
+    )
     age_group = django_filters.ChoiceFilter(
         choices=AGE_GROUP_CHOICES,
         method='filter_age_group',

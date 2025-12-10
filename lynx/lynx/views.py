@@ -1564,7 +1564,7 @@ def contact_filter(request):
         # initial page load: show form with defaults but DO NOT filter / load results
         f = lfi.ContactFilter(data=None, queryset=qs_base)
         f.form.initial.update({
-            'intake_after': grant_year_start_date(),
+            # 'intake_after': grant_year_start_date(),
             'is_active': True,
         })
         clients = []  # no results until user submits
