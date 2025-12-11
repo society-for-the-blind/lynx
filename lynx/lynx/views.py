@@ -2301,7 +2301,13 @@ def oib_service_events_per_client_per_program(request, contact_id, program):
     events = []
     for plan in plans:
         if plan.get('program') == program:
-            events.extend(plan.get('service_events', []))
+            # attach plan metadata to each event so template can link to the exact virtual plan
+            for ev in plan.get('service_events', []):
+                setattr(ev, 'plan_grant_year', plan.get('grant_year'))
+                setattr(ev, 'plan_service_delivery_type_id', plan.get('service_delivery_type_id'))
+                setattr(ev, 'plan_token', plan.get('plan_token'))
+                setattr(ev, 'plan_program', plan.get('program'))
+                events.append(ev)
     # order newest first
     events.sort(key=lambda e: (getattr(e, 'date', None) or date.min, getattr(e, 'id', 0)), reverse=True)
 

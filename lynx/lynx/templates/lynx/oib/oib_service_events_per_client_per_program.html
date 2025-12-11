@@ -1,10 +1,13 @@
 {% extends 'lynx/base.html' %}
+{% load time_convert %}
+
 {% block content %}
   <h1>{{ client.first_name }} {{ client.last_name }} — {{ program }} service events</h1>
 
   {% if not service_events %}
     <p>No {{ program }} service events found for this client.</p>
   {% else %}
+    <!-- Compact table with View + Edit per event -->
     <table class="table table-sm">
       <thead>
         <tr><th>Date</th><th>Plan type</th><th>Note</th><th></th></tr>
@@ -14,12 +17,88 @@
           <tr>
             <td>{{ ev.date }}</td>
             <td>{{ ev.oib_service_delivery_type.oib_service_delivery_type }}</td>
-            <td>{{ ev.note|truncatechars:120 }}</td>
-            <td><a class="btn btn-sm btn-outline-primary" href="{% url 'lynx:oib_service_event_show' ev.id %}">View</a></td>
+            <td>
+              <span aria-hidden="true">{{ ev.note|truncatechars:77 }}</span>
+              <span class="visually-hidden">{{ ev.note }}</span>
+            </td>
+            <td class="text-nowrap">
+              <a class="btn btn-sm btn-outline-primary" href="{% url 'lynx:oib_service_event_show' ev.id %}">View</a>
+              <a class="btn btn-sm btn-outline-secondary" href="{% url 'lynx:oib_service_event_edit' ev.id %}">Edit</a>
+            </td>
           </tr>
         {% endfor %}
       </tbody>
     </table>
+
+    <hr />
+
+    <!-- Verbose reverse-chronological listing -->
+    <div class="oib-verbose-list">
+      {% for ev in service_events %}
+        <div class="card mb-3">
+          <div class="card-body">
+            <div class="d-flex justify-content-between align-items-start">
+              <div>
+                <strong>{{ ev.date }}</strong> — {{ ev.oib_service_delivery_type.oib_service_delivery_type }}
+              </div>
+              <div class="btn-group">
+                <a class="btn btn-sm btn-outline-primary" href="{% url 'lynx:oib_service_event_edit' ev.id %}">Edit</a>
+                <a class="btn btn-sm btn-outline-danger" href="{% url 'lynx:oib_service_event_delete' ev.id %}">Delete</a>
+              </div>
+            </div>
+
+            <p class="mt-2 mb-1">
+              <span aria-hidden="true">{{ ev.note|truncatechars:400 }}</span>
+              <span class="visually-hidden">{{ ev.note }}</span>
+            </p>
+
+            <p class="mb-1"><strong>Instructors:</strong>
+              {% if ev.instructors.all %}
+                {% for inst in ev.instructors.all %}
+                  {{ inst.get_full_name|default:inst.username }}{% if not forloop.last %}, {% endif %}
+                {% endfor %}
+              {% else %}
+                <em>None</em>
+              {% endif %}
+            </p>
+
+            <p class="mb-1"><strong>Entered by:</strong> {{ ev.entered_by.get_full_name|default:ev.entered_by.username }}</p>
+
+            <p class="mb-1"><strong>Hours:</strong>
+              {% if ev.length %}
+                {{ ev.length }} (HH:MM:SS)
+              {% else %}
+                <em>0</em>
+              {% endif %}
+            </p>
+
+            <p class="mb-1">
+              <strong>Plan:</strong>
+              {% if ev.plan_grant_year and ev.plan_service_delivery_type_id %}
+                <a href="{% url 'lynx:oib_plan_show' client.id program ev.plan_grant_year ev.plan_service_delivery_type_id %}">{{ program }} 10/1/{{ ev.plan_grant_year }} - {{ ev.oib_service_delivery_type.oib_service_delivery_type }}</a>
+              {% else %}
+                <a href="{% url 'lynx:oib_plan_list' client.id %}?program={{ program|urlencode }}">Open plans for {{ program }}</a>
+              {% endif %}
+            </p>
+
+            <p class="mb-1">
+              <strong>Services:</strong>
+              {% with svc_list=ev.services.all %}
+                {% if svc_list %}
+                  {% for svc in svc_list %}
+                    {{ svc.long_name|default:svc.oib_service }}{% if not forloop.last %}, {% endif %}
+                  {% endfor %}
+                {% else %}
+                  <em>None</em>
+                {% endif %}
+              {% endwith %}
+              &nbsp; — &nbsp;
+              <a class="text-danger" href="{% url 'lynx:oib_service_event_delete' ev.id %}">delete note</a>
+            </p>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
   {% endif %}
 
   <p><a class="btn btn-secondary" href="{% url 'lynx:contact_show' client.id %}">Back to client</a></p>
