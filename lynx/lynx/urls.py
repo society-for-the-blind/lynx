@@ -121,6 +121,10 @@ urlpatterns = [
          views.oib_service_event_list,
          name='oib_service_event_list'
         ),
+    path('oib-service-events/<int:contact_id>/<str:program>',
+         views.oib_service_events_per_client_per_program,
+         name='oib_service_events_per_client_per_program'
+        ),
 
     # "plans" (one / client / grant year / service delivery type (aka. plan type))
     path('clients/<int:contact_id>/plans',

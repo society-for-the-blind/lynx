@@ -2288,6 +2288,29 @@ def oib_plan_list(request, contact_id):
         "program": request.GET.get('program')
     })
 
+@login_required
+def oib_service_events_per_client_per_program(request, contact_id, program):
+    """
+    Show a flat list of OIBServiceEvent rows for `contact_id` where the
+    program (as determined by client age at event) == `program`.
+    Uses _get_plans() to rely on the same program-detection logic.
+    """
+    client = get_object_or_404(lm.Contact, pk=contact_id)
+    plans = _get_plans(client)
+    # collect events for the requested program
+    events = []
+    for plan in plans:
+        if plan.get('program') == program:
+            events.extend(plan.get('service_events', []))
+    # order newest first
+    events.sort(key=lambda e: (getattr(e, 'date', None) or date.min, getattr(e, 'id', 0)), reverse=True)
+
+    return render(request, "lynx/oib/oib_service_events_per_client_per_program.html", {
+        "client": client,
+        "program": program,
+        "service_events": events,
+    })
+
 def _get_plans(client):
     service_events_qs = lm.OIBServiceEvent.for_client_with_grant_year(client.id)
 
@@ -2329,6 +2352,7 @@ def _get_plans(client):
             'outcomes': otc_tuples,
             'service_names': sorted(service_names, key=str.lower),
             'plan_token': plan_token,
+            'service_events': service_events,
         })
 
     return plans

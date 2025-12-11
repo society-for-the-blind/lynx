@@ -53,6 +53,11 @@
                      onclick="location.href='{% url 'lynx:oib_plan_list' object.id %}?program={{ program|urlencode }}';"
                      value="{{ program }} Plans" />
     {% endfor %}
+    {% for program in oib_programs %}
+        <input type="button" class="btn btn-success" aria-label="{{ program }} Events"
+               onclick="location.href='{% url 'lynx:oib_service_events_per_client_per_program' object.id program %}';"
+               value="View {{ program }} Notes" />
+    {% endfor %}
     <!--
     <a class="btn btn-success" aria-label="SIP Plans" href="/lynx/sipplans/{{ object.id }}">SIP Plans</a>
     <a class="btn btn-success" aria-label="SIP Notes" href="/lynx/sipnotes/{{ object.id }}">SIP Notes</a>

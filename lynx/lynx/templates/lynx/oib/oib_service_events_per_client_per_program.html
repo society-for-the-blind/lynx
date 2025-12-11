@@ -1,0 +1,26 @@
+{% extends 'lynx/base.html' %}
+{% block content %}
+  <h1>{{ client.first_name }} {{ client.last_name }} — {{ program }} service events</h1>
+
+  {% if not service_events %}
+    <p>No {{ program }} service events found for this client.</p>
+  {% else %}
+    <table class="table table-sm">
+      <thead>
+        <tr><th>Date</th><th>Plan type</th><th>Note</th><th></th></tr>
+      </thead>
+      <tbody>
+        {% for ev in service_events %}
+          <tr>
+            <td>{{ ev.date }}</td>
+            <td>{{ ev.oib_service_delivery_type.oib_service_delivery_type }}</td>
+            <td>{{ ev.note|truncatechars:120 }}</td>
+            <td><a class="btn btn-sm btn-outline-primary" href="{% url 'lynx:oib_service_event_show' ev.id %}">View</a></td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% endif %}
+
+  <p><a class="btn btn-secondary" href="{% url 'lynx:contact_show' client.id %}">Back to client</a></p>
+{% endblock %}
