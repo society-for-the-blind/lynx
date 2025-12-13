@@ -10,13 +10,13 @@ div#signed_in_user span {
     font-weight: bolder;
 }
 
-.long-cells {
+/* .long-cells {
     white-space: nowrap;
     text-overflow:ellipsis;
     overflow: hidden;
     max-width:1px;
     ">";
-}
+} */
 
 .short-cells {
     white-space: nowrap;
@@ -106,3 +106,39 @@ h3 {
 }
 
 .tab { margin-left: 40px; }
+
+.visually-hidden {
+  position: absolute !important;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* preview: approx 40 characters, single-line with ellipsis */
+.note-preview {
+  display: inline-block;
+  max-width: 40ch;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  vertical-align: middle;
+}
+
+/* visible full text when expanded */
+.note-visible {
+  display: inline-block;
+  white-space: normal;
+  word-break: break-word;
+}
+
+.note-toggle {
+  padding: 0;
+  margin-left: .5rem;
+  font-size: .85rem;
+  line-height: 1;
+}

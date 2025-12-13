@@ -7,31 +7,6 @@
   {% if not service_events %}
     <p>No {{ program }} service events found for this client.</p>
   {% else %}
-    <!-- Compact table with View + Edit per event -->
-    <table class="table table-sm">
-      <thead>
-        <tr><th>Date</th><th>Plan type</th><th>Note</th><th></th></tr>
-      </thead>
-      <tbody>
-        {% for ev in service_events %}
-          <tr>
-            <td>{{ ev.date }}</td>
-            <td>{{ ev.oib_service_delivery_type.oib_service_delivery_type }}</td>
-            <td>
-              <span aria-hidden="true">{{ ev.note|truncatechars:77 }}</span>
-              <span class="visually-hidden">{{ ev.note }}</span>
-            </td>
-            <td class="text-nowrap">
-              <a class="btn btn-sm btn-outline-primary" href="{% url 'lynx:oib_service_event_show' ev.id %}">View</a>
-              <a class="btn btn-sm btn-outline-secondary" href="{% url 'lynx:oib_service_event_edit' ev.id %}">Edit</a>
-            </td>
-          </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-
-    <hr />
-
     <!-- Verbose reverse-chronological listing -->
     <div class="oib-verbose-list">
       {% for ev in service_events %}
@@ -43,13 +18,21 @@
               </div>
               <div class="btn-group">
                 <a class="btn btn-sm btn-outline-primary" href="{% url 'lynx:oib_service_event_edit' ev.id %}">Edit</a>
-                <a class="btn btn-sm btn-outline-danger" href="{% url 'lynx:oib_service_event_delete' ev.id %}">Delete</a>
+                <a class="btn btn-sm btn-outline-danger" href="{% url 'lynx:oib_service_event_delete' ev.id %}" onclick="return confirm('Delete this service event?');">Delete</a>
               </div>
             </div>
 
             <p class="mt-2 mb-1">
-              <span aria-hidden="true">{{ ev.note|truncatechars:400 }}</span>
-              <span class="visually-hidden">{{ ev.note }}</span>
+              <div class="note-container" id="note-container-verbose-{{ ev.id }}">
+                <span class="note-preview" id="note-preview-verbose-{{ ev.id }}" aria-hidden="true">{{ ev.note|truncatechars:40 }}</span>
+                <span id="note-sr-verbose-{{ ev.id }}" class="visually-hidden">{{ ev.note }}</span>
+                <span id="note-vis-verbose-{{ ev.id }}" class="note-visible visually-hidden" aria-hidden="true"></span>
+                <button type="button"
+                        class="btn btn-link note-toggle"
+                        aria-expanded="false"
+                        aria-controls="note-vis-verbose-{{ ev.id }}"
+                        data-note-id="verbose-{{ ev.id }}">Show more</button>
+              </div>
             </p>
 
             <p class="mb-1"><strong>Instructors:</strong>
@@ -75,7 +58,7 @@
             <p class="mb-1">
               <strong>Plan:</strong>
               {% if ev.plan_grant_year and ev.plan_service_delivery_type_id %}
-                <a href="{% url 'lynx:oib_plan_show' client.id program ev.plan_grant_year ev.plan_service_delivery_type_id %}">{{ program }} 10/1/{{ ev.plan_grant_year }} - {{ ev.oib_service_delivery_type.oib_service_delivery_type }}</a>
+                <a href="{% url 'lynx:oib_plan_show' client.id program ev.plan_grant_year ev.plan_service_delivery_type_id %}">Open plan 10/1/{{ ev.plan_grant_year }} - {{ ev.oib_service_delivery_type.oib_service_delivery_type }}</a>
               {% else %}
                 <a href="{% url 'lynx:oib_plan_list' client.id %}?program={{ program|urlencode }}">Open plans for {{ program }}</a>
               {% endif %}
@@ -93,13 +76,99 @@
                 {% endif %}
               {% endwith %}
               &nbsp; — &nbsp;
-              <a class="text-danger" href="{% url 'lynx:oib_service_event_delete' ev.id %}">delete note</a>
+              <a class="text-danger" href="{% url 'lynx:oib_service_event_delete' ev.id %}" onclick="return confirm('Delete note for this event?');">delete note</a>
             </p>
           </div>
         </div>
       {% endfor %}
     </div>
+
+    <hr />
+
+    <!-- Compact table with View + Edit per event -->
+    <table class="table table-sm">
+      <thead>
+        <tr><th>Date</th><th>Plan type</th><th>Note</th><th></th></tr>
+      </thead>
+      <tbody>
+        {% for ev in service_events %}
+          <tr>
+            <td>{{ ev.date }}</td>
+            <td>{{ ev.oib_service_delivery_type.oib_service_delivery_type }}</td>
+            <td>
+              <div class="note-container" id="note-container-{{ ev.id }}">
+                <!-- visually truncated preview (visible) -->
+                <span class="note-preview" id="note-preview-{{ ev.id }}" aria-hidden="true">{{ ev.note|truncatechars:40 }}</span>
+                <!-- full text for screen readers -->
+                <span id="note-sr-{{ ev.id }}" class="visually-hidden">{{ ev.note }}</span>
+                <!-- placeholder where full text will be injected when expanded -->
+                <span id="note-vis-{{ ev.id }}" class="note-visible visually-hidden" aria-hidden="true"></span>
+                <button type="button"
+                        class="btn btn-link note-toggle"
+                        aria-expanded="false"
+                        aria-controls="note-vis-{{ ev.id }}"
+                        data-note-id="{{ ev.id }}">Show more</button>
+              </div>
+            </td>
+            <td class="text-nowrap">
+              <a class="btn btn-sm btn-outline-primary" href="{% url 'lynx:oib_service_event_show' ev.id %}">View</a>
+              <a class="btn btn-sm btn-outline-secondary" href="{% url 'lynx:oib_service_event_edit' ev.id %}">Edit</a>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+
   {% endif %}
 
   <p><a class="btn btn-secondary" href="{% url 'lynx:contact_show' client.id %}">Back to client</a></p>
+
+  <script>
+    (function () {
+      function toggleNote(idKey, isVerbose) {
+        var previewId = isVerbose ? 'note-preview-verbose-' + idKey : 'note-preview-' + idKey;
+        var srId = isVerbose ? 'note-sr-verbose-' + idKey : 'note-sr-' + idKey;
+        var visId = isVerbose ? 'note-vis-verbose-' + idKey : 'note-vis-' + idKey;
+        var btnSelector = '[data-note-id="' + (isVerbose ? 'verbose-' + idKey : idKey) + '"]';
+
+        var preview = document.getElementById(previewId);
+        var sr = document.getElementById(srId);
+        var vis = document.getElementById(visId);
+        var btn = document.querySelector(btnSelector);
+
+        if (!preview || !sr || !vis || !btn) return;
+
+        var expanded = btn.getAttribute('aria-expanded') === 'true';
+        if (expanded) {
+          // collapse
+          vis.classList.add('visually-hidden');
+          vis.setAttribute('aria-hidden', 'true');
+          preview.setAttribute('aria-hidden', 'false');
+          btn.setAttribute('aria-expanded', 'false');
+          btn.textContent = 'Show more';
+        } else {
+          // expand: populate visible element from SR-only full text and show it
+          vis.textContent = sr.textContent || sr.innerText || '';
+          vis.classList.remove('visually-hidden');
+          vis.setAttribute('aria-hidden', 'false');
+          preview.setAttribute('aria-hidden', 'true');
+          btn.setAttribute('aria-expanded', 'true');
+          btn.textContent = 'Show less';
+        }
+      }
+
+      document.addEventListener('click', function (e) {
+        var t = e.target;
+        if (t && t.classList && t.classList.contains('note-toggle')) {
+          var noteId = t.getAttribute('data-note-id') || '';
+          if (noteId.indexOf('verbose-') === 0) {
+            toggleNote(noteId.replace('verbose-', ''), true);
+          } else {
+            toggleNote(noteId, false);
+          }
+        }
+      });
+    })();
+  </script>
 {% endblock %}
