@@ -64,6 +64,7 @@ jsonschema-specifications==2024.10.1
 jupyter_core==5.7.2
 keyring==25.6.0
 keyrings.alt==5.0.2
+lxml==6.0.2
 # language-selector
 # lynx @ file:///home/lynx-dev/lynx_dev_data_disk/dev/clones/slate-2/lynx
 MarkupSafe==2.1.2

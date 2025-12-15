@@ -63,6 +63,7 @@ jsonschema
 jupyter_core
 keyring
 keyrings.alt
+lxml
 # language-selector
 # lynx @ file:///home/lynx-dev/lynx_dev_data_disk/dev/clones/slate-2/lynx
 MarkupSafe
