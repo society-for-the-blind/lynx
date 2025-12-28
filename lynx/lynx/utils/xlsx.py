@@ -363,61 +363,20 @@ def dump_files_to_bytesio(files: WorkBookArchiveFilepathsWithBytes) -> BytesIO:
 
 # Example:
 # =================================================================
-# from pathlib import Path
-# from lynx.utils.xlsx_zip import load_xlsx_to_memory, list_worksheets, write_column_from_iterable, dump_files_to_bytesio
+# $ python lynx/manage.py shell
+# Python 3.10.9 (main, Dec  6 2022, 18:44:57) [GCC 11.3.0] on linux
+# Type "help", "copyright", "credits" or "license" for more information.
+# (InteractiveConsole)
 
-# files = load_xlsx_to_memory('/path/to/template.xlsx')
-# print(list_worksheets(files))            # see sheet names/paths
-# write_column_from_iterable(files, 'Sheet1', 'B4', ['Alice', 'Bob', 'Carol'])
-# bio = dump_files_to_bytesio(files)
-# response = HttpResponse(bio.read(), content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
-# response['Content-Disposition'] = 'attachment; filename="filled.xlsx"'
-# return response
+# >>> import lynx.utils.xlsx as x; template = "sftb/xlsx_templates/7-OB_Report_Data_Collection_Tool_2025.xlsx"; values = ["lofa", "vmi", "balabab"]; wbaf = x.load_xlsx_to_memory(template); print(*x.get_sheets(wbaf), sep="\n");
 
-# To try it ouf from the django shell:
-# =================================================================
-# from pathlib import Path
-# from lynx.utils.xlsx import (
-#     load_xlsx_to_memory,
-#     list_worksheets,
-#     write_column_from_iterable,
-#     write_memory_to_xlsx,
-# )
+# SheetInfo(sheet_name='PART II-PROGRAM STAFFING', rId='rId3', path=WorkBookArchiveFilepath(rel_path='xl/worksheets/sheet3.xml'), sheet_tree=SheetTree(lxml_tree=<Element {http://schemas.openxmlformats.org/spreadsheetml/2006/main}worksheet at 0x74c22a50ab40>))
+# SheetInfo(sheet_name='Data', rId='rId7', path=WorkBookArchiveFilepath(rel_path='xl/worksheets/sheet7.xml'), sheet_tree=SheetTree(lxml_tree=<Element {http://schemas.openxmlformats.org/spreadsheetml/2006/main}worksheet at 0x74c22a50ac40>))
+# SheetInfo(sheet_name='Instructions', rId='rId2', path=WorkBookArchiveFilepath(rel_path='xl/worksheets/sheet2.xml'), sheet_tree=SheetTree(lxml_tree=<Element {http://schemas.openxmlformats.org/spreadsheetml/2006/main}worksheet at 0x74c22a50ad40>))
+# SheetInfo(sheet_name='7-OB Report', rId='rId1', path=WorkBookArchiveFilepath(rel_path='xl/worksheets/sheet1.xml'), sheet_tree=SheetTree(lxml_tree=<Element {http://schemas.openxmlformats.org/spreadsheetml/2006/main}worksheet at 0x74c22a50ae40>))
+# SheetInfo(sheet_name='Counties', rId='rId6', path=WorkBookArchiveFilepath(rel_path='xl/worksheets/sheet6.xml'), sheet_tree=SheetTree(lxml_tree=<Element {http://schemas.openxmlformats.org/spreadsheetml/2006/main}worksheet at 0x74c22a50af40>))
+# SheetInfo(sheet_name='PART IV-V-SERVICES AND OUTCOMES', rId='rId5', path=WorkBookArchiveFilepath(rel_path='xl/worksheets/sheet5.xml'), sheet_tree=SheetTree(lxml_tree=<Element {http://schemas.openxmlformats.org/spreadsheetml/2006/main}worksheet at 0x74c22a50b080>))
+# SheetInfo(sheet_name='PART III-DEMOGRAPHICS', rId='rId4', path=WorkBookArchiveFilepath(rel_path='xl/worksheets/sheet4.xml'), sheet_tree=SheetTree(lxml_tree=<Element {http://schemas.openxmlformats.org/spreadsheetml/2006/main}worksheet at 0x74c22a50b180>))
 
-# template = "/path/to/your/template.xlsx"   # <-- update this
-# out_path = "/tmp/filled.xlsx"
-
-# # load workbook into memory
-# files = load_xlsx_to_memory(template)
-
-# # inspect sheets
-# for s in list_worksheets(files):
-#     print(s)   # {'name': ..., 'rId': ..., 'path': ...}
-
-# # write a column of values starting at B4 in sheet named "Sheet1"
-# values = ["Alice", "Bob", "Carol"]
-# write_column_from_iterable(files, sheet_name="Sheet1", start_cell="B4", values=values)
-
-# # save changed workbook back to disk
-# write_memory_to_xlsx(files, out_path)
-# print("Saved:", out_path)
-
-def example_usage(outfile: str = "/tmp/filled.xlsx"):
-    # import lynx.utils.xlsx as x
-    # x.get_sheets(wbaf);
-    # x.write_memory_to_xlsx(wbaf, "/tmp/fff.xlsx");
-    # x.write_column(wbaf, "rId4", x.Cell(column="A", row=17), values);
-
-    template = "sftb/xlsx_templates/7-OB_Report_Data_Collection_Tool_2025.xlsx"
-    wbaf = load_xlsx_to_memory(template)
-
-    # inspect sheets
-    print(*get_sheets(wbaf), sep="\n")
-
-    # write a column of values starting at B4 in sheet named "Sheet1"
-    values = ["lofa", "vmi", "balabab"]
-    write_column( wba_files=wbaf, sheet_rid="rId4", start_cell=Cell(column='A', row=17), values=values)
-
-    # save changed workbook back to disk
-    write_memory_to_xlsx(wbaf, outfile)
-    print("Saved:", outfile)
+# >>> _ = x.write_column( wba_files=wbaf, sheet_rid="rId4", start_cell=x.Cell(column='A', row=17), values=values);
+# >>> x.write_memory_to_xlsx(wbaf, "/tmp/fff.xlsx")
