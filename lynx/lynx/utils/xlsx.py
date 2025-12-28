@@ -3,7 +3,7 @@ import zipfile
 from io import BytesIO
 from lxml import etree
 
-from .. import kitchen_sink as lks
+from . import kitchen_sink as lks
 
 class WorkBookArchiveFilepath(NamedTuple):
     """

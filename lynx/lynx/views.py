@@ -41,13 +41,14 @@ from django.views.generic import DetailView   \
 
 import csv, logging, os, re, time
 
+from .utils import kitchen_sink as lks
+
 # lm  = lynx model
 # lfo = lynx forms
 # lfi = lynx filter
 from . import models  as lm  \
             , forms   as lfo \
-            , filters as lfi \
-            , kitchen_sink as lks
+            , filters as lfi
 
 logger = logging.getLogger(__name__)
 
