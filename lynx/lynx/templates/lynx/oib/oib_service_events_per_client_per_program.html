@@ -20,6 +20,7 @@
                 <strong>{{ ev.date }}</strong> — {{ ev.oib_service_delivery_type.oib_service_delivery_type }}
               </div>
               <div class="btn-group">
+                <a class="btn btn-sm btn-outline-primary" href="{% url 'lynx:oib_service_event_show' ev.id %}">View</a>
                 <a class="btn btn-sm btn-outline-primary" href="{% url 'lynx:oib_service_event_edit' ev.id %}">Edit</a>
                 <a class="btn btn-sm btn-outline-danger" href="{% url 'lynx:oib_service_event_delete' ev.id %}" onclick="return confirm('Delete this service event?');">Delete</a>
               </div>
@@ -116,6 +117,7 @@
             <td class="text-nowrap">
               <a class="btn btn-sm btn-outline-primary" href="{% url 'lynx:oib_service_event_show' ev.id %}">View</a>
               <a class="btn btn-sm btn-outline-secondary" href="{% url 'lynx:oib_service_event_edit' ev.id %}">Edit</a>
+              <a class="btn btn-sm btn-outline-danger" href="{% url 'lynx:oib_service_event_delete' ev.id %}" onclick="return confirm('Delete this service event?');">Delete</a>
             </td>
           </tr>
         {% endfor %}
