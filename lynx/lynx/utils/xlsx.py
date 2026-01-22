@@ -279,6 +279,10 @@ def set_cell(sheet_tree: SheetTree, cell: Cell, value: str) -> SheetTree:
     is_element_lxml = etree.SubElement(cell_lxml, f"{{{NS['main']}}}is")
     t_element_lxml = etree.SubElement(is_element_lxml, f"{{{NS['main']}}}t")
     t_element_lxml.text = value
+    # Preserve significant whitespace for values that have leading/trailing
+    # or consecutive spaces. This writes: <t xml:space="preserve">text </t>
+    if value is not None and (value != value.strip() or '  ' in value):
+      t_element_lxml.set('{http://www.w3.org/XML/1998/namespace}space', 'preserve')
 
     return SheetTree(lxml_tree=sheet_tree_lxml)
 
@@ -329,37 +333,70 @@ def write_column(
     wba_files[sheet_path] = WorkBookArchiveFileBytes(bytes=sheet_bytes)
     return wba_files
 
-def get_sheet_path_by_name(files: WorkBookArchiveFilepathsWithBytes, sheet_name: str) -> Optional[str]:
-    """
-    Return the archive path for a worksheet given its display name.
+# def get_sheet_path_by_name(files: WorkBookArchiveFilepathsWithBytes, sheet_name: str) -> Optional[str]:
+#     """
+#     Return the archive path for a worksheet given its display name.
 
-    Args:
-      files: in-memory xlsx archive dict.
-      sheet_name: worksheet display name.
+#     Args:
+#       files: in-memory xlsx archive dict.
+#       sheet_name: worksheet display name.
 
-    Returns:
-      The archive path (e.g. 'xl/worksheets/sheet1.xml') or None if not found.
-    """
-    sheets = get_sheets(files)
-    match = next((s for s in sheets if s.sheet_name == sheet_name), None)
-    return match['path'] if match else None
+#     Returns:
+#       The archive path (e.g. 'xl/worksheets/sheet1.xml') or None if not found.
+#     """
+#     sheets = get_sheets(files)
+#     match = next((s for s in sheets if s.sheet_name == sheet_name), None)
+#     return match['path'] if match else None
 
-def dump_files_to_bytesio(files: WorkBookArchiveFilepathsWithBytes) -> BytesIO:
-    """
-    Build an .xlsx archive from the in-memory files dict and return it as a BytesIO.
+# def dump_files_to_bytesio(files: WorkBookArchiveFilepathsWithBytes) -> BytesIO:
+#     """
+#     Build an .xlsx archive from the in-memory files dict and return it as a BytesIO.
 
-    Args:
-      files: in-memory xlsx archive dict.
+#     Args:
+#       files: in-memory xlsx archive dict.
 
-    Returns:
-      BytesIO positioned at start containing the .xlsx ZIP bytes.
-    """
-    bio = BytesIO()
-    with zipfile.ZipFile(bio, 'w', compression=zipfile.ZIP_DEFLATED) as zout:
-        for name, content in files.items():
-            zout.writestr(name, content)
-    bio.seek(0)
-    return bio
+#     Returns:
+#       BytesIO positioned at start containing the .xlsx ZIP bytes.
+#     """
+#     bio = BytesIO()
+#     with zipfile.ZipFile(bio, 'w', compression=zipfile.ZIP_DEFLATED) as zout:
+#         for name, content in files.items():
+#             zout.writestr(name, content)
+#     bio.seek(0)
+#     return bio
+
+def force_recalc_on_open(wba_files: WorkBookArchiveFilepathsWithBytes) -> WorkBookArchiveFilepathsWithBytes:
+  """
+  Ensure Excel will recalculate formulas on open.
+
+  Behavior:
+    - Remove `xl/calcChain.xml` if present (cached calc chain can prevent recalculation).
+    - Ensure `xl/workbook.xml` has a `<calcPr>` element with
+    `fullCalcOnLoad="1"` and `calcMode="auto"` so Excel performs a full
+    recalculation when the workbook is opened.
+
+  Returns the modified `wba_files` dict (modified in-place).
+  """
+  # 1) remove cached calcChain if present (forces Excel to rebuild it)
+  calc_chain_path = WorkBookArchiveFilepath(rel_path='xl/calcChain.xml')
+  wba_files.pop(calc_chain_path, None)
+
+  # 2) set workbook calcPr to force a full recalc on load
+  workbook_xml_path = WorkBookArchiveFilepath(rel_path='xl/workbook.xml')
+  workbook_bytes = wba_files.get(workbook_xml_path)
+  if workbook_bytes is None:
+    return wba_files
+
+  wb_el = parse_XML(workbook_bytes.bytes)
+  calcPr = wb_el.find('main:calcPr', namespaces=NS)
+  if calcPr is None:
+    from lxml import etree
+    calcPr = etree.SubElement(wb_el, f"{{{NS['main']}}}calcPr")
+  calcPr.set('fullCalcOnLoad', '1')
+  calcPr.set('calcMode', 'auto')
+
+  wba_files[workbook_xml_path] = WorkBookArchiveFileBytes(bytes=serialize_lxml_tree(wb_el))
+  return wba_files
 
 # Example:
 # =================================================================

@@ -189,20 +189,81 @@ class Contact(models.Model):
         )
         return intake.birth_date if intake else None
 
-    def maybe_age_on(self, on_date):
+    def maybe_age_on(self, on_date=None):
         dob = self.maybe_birth_date()
-        if not dob or not on_date:
+        if not dob:
             return None
+        on_date = on_date or date.today()
         return on_date.year - dob.year - ((on_date.month, on_date.day) < (dob.month, dob.day))
+
     def __str__(self):
         return '%s, %s' % (self.last_name, self.first_name)
 
     def get_absolute_url(self):
         return reverse('lynx:contact_show', kwargs={'pk': self.id})
 
+    @classmethod
+    def _current_grant_start(cls, as_of=None):
+        """Return Oct 1 of the most recent fiscal-year start <= as_of (or today)."""
+        today = as_of or date.today()
+        if today.month >= 10:
+            return date(today.year, 10, 1)
+        return date(today.year - 1, 10, 1)
+
+    @classmethod
+    def oib_services_since_grant_start_qs(cls, as_of=None):
+        """
+        Return a QuerySet (values rows) with one row per service received by clients
+        between the most recent Oct 1 (<= as_of) and as_of (or today).
+
+        Each row contains: contact id, last_name, first_name, birth_date,
+        service_date, service_id, service_name.
+        """
+        from .models import OIBServiceEvent, OIBService  # local import to avoid circulars
+        end = as_of or date.today()
+        start = cls._current_grant_start(end)
+        qs = cls.objects.filter(
+            oibserviceevent__date__gte=start,
+            oibserviceevent__date__lte=end
+        ).values(
+            'id',
+            'last_name',
+            'first_name',
+            'intake__birth_date',
+            'oibserviceevent__date',
+            'oibserviceevent__services__id',
+            'oibserviceevent__services__long_name',
+            'oibserviceevent__services__oib_service',
+        ).order_by('last_name', 'first_name', 'oibserviceevent__date')
+        return qs
+
+    def oib_service_history_since(self, as_of=None):
+        """
+        Return a list of dicts for this contact:
+          { 'service_date': date, 'service_name': name, 'service_id': id }
+        for events between the most recent Oct 1 and as_of (or today).
+        """
+        end = as_of or date.today()
+        start = self._current_grant_start(end)
+        events = (
+            OIBServiceEvent.objects
+            .filter(contacts__id=self.id, date__gte=start, date__lte=end)
+            .prefetch_related('services')
+            .order_by('date')
+        )
+        out = []
+        for ev in events:
+            for svc in ev.services.all():
+                out.append({
+                    'service_date': ev.date,
+                    'service_id': svc.id,
+                    'service_name': svc.long_name or svc.oib_service,
+                    'event_id': ev.id,
+                })
+        return out
+
     class Meta:
         ordering = ['last_name', 'first_name']
-
 class Program(models.Model):
     program = models.CharField(max_length=64, unique=True)
     long_name = models.CharField(max_length=255)
@@ -232,6 +293,9 @@ class Program(models.Model):
         Return the appropriate OIB Program for a contact of a given age - no matter if
         contact is an OIB client or not.
         """
+        if contact_age is None:
+            return None
+
         oib_programs = cls.objects.filter(is_oib=True)
         qs = oib_programs.filter(
             models.Q(min_age__lte=contact_age) | models.Q(min_age=-1),
@@ -909,9 +973,6 @@ class OIBServiceEvent(models.Model):
         return f"{self.date} {self.oib_service_delivery_type} {self.date}"
 
     def get_grant_year(self):
-        """
-        Compute the Oct-Sep fiscal year for this event's date.
-        """
         if self.date.month >= 10:
             return self.date.year
         else:
