@@ -130,8 +130,21 @@ def get_oib_clients_with_at_least_2_service_events(as_of: date | None = None) ->
     for cid, entry in list(result.items()):
         entry['service_event_count'] = len(entry.pop('_event_ids', set()))
 
-    # Keep only clients who participated in more than one distinct service event
-    result = {cid: entry for cid, entry in result.items() if entry.get('service_event_count', 0) > 1}
+    # Keep only SIP-program clients who participated in more than one distinct service event;
+    # ILP (or other programs) are not filtered by count.
+    sip_contact_ids = set(
+        lm.ContactProgram.objects.filter(
+            contact_id__in=result.keys(),
+            program__program="SIP",
+            end_date__isnull=True,
+        ).values_list('contact_id', flat=True)
+    )
+
+    result = {
+        cid: entry
+        for cid, entry in result.items()
+        if cid not in sip_contact_ids or entry.get('service_event_count', 0) > 1
+    }
 
     # Enrich `result` with the latest OIBOutcome per contact (choice text + created timestamp)
     contact_ids = list(result.keys())
