@@ -431,8 +431,8 @@ def transpose_report_data(ordered_oib_clients: OIBClientsWithReportData) -> List
 # x.write_memory_to_xlsx(wbaf_7ob, "/tmp/aaa.xlsx")
 def write_report(oib_quarter: OIBQuarter):
     report_templates = {
-        "YIB": "sftb/xlsx_templates/YIB_Report_Data_Collection_Tool_2025.xlsx",
-        "7OB": "sftb/xlsx_templates/7-OB_Report_Data_Collection_Tool_2025.xlsx",
+        "YIB": "sftb/xlsx_templates/YIB_Report_Data_Collection_Tool_2025_v2.xlsx",
+        "7OB": "sftb/xlsx_templates/7-OB_Report_Data_Collection_Tool_2025_v2.xlsx",
     }
     report_sheet_rids = {
         "demographics": "rId4",
@@ -546,15 +546,19 @@ def _get_case_open_date(one_item_list, grant_year_start):
 def _normalize_gender(one_item_list: List[any], _prop_error: str) -> str:
     db_value = one_item_list[0]
     interim_value = ""
-    g = db_value.strip().lower()
-    if not db_value:
+    # Handle None or empty values safely before calling string methods
+    if db_value is None:
         interim_value = "Did Not Self-Identify"
-    elif g == 'female':
-        interim_value = 'Female'
-    elif g == 'male':
-        interim_value = 'Male'
     else:
-        interim_value = 'Did Not Self-Identify'
+        g = str(db_value).strip().lower()
+        if not g:
+            interim_value = "Did Not Self-Identify"
+        elif g == 'female':
+            interim_value = 'Female'
+        elif g == 'male':
+            interim_value = 'Male'
+        else:
+            interim_value = 'Did Not Self-Identify'
 
     return oib_value_checker(['Female', 'Male', 'Did Not Self-Identify'], interim_value)
 
@@ -595,6 +599,10 @@ def _normalize_degree_of_visual_impairment(one_item_list: List[any], prop_error:
     interim_value = ""
     if not db_value:
         interim_value = prop_error
+    elif db_value == "Low Vision":
+        interim_value = "Legally Blind"
+    elif db_value == "Totally Blind (NP or NLP)":
+        interim_value = "Totally Blind"
     else:
         interim_value = db_value
 
@@ -613,6 +621,12 @@ def _normalize_major_cause_of_visual_impairment(model_lookups: List[any], prop_e
         else:
             interim_value = _normalize_major_cause_of_visual_impairment(model_lookups, prop_error)
     elif db_value == "Other causes of visual impairment":
+        interim_value = "Other causes"
+    elif db_value == "Other":
+        interim_value = "Other causes"
+    elif db_value == "Uveitis":
+        interim_value = "Other causes"
+    elif db_value == "Retinopathy of Prematurity(ROP)":
         interim_value = "Other causes"
     else:
         interim_value = db_value
@@ -639,6 +653,8 @@ def _normalize_residence_type(one_item_list: List[any], prop_error: str) -> str:
     interim_value = ""
     if not db_value:
         interim_value = prop_error
+    elif db_value == "Skilled Nursing Care":
+        interim_value = "Nursing Home"
     else:
         interim_value = db_value
 
@@ -655,6 +671,8 @@ def _normalize_referral_source(one_item_list: List[any], prop_error: str) -> str
     interim_value = ""
     if not db_value:
         interim_value = prop_error
+    elif db_value == "DOR":
+        interim_value = "State VR Agency"
     else:
         interim_value = db_value
 
