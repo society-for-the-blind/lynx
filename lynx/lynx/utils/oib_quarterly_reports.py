@@ -371,8 +371,9 @@ def attach_demographics(oib_clients: OIBClientsWithReportData, oib_quarter: OIBQ
         entry['residence_type'] = demographics_err_msg_wrapper(query, ['residence_type'], _normalize_residence_type, "MISSING INTAKE", "MISSING RESIDENCE INFO")
         entry['referral_source'] = demographics_err_msg_wrapper(query, ['referred_by'], _normalize_referral_source, "MISSING INTAKE", "MISSING REFERRAL SOURCE INFO")
         entry['residence_county'] = demographics_err_msg_wrapper(query, ['county'], _normalize_residence_county, "MISSING INTAKE", "MISSING ADDRESS COUNTY INFO")
-        entry['vision_screening'] = demographics_err_msg_wrapper(query, ['mental_health'], _normalize_bool, "MISSING INTAKE", "MISSING IMPAIRMENT INFO")
-        entry['vision_treatment'] = demographics_err_msg_wrapper(query, ['mental_health'], _normalize_bool, "MISSING INTAKE", "MISSING IMPAIRMENT INFO")
+        # SFTB does not provide clinical vision assessments or surgical/therapeutic treatments
+        entry['vision_screening'] = "No"
+        entry['vision_treatment'] = "No"
 
     # Return an OrderedDict sorted by the client's display name.
     return OrderedDict(sorted(new_oib_clients.items(), key=lambda kv: kv[1]['client_name']))
