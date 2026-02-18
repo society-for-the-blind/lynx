@@ -160,6 +160,7 @@ add_django_superuser:                  # {{-
 # them from id=1.
 prep:                                  # {{-
   python lynx/manage.py sqlsequencereset lynx | python lynx/manage.py dbshell
+  python lynx/manage.py sqlsequencereset auth | python lynx/manage.py dbshell
   just m collectstatic
   just m check --deploy
 # }}-
