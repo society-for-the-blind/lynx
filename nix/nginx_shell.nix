@@ -47,26 +47,6 @@
 # above  command  with `exec`  (i.e.,  `exec
 # nix-shell ...`).
 
-# > NOTE STATIC ASSETS NOT SERVED WHEN USING "sudo"
-# >
-# >      See TODO "groups & (system) users" in
-# >      `dev_shell.nix`.
-# >
-# >      Permissions. The whole project is probably
-# >      served from a  home directory, and NGINX's
-# >      `nobody`  user  does  not have  access  to
-# >      it.  For  example, files  and  directories
-# >      in  the "slate-2"  repo have  644 and  755
-# >      permissions,  respectively,  but the  home
-# >      directory has 750,  meanning that `nobody`
-# >      either  has to  be the  owner of  the home
-# >      directory  or it  has to  be in  the group
-# >      that has read rights on the home dir.
-# >
-# >      The following should help:
-# >
-# >          sudo -a -G <home-dir-allowed-group> nobody
-
 # }}- }}-
 # HOW TO MONITOR? {{- {{-
 # ====================================================
@@ -78,35 +58,70 @@
 # }}- }}-
 
 # TODO look into `nginx` package in Nixpkgs
+
 # NOTE ERRORS ON FIRST RUN {{- {{-
 #      ===================
-# There will probably be a lot of errors along the lines of:
+
+# 1. MISSING DIRECTORIES/FILES
+#    -------------------------
+#    There will probably be a lot of errors along the lines of:
 #
-#     2023/05/05 15:55:03 [emerg] 3106282#3106282: mkdir() "/var/cache/nginx/proxy" failed (13: Permission denied)
+#        2023/05/05 15:55:03 [emerg] 3106282#3106282: mkdir() "/var/cache/nginx/proxy" failed (13: Permission denied)
 #
-# This is because  (as far as I was able  to figure it
-# out) the  NGINX Nix  package has been  compiled with
-# these  hard paths  that HAVE  TO exist,  even though
-# they won't  be touched  (and some  of them  could be
-# over-ridden; e.g., error.log - see below).`
+#    This is because  (as far as I was able  to figure it
+#    out) the  NGINX Nix  package has been  compiled with
+#    these  hard paths  that HAVE  TO exist,  even though
+#    they won't  be touched  (and some  of them  could be
+#    over-ridden; e.g., error.log - see below).`
 #
-# These have done the trick thus far:
+#    These have done the trick thus far:
 #
-#     sudo mkdir -p /var/log/nginx/
-#     sudo touch /var/log/nginx/error.log
-#     sudo mkdir -p /var/cache/nginx/proxy
-#     sudo mkdir -p /var/cache/nginx/uwsgi
-#     sudo mkdir -p /var/cache/nginx/scgi
-#     sudo mkdir -p /var/cache/nginx/fastcgi
-#     sudo mkdir -p /var/cache/nginx/client_body
+#        sudo mkdir -p /var/log/nginx/
+#        sudo touch /var/log/nginx/error.log
+#        sudo mkdir -p /var/cache/nginx/proxy
+#        sudo mkdir -p /var/cache/nginx/uwsgi
+#        sudo mkdir -p /var/cache/nginx/scgi
+#        sudo mkdir -p /var/cache/nginx/fastcgi
+#        sudo mkdir -p /var/cache/nginx/client_body
 #
-#     # https://serverfault.com/questions/235154
-#     # (The user should be whoever starts NGINX.)
-#     sudo chown -R $(whoami):$(whoami) /var/{log,cache}/nginx
+#        # https://serverfault.com/questions/235154
+#        # (The user should be whoever starts NGINX.)
+#        sudo chown -R $(whoami):$(whoami) /var/{log,cache}/nginx
 #
-# As a one-liner:
+#    As a one-liner:
 #
-#     sudo mkdir -p /var/log/nginx/ && sudo touch /var/log/nginx/error.log && sudo mkdir -p /var/cache/nginx/proxy && sudo mkdir -p /var/cache/nginx/uwsgi && sudo mkdir -p /var/cache/nginx/scgi && sudo mkdir -p /var/cache/nginx/fastcgi && sudo mkdir -p /var/cache/nginx/client_body && sudo chown -R $(whoami):$(whoami) /var/{log,cache}/nginx
+#        sudo mkdir -p /var/log/nginx/ && sudo touch /var/log/nginx/error.log && sudo mkdir -p /var/cache/nginx/proxy && sudo mkdir -p /var/cache/nginx/uwsgi && sudo mkdir -p /var/cache/nginx/scgi && sudo mkdir -p /var/cache/nginx/fastcgi && sudo mkdir -p /var/cache/nginx/client_body && sudo chown -R $(whoami):$(whoami) /var/{log,cache}/nginx
+
+# 2. FIREWALL
+#    --------
+# On Azure, the ports 80 and 443 need to be opened to the private IP address of the VM by adding inbound rules:
+#
+#    310 HTTP  80  TCP Any 10.2.0.4 Allow
+#    320 HTTPS 443 TCP Any 10.2.0.4 Allow
+
+# 3. EMPTY "PAGES" WHEN CLICKING ON LINKS
+#
+# Static assets are not served because NGINX is running as "sudo", so:
+# 
+#      Permissions. The whole project is probably
+#      served from a  home directory, and NGINX's
+#      `nobody`  user  does  not have  access  to
+#      it.  For  example, files  and  directories
+#      in  the "slate-2"  repo have  644 and  755
+#      permissions,  respectively,  but the  home
+#      directory has 750,  meanning that `nobody`
+#      either  has to  be the  owner of  the home
+#      directory  or it  has to  be in  the group
+#      that has read rights on the home dir.
+# 
+#      The following should help:
+# 
+#          sudo usermod -a -G <home-dir-allowed-group> nobody
+#
+#      See TODO "groups & (system) users" in
+#      `dev_shell.nix`.
+# 
+
 # }}- }}-
 
 # OUTDATED NOTE? (2023-07-08) {{- {{-

@@ -50,6 +50,10 @@
 
    > NOTE: **HTTPS only, both for testing and in production.**
 
+   > IMPORTANT: If LYNX cannot be reached when served with NGINX,
+   >            then look into `./nix/nginx_shell.nix` and find
+   >            "NOTE ERRORS ON FIRST RUN" section  
+
    From the project root:
 
        nix-shell                                                       \
