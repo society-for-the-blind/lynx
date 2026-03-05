@@ -57,15 +57,13 @@ logger = logging.getLogger(__name__)
 def index(request):
     context = {
         "message": "Welcome to Lynx, the Client Management Tool for Society for the Blind",
-        "page_title": "LYNX Home Page",
+        "page_title": "Home Page",
     }
     return render(request, 'lynx/index.html', context)
 
 @login_required
 def reports(request):
-    context = {
-        "page_title": "Reports",
-    }
+    context = { "page_title": "Reports", }
     return render(request, 'lynx/reports.html', context)
 
 @login_required
@@ -90,7 +88,8 @@ def add_intake(request, contact_id):
             form.active = 1
             form.save()
             return HttpResponseRedirect(reverse('lynx:contact_show', args=(contact_id,)))
-    return render(request, 'lynx/intake/intake_form.html', {'form': form})
+    context = {'form': form, 'page_title': 'Add client intake'}
+    return render(request, 'lynx/intake/intake_form.html', context)
 
 @login_required
 def add_assignments(request, contact_id):
@@ -127,15 +126,19 @@ def add_assignments(request, contact_id):
 
             return HttpResponseRedirect(reverse('lynx:assignment', args=(contact_id,)))
 
-    return render( request                                          \
-                 , 'lynx/add_assignments.html'                      \
-                 , { 'form': form                                   \
-                   , 'instructors': instructors                     \
-                   , 'contact_id': contact_id                       \
-                   , 'program_options': program_options             \
-                   , 'assignment_priorities': assignment_priorities \
-                   , 'assignment_statuses': assignment_statuses     \
-                   }                                                \
+    context = \
+            { 'form': form                                   \
+            , 'page_title': 'Add SIP assignment'             \
+            , 'instructors': instructors                     \
+            , 'contact_id': contact_id                       \
+            , 'program_options': program_options             \
+            , 'assignment_priorities': assignment_priorities \
+            , 'assignment_statuses': assignment_statuses     \
+            }                                                \
+
+    return render( request                    \
+                 , 'lynx/add_assignment.html' \
+                 , context                    \
                  )
 
 @login_required
@@ -161,9 +164,8 @@ def add_emergency(request, contact_id):
                     phone_form.save()
 
             return HttpResponseRedirect(reverse('lynx:contact_show', args=(contact_id,)))
-    return render(request, 'lynx/add_emergency.html',
-                  {'phone_form': phone_form, 'form': form})
-
+    context = {'phone_form': phone_form, 'form': form, 'page_title': 'Add emergency contact'}
+    return render(request, 'lynx/add_emergency.html', context)
 
 @login_required
 def add_address(request, contact_id):
@@ -177,8 +179,8 @@ def add_address(request, contact_id):
             form.active = 1
             form.save()
             return HttpResponseRedirect(reverse('lynx:contact_show', args=(contact_id,)))
-    return render(request, 'lynx/add_address.html', {'form': form})
-
+    context = {'form': form, 'page_title': 'Add client address'}
+    return render(request, 'lynx/add_address.html', context)
 
 @login_required
 def add_email(request, contact_id):
@@ -192,8 +194,8 @@ def add_email(request, contact_id):
             form.active = 1
             form.save()
             return HttpResponseRedirect(reverse('lynx:contact_show', args=(contact_id,)))
-    return render(request, 'lynx/add_email.html', {'form': form})
-
+    context = {'form': form, 'page_title': 'Add client email'}
+    return render(request, 'lynx/add_email.html', context)
 
 @login_required
 def add_emergency_email(request, emergency_contact_id):
@@ -209,8 +211,8 @@ def add_emergency_email(request, emergency_contact_id):
             emergency = lm.EmergencyContact.objects.get(id=emergency_contact_id)
             contact_id = int(emergency.contact_id)
             return HttpResponseRedirect(reverse('lynx:contact_show', args=(contact_id,)))
-    return render(request, 'lynx/add_email.html', {'form': form})
-
+    context = {'form': form, 'page_title': 'Add emergency email'}
+    return render(request, 'lynx/add_email.html', context)
 
 @login_required
 def add_phone(request, contact_id):
@@ -224,8 +226,8 @@ def add_phone(request, contact_id):
             form.active = 1
             form.save()
             return HttpResponseRedirect(reverse('lynx:contact_show', args=(contact_id,)))
-    return render(request, 'lynx/add_phone.html', {'form': form})
-
+    context = {'form': form, 'page_title': 'Add client phone number'}
+    return render(request, 'lynx/add_phone.html', context)
 
 @login_required
 def add_emergency_phone(request, emergency_contact_id):
@@ -241,8 +243,8 @@ def add_emergency_phone(request, emergency_contact_id):
             emergency = lm.EmergencyContact.objects.get(id=emergency_contact_id)
             contact_id = int(emergency.contact_id)
             return HttpResponseRedirect(reverse('lynx:contact_show', args=(contact_id,)))
-    return render(request, 'lynx/add_phone.html', {'form': form})
-
+    context = {'form': form, 'page_title': 'Add emergency phone number'}
+    return render(request, 'lynx/add_phone.html', context)
 
 @login_required
 def add_authorization(request, contact_id):
@@ -256,8 +258,8 @@ def add_authorization(request, contact_id):
             form.active = 1
             form.save()
             return HttpResponseRedirect(reverse('lynx:authorization_detail', args=(form.pk,)))
-    return render(request, 'lynx/add_authorization.html', {'form': form})
-
+    context = {'form': form, 'page_title': 'Add authorization'}
+    return render(request, 'lynx/add_authorization.html', context)
 
 @login_required
 def add_progress_report(request, authorization_id):
@@ -274,9 +276,8 @@ def add_progress_report(request, authorization_id):
             form.user_id = request.user.id
             form.save()
             return HttpResponseRedirect(reverse('lynx:authorization_detail', args=(authorization_id,)))
-    return render(request, 'lynx/add_progress_report.html', {'form': form})
-
-
+    context = {'form': form, 'page_title': 'Add progress report'}
+    return render(request, 'lynx/add_progress_report.html', context)
 
 @login_required
 def add_lesson_note(request, authorization_id):
@@ -297,9 +298,14 @@ def add_lesson_note(request, authorization_id):
             form.user_id = request.user.id
             form.save()
             return HttpResponseRedirect(reverse('lynx:authorization_detail', args=(authorization_id,)))
-    return render(request, 'lynx/add_lesson_note.html', {'form': form, 'client': client, 'auth_type': auth_type,
-                                                         'authorization_id': authorization_id})
-
+    context = \
+        { 'form': form                         \
+        , 'page_title': 'Add lesson note'      \
+        , 'client': client                     \
+        , 'auth_type': auth_type               \
+        , 'authorization_id': authorization_id \
+        }
+    return render(request, 'lynx/add_lesson_note.html', context)
 
 @login_required
 def add_vaccination_record(request, contact_id):
@@ -312,41 +318,8 @@ def add_vaccination_record(request, contact_id):
             form.user_id = request.user.id
             form.save()
             return HttpResponseRedirect(reverse('lynx:contact_show', args=(contact_id,)))
-    return render(request, 'lynx/add_vaccine_record.html', {'form': form})
-
-
-def get_hour_validation(request, authorization_id, billed_units): #check if they are entering more hours then allowed on authorization
-    authorization = lm.Authorization.objects.get(id=authorization_id)
-    note_list = lm.LessonNote.objects.filter(authorization_id=authorization_id)
-
-    total_time = authorization.total_time
-    total_units = 0
-    for note in note_list:
-        if note.billed_units:
-            units = float(note.billed_units)
-            total_units += units
-    total_used = units_to_hours(total_units)
-    if total_used is None or len(str(total_used)) == 0:
-        total_used = 0
-
-    note_hours = units_to_hours(float(billed_units))
-    total_hours = float(total_used) + float(note_hours)
-
-    if total_hours > float(total_time):
-        return JsonResponse({"result": 'false'})
-    else:
-        return JsonResponse({"result": 'true'})
-
-
-def get_date_validation(request, authorization_id, note_date): #check if they are entering a lesson note after the authorization authorization
-    authorization = lm.Authorization.objects.get(id=authorization_id)
-    auth_date = authorization.end_date
-    auth_date = auth_date.strftime("%Y-%m-%d")
-
-    if note_date > auth_date:
-        return JsonResponse({"result": 'false'})
-    else:
-        return JsonResponse({"result": 'true'})
+    context = {'form': form, 'page_title': 'Add vaccination record'}
+    return render(request, 'lynx/add_vaccine_record.html', context)
 
 @login_required
 def contact_search(request):
@@ -364,49 +337,8 @@ def contact_search(request):
         object_list = object_list.order_by(ddmf.Lower('last_name'), ddmf.Lower('first_name'))
     else:
         object_list = None
-    return render(request, 'lynx/contact/contact_search.html', {'object_list': object_list, 'clients': clients})
-
-@login_required
-def client_advanced_result_view(request):
-    query = request.GET.get('q')
-    if query:
-        object_list = lm.Contact.objects.annotate(
-            full_name=ddmf.Concat('first_name', ddm.Value(' '), 'last_name')
-        ).annotate(
-            phone_number=ddmf.Replace('phone__phone', ddm.Value('('), ddm.Value(''))
-        ).annotate(
-            phone_number=ddmf.Replace('phone_number', ddm.Value(')'), ddm.Value(''))
-        ).annotate(
-            phone_number=ddmf.Replace('phone_number', ddm.Value('-'), ddm.Value(''))
-        ).annotate(
-            phone_number=ddmf.Replace('phone_number', ddm.Value(' '), ddm.Value(''))
-        ).annotate(
-            zip_code=ddm.F('address__zip_code')
-        ).annotate(
-            county=ddm.F('address__county')
-        ).annotate(
-            intake_date=ddm.F('intake__intake_date')
-        ).annotate(
-            email_address=ddm.F('email__email')
-        ).filter(
-            ddm.Q(full_name__icontains=query) |
-            ddm.Q(first_name__icontains=query) |
-            ddm.Q(last_name__icontains=query) |
-            ddm.Q(zip_code__icontains=query) |
-            ddm.Q(county__icontains=query) |
-            ddm.Q(phone_number__icontains=query) |
-            ddm.Q(intake_date__icontains=query) |
-            ddm.Q(email_address__icontains=query)
-        )
-
-        object_list = object_list.order_by(ddmf.Lower('last_name'), ddmf.Lower('first_name'), 'id')
-        paginator = Paginator(object_list, 20)
-        page_number = request.GET.get('page')
-        page_obj = paginator.get_page(page_number)
-    else:
-        page_obj = None
-    return render(request, 'lynx/client_advanced_search.html', {'page_obj': page_obj})
-
+    context = {'object_list': object_list, 'clients': clients, 'page_title': 'Client Search'}
+    return render(request, 'lynx/contact/contact_search.html', context)
 
 @login_required
 def progress_result_view(request):
@@ -1612,10 +1544,8 @@ def contact_filter(request):
         })
         clients = []  # no results until user submits
 
-    return render(request, 'lynx/contact/contact_filter.html', {
-        'filter': f,
-        'clients': clients,
-    })
+    context = { 'filter': f, 'clients': clients, 'page_title': 'Advanced Client Search' } 
+    return render(request, 'lynx/contact/contact_filter.html', context)
 
 @login_required
 def download(request, path):
@@ -2460,5 +2390,87 @@ def oib_plan_edit(request, contact_id, program, grant_year, service_delivery_typ
         return redirect('lynx:oib_plan_show', contact_id, program, grant_year, service_delivery_type_id)
 
     return render(request, "lynx/oib/oib_plan_show.html", opd)
+
+# TODO: 20260304_2153
+#       Soft-deprecating these for now because (1) they are not used and (2) broken,
+#       but delete at one point.
+#       ============================================================================
+# [mjtolentino] check if they are entering more hours then allowed on authorization
+# def get_hour_validation(request, authorization_id, billed_units):
+#     authorization = lm.Authorization.objects.get(id=authorization_id)
+#     note_list = lm.LessonNote.objects.filter(authorization_id=authorization_id)
+#
+#     total_time = authorization.total_time
+#     total_units = 0
+#     for note in note_list:
+#         if note.billed_units:
+#             units = float(note.billed_units)
+#             total_units += units
+#     total_used = units_to_hours(total_units)
+#     if total_used is None or len(str(total_used)) == 0:
+#         total_used = 0
+#
+#     note_hours = units_to_hours(float(billed_units))
+#     total_hours = float(total_used) + float(note_hours)
+#
+#     if total_hours > float(total_time):
+#         return JsonResponse({"result": 'false'})
+#     else:
+#         return JsonResponse({"result": 'true'})
+#
+# [mjtolentino] check if they are entering a lesson note after the authorization authorization
+# def get_date_validation(request, authorization_id, note_date):
+#     authorization = lm.Authorization.objects.get(id=authorization_id)
+#     auth_date = authorization.end_date
+#     auth_date = auth_date.strftime("%Y-%m-%d")
+#
+#     if note_date > auth_date:
+#         return JsonResponse({"result": 'false'})
+#     else:
+#         return JsonResponse({"result": 'true'})
+#
+# @login_required
+# def client_advanced_result_view(request):
+#     query = request.GET.get('q')
+#     if query:
+#         object_list = lm.Contact.objects.annotate(
+#             full_name=ddmf.Concat('first_name', ddm.Value(' '), 'last_name')
+#         ).annotate(
+#             phone_number=ddmf.Replace('phone__phone', ddm.Value('('), ddm.Value(''))
+#         ).annotate(
+#             phone_number=ddmf.Replace('phone_number', ddm.Value(')'), ddm.Value(''))
+#         ).annotate(
+#             phone_number=ddmf.Replace('phone_number', ddm.Value('-'), ddm.Value(''))
+#         ).annotate(
+#             phone_number=ddmf.Replace('phone_number', ddm.Value(' '), ddm.Value(''))
+#         ).annotate(
+#             zip_code=ddm.F('address__zip_code')
+#         ).annotate(
+#             county=ddm.F('address__county')
+#         ).annotate(
+#             intake_date=ddm.F('intake__intake_date')
+#         ).annotate(
+#             email_address=ddm.F('email__email')
+#         ).filter(
+#             ddm.Q(full_name__icontains=query) |
+#             ddm.Q(first_name__icontains=query) |
+#             ddm.Q(last_name__icontains=query) |
+#             ddm.Q(zip_code__icontains=query) |
+#             ddm.Q(county__icontains=query) |
+#             ddm.Q(phone_number__icontains=query) |
+#             ddm.Q(intake_date__icontains=query) |
+#             ddm.Q(email_address__icontains=query)
+#         )
+
+#         object_list = object_list.order_by(ddmf.Lower('last_name'), ddmf.Lower('first_name'), 'id')
+#         paginator = Paginator(object_list, 20)
+#         page_number = request.GET.get('page')
+#         page_obj = paginator.get_page(page_number)
+#     else:
+#         page_obj = None
+#     context = {'page_obj': page_obj, 'page_title': 'Advanced Client Search'}
+#     return render(request, 'lynx/client_advanced_search.html', context)
+
+
 
 # vim: set foldmethod=marker foldmarker={{-,}}- tabstop=4 shiftwidth=4 softtabstop=4 expandtab:

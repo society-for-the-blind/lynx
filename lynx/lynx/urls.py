@@ -27,7 +27,7 @@ urlpatterns = [
     # contacts/search but this one is probably superfluous
 
 
-    path('client-advanced-search', views.client_advanced_result_view, name='client_advanced_search'),
+    # path('client-advanced-search', views.client_advanced_result_view, name='client_advanced_search'),
     path('address-edit/<int:pk>', views.AddressUpdateView.as_view(), name='address-edit'),
     path('phone-edit/<int:pk>', views.PhoneUpdateView.as_view(), name='phone-edit'),
     path('email-edit/<int:pk>', views.EmailUpdateView.as_view(), name='email-edit'),
@@ -44,7 +44,9 @@ urlpatterns = [
 
     path('authorizations/<int:client_id>', views.authorization_list_view, name='auth_list'),
     path('add-authorization/<int:contact_id>/', views.add_authorization, name='add_authorization'),
-    path('get-hour-validation/<int:authorization_id>/<int:billed_units>', views.get_hour_validation, name='get_hour_validation'),
+    # TODO See 20260304_2153
+    # path('get-hour-validation/<int:authorization_id>/<int:billed_units>', views.get_hour_validation, name='get_hour_validation'),
+    # path('get-date-validation/<int:authorization_id>/<str:note_date>', views.get_date_validation, name='get_date_validation'),
     path('add-intake/<int:contact_id>/', views.add_intake, name='add_intake'),
     path('intake/<int:pk>/confirm-birth-date/', views.IntakeBirthDateConfirmView.as_view(), name='intake_birthdate_confirm'),
     path('add-emergency/<int:contact_id>/', views.add_emergency, name='add_emergency'),
@@ -82,7 +84,6 @@ urlpatterns = [
     path('intake-note-confirm/<int:pk>/<int:client_id>', views.IntakeNoteDeleteView.as_view(), name='intake-note-delete'),
     path('lesson-note-confirm/<int:pk>/<int:auth_id>', views.LessonNoteDeleteView.as_view(), name='ln-delete'),
     path('add-lesson-note/<int:authorization_id>/', views.add_lesson_note, name='add_lesson_note'),
-    path('get-date-validation/<int:authorization_id>/<str:note_date>', views.get_date_validation, name='get_date_validation'),
     path('lesson-note/<int:pk>/', views.LessonNoteDetailView.as_view(), name='lesson_note'),
     path('lesson-note-edit/<int:pk>', views.LessonNoteUpdateView.as_view(), name='lesson-note-edit'),
     path('intake-note-edit/<int:pk>', views.IntakeNoteUpdateView.as_view(), name='intake-note-edit'),
