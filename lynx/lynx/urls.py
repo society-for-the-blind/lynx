@@ -42,12 +42,12 @@ urlpatterns = [
     #                    is not accessible.
     # So, use it to manage entities that are rarely touched? (Was meaning to write non-client contacts, but those can be managed from `clients/` as well...)
 
-    path('authorizations/<int:client_id>', views.authorization_list_view, name='auth_list'),
+    path('core_authorizations/<int:client_id>', views.authorization_list, name='core_authorization_list'),
     path('add-authorization/<int:contact_id>/', views.add_authorization, name='add_authorization'),
     # TODO See 20260304_2153
     # path('get-hour-validation/<int:authorization_id>/<int:billed_units>', views.get_hour_validation, name='get_hour_validation'),
     # path('get-date-validation/<int:authorization_id>/<str:note_date>', views.get_date_validation, name='get_date_validation'),
-    path('add-intake/<int:contact_id>/', views.add_intake, name='add_intake'),
+    path('clients/<int:contact_id>/intake/new', views.intake_add, name='intake_add'),
     path('intake/<int:pk>/confirm-birth-date/', views.IntakeBirthDateConfirmView.as_view(), name='intake_birthdate_confirm'),
     path('add-emergency/<int:contact_id>/', views.add_emergency, name='add_emergency'),
     path('add-address/<int:contact_id>/', views.add_address, name='add_address'),
@@ -80,7 +80,7 @@ urlpatterns = [
     path('download/<path:path>', views.download, name='download'),
     path('manual', views.ManualView.as_view(), name='manual'),
     path('email', views.email_update, name='email'),
-    path('reports/', views.reports, name='reports'),
+    path('reports', views.reports, name='reports'),
     path('intake-note-confirm/<int:pk>/<int:client_id>', views.IntakeNoteDeleteView.as_view(), name='intake-note-delete'),
     path('lesson-note-confirm/<int:pk>/<int:auth_id>', views.LessonNoteDeleteView.as_view(), name='ln-delete'),
     path('add-lesson-note/<int:authorization_id>/', views.add_lesson_note, name='add_lesson_note'),
@@ -92,7 +92,7 @@ urlpatterns = [
     # ASSIGNMENTS #
     ###############
     path('oib-assignments/<int:contact_id>', views.oib_assignment_list_for_client, name='oib_assignment_for_client'),
-    path('add-assignment/<int:contact_id>', views.add_assignments, name='add_assignment'),
+    path('clients/<int:contact_id>/oib-assigments/new', views.oib_assigment_add, name='oib_assignment_add'),
     path('assignment-edit/<int:pk>', views.AssignmentUpdateView.as_view(), name='assignment-edit'),
     path('assignment-confirm/<int:pk>/<int:client_id>', views.AssignmentDeleteView.as_view(), name='assignment-delete'),
     path('oib-assignments', views.oib_assignment_list, name='oib_assignment_list'),

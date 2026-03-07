@@ -67,17 +67,17 @@ def reports(request):
     return render(request, 'lynx/reports.html', context)
 
 @login_required
-def authorization_list_view(request, client_id):
+def authorization_list(request, client_id):
     authorizations = lm.Authorization.objects.filter(contact_id=client_id).order_by('-start_date')
     client = lm.Contact.objects.get(id=client_id)
     context = { 'authorizations': authorizations,
                 'client': client,
                 'page_title': 'Core Authorizations'
               }
-    return render(request, 'lynx/authorization_list.html', context)
+    return render(request, 'lynx/core/authorization_list.html', context)
 
 @login_required
-def add_intake(request, contact_id):
+def intake_add(request, contact_id):
     form = lfo.IntakeForm()
     if request.method == 'POST':
         form = lfo.IntakeForm(request.POST)
@@ -89,57 +89,7 @@ def add_intake(request, contact_id):
             form.save()
             return HttpResponseRedirect(reverse('lynx:contact_show', args=(contact_id,)))
     context = {'form': form, 'page_title': 'Add client intake'}
-    return render(request, 'lynx/intake/intake_form.html', context)
-
-@login_required
-def add_assignments(request, contact_id):
-    form = lfo.AssignmentForm()
-    # import pdb; pdb.set_trace()
-    instructors = dca.User.objects.filter(groups__name='SIP').order_by(ddmf.Lower('last_name'))
-    program_options = lm.Program.objects.filter(is_oib=True).order_by('program')
-    assignment_priorities = lm.AssignmentPriority.objects.all().order_by('name')
-    assignment_statuses = lm.AssignmentStatus.objects.all().order_by('name')
-
-    if request.method == 'POST':
-        form = lfo.AssignmentForm(request.POST)
-
-        if form.is_valid():
-            form = form.save(commit=False)
-            form.contact_id = contact_id
-            form.user_id = request.user.id
-            # assignment_status not shown in form — assign default id 1 explicitly
-            form.assignment_status_id = 1
-            form.save()
-
-            username = 'SIP Assignments <' + settings.EMAIL_HOST_USER + '>'
-            message = "You have a new Assignment by " + request.user.first_name + " with the following note: " + form.note
-            instructor = dca.User.objects.filter(pk=form.instructor_id).values('email')
-            inst_email = instructor[0]['email']
-            client_name = form.contact.first_name + " " + form.contact.last_name
-
-            send_mail(client_name, #subject
-                      message, #message
-                      username,#from email
-                      [inst_email], #recipient list
-                      fail_silently=False,
-                      )
-
-            return HttpResponseRedirect(reverse('lynx:assignment', args=(contact_id,)))
-
-    context = \
-            { 'form': form                                   \
-            , 'page_title': 'Add SIP assignment'             \
-            , 'instructors': instructors                     \
-            , 'contact_id': contact_id                       \
-            , 'program_options': program_options             \
-            , 'assignment_priorities': assignment_priorities \
-            , 'assignment_statuses': assignment_statuses     \
-            }                                                \
-
-    return render( request                    \
-                 , 'lynx/add_assignment.html' \
-                 , context                    \
-                 )
+    return render(request, 'lynx/contact/intake/intake_add.html', context)
 
 @login_required
 def add_emergency(request, contact_id):
@@ -352,8 +302,13 @@ def progress_result_view(request):
     else:
         object_list = None
         given_month = None
-    return render(request, 'lynx/monthly_progress_reports.html', {'object_list': object_list, 'givenMonth': given_month,
-                                                                  'givenYear': request.GET.get('selYear')})
+    context = \
+        { 'page_title': 'Progress Reports and Invoices for CORE Billing'
+        , 'object_list': object_list
+        , 'givenMonth': given_month
+        , 'givenYear': request.GET.get('selYear')
+        }
+    return render(request, 'lynx/monthly_progress_reports.html', context)
 
 class AuthorizationDetailView(LoginRequiredMixin, DetailView):
     model = lm.Authorization
@@ -760,7 +715,7 @@ class PhoneUpdateView(LoginRequiredMixin, UpdateView):
 
 class IntakeUpdateView(LoginRequiredMixin, UpdateView):
     model = lm.Intake
-    template_name = 'lynx/intake/intake_form.html'
+    template_name = 'lynx/contact/intake/intake_add.html'
     fields = ['intake_date', 'intake_type', 'gender', 'pronouns', 'birth_date', 'ethnicity',
               'other_ethnicity', 'income', 'first_language', 'second_language', 'other_languages', 'education',
               'living_arrangement', 'residence_type', 'performs_tasks', 'notes', 'work_history', 'veteran',
@@ -849,7 +804,7 @@ class IntakeUpdateView(LoginRequiredMixin, UpdateView):
 
 
 class IntakeBirthDateConfirmView(LoginRequiredMixin, TemplateView):
-    template_name = 'lynx/intake/intake_birthdate_confirm.html'
+    template_name = 'lynx/contact/intake/intake_birthdate_confirm.html'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -1014,22 +969,6 @@ class VaccineUpdateView(LoginRequiredMixin, UpdateView):
         form.fields['vaccine_note'].label = "Notes"
         form.fields['vaccination_date'].label = "Date"
         return form
-
-
-class AssignmentUpdateView(LoginRequiredMixin, UpdateView):
-    model = lm.Assignment
-    fields = ['program', 'priority', 'note']
-    template_name_suffix = '_edit'
-
-    def get_success_url(self):
-        return self.request.GET.get('next')
-
-
-class AssignmentDeleteView(LoginRequiredMixin, DeleteView):
-    model = lm.Assignment
-
-    def get_success_url(self):
-        return self.request.GET.get('next')
 
 class IntakeNoteDeleteView(LoginRequiredMixin, DeleteView):
     model = lm.IntakeNote
@@ -1584,6 +1523,71 @@ def grant_year_start_date():
     else:
         start_date = date(today.year - 1, grant_start_month, grant_start_day)
     return start_date
+
+# === OIB (SIP/ILP programs) ======= {{-
+@login_required
+def oib_assigment_add(request, contact_id):
+    form = lfo.AssignmentForm()
+    # import pdb; pdb.set_trace()
+    instructors = dca.User.objects.filter(groups__name='SIP').order_by(ddmf.Lower('last_name'))
+    program_options = lm.Program.objects.filter(is_oib=True).order_by('program')
+    assignment_priorities = lm.AssignmentPriority.objects.all().order_by('name')
+    assignment_statuses = lm.AssignmentStatus.objects.all().order_by('name')
+
+    if request.method == 'POST':
+        form = lfo.AssignmentForm(request.POST)
+
+        if form.is_valid():
+            form = form.save(commit=False)
+            form.contact_id = contact_id
+            form.user_id = request.user.id
+            # assignment_status not shown in form — assign default id 1 explicitly
+            form.assignment_status_id = 1
+            form.save()
+
+            username = 'SIP Assignments <' + settings.EMAIL_HOST_USER + '>'
+            message = "You have a new Assignment by " + request.user.first_name + " with the following note: " + form.note
+            instructor = dca.User.objects.filter(pk=form.instructor_id).values('email')
+            inst_email = instructor[0]['email']
+            client_name = form.contact.first_name + " " + form.contact.last_name
+
+            send_mail(client_name, #subject
+                      message, #message
+                      username,#from email
+                      [inst_email], #recipient list
+                      fail_silently=False,
+                      )
+
+            return HttpResponseRedirect(reverse('lynx:oib_assignment_for_client', args=(contact_id,)))
+
+    context = \
+            { 'form': form                                   \
+            , 'page_title': 'Add SIP assignment'             \
+            , 'instructors': instructors                     \
+            , 'contact_id': contact_id                       \
+            , 'program_options': program_options             \
+            , 'assignment_priorities': assignment_priorities \
+            , 'assignment_statuses': assignment_statuses     \
+            }                                                \
+
+    return render( request                    \
+                 , 'lynx/oib/assignment_add.html' \
+                 , context                    \
+                 )
+
+class AssignmentUpdateView(LoginRequiredMixin, UpdateView):
+    model = lm.Assignment
+    fields = ['program', 'priority', 'note']
+    template_name_suffix = '_edit'
+
+    def get_success_url(self):
+        return self.request.GET.get('next')
+
+class AssignmentDeleteView(LoginRequiredMixin, DeleteView):
+    model = lm.Assignment
+
+    def get_success_url(self):
+        return self.request.GET.get('next')
 
 @login_required
 def oib_assignment_list(request):
@@ -2390,6 +2394,7 @@ def oib_plan_edit(request, contact_id, program, grant_year, service_delivery_typ
         return redirect('lynx:oib_plan_show', contact_id, program, grant_year, service_delivery_type_id)
 
     return render(request, "lynx/oib/oib_plan_show.html", opd)
+# }}
 
 # TODO: 20260304_2153
 #       Soft-deprecating these for now because (1) they are not used and (2) broken,
