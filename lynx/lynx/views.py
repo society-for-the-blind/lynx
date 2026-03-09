@@ -61,21 +61,7 @@ def index(request):
     }
     return render(request, 'lynx/index.html', context)
 
-@login_required
-def reports(request):
-    context = { "page_title": "Reports", }
-    return render(request, 'lynx/reports.html', context)
-
-@login_required
-def authorization_list(request, client_id):
-    authorizations = lm.Authorization.objects.filter(contact_id=client_id).order_by('-start_date')
-    client = lm.Contact.objects.get(id=client_id)
-    context = { 'authorizations': authorizations,
-                'client': client,
-                'page_title': 'Core Authorizations'
-              }
-    return render(request, 'lynx/core/authorization_list.html', context)
-
+# === CONTACT (client) pages ========================================== {{-
 @login_required
 def intake_add(request, contact_id):
     form = lfo.IntakeForm()
@@ -92,7 +78,50 @@ def intake_add(request, contact_id):
     return render(request, 'lynx/contact/intake/intake_add.html', context)
 
 @login_required
-def add_emergency(request, contact_id):
+def contact_address_add(request, contact_id):
+    form = lfo.AddressForm()
+    if request.method == 'POST':
+        form = lfo.AddressForm(request.POST)
+        if form.is_valid():
+            form = form.save(commit=False)
+            form.contact_id = contact_id
+            form.user_id = request.user.id
+            form.active = 1
+            form.save()
+            return HttpResponseRedirect(reverse('lynx:contact_show', args=(contact_id,)))
+    context = {'form': form, 'page_title': 'Add client address'}
+    return render(request, 'lynx/contact/contact_address_add.html', context)
+
+@login_required
+def _add_contact_info(request, contact_id, form_class, field_name, page_title, template_name, info_id=None):
+    form = form_class()
+    if request.method == 'POST':
+        form = form_class(request.POST)
+        if form.is_valid():
+            form = form.save(commit=False)
+            if info_id:
+                setattr(form, field_name, info_id)
+            else:
+                form.contact_id = contact_id
+            form.active = 1
+            form.user_id = request.user.id
+            form.save()
+            return HttpResponseRedirect(reverse('lynx:contact_show', args=(contact_id,)))
+    context = {'form': form, 'page_title': page_title}
+    return render(request, f'lynx/contact/{template_name}.html', context)
+
+def email_add(request, contact_id, emergency_contact_id=None):
+    page_title = 'Add email for emergency contact' if emergency_contact_id else 'Add email for client'
+    return _add_contact_info(request, contact_id, lfo.EmailForm, 'emergency_contact_id', page_title, 'email_add', emergency_contact_id)
+
+def phone_add(request, contact_id, emergency_contact_id=None):
+    page_title = 'Add phone for emergency contact' if emergency_contact_id else 'Add phone for client'
+    return _add_contact_info(request, contact_id, lfo.PhoneForm, 'emergency_contact_id', page_title, 'phone_add', emergency_contact_id)
+# ===================================================================== }}-
+
+# === EMERGENCY CONTACT (client) pages ================================ {{-
+@login_required
+def emergency_contact_add(request, contact_id):
     form = lfo.EmergencyForm()
     phone_form = lfo.PhoneForm()
     if request.method == 'POST':
@@ -115,86 +144,27 @@ def add_emergency(request, contact_id):
 
             return HttpResponseRedirect(reverse('lynx:contact_show', args=(contact_id,)))
     context = {'phone_form': phone_form, 'form': form, 'page_title': 'Add emergency contact'}
-    return render(request, 'lynx/add_emergency.html', context)
+    return render(request, 'lynx/contact/emergency_contact_add.html', context)
+# ===================================================================== }}-
 
+# === CORE program ==================================================== {{-
 @login_required
-def add_address(request, contact_id):
-    form = lfo.AddressForm()
-    if request.method == 'POST':
-        form = lfo.AddressForm(request.POST)
-        if form.is_valid():
-            form = form.save(commit=False)
-            form.contact_id = contact_id
-            form.user_id = request.user.id
-            form.active = 1
-            form.save()
-            return HttpResponseRedirect(reverse('lynx:contact_show', args=(contact_id,)))
-    context = {'form': form, 'page_title': 'Add client address'}
-    return render(request, 'lynx/add_address.html', context)
+def authorization_list(request, client_id):
+    authorizations = lm.Authorization.objects.filter(contact_id=client_id).order_by('-start_date')
+    client = lm.Contact.objects.get(id=client_id)
+    context = { 'authorizations': authorizations,
+                'client': client,
+                'page_title': 'Core Authorizations'
+              }
+    return render(request, 'lynx/core/authorization_list.html', context)
+# ===================================================================== }}-
 
+# === REPORTS ========================================================= {{-
 @login_required
-def add_email(request, contact_id):
-    form = lfo.EmailForm()
-    if request.method == 'POST':
-        form = lfo.EmailForm(request.POST)
-        if form.is_valid():
-            form = form.save(commit=False)
-            form.contact_id = contact_id
-            form.user_id = request.user.id
-            form.active = 1
-            form.save()
-            return HttpResponseRedirect(reverse('lynx:contact_show', args=(contact_id,)))
-    context = {'form': form, 'page_title': 'Add client email'}
-    return render(request, 'lynx/add_email.html', context)
-
-@login_required
-def add_emergency_email(request, emergency_contact_id):
-    form = lfo.EmailForm()
-    if request.method == 'POST':
-        form = lfo.EmailForm(request.POST)
-        if form.is_valid():
-            form = form.save(commit=False)
-            form.emergency_contact_id = emergency_contact_id
-            form.active = 1
-            form.user_id = request.user.id
-            form.save()
-            emergency = lm.EmergencyContact.objects.get(id=emergency_contact_id)
-            contact_id = int(emergency.contact_id)
-            return HttpResponseRedirect(reverse('lynx:contact_show', args=(contact_id,)))
-    context = {'form': form, 'page_title': 'Add emergency email'}
-    return render(request, 'lynx/add_email.html', context)
-
-@login_required
-def add_phone(request, contact_id):
-    form = lfo.PhoneForm()
-    if request.method == 'POST':
-        form = lfo.PhoneForm(request.POST)
-        if form.is_valid():
-            form = form.save(commit=False)
-            form.contact_id = contact_id
-            form.user_id = request.user.id
-            form.active = 1
-            form.save()
-            return HttpResponseRedirect(reverse('lynx:contact_show', args=(contact_id,)))
-    context = {'form': form, 'page_title': 'Add client phone number'}
-    return render(request, 'lynx/add_phone.html', context)
-
-@login_required
-def add_emergency_phone(request, emergency_contact_id):
-    form = lfo.PhoneForm()
-    if request.method == 'POST':
-        form = lfo.PhoneForm(request.POST)
-        if form.is_valid():
-            form = form.save(commit=False)
-            form.emergency_contact_id = emergency_contact_id
-            form.user_id = request.user.id
-            form.active = 1
-            form.save()
-            emergency = lm.EmergencyContact.objects.get(id=emergency_contact_id)
-            contact_id = int(emergency.contact_id)
-            return HttpResponseRedirect(reverse('lynx:contact_show', args=(contact_id,)))
-    context = {'form': form, 'page_title': 'Add emergency phone number'}
-    return render(request, 'lynx/add_phone.html', context)
+def reports(request):
+    context = { "page_title": "Reports", }
+    return render(request, 'lynx/reports.html', context)
+# ===================================================================== }}-
 
 @login_required
 def add_authorization(request, contact_id):
@@ -650,7 +620,7 @@ class ContactFormView(LoginRequiredMixin, dvg.edit.ModelFormMixin):
             email.active = True
             email.save()
 
-        return HttpResponseRedirect(reverse('lynx:add_emergency', args=(contact_id,)))
+        return HttpResponseRedirect(reverse('lynx:emergency_contact_add', args=(contact_id,)))
 
 # For add
 class ContactCreateView(ContactFormView, dvg.CreateView):
@@ -1524,7 +1494,7 @@ def grant_year_start_date():
         start_date = date(today.year - 1, grant_start_month, grant_start_day)
     return start_date
 
-# === OIB (SIP/ILP programs) ======= {{-
+# === OIB (SIP/ILP) programs ========================================== {{-
 @login_required
 def oib_assigment_add(request, contact_id):
     form = lfo.AssignmentForm()
@@ -2394,7 +2364,7 @@ def oib_plan_edit(request, contact_id, program, grant_year, service_delivery_typ
         return redirect('lynx:oib_plan_show', contact_id, program, grant_year, service_delivery_type_id)
 
     return render(request, "lynx/oib/oib_plan_show.html", opd)
-# }}
+# ===================================================================== }}-
 
 # TODO: 20260304_2153
 #       Soft-deprecating these for now because (1) they are not used and (2) broken,

@@ -151,9 +151,9 @@
     <p class="tab">Sorry, no associated emails for this client</p>
 {% endfor %}
 {% if not request.GET.print %}
-<input type="button" class="btn btn-success" aria-label="Add Address" onclick="location.href='/lynx/add-address/{{ object.id }}/';" value="Add Address" />
-<input type="button" class="btn btn-success" aria-label="Add Phone Number" onclick="location.href='/lynx/add-phone/{{ object.id }}/';" value="Add Phone Number" />
-<input type="button" class="btn btn-success" aria-label="Add Email" onclick="location.href='/lynx/add-email/{{ object.id }}/';" value="Add Email" />
+<input type="button" class="btn btn-success" aria-label="Add Address" onclick="location.href='{% url 'lynx:contact_address_add' object.id %}';" value="Add Address" />
+<input type="button" class="btn btn-success" aria-label="Add Phone Number" onclick="location.href='{% url 'lynx:contact_phone_add' object.id %}';" value="Add Phone Number" />
+<input type="button" class="btn btn-success" aria-label="Add Email" onclick="location.href='{% url 'lynx:contact_email_add' object.id %}';" value="Add Email" />
 {% endif %}
 
 <h2>Emergency Contacts</h2>
@@ -183,13 +183,13 @@
         <p class="tab">Sorry, no associated emergency emails for this client</p>
     {% endfor %}
     {% if not request.GET.print %}
-        <a href='/lynx/emergency-contact-edit/{{ emergency.id }}'>Edit {{ emergency.name }}'s Information</a> | <a href='/lynx/add-emergency-phone/{{ emergency.id }}/'>Add Emergency Phone Number for {{ emergency.name }}</a> | <a href='/lynx/add-emergency-email/{{ emergency.id }}/'>Add Emergency Email for {{ emergency.name }}</a>
+        <a href='/lynx/emergency-contact-edit/{{ emergency.id }}'>Edit {{ emergency.name }}'s Information</a> | <a href="{% url 'lynx:emergency_contact_phone_add' object.id emergency.id %}">Add Emergency Phone Number for {{ emergency.name }}</a> | <a href="{% url 'lynx:emergency_contact_email_add' object.id emergency.id %}">Add Emergency Email for {{ emergency.name }}</a>
     {% endif %}
 {% empty %}
     <p class="tab">Sorry, no emergency contacts for this client</p>
 {% endfor %}
 <br><br>
-{% if not request.GET.print %}<input type="button" class="btn btn-success" aria-label="Edit Emergency Contact" onclick="location.href='/lynx/add-emergency/{{ object.id }}/';" value="Add Emergency Contact" />{% endif %}
+{% if not request.GET.print %}<input type="button" class="btn btn-success" aria-label="Edit Emergency Contact" onclick="location.href='{% url 'lynx:emergency_contact_add' object.id %}';" value="Add Emergency Contact" />{% endif %}
     <br><br>
 <br><hr>
 <h2>Intake Information</h2>
