@@ -35,13 +35,13 @@ urlpatterns = [
     # Even though one could use it to manage entities # (contacts, notes, service_events, etc.), but it is # mostly used for Lynx user management - but even that # is not accessible.
     # So, use it to manage entities that are rarely touched? (Was meaning to write non-client contacts, but those can be managed from `clients/` as well...)
 
-    path('core_authorizations/<int:client_id>', views.authorization_list, name='core_authorization_list'),
+    path('core/authorizations/<int:client_id>', views.authorization_list, name='core_authorization_list'),
+    path('add-authorization/<int:contact_id>/', views.add_authorization, name='add_authorization'),
 
     # ================================================================================================================
     path('address-edit/<int:pk>', views.AddressUpdateView.as_view(), name='address-edit'),
     path('phone-edit/<int:pk>', views.PhoneUpdateView.as_view(), name='phone-edit'),
     path('email-edit/<int:pk>', views.EmailUpdateView.as_view(), name='email-edit'),
-    path('add-authorization/<int:contact_id>/', views.add_authorization, name='add_authorization'),
     # TODO See 20260304_2153
     # path('get-hour-validation/<int:authorization_id>/<int:billed_units>', views.get_hour_validation, name='get_hour_validation'),
     # path('get-date-validation/<int:authorization_id>/<str:note_date>', views.get_date_validation, name='get_date_validation'),
@@ -76,14 +76,13 @@ urlpatterns = [
     path('lesson-note-edit/<int:pk>', views.LessonNoteUpdateView.as_view(), name='lesson-note-edit'),
     path('intake-note-edit/<int:pk>', views.IntakeNoteUpdateView.as_view(), name='intake-note-edit'),
 
-    ###############
-    # ASSIGNMENTS #
-    ###############
+# === ASSIGNMENTS (OIB programs only) ================================= {{-
+    path('clients/<int:contact_id>/oib/assigments/new', views.oib_assigment_add, name='oib_assignment_add'),
     path('oib-assignments/<int:contact_id>', views.oib_assignment_list_for_client, name='oib_assignment_for_client'),
-    path('clients/<int:contact_id>/oib-assigments/new', views.oib_assigment_add, name='oib_assignment_add'),
     path('assignment-edit/<int:pk>', views.AssignmentUpdateView.as_view(), name='assignment-edit'),
     path('assignment-confirm/<int:pk>/<int:client_id>', views.AssignmentDeleteView.as_view(), name='assignment-delete'),
     path('oib-assignments', views.oib_assignment_list, name='oib_assignment_list'),
+# ===================================================================== }}-
 
     ################
     # OIB RE-WRITE #
