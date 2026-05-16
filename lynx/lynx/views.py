@@ -166,6 +166,199 @@ def reports(request):
     return render(request, 'lynx/reports.html', context)
 # ===================================================================== }}-
 
+# === ASSIGNMENTS (OIB programs only) ================================= {{-
+@login_required
+def oib_assigment_add(request, contact_id):
+    form = lfo.AssignmentForm()
+    # import pdb; pdb.set_trace()
+    instructors = dca.User.objects.filter(groups__name='SIP').order_by(ddmf.Lower('last_name'))
+    program_options = lm.Program.objects.filter(is_oib=True).order_by('program')
+    assignment_priorities = lm.AssignmentPriority.objects.all().order_by('name')
+    assignment_statuses = lm.AssignmentStatus.objects.all().order_by('name')
+
+    if request.method == 'POST':
+        form = lfo.AssignmentForm(request.POST)
+
+        if form.is_valid():
+            form = form.save(commit=False)
+            form.contact_id = contact_id
+            form.user_id = request.user.id
+            # assignment_status not shown in form — assign default id 1 explicitly
+            form.assignment_status_id = 1
+            form.save()
+
+            username = 'SIP Assignments <' + settings.EMAIL_HOST_USER + '>'
+            message = "You have a new Assignment by " + request.user.first_name + " with the following note: " + form.note
+            instructor = dca.User.objects.filter(pk=form.instructor_id).values('email')
+            inst_email = instructor[0]['email']
+            client_name = form.contact.first_name + " " + form.contact.last_name
+
+            send_mail(client_name, #subject
+                      message, #message
+                      username,#from email
+                      [inst_email], #recipient list
+                      fail_silently=False,
+                      )
+
+            return HttpResponseRedirect(reverse('lynx:oib_assignment_for_client', args=(contact_id,)))
+
+    context = \
+            { 'form': form                                   \
+            , 'page_title': 'Add SIP assignment'             \
+            , 'instructors': instructors                     \
+            , 'contact_id': contact_id                       \
+            , 'program_options': program_options             \
+            , 'assignment_priorities': assignment_priorities \
+            , 'assignment_statuses': assignment_statuses     \
+            }                                                \
+
+    return render( request                    \
+                 , 'lynx/oib/assignment_add.html' \
+                 , context                    \
+                 )
+
+class AssignmentUpdateView(LoginRequiredMixin, UpdateView):
+    model = lm.Assignment
+    fields = ['program', 'priority', 'note']
+    template_name_suffix = '_edit'
+
+    def get_success_url(self):
+        return self.request.GET.get('next')
+
+class AssignmentDeleteView(LoginRequiredMixin, DeleteView):
+    model = lm.Assignment
+
+    def get_success_url(self):
+        return self.request.GET.get('next')
+
+@login_required
+def oib_assignment_list(request):
+    # import pdb; pdb.set_trace()
+    if request.method == 'GET':
+        strict = True
+
+        # The assignment  filter form  gets submitted  via GET
+        # method, but the first  assignments page load is also
+        # a  GET (naturally),  so to  set a  default date  for
+        # "Assignments  after date"  the  form submission  and
+        # initial page load have to  be discerned: if the page
+        # load input  (i.e., `requet.GET`) is empty,  then the
+        # page is being loaded the first time.
+        qs = lm.Assignment.objects.all().order_by('-assignment_date')
+
+        if request.GET:
+            # user submitted filters -> apply them
+            f = lfi.AssignmentFilter(request.GET, queryset=qs)
+            assignment_qs = f.qs
+        else:
+            # initial page load: show form prefilled but DO NOT apply defaults
+            f = lfi.AssignmentFilter(data=None, queryset=qs)
+            f.form.initial.update({
+                'assignment_date_gt': grant_year_start_date(),
+                'instructor': request.user.id,
+            })
+            assignment_qs = lm.Assignment.objects.none()
+
+        assignment_condensed = {}
+        for assignment in assignment_qs:
+            assignment_condensed[assignment.id] = {}
+
+            program_code = getattr(assignment.program, 'program', '') if assignment.program else ''
+            assignment_condensed[assignment.id]['program'] = program_code
+
+            assignment_condensed[assignment.id]['assignment_id'] = assignment.id if assignment.id is not None else ''
+            assignment_condensed[assignment.id]['assignment_date'] = assignment.assignment_date if assignment.assignment_date is not None else ''
+            assignment_condensed[assignment.id]['timestamp'] = timestamp = int(time.mktime(assignment.assignment_date.timetuple())) if assignment.assignment_date is not None else ''
+            assignment_condensed[assignment.id]['assignment_priority'] = getattr(assignment.priority, 'name', '') if assignment.priority else ''
+            assignment_condensed[assignment.id]['client_id'] = assignment.contact_id if assignment.contact_id is not None else ''
+            assignment_condensed[assignment.id]['client_first_name'] = assignment.contact.first_name if assignment.contact.first_name is not None else ''
+            assignment_condensed[assignment.id]['client_last_name'] = assignment.contact.last_name if assignment.contact.last_name is not None else ''
+            assignment_condensed[assignment.id]['note'] = assignment.note if assignment.note is not None else ''
+            assignment_condensed[assignment.id]['assigned_by_first_name'] = assignment.user.first_name if assignment.user.first_name is not None else ''
+            assignment_condensed[assignment.id]['assigned_by_last_name'] = assignment.user.last_name if assignment.user.last_name is not None else ''
+            # assignment_condensed[assignment.id]['assignment_status'] = assignment.assignment_status if assignment.assignment_status is not None else ''
+            assignment_condensed[assignment.id]['instructor_first_name'] = assignment.instructor.first_name if assignment.instructor.first_name is not None else ''
+            assignment_condensed[assignment.id]['instructor_last_name'] = assignment.instructor.last_name if assignment.instructor.last_name is not None else ''
+
+            most_recent_in_home_service_event = (
+                lm.OIBServiceEvent.objects
+                .filter(
+                    contacts__id=assignment.contact_id,
+                    oib_service_delivery_type__oib_service_delivery_type__iexact='In-home'
+                )
+                .select_related('oib_service_delivery_type')  # keep FK joins
+                .prefetch_related(
+                    # Prefetch the through-model so we also have role info if needed
+                    ddm.Prefetch(
+                        'oibserviceeventinstructor_set',
+                        queryset=lm.OIBServiceEventInstructor.objects.select_related('instructor', 'oib_service_event_instructor_role'),
+                        to_attr='instructor_roles'
+                    )
+                    # alternatively: .prefetch_related('instructors') to get User instances only
+                )
+                .order_by('-date', '-id')
+                .first()
+            )
+
+            if most_recent_in_home_service_event:
+                mrihse = most_recent_in_home_service_event
+                assignment_condensed[assignment.id]['most_recent_in_home_note_id']         = mrihse.id
+                assignment_condensed[assignment.id]['most_recent_in_home_note_date']       = mrihse.date
+                assignment_condensed[assignment.id]['most_recent_in_home_note']            = mrihse.note
+                instructors = [ir.instructor for ir in getattr(mrihse, 'instructor_roles', [])]
+                instructor_names = [f"{u.first_name} {u.last_name}".strip() for u in instructors]
+                assignment_condensed[assignment.id]['most_recent_in_home_note_instructor'] = ", ".join(instructor_names) if instructor_names else 'n/a'
+            else:
+                assignment_condensed[assignment.id]['most_recent_in_home_note_id']         = ''
+                assignment_condensed[assignment.id]['most_recent_in_home_note_date']       = ''
+                assignment_condensed[assignment.id]['most_recent_in_home_note']            = ''
+                assignment_condensed[assignment.id]['most_recent_in_home_note_instructor'] = ''
+
+            # ==========================================================
+
+            intakenotes = getattr(assignment.contact, 'related_intakenotes', [])
+            # Again, same as above, but got burned by this form a couple times
+            # intakenotes = assignment.contact.related_intakenotes
+
+            client_notes_for_assignee = [
+                note for note in intakenotes
+                if      note.user_id == assignment.instructor_id
+                    and note.created.date() >= assignment.assignment_date
+            ]
+
+            if client_notes_for_assignee:
+                # If there are any intake notes, add the date and note of the most recent one
+                most_recent_client_note_by_assignee = max(client_notes_for_assignee, key=lambda note: note.modified)
+                cn = most_recent_client_note_by_assignee
+                # import pdb; pdb.set_trace()
+                assignment_condensed[assignment.id]['intakenote_date'] = cn.modified.date()
+                assignment_condensed[assignment.id]['intakenote'] = cn.note
+
+                if cn.user:
+                    assignment_condensed[assignment.id]['intakenote_instructor'] = f'{cn.user.first_name} {cn.user.last_name}'
+                else:
+                    assignment_condensed[assignment.id]['intakenote_instructor'] = 'n/a'
+
+            else:
+                # If there are no intake notes, add empty values
+                assignment_condensed[assignment.id]['intakenote_date'] = ''
+                assignment_condensed[assignment.id]['intakenote'] = ''
+
+    else:
+        f = lfi.AssignmentFilter()
+        assignment_condensed = {}
+
+    return render(request, 'lynx/assignment_list.html', {'filter': f, 'assignment_list': assignment_condensed})
+
+@login_required
+def oib_assignment_list_for_client(request, contact_id):
+    instructor_list = lm.Assignment.objects.filter(contact_id=contact_id).order_by('-assignment_date')
+    # contact = lm.Contact.objects.get(id=contact_id).first()
+    contact = lm.Contact.objects.filter(pk=contact_id).first()
+    # import pdb; pdb.set_trace()
+    return render(request, 'lynx/assignment_detail.html', {'instructor_list': instructor_list, "contact_id": contact_id, 'contact': contact})
+# ===================================================================== }}-
+
 @login_required
 def add_authorization(request, contact_id):
     form = lfo.AuthorizationForm()
@@ -1495,196 +1688,6 @@ def grant_year_start_date():
     return start_date
 
 # === OIB (SIP/ILP) programs ========================================== {{-
-@login_required
-def oib_assigment_add(request, contact_id):
-    form = lfo.AssignmentForm()
-    # import pdb; pdb.set_trace()
-    instructors = dca.User.objects.filter(groups__name='SIP').order_by(ddmf.Lower('last_name'))
-    program_options = lm.Program.objects.filter(is_oib=True).order_by('program')
-    assignment_priorities = lm.AssignmentPriority.objects.all().order_by('name')
-    assignment_statuses = lm.AssignmentStatus.objects.all().order_by('name')
-
-    if request.method == 'POST':
-        form = lfo.AssignmentForm(request.POST)
-
-        if form.is_valid():
-            form = form.save(commit=False)
-            form.contact_id = contact_id
-            form.user_id = request.user.id
-            # assignment_status not shown in form — assign default id 1 explicitly
-            form.assignment_status_id = 1
-            form.save()
-
-            username = 'SIP Assignments <' + settings.EMAIL_HOST_USER + '>'
-            message = "You have a new Assignment by " + request.user.first_name + " with the following note: " + form.note
-            instructor = dca.User.objects.filter(pk=form.instructor_id).values('email')
-            inst_email = instructor[0]['email']
-            client_name = form.contact.first_name + " " + form.contact.last_name
-
-            send_mail(client_name, #subject
-                      message, #message
-                      username,#from email
-                      [inst_email], #recipient list
-                      fail_silently=False,
-                      )
-
-            return HttpResponseRedirect(reverse('lynx:oib_assignment_for_client', args=(contact_id,)))
-
-    context = \
-            { 'form': form                                   \
-            , 'page_title': 'Add SIP assignment'             \
-            , 'instructors': instructors                     \
-            , 'contact_id': contact_id                       \
-            , 'program_options': program_options             \
-            , 'assignment_priorities': assignment_priorities \
-            , 'assignment_statuses': assignment_statuses     \
-            }                                                \
-
-    return render( request                    \
-                 , 'lynx/oib/assignment_add.html' \
-                 , context                    \
-                 )
-
-class AssignmentUpdateView(LoginRequiredMixin, UpdateView):
-    model = lm.Assignment
-    fields = ['program', 'priority', 'note']
-    template_name_suffix = '_edit'
-
-    def get_success_url(self):
-        return self.request.GET.get('next')
-
-class AssignmentDeleteView(LoginRequiredMixin, DeleteView):
-    model = lm.Assignment
-
-    def get_success_url(self):
-        return self.request.GET.get('next')
-
-@login_required
-def oib_assignment_list(request):
-    # import pdb; pdb.set_trace()
-    if request.method == 'GET':
-        strict = True
-
-        # The assignment  filter form  gets submitted  via GET
-        # method, but the first  assignments page load is also
-        # a  GET (naturally),  so to  set a  default date  for
-        # "Assignments  after date"  the  form submission  and
-        # initial page load have to  be discerned: if the page
-        # load input  (i.e., `requet.GET`) is empty,  then the
-        # page is being loaded the first time.
-        qs = lm.Assignment.objects.all().order_by('-assignment_date')
-
-        if request.GET:
-            # user submitted filters -> apply them
-            f = lfi.AssignmentFilter(request.GET, queryset=qs)
-            assignment_qs = f.qs
-        else:
-            # initial page load: show form prefilled but DO NOT apply defaults
-            f = lfi.AssignmentFilter(data=None, queryset=qs)
-            f.form.initial.update({
-                'assignment_date_gt': grant_year_start_date(),
-                'instructor': request.user.id,
-            })
-            assignment_qs = lm.Assignment.objects.none()
-
-        assignment_condensed = {}
-        for assignment in assignment_qs:
-            assignment_condensed[assignment.id] = {}
-
-            program_code = getattr(assignment.program, 'program', '') if assignment.program else ''
-            assignment_condensed[assignment.id]['program'] = program_code
-
-            assignment_condensed[assignment.id]['assignment_id'] = assignment.id if assignment.id is not None else ''
-            assignment_condensed[assignment.id]['assignment_date'] = assignment.assignment_date if assignment.assignment_date is not None else ''
-            assignment_condensed[assignment.id]['timestamp'] = timestamp = int(time.mktime(assignment.assignment_date.timetuple())) if assignment.assignment_date is not None else ''
-            assignment_condensed[assignment.id]['assignment_priority'] = getattr(assignment.priority, 'name', '') if assignment.priority else ''
-            assignment_condensed[assignment.id]['client_id'] = assignment.contact_id if assignment.contact_id is not None else ''
-            assignment_condensed[assignment.id]['client_first_name'] = assignment.contact.first_name if assignment.contact.first_name is not None else ''
-            assignment_condensed[assignment.id]['client_last_name'] = assignment.contact.last_name if assignment.contact.last_name is not None else ''
-            assignment_condensed[assignment.id]['note'] = assignment.note if assignment.note is not None else ''
-            assignment_condensed[assignment.id]['assigned_by_first_name'] = assignment.user.first_name if assignment.user.first_name is not None else ''
-            assignment_condensed[assignment.id]['assigned_by_last_name'] = assignment.user.last_name if assignment.user.last_name is not None else ''
-            # assignment_condensed[assignment.id]['assignment_status'] = assignment.assignment_status if assignment.assignment_status is not None else ''
-            assignment_condensed[assignment.id]['instructor_first_name'] = assignment.instructor.first_name if assignment.instructor.first_name is not None else ''
-            assignment_condensed[assignment.id]['instructor_last_name'] = assignment.instructor.last_name if assignment.instructor.last_name is not None else ''
-
-            most_recent_in_home_service_event = (
-                lm.OIBServiceEvent.objects
-                .filter(
-                    contacts__id=assignment.contact_id,
-                    oib_service_delivery_type__oib_service_delivery_type__iexact='In-home'
-                )
-                .select_related('oib_service_delivery_type')  # keep FK joins
-                .prefetch_related(
-                    # Prefetch the through-model so we also have role info if needed
-                    ddm.Prefetch(
-                        'oibserviceeventinstructor_set',
-                        queryset=lm.OIBServiceEventInstructor.objects.select_related('instructor', 'oib_service_event_instructor_role'),
-                        to_attr='instructor_roles'
-                    )
-                    # alternatively: .prefetch_related('instructors') to get User instances only
-                )
-                .order_by('-date', '-id')
-                .first()
-            )
-
-            if most_recent_in_home_service_event:
-                mrihse = most_recent_in_home_service_event
-                assignment_condensed[assignment.id]['most_recent_in_home_note_id']         = mrihse.id
-                assignment_condensed[assignment.id]['most_recent_in_home_note_date']       = mrihse.date
-                assignment_condensed[assignment.id]['most_recent_in_home_note']            = mrihse.note
-                instructors = [ir.instructor for ir in getattr(mrihse, 'instructor_roles', [])]
-                instructor_names = [f"{u.first_name} {u.last_name}".strip() for u in instructors]
-                assignment_condensed[assignment.id]['most_recent_in_home_note_instructor'] = ", ".join(instructor_names) if instructor_names else 'n/a'
-            else:
-                assignment_condensed[assignment.id]['most_recent_in_home_note_id']         = ''
-                assignment_condensed[assignment.id]['most_recent_in_home_note_date']       = ''
-                assignment_condensed[assignment.id]['most_recent_in_home_note']            = ''
-                assignment_condensed[assignment.id]['most_recent_in_home_note_instructor'] = ''
-
-            # ==========================================================
-
-            intakenotes = getattr(assignment.contact, 'related_intakenotes', [])
-            # Again, same as above, but got burned by this form a couple times
-            # intakenotes = assignment.contact.related_intakenotes
-
-            client_notes_for_assignee = [
-                note for note in intakenotes
-                if      note.user_id == assignment.instructor_id
-                    and note.created.date() >= assignment.assignment_date
-            ]
-
-            if client_notes_for_assignee:
-                # If there are any intake notes, add the date and note of the most recent one
-                most_recent_client_note_by_assignee = max(client_notes_for_assignee, key=lambda note: note.modified)
-                cn = most_recent_client_note_by_assignee
-                # import pdb; pdb.set_trace()
-                assignment_condensed[assignment.id]['intakenote_date'] = cn.modified.date()
-                assignment_condensed[assignment.id]['intakenote'] = cn.note
-
-                if cn.user:
-                    assignment_condensed[assignment.id]['intakenote_instructor'] = f'{cn.user.first_name} {cn.user.last_name}'
-                else:
-                    assignment_condensed[assignment.id]['intakenote_instructor'] = 'n/a'
-
-            else:
-                # If there are no intake notes, add empty values
-                assignment_condensed[assignment.id]['intakenote_date'] = ''
-                assignment_condensed[assignment.id]['intakenote'] = ''
-
-    else:
-        f = lfi.AssignmentFilter()
-        assignment_condensed = {}
-
-    return render(request, 'lynx/assignment_list.html', {'filter': f, 'assignment_list': assignment_condensed})
-
-@login_required
-def oib_assignment_list_for_client(request, contact_id):
-    instructor_list = lm.Assignment.objects.filter(contact_id=contact_id).order_by('-assignment_date')
-    # contact = lm.Contact.objects.get(id=contact_id).first()
-    contact = lm.Contact.objects.filter(pk=contact_id).first()
-    # import pdb; pdb.set_trace()
-    return render(request, 'lynx/assignment_detail.html', {'instructor_list': instructor_list, "contact_id": contact_id, 'contact': contact})
 
 ####################################################
 # OIB RE-WRITE                                     #
