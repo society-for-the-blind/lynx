@@ -47,7 +47,7 @@
   {% endif %}
 
   {% if object.programs.all|has_any_oib %}
-        <input type="button" class="btn btn-success" aria-label="SIP/ILP Assignments" onclick="location.href='/lynx/oib-assignments/{{ object.id }}';" value="SIP/ILP Assignments" />
+        <input type="button" class="btn btn-success" aria-label="SIP/ILP Assignments" onclick="location.href='{% url 'lynx:oib_assignment_for_client' object.id %}';" value="SIP/ILP Assignments" />
     {% for program in oib_programs %}
         {% if program != None %}
             <input type="button" class="btn btn-success" aria-label="{{ program }} Plans"
@@ -114,7 +114,7 @@
             {{ address.city }}, {{ address.state }} {{ address.zip_code }}<br>
             {{ address.county }}<br>
             <!-- TODO replace input buttons with simple a hrefs as above -->
-            {% if not request.GET.print %}<input type="button" class="btn btn-primary" aria-label="Edit Address" onclick="location.href='/lynx/address-edit/{{ address.id }}';" value="Edit Address" />{% endif %}
+            {% if not request.GET.print %}<input type="button" class="btn btn-primary" aria-label="Edit Address" onclick="location.href='{% url 'lynx:address-edit' address.contact_id address.id %}';" value="Edit Address" />{% endif %}
         </p>
         {% if address.region %}<p class="tab"><strong>SIR Region:</strong> {{ address.region }}</p>{% endif %}
         {% if address.cross_streets %}<p class="tab"><strong>Cross Streets:</strong> {{ address.cross_streets }}</p>{% endif %}
@@ -131,7 +131,7 @@
         <p class="tab">
             <strong>{{ phone.phone_type }} Phone Number:</strong> {{ phone.phone }} <br>
             {% if not request.GET.print %}
-                <a href='/lynx/phone-edit/{{ phone.id }}'>Edit</a> | <a href='/lynx/phone-confirm/{{ phone.id }}/{{object.id}}'>Delete</a>
+                <a href='{% url 'lynx:phone-edit' object.id phone.id %}'>Edit</a> | <a href='{% url 'lynx:phone-delete' object.id phone.id %}'>Delete</a>
             {% endif %}
         </p>
     {% endif %}
@@ -144,7 +144,7 @@
     {% if email.active %}
         <p class="tab">
             <strong>{{ email.email_type }} Email Address:</strong> {{ email.email }} <br>
-            {% if not request.GET.print %}<input type="button" class="btn btn-primary" aria-label="Edit Email" onclick="location.href='/lynx/email-edit/{{ email.id }}';" value="Edit Email" />{% endif %}
+            {% if not request.GET.print %}<input type="button" class="btn btn-primary" aria-label="Edit Email" onclick="location.href='{% url 'lynx:email-edit' object.id email.id %}';" value="Edit Email" />{% endif %}
         </p>
     {% endif %}
 {% empty %}
@@ -165,7 +165,7 @@
             <p class="tab">
                 <strong>{{ phone.phone_type|default_if_none:"" }} Phone Number:</strong> {{ phone.phone }} <br>
                 {% if not request.GET.print %}
-                    <a href='/lynx/phone-edit/{{ phone.id }}'>Edit</a> | <a href='/lynx/phone-confirm/{{ phone.id }}/{{object.id}}'>Delete</a>
+                    <a href='{% url 'lynx:phone-edit' object.id phone.id %}'>Edit</a> | <a href='{% url 'lynx:phone-delete' object.id phone.id %}'>Delete</a>
                 {% endif %}
             </p>
         {% endif %}
@@ -176,7 +176,7 @@
         {% if email.active and email.email%}
             <p class="tab">
                 <strong>{{ email.email_type|default_if_none:"" }} Email Address:</strong> {{ email.email }} <br>
-                {% if not request.GET.print %}<input type="button" class="btn btn-primary" aria-label="Edit Email" onclick="location.href='/lynx/email-edit/{{ email.id }}';" value="Edit Email" />{% endif %}
+                {% if not request.GET.print %}<input type="button" class="btn btn-primary" aria-label="Edit Email" onclick="location.href='{% url 'lynx:email-edit' object.id email.id %}';" value="Edit Email" />{% endif %}
             </p>
         {% endif %}
     {% empty %}
@@ -276,14 +276,14 @@
                         <td>{{ vax.vaccination_date }}</td>
                         <td> {{ vax.vaccine }}</td>
                         <td> {{ vax.vaccine_note }}</td>
-                        <td><a href='/lynx/vaccine-edit/{{ vax.id }}'>Edit</a> | <a href='/lynx/vaccine-confirm/{{ vax.id }}/{{ object.id }}'>Delete</a></td>
+                        <td><a href='{% url 'lynx:vaccine-edit' object.id vax.id %}'>Edit</a> | <a href='{% url 'lynx:vaccine-delete' object.id vax.id %}'>Delete</a></td>
                     <tr>
                 {% endfor %}
             </table>
         {% else %}
             <p class="tab">Sorry, no vaccination information for this client</p>
         {% endif %}
-        {% if not request.GET.print %}<input type="button" class="btn btn-success" aria-label="Add Vaccination Record" onclick="location.href='/lynx/add-vaccination/{{ object.id }}/';" value="Add Vaccination Record" />{% endif %}
+        {% if not request.GET.print %}<input type="button" class="btn btn-success" aria-label="Add Vaccination Record" onclick="location.href='{% url 'lynx:add_vaccination_record' object.id %}';" value="Add Vaccination Record" />{% endif %}
 
     <h3>Blindness Skills/Other Information</h3>
         {% if intake.performs_tasks %}<p class="tab"><strong>Performs Tasks:</strong> {{ intake.performs_tasks }}</p>{% endif %}

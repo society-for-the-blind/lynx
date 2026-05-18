@@ -204,7 +204,7 @@ def oib_assigment_add(request, contact_id):
 
     context = \
             { 'form': form                                   \
-            , 'page_title': 'Add SIP assignment'             \
+            , 'page_title': 'Add SIP Assignment'             \
             , 'instructors': instructors                     \
             , 'contact_id': contact_id                       \
             , 'program_options': program_options             \
@@ -222,11 +222,21 @@ class AssignmentUpdateView(LoginRequiredMixin, UpdateView):
     fields = ['program', 'priority', 'note']
     template_name_suffix = '_edit'
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['page_title'] = 'Edit SIP Assignment'
+        return context
+
     def get_success_url(self):
         return self.request.GET.get('next')
 
 class AssignmentDeleteView(LoginRequiredMixin, DeleteView):
     model = lm.Assignment
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['page_title'] = 'Delete SIP Assignment'
+        return context
 
     def get_success_url(self):
         return self.request.GET.get('next')
@@ -348,7 +358,8 @@ def oib_assignment_list(request):
         f = lfi.AssignmentFilter()
         assignment_condensed = {}
 
-    return render(request, 'lynx/assignment_list.html', {'filter': f, 'assignment_list': assignment_condensed})
+    context = {'filter': f, 'assignment_list': assignment_condensed, 'page_title': 'SIP Assignments'}
+    return render(request, 'lynx/assignment_list.html', context)
 
 @login_required
 def oib_assignment_list_for_client(request, contact_id):
@@ -356,7 +367,13 @@ def oib_assignment_list_for_client(request, contact_id):
     # contact = lm.Contact.objects.get(id=contact_id).first()
     contact = lm.Contact.objects.filter(pk=contact_id).first()
     # import pdb; pdb.set_trace()
-    return render(request, 'lynx/assignment_detail.html', {'instructor_list': instructor_list, "contact_id": contact_id, 'contact': contact})
+    context = {
+        'instructor_list': instructor_list,
+        "contact_id": contact_id,
+        'contact': contact,
+        'page_title': 'SIP Assignments for ' + contact.first_name + ' ' + contact.last_name
+    }
+    return render(request, 'lynx/assignment_detail.html', context)
 # ===================================================================== }}-
 
 @login_required
@@ -828,6 +845,11 @@ class ContactUpdateView(ContactFormView, UpdateView):
         context.pop('email_form', None)
         return context
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['page_title'] = 'Edit client information'
+        return context
+
     def form_valid(self, form):
         self.object = form.save(commit=False)
         self.object.user_id = self.request.user.id
@@ -864,17 +886,30 @@ class AddressUpdateView(LoginRequiredMixin, UpdateView):
               'cross_streets', 'bad_address', 'address_notes', 'preferred_medium']
     template_name_suffix = '_edit'
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['page_title'] = 'Edit Address'
+        return context
 
 class EmailUpdateView(LoginRequiredMixin, UpdateView):
     model = lm.Email
     fields = ['email', 'email_type', 'active']
     template_name_suffix = '_edit'
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['page_title'] = 'Update email address'
+        return context
 
 class PhoneUpdateView(LoginRequiredMixin, UpdateView):
     model = lm.Phone
     fields = ['phone', 'phone_type', 'active']
     template_name_suffix = '_edit'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['page_title'] = 'Update phone number'
+        return context
 
 class IntakeUpdateView(LoginRequiredMixin, UpdateView):
     model = lm.Intake
@@ -957,7 +992,7 @@ class IntakeUpdateView(LoginRequiredMixin, UpdateView):
                     ]
                 }
                 self.request.session.modified = True
-                return redirect('lynx:intake_birthdate_confirm', pk=db_obj.pk)
+                return redirect('lynx:intake_birthdate_confirm', contact_id=db_obj.contact_id, pk=db_obj.pk)
         # No violations or DOB unchanged: save normally (includes new DOB)
         intake.save()
         return HttpResponseRedirect(intake.get_absolute_url())
@@ -966,6 +1001,11 @@ class IntakeUpdateView(LoginRequiredMixin, UpdateView):
         return self.render_to_response(self.get_context_data(form=form))
 
 
+# Only time this is used when client is member of an OIB program (SIP or
+# ILP) and DOB change would make them ineligible for that  program;  shows
+# violations and asks user to confirm auto-ending memberships.
+#
+# (used in IntakeUpdateView.form_valid's DOB change flow)
 class IntakeBirthDateConfirmView(LoginRequiredMixin, TemplateView):
     template_name = 'lynx/contact/intake/intake_birthdate_confirm.html'
 
@@ -1125,6 +1165,11 @@ class VaccineUpdateView(LoginRequiredMixin, UpdateView):
     fields = ['vaccine', 'vaccine_note', 'vaccination_date']
     template_name_suffix = '_edit'
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['page_title'] = 'Edit Vaccine Record'
+        return context
+
     def get_form(self, form_class=None):
         form = super().get_form(form_class=form_class)
         form.fields['vaccination_date'].widget = forms.SelectDateWidget(years=list(range(1900, 2100)))
@@ -1132,6 +1177,19 @@ class VaccineUpdateView(LoginRequiredMixin, UpdateView):
         form.fields['vaccine_note'].label = "Notes"
         form.fields['vaccination_date'].label = "Date"
         return form
+
+    def get_success_url(self):
+        next_url = self.request.GET.get('next')
+        if next_url:
+            return next_url
+        # try common Vaccine->contact relations
+        contact_id = getattr(self.object, 'contact_id', None)
+        if not contact_id:
+            contact = getattr(self.object, 'contact', None)
+            contact_id = contact.id if contact else None
+        if contact_id:
+            return reverse('lynx:contact_show', args=(contact_id,))
+        return reverse('lynx:index')
 
 class IntakeNoteDeleteView(LoginRequiredMixin, DeleteView):
     model = lm.IntakeNote
@@ -1185,17 +1243,36 @@ class LessonNoteDeleteView(LoginRequiredMixin, DeleteView):
 class PhoneDeleteView(LoginRequiredMixin, DeleteView):
     model = lm.Phone
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['page_title'] = 'Delete phone number'
+        return context
+
     def get_success_url(self):
-        client_id = self.kwargs['client_id']
+        client_id = self.kwargs['contact_id']
         return reverse_lazy('lynx:contact_show', kwargs={'pk': client_id})
 
 
 class VaccineDeleteView(LoginRequiredMixin, DeleteView):
     model = lm.Vaccine
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['page_title'] = 'Delete Vaccine Record'
+        return context
+
     def get_success_url(self):
-        client_id = self.kwargs['client_id']
-        return reverse_lazy('lynx:contact_show', kwargs={'pk': client_id})
+        next_url = self.request.GET.get('next')
+        if next_url:
+            return next_url
+        # try common Vaccine->contact relations
+        contact_id = getattr(self.object, 'contact_id', None)
+        if not contact_id:
+            contact = getattr(self.object, 'contact', None)
+            contact_id = contact.id if contact else None
+        if contact_id:
+            return reverse('lynx:contact_show', args=(contact_id,))
+        return reverse('lynx:index')
 
 
 class DocumentDeleteView(LoginRequiredMixin, DeleteView):
@@ -1663,19 +1740,6 @@ def download(request, path):
 class ManualView(LoginRequiredMixin, TemplateView):
     template_name = 'lynx/manual.html'
 
-
-@login_required
-def email_update(request):
-    username = settings.EMAIL_HOST_USER
-
-    send_mail("Address Changes",
-                "Did it work?",
-                username,
-                ['mjtolentino247@gmail.com'],
-                fail_silently=False,
-                )
-
-    return HttpResponse('Mail successfully sent')
 
 def grant_year_start_date():
     grant_start_month = 10  # October
