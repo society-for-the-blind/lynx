@@ -482,12 +482,12 @@ def progress_result_view(request):
     else:
         object_list = None
         given_month = None
-    context = \
-        { 'page_title': 'Progress Reports and Invoices for CORE Billing'
-        , 'object_list': object_list
-        , 'givenMonth': given_month
-        , 'givenYear': request.GET.get('selYear')
-        }
+    context = {
+         'page_title': 'Core monthly progress reports and invoices',
+         'object_list': object_list,
+         'givenMonth': given_month,
+         'givenYear': request.GET.get('selYear')
+    }
     return render(request, 'lynx/monthly_progress_reports.html', context)
 
 class AuthorizationDetailView(LoginRequiredMixin, DetailView):
@@ -498,6 +498,7 @@ class AuthorizationDetailView(LoginRequiredMixin, DetailView):
         context = super(AuthorizationDetailView, self).get_context_data(**kwargs)
         context['report_list'] = lm.ProgressReport.objects.filter(authorization_id=self.kwargs['pk'])
         context['note_list'] = lm.LessonNote.objects.filter(authorization_id=self.kwargs['pk']).order_by('-date')
+        context['page_title'] = 'Core Authorization for ' + context['authorization'].contact.first_name + ' ' + context['authorization'].contact.last_name
         notes = lm.LessonNote.objects.filter(authorization_id=self.kwargs['pk']).values()
         authorization = lm.Authorization.objects.filter(id=self.kwargs['pk']).values()
         total_units = 0
@@ -554,8 +555,14 @@ class AuthorizationDetailView(LoginRequiredMixin, DetailView):
             form.authorization_id = self.kwargs['pk']
             form.user_id = request.user.id
             form.save()
-            # TODO Remove hard coded path (see `SipNoteUpdateView.form_valid`'s return function)
-            action = "/lynx/authorization/" + str(self.kwargs['pk'])
+            action = reverse(
+                'lynx:authorization_detail',
+                kwargs={
+                    'client_id': self.kwargs.get('client_id') or getattr(self.object,
+                    'contact_id',
+                    None),
+                    'pk': self.kwargs['pk'],
+                })
             return HttpResponseRedirect(action)
 
 
@@ -782,8 +789,11 @@ class ContactDetailView(LoginRequiredMixin, DetailView):
             if upload:
                 form.description = request.FILES['document'].name
             form.save()
-            # TODO Remove hard coded path (see `SipNoteUpdateView.form_valid`'s return function)
-            action = "/lynx/clients/" + str(self.kwargs['pk'])
+            action = reverse(
+                'lynx:contact_show',
+                kwargs={
+                    'pk': self.kwargs['pk'],
+                })
             return HttpResponseRedirect(action)
 
 class ContactFormView(LoginRequiredMixin, dvg.edit.ModelFormMixin):

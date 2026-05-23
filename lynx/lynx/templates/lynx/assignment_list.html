@@ -41,7 +41,7 @@
                     <a href="/lynx/sip-plan/{{ assignment.most_recent_in_home_plan_for_assignee_plan_id }}">{{ assignment.most_recent_in_home_plan_for_assignee_plan_name }}</a>
                 </td>
                     -->
-                <td class="short-cells"><a class="client-link" href="/lynx/clients/{{ assignment.client_id }}">{{ assignment.client_last_name }}, {{ assignment.client_first_name }}</a></td>
+                <td class="short-cells"><a class="client-link" href="{% url 'lynx:contact_show' assignment.client_id %}">{{ assignment.client_last_name }}, {{ assignment.client_first_name }}</a></td>
                 <td class="short-cells">{{ assignment.program }}</td>
                 <td class="short-cells">{{ assignment.assignment_priority }}</td>
                 <td class="long-cells expandable">{{ assignment.note }}</td>
@@ -58,7 +58,7 @@
                         </a>
                     {% endif %}
                 </td>
-                <td class="long-cells expandable"><a class="client-link" href="/lynx/clients/{{ assignment.client_id }}#notes">{% if assignment.intakenote == '' %}None{% else %}{{ assignment.intakenote_date }}, {{assignment.intakenote_instructor}}, {{assignment.intakenote}}{% endif %}</a></td>
+                <td class="long-cells expandable"><a class="client-link" href="{% url 'lynx:contact_show' assignment.client_id %}">{% if assignment.intakenote == '' %}None{% else %}{{ assignment.intakenote_date }}, {{assignment.intakenote_instructor}}, {{assignment.intakenote}}{% endif %}</a></td>
 <!--                <td>{{ assignment }}</td>-->
                 <td class="short-cells">{{ assignment.assigned_by_first_name }} {{ assignment.assigned_by_last_name }}</td>
                 {% if not request.GET.instructor  %}

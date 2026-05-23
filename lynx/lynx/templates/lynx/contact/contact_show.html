@@ -316,7 +316,7 @@
 <br><br>
 {% if not request.GET.print %}
 <h3>Add New Client Note</h3>
-<form action="/lynx/clients/{{ object.id }}" method="post">
+<form action="{% url 'lynx:contact_show' object.id %}" method="post">
 <!--    <p>These notes are for high level client information. Please don't record lesson or service information here.</p>-->
     {% csrf_token %}
     {{ form.as_p }}
@@ -337,13 +337,13 @@
 </ul>
 <br>
 <h3 id="upload">Upload Files</h3>
-<form action="/lynx/clients/{{ object.id }}" method="post" enctype="multipart/form-data">
+<form action="{% url 'lynx:contact_show' object.id %}" method="post" enctype="multipart/form-data">
     {% csrf_token %}
     {{ upload_form.as_p }}
     <input type="submit" class="btn btn-success" value="Upload">
 </form>
 <br><br>
-<form action="/lynx/clients/{{ object.id }}" method="GET">
+<form action="{% url 'lynx:contact_show' object.id %}" method="GET">
   <input type="hidden" name="print" value="true" />
   <input type="submit" value="Print View" class="btn btn-primary" />
 </form>

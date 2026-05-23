@@ -6,7 +6,7 @@
     <h1>{{ page_title }}</h1>
     <h2>Core Reports</h2>
         <a href="/lynx/billing-report/" title="Core Billing Report">Core Billing Report</a></br>
-        <a href="/lynx/report-search" title="Print Monthly Invoices">Print Monthly Invoices</a></br>
+        <a href="{% url 'lynx:core_monthly_print' %}" title="Print Monthly Invoices">Print Monthly Invoices</a></br>
     <h2>SIP Reports</h2>
         <a href="/lynx/sip-demographic-report/" title="SIP Demographic Report">Monthly SIP Demographic Report</a></br>
         <a href="/lynx/sip-quarterly-report/" title="SIP Quarterly Report">SIP Quarterly Report</a></br>

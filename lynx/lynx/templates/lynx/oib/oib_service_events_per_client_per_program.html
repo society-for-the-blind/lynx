@@ -4,7 +4,7 @@
 {% block content %}
   <h1>{{ client.first_name }} {{ client.last_name }} — {{ program }} service events</h1>
 
-  <input type="button" class="btn btn-success" aria-label="Back to Client" onclick="location.href='/lynx/clients/{{ client.id }}';" value="Return to Client" />
+  <input type="button" class="btn btn-success" aria-label="Back to Client" onclick="location.href='{% url 'lynx:contact_show' client.id %}';" value="Return to Client" />
   <a href="{% url 'lynx:oib_service_event_add' %}" class="btn btn-primary" style="margin-bottom: 1em;">Add new note</a>
 
   {% if not service_events %}

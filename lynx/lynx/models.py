@@ -711,8 +711,13 @@ class Authorization(models.Model):
     history = HistoricalRecords()
 
     def get_absolute_url(self):
-        return reverse('lynx:authorization_detail', kwargs={'pk': self.id})
-
+        client_id = getattr(self, 'contact_id', None)
+        if not client_id:
+            intake = getattr(self, 'intake', None)
+            client_id = getattr(intake, 'contact_id', None) if intake else None
+        if client_id:
+            return reverse('lynx:authorization_detail', kwargs={'client_id': client_id, 'pk': self.id})
+        return reverse('lynx:index')
 
 class OutsideAgency(models.Model):
     contact = models.ForeignKey('Contact', on_delete=models.CASCADE)

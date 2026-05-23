@@ -28,7 +28,7 @@
 
 {% if not request.GET.print %}
 <h1>Invoice for the month of {{ month|month_name }}, {{ year }}</h1>
-<input type="button" onclick="location.href='/lynx/authorization/{{ object.id }}';" value="Return to Authorization" /> <input type="button" onclick="location.href='/lynx/clients/{{ object.authorization.contact.id}}';" value="Return to Client" />
+<input type="button" onclick="location.href='{% url "lynx:authorization_detail" object.authorization.contact.id object.authorization.id %}';" value="Return to Authorization" /> <input type="button" onclick="location.href='{% url "lynx:contact_show" object.authorization.contact.id %}';" value="Return to Client" />
 <p>Please review the following information. Listed below is the billing information on file for this authorization. You can modify the contact information for the payment source, or view a printable invoice.</p>
 
 <div>

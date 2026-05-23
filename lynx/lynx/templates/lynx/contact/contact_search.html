@@ -5,7 +5,7 @@
     $(document).ready(function(){
         $('#contactSelect').change(function(){
             var clientId = document.getElementById("contactSelect").value;
-            $('#viewClient').attr('action', '/lynx/clients/' + clientId);
+            $('#viewClient').attr('action', '{% url "lynx:contact_show" 0 %}'.replace('0', clientId));
         });
     });
 </script>

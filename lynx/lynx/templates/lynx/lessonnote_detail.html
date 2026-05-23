@@ -4,7 +4,7 @@
 
 <h1>{{ object.authorization.contact.first_name }} {{ object.authorization.contact.last_name }}'s Lesson Note from {{ object.user.first_name }} {{ object.user.last_name }}</h1>
 <h2>{{ object.date|date:'F j, Y' }}</h2>
-<input type="button" onclick="location.href='/lynx/authorization/{{ object.authorization_id }}';" value="Return to Authorization" /> <input type="button" onclick="location.href='/lynx/clients/{{ object.authorization.contact_id}}';" value="Return to Client" />
+<input type="button" onclick="location.href='{% url 'lynx:authorization_detail' object.authorization.contact.id object.authorization_id %}';" value="Return to Authorization" /> <input type="button" onclick="location.href='{% url 'lynx:contact_show' object.authorization.contact.id %}';" value="Return to Client" />
 <p class="tab"><strong>Attendance:</strong> {{ object.attendance }}</p>
 <!--<p class="tab"><strong>Instructional Units:</strong> {{ object.instructional_units }}</p>-->
 <p class="tab"><strong>Billed Units:</strong> {{ object.billed_units }}</p>

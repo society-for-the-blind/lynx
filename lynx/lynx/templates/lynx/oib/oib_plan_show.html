@@ -5,7 +5,7 @@
 {% block content %}
 <h1>{{ program }} Plan for {{ client }}: {{ plan_name }}</h1>
 
-<input type="button" class="btn btn-success" aria-label="Back to Client" onclick="location.href='/lynx/clients/{{ client.id }}';" value="Return to Client" />
+<input type="button" class="btn btn-success" aria-label="Back to Client" onclick="location.href='{% url 'lynx:contact_show' client.id %}';" value="Return to Client" />
 <!-- <input type="button" class="btn btn-success" aria-label="Edit outcomes" onclick="location.href='{% url 'lynx:oib_plan_list' client.id %}';" value="Edit" /> -->
 <input type="button" class="btn btn-success" aria-label="SIP Plans" onclick="location.href='{% url 'lynx:oib_plan_list' client.id %}';" value="Show all SIP plans" />
 <a class="btn btn-success" href="{% url 'lynx:contact_show' client.id %}">Back to client</a>

@@ -43,11 +43,12 @@ urlpatterns = [
     # So, use it to manage entities that are rarely touched? (Was meaning to write non-client contacts, but those can be managed from `client/` as well...)
 
     # === CORE ============================================================ {{-
-    path('core/authorizations/<int:client_id>', views.authorization_list, name='core_authorization_list'),
+    path('core/client/<int:client_id>/authorizations/', views.authorization_list, name='core_authorization_list'),
+    path('core/client/<int:client_id>/authorization/<int:pk>', views.AuthorizationDetailView.as_view(), name='authorization_detail'),
+
+    path('progress-report/<int:pk>/', views.ProgressReportDetailView.as_view(), name='progress_report_detail'),
     path('add-authorization/<int:contact_id>/', views.add_authorization, name='add_authorization'),
     path('add-progress-report/<int:authorization_id>/', views.add_progress_report, name='add_progress_report'),
-    path('authorization/<int:pk>', views.AuthorizationDetailView.as_view(), name='authorization_detail'),
-    path('progress-report/<int:pk>/', views.ProgressReportDetailView.as_view(), name='progress_report_detail'),
     path('authorization-edit/<int:pk>', views.AuthorizationUpdateView.as_view(), name='authorization-edit'),
     path('progress-report-edit/<int:pk>', views.ProgressReportUpdateView.as_view(), name='progresss-report-edit'),
     path('progress-report-confirm/<int:pk>/<int:auth_id>', views.ProgressReportDeleteView.as_view(), name='pr-delete'),
@@ -61,6 +62,10 @@ urlpatterns = [
     # TODO See 20260304_2153
     # path('get-hour-validation/<int:authorization_id>/<int:billed_units>', views.get_hour_validation, name='get_hour_validation'),
     # path('get-date-validation/<int:authorization_id>/<str:note_date>', views.get_date_validation, name='get_date_validation'),
+
+    # === CORE ============================================================ {{-
+    path('report/core/monthly-invoices-and-progress-reports', views.progress_result_view, name='core_monthly_print'),
+
     path('reports', views.reports, name='reports'),
     path('billing-report/', views.billing_report, name='billing_report'),
     path('sip-demographic-report/', views.sip_demographic_report, name='sip_demo_report'),
@@ -72,7 +77,6 @@ urlpatterns = [
     path('emergency-contact-edit/<int:pk>', views.EmergencyContactUpdateView.as_view(), name='emergency-contact-edit'),
     path('contact-confirm/<int:pk>', views.ContactDeleteView.as_view(), name='contact-delete'),
     path('document-confirm/<int:pk>/<int:client_id>', views.DocumentDeleteView.as_view(), name='document-delete'),
-    path('report-search', views.progress_result_view, name='report_search'),
     path('download/<path:path>', views.download, name='download'),
     path('manual', views.ManualView.as_view(), name='manual'),
     path('intake-note-confirm/<int:pk>/<int:client_id>', views.IntakeNoteDeleteView.as_view(), name='intake-note-delete'),
@@ -114,19 +118,19 @@ urlpatterns = [
         ),
 
     # "plans" (one / client / grant year / service delivery type (aka. plan type))
-    path('client/<int:contact_id>/plans',
+    path('oib/client/<int:contact_id>/plans',
          views.oib_plan_list,
          name='oib_plan_list'
         ),
-    path('client/<int:contact_id>/plans-with-notes',
+    path('oib/client/<int:contact_id>/plans-with-notes',
          views.oib_plan_list_with_notes,
          name='oib_plan_list_with_notes'
         ),
-    path('client/<int:contact_id>/plans/<str:program>/<int:grant_year>/<int:service_delivery_type_id>',
+    path('oib/client/<int:contact_id>/plans/<str:program>/<int:grant_year>/<int:service_delivery_type_id>',
          views.oib_plan_show,
          name='oib_plan_show'
         ),
-    path('client/<int:contact_id>/plans/<str:program>/<int:grant_year>/<int:service_delivery_type_id>/edit',
+    path('oib/client/<int:contact_id>/plans/<str:program>/<int:grant_year>/<int:service_delivery_type_id>/edit',
          views.oib_plan_edit,
          name='oib_plan_edit'
         ),
