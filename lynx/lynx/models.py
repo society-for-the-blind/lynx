@@ -716,7 +716,7 @@ class Authorization(models.Model):
             intake = getattr(self, 'intake', None)
             client_id = getattr(intake, 'contact_id', None) if intake else None
         if client_id:
-            return reverse('lynx:authorization_detail', kwargs={'client_id': client_id, 'pk': self.id})
+            return reverse('lynx:authorization_show', kwargs={'client_id': client_id, 'pk': self.id})
         return reverse('lynx:index')
 
 class OutsideAgency(models.Model):
@@ -767,7 +767,17 @@ class ProgressReport(models.Model):
     history = HistoricalRecords()
 
     def get_absolute_url(self):
-        return reverse('lynx:authorization_detail', kwargs={'pk': self.authorization_id})
+        auth = getattr(self, 'authorization', None)
+        auth_id = getattr(self, 'authorization_id', None) or (auth.id if auth else None)
+        client_id = None
+        if auth:
+            client_id = getattr(auth, 'contact_id', None) or getattr(auth, 'client_id', None)
+            if not client_id:
+                intake = getattr(auth, 'intake', None)
+                client_id = getattr(intake, 'contact_id', None) if intake else None
+        if auth_id and client_id:
+            return reverse('lynx:authorization_show', kwargs={'client_id': client_id, 'pk': auth_id})
+        return reverse('lynx:index')
 
 
 class LessonNote(models.Model):
@@ -797,7 +807,7 @@ class LessonNote(models.Model):
     history = HistoricalRecords()
 
     def get_absolute_url(self):
-        return reverse('lynx:authorization_detail', kwargs={'pk': self.authorization_id})
+        return reverse('lynx:authorization_show', kwargs={'pk': self.authorization_id})
 
 class Document(models.Model):
     contact = models.ForeignKey('Contact', on_delete=models.CASCADE)

@@ -8,8 +8,8 @@
 <form>
   <button class="btn btn-success" formaction="{% url 'lynx:contact_show' object.contact_id %}">Return to {{ object.contact.first_name }} {{ object.contact.last_name }}'s Information </button>
   {% if user.is_superuser %}
-    <button class="btn btn-primary" formaction="/lynx/authorization-edit/{{ object.id }}"> Edit Authorization </button>
-    <button class="btn btn-danger" formaction="/lynx/authorization-confirm/{{ object.id }}/{{ object.contact_id }}"> Delete Authorization </button>
+    <button class="btn btn-primary" formaction="{% url 'lynx:core_authorization_edit' object.contact_id object.id %}"> Edit Authorization </button>
+    <button class="btn btn-danger" formaction="{% url 'lynx:core_authorization_delete' object.contact_id object.id %}"> Delete Authorization </button>
   {% endif %}
 </form>
 <hr>
@@ -88,12 +88,12 @@
 <h2>Progress Reports</h2>
     <ul>
         {% for report in report_list %}
-            <li><a href='/lynx/progress-report/{{ report.id }}/'>{{ report.month|month_name }} by {{ report.instructor }}</a> | <a href='/lynx/progress-report-edit/{{ report.id }}'>Edit {{ report.month|month_name }} Report</a> {% if user.is_superuser %} | <a href='/lynx/progress-report-confirm/{{ report.id }}/{{ object.id }}'>Delete {{ report.month|month_name }} Report{% endif %} </a> </li>
+            <li><a href='{% url "lynx:core_progress_report_show" object.contact.id object.id report.id %}'>{{ report.month|month_name }} by {{ report.instructor }}</a> | <a href='{% url "lynx:core_progress_report_edit" object.contact.id object.id report.id %}'>Edit {{ report.month|month_name }} Report</a> {% if user.is_superuser %} | <a href='{% url "lynx:core_progress_report_delete" object.contact.id object.id report.id %}'>Delete {{ report.month|month_name }} Report{% endif %} </a> </li>
         {% empty %}
             <li>Sorry, no progress reports for this authorization</li>
         {% endfor %}
     </ul>
-<input type="button" onclick="location.href='/lynx/add-progress-report/{{ object.id }}/';" value="Add Progress Report" />
+<input type="button" onclick="location.href='{% url "lynx:core_progress_report_new" object.contact.id object.id %}';" value="Add Progress Report" />
 
 <br><br>
 

@@ -387,7 +387,9 @@ def add_authorization(request, contact_id):
             form.user_id = request.user.id
             form.active = 1
             form.save()
-            return HttpResponseRedirect(reverse('lynx:authorization_detail', args=(form.pk,)))
+        return HttpResponseRedirect(
+            reverse('lynx:authorization_show', kwargs={'client_id': contact_id, 'pk': form.pk})
+        )
     context = {'form': form, 'page_title': 'Add authorization'}
     return render(request, 'lynx/add_authorization.html', context)
 
@@ -405,7 +407,7 @@ def add_progress_report(request, authorization_id):
             form.authorization_id = authorization_id
             form.user_id = request.user.id
             form.save()
-            return HttpResponseRedirect(reverse('lynx:authorization_detail', args=(authorization_id,)))
+            return HttpResponseRedirect(reverse('lynx:authorization_show', args=(authorization_id,)))
     context = {'form': form, 'page_title': 'Add progress report'}
     return render(request, 'lynx/add_progress_report.html', context)
 
@@ -427,7 +429,7 @@ def add_lesson_note(request, authorization_id):
             form = form.save(commit=False)
             form.user_id = request.user.id
             form.save()
-            return HttpResponseRedirect(reverse('lynx:authorization_detail', args=(authorization_id,)))
+            return HttpResponseRedirect(reverse('lynx:authorization_show', args=(authorization_id,)))
     context = \
         { 'form': form                         \
         , 'page_title': 'Add lesson note'      \
@@ -556,7 +558,7 @@ class AuthorizationDetailView(LoginRequiredMixin, DetailView):
             form.user_id = request.user.id
             form.save()
             action = reverse(
-                'lynx:authorization_detail',
+                'lynx:authorization_show',
                 kwargs={
                     'client_id': self.kwargs.get('client_id') or getattr(self.object,
                     'contact_id',
@@ -589,6 +591,13 @@ class ProgressReportDetailView(LoginRequiredMixin, DetailView):
             date__month=month_number).filter(date__year=year).values()
         all_notes = lm.LessonNote.objects.filter(authorization_id=auth_id).filter(date__lte=max_date).values()
         authorization = lm.Authorization.objects.filter(id=auth_id).values()
+
+        try:
+            month_val = int(report[0]['month'])
+        except (TypeError, ValueError):
+            month_val = report[0]['month']
+        month_name = next((k for k, v in MONTHS.items() if v == month_val), str(month_val))
+        context['page_title'] = f"Progress Report: {context['progressreport'].authorization.contact.last_name}, {context['progressreport'].authorization.contact.first_name} - {month_name} {report[0]['year']}"
 
         total_units = 0
         all_units = 0
@@ -1160,6 +1169,11 @@ class AuthorizationUpdateView(LoginRequiredMixin, UpdateView):
               'total_time', 'billing_rate', 'outside_agency', 'student_plan', 'notes']
     template_name_suffix = '_edit'
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['page_title'] = 'Edit Authorization'
+        return context
+
     def get_form(self, form_class=None):
         form = super().get_form(form_class=form_class)
         form.fields['start_date'].widget = forms.SelectDateWidget(years=list(range(1900, 2100)))
@@ -1216,9 +1230,24 @@ class ProgressReportDeleteView(UserPassesTestMixin, DeleteView):
         return self.request.user.is_superuser
 
     def get_success_url(self):
-        auth_id = self.kwargs['auth_id']
-        return reverse_lazy('lynx:authorization_detail', kwargs={'pk': auth_id})
-
+        auth_id = self.kwargs.get('authorization_id') or getattr(self.object, 'authorization_id', None)
+        # prefer explicit client kwarg, fall back to related objects or DB lookup
+        client_id = self.kwargs.get('client_id') or self.kwargs.get('contact_id')
+        if not client_id:
+            auth = getattr(self.object, 'authorization', None) if getattr(self, 'object', None) else None
+            client_id = getattr(auth, 'contact_id', None) if auth else None
+        if not client_id and auth_id:
+            try:
+                from .models import Authorization
+                auth_obj = Authorization.objects.filter(pk=auth_id).only('contact_id').first()
+                client_id = getattr(auth_obj, 'contact_id', None) if auth_obj else None
+            except Exception:
+                client_id = None
+        if auth_id and client_id:
+            return reverse_lazy('lynx:authorization_show', kwargs={'client_id': client_id, 'pk': auth_id})
+        if client_id:
+            return reverse_lazy('lynx:contact_show', kwargs={'pk': client_id})
+        return reverse_lazy('lynx:index')
 
 class AuthorizationDeleteView(UserPassesTestMixin, DeleteView):
     model = lm.Authorization
@@ -1226,8 +1255,13 @@ class AuthorizationDeleteView(UserPassesTestMixin, DeleteView):
     def test_func(self):
         return self.request.user.is_superuser
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['page_title'] = 'Delete Authorization?'
+        return context
+
     def get_success_url(self):
-        client_id = self.kwargs['client_id']
+        client_id = self.kwargs['contact_id']
         return reverse_lazy('lynx:contact_show', kwargs={'pk': client_id})
 
 
@@ -1247,7 +1281,7 @@ class LessonNoteDeleteView(LoginRequiredMixin, DeleteView):
 
     def get_success_url(self):
         auth_id = self.kwargs['auth_id']
-        return reverse_lazy('lynx:authorization_detail', kwargs={'pk': auth_id})
+        return reverse_lazy('lynx:authorization_show', kwargs={'pk': auth_id})
 
 
 class PhoneDeleteView(LoginRequiredMixin, DeleteView):

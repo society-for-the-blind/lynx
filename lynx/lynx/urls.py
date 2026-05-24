@@ -8,32 +8,32 @@ app_name = "lynx"
 urlpatterns = [
     path("", views.index, name='index'),
     # At the moment, this one pull all active clients into a dropdown, so the path name should probably reflect that (e.g., `clients/active`). Why not just list them with the ability to search all contacts at the top?
-    path('client/new',           views.ContactCreateView.as_view(), name='contact_add'),
+    path('client/new',           views.ContactCreateView.as_view(), name='contact_new'),
     path('client/search',        views.contact_search,              name='contact_search'),
     path('client/<int:pk>',      views.ContactDetailView.as_view(), name='contact_show'),
     # TODO 20260517_2108 This doesn't work; remove this, and instead add buttons to update name and program memberships (or fix the form so that it works properly...)
     path('client/<int:pk>/edit', views.ContactUpdateView.as_view(), name='contact_edit'),
     path('client/filter',        views.contact_filter,              name='contact_filter'),
 
-    path('client/<int:contact_id>/address/new', views.contact_address_add, name='contact_address_add'),
-    path('client/<int:contact_id>/address/<int:pk>/edit', views.AddressUpdateView.as_view(), name='address-edit'),
+    path('client/<int:contact_id>/address/new', views.contact_address_add, name='contact_address_new'),
+    path('client/<int:contact_id>/address/<int:pk>/edit', views.AddressUpdateView.as_view(), name='contact_address_edit'),
 
-    path('client/<int:contact_id>/email/new', views.email_add, name='contact_email_add'),
-    path('client/<int:contact_id>/email/<int:pk>/edit', views.EmailUpdateView.as_view(), name='email-edit'),
+    path('client/<int:contact_id>/email/new', views.email_add, name='contact_email_new'),
+    path('client/<int:contact_id>/email/<int:pk>/edit', views.EmailUpdateView.as_view(), name='contact_email_edit'),
 
-    path('client/<int:contact_id>/phone_number/new', views.phone_add, name='contact_phone_add'),
-    path('client/<int:contact_id>/phone_number/<int:pk>/edit', views.PhoneUpdateView.as_view(), name='phone-edit'),
-    path('client/<int:contact_id>/phone_number/<int:pk>/delete', views.PhoneDeleteView.as_view(), name='phone-delete'),
+    path('client/<int:contact_id>/phone_number/new', views.phone_add, name='contact_phone_new'),
+    path('client/<int:contact_id>/phone_number/<int:pk>/edit', views.PhoneUpdateView.as_view(), name='contact_phone_edit'),
+    path('client/<int:contact_id>/phone_number/<int:pk>/delete', views.PhoneDeleteView.as_view(), name='contact_phone_delete'),
 
-    path('client/<int:contact_id>/emergency-contacts/new', views.emergency_contact_add, name='emergency_contact_add'),
-    path('client/<int:contact_id>/emergency-contacts/<int:emergency_contact_id>/emails/new', views.email_add, name='emergency_contact_email_add'),
-    path('client/<int:contact_id>/emergency-contacts/<int:emergency_contact_id>/phone_number/new', views.phone_add, name='emergency_contact_phone_add'),
+    path('client/<int:contact_id>/emergency-contacts/new', views.emergency_contact_add, name='emergency_contact_new'),
+    path('client/<int:contact_id>/emergency-contacts/<int:emergency_contact_id>/emails/new', views.email_add, name='emergency_contact_email_new'),
+    path('client/<int:contact_id>/emergency-contacts/<int:emergency_contact_id>/phone_number/new', views.phone_add, name='emergency_contact_phone_new'),
 
-    path('client/<int:contact_id>/vaccine/add', views.add_vaccination_record, name='add_vaccination_record'),
-    path('client/<int:contact_id>/vaccine/<int:pk>/edit', views.VaccineUpdateView.as_view(), name='vaccine-edit'),
-    path('client/<int:contact_id>/vaccine/<int:pk>/delete', views.VaccineDeleteView.as_view(), name='vaccine-delete'),
+    path('client/<int:contact_id>/vaccine/new', views.add_vaccination_record, name='vaccine_new'),
+    path('client/<int:contact_id>/vaccine/<int:pk>/edit', views.VaccineUpdateView.as_view(), name='vaccine_edit'),
+    path('client/<int:contact_id>/vaccine/<int:pk>/delete', views.VaccineDeleteView.as_view(), name='vaccine_delete'),
 
-    path('client/<int:contact_id>/intake/new', views.intake_add, name='intake_add'),
+    path('client/<int:contact_id>/intake/new', views.intake_add, name='intake_new'),
     path('client/<int:contact_id>/intake/<int:pk>/confirm-birth-date-for-oib-program/', views.IntakeBirthDateConfirmView.as_view(), name='intake_birthdate_confirm'),
 
     # path('client-advanced-search', views.client_advanced_result_view, name='client_advanced_search'),
@@ -43,20 +43,29 @@ urlpatterns = [
     # So, use it to manage entities that are rarely touched? (Was meaning to write non-client contacts, but those can be managed from `client/` as well...)
 
     # === CORE ============================================================ {{-
-    path('core/client/<int:client_id>/authorizations/', views.authorization_list, name='core_authorization_list'),
-    path('core/client/<int:client_id>/authorization/<int:pk>', views.AuthorizationDetailView.as_view(), name='authorization_detail'),
+    path('core/client/<int:client_id>/authorizations', views.authorization_list, name='core_authorization_list'),
+    path('core/client/<int:client_id>/authorization/<int:pk>', views.AuthorizationDetailView.as_view(), name='authorization_show'),
+    path('core/client/<int:contact_id>/authorization/new', views.add_authorization, name='core_authorization_new'),
+    path('core/client/<int:contact_id>/authorization/<int:pk>/edit', views.AuthorizationUpdateView.as_view(), name='core_authorization_edit'),
+    path('core/client/<int:contact_id>/authorization/<int:pk>/delete', views.AuthorizationDeleteView.as_view(), name='core_authorization_delete'),
 
-    path('progress-report/<int:pk>/', views.ProgressReportDetailView.as_view(), name='progress_report_detail'),
-    path('add-authorization/<int:contact_id>/', views.add_authorization, name='add_authorization'),
-    path('add-progress-report/<int:authorization_id>/', views.add_progress_report, name='add_progress_report'),
-    path('authorization-edit/<int:pk>', views.AuthorizationUpdateView.as_view(), name='authorization-edit'),
-    path('progress-report-edit/<int:pk>', views.ProgressReportUpdateView.as_view(), name='progresss-report-edit'),
-    path('progress-report-confirm/<int:pk>/<int:auth_id>', views.ProgressReportDeleteView.as_view(), name='pr-delete'),
-    path('authorization-confirm/<int:pk>/<int:client_id>', views.AuthorizationDeleteView.as_view(), name='auth-delete'),
-    path('lesson-note-confirm/<int:pk>/<int:auth_id>', views.LessonNoteDeleteView.as_view(), name='ln-delete'),
-    path('add-lesson-note/<int:authorization_id>/', views.add_lesson_note, name='add_lesson_note'),
-    path('lesson-note/<int:pk>/', views.LessonNoteDetailView.as_view(), name='lesson_note'),
-    path('lesson-note-edit/<int:pk>', views.LessonNoteUpdateView.as_view(), name='lesson-note-edit'),
+    # path('progress-report/<int:pk>/', views.ProgressReportDetailView.as_view(), name='progress_report_detail'),
+    # path('add-progress-report/<int:authorization_id>/', views.add_progress_report, name='add_progress_report'),
+    # path('progress-report-edit/<int:pk>', views.ProgressReportUpdateView.as_view(), name='progresss-report-edit'),
+    # path('progress-report-confirm/<int:pk>/<int:auth_id>', views.ProgressReportDeleteView.as_view(), name='pr-delete'),
+    path('core/client/<int:client_id>/authorization/<int:authorization_id>/progress-report/<int:pk>', views.ProgressReportDetailView.as_view(), name='core_progress_report_show'),
+    path('core/client/<int:client_id>/authorization/<int:authorization_id>/progress-report/new', views.add_progress_report, name='core_progress_report_new'),
+    path('core/client/<int:client_id>/authorization/<int:authorization_id>/progress-report/<int:pk>/edit', views.ProgressReportUpdateView.as_view(), name='core_progress_report_edit'),
+    path('core/client/<int:client_id>/authorization/<int:authorization_id>/progress-report/<int:pk>/delete', views.ProgressReportDeleteView.as_view(), name='core_progress_report_delete'),
+
+    # path('lesson-note-confirm/<int:pk>/<int:auth_id>', views.LessonNoteDeleteView.as_view(), name='ln-delete'),
+    # path('add-lesson-note/<int:authorization_id>/', views.add_lesson_note, name='add_lesson_note'),
+    # path('lesson-note/<int:pk>/', views.LessonNoteDetailView.as_view(), name='lesson_note'),
+    # path('lesson-note-edit/<int:pk>', views.LessonNoteUpdateView.as_view(), name='lesson-note-edit'),
+    path('lesson-note-confirm/<int:pk>/<int:auth_id>', views.LessonNoteDeleteView.as_view(), name='core_lesson_note_delete'),
+    path('add-lesson-note/<int:authorization_id>/', views.add_lesson_note, name='core_lesson_note_new'),
+    path('lesson-note/<int:pk>/', views.LessonNoteDetailView.as_view(), name='core_lesson_note_show'),
+    path('lesson-note-edit/<int:pk>', views.LessonNoteUpdateView.as_view(), name='core_lesson_note_edit'),
     # ===================================================================== }}-
 
     # TODO See 20260304_2153
