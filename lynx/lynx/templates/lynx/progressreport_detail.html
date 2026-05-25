@@ -11,7 +11,7 @@
 
 {% if not request.GET.print %}
 <h1>Progress Report for the Month of {{ object.month|month_name }} {{ object.year }}</h1>
-<input type="button" class="btn btn-primary" onclick="location.href='{% url 'lynx:authorization_show' object.authorization.contact.id object.authorization.id %}';" value="Return to Authorization" />
+<input type="button" class="btn btn-primary" onclick="location.href='{% url 'lynx:core_authorization_show' object.authorization.contact.id object.authorization.id %}';" value="Return to Authorization" />
 <input type="button" class="btn btn-primary" onclick="location.href='{% url 'lynx:contact_show' object.authorization.contact.id %}';" value="Return to Client" />
 <input type="button" class="btn btn-success" onclick="location.href='{% url 'lynx:core_progress_report_edit' object.authorization.contact.id object.authorization.id object.id %}';" value="Edit" />
 {% if user.is_superuser %}
@@ -111,7 +111,7 @@
 </div>
 
 {% if not request.GET.print %}
-<form action="/lynx/progress-report/{{ object.id }}/" method="GET">
+<form action="{% url 'lynx:core_progress_report_show' client_id=object.authorization.contact.id authorization_id=object.authorization.id pk=object.id %}" method="GET">
   <input type="hidden" name="print" value="true" />
   <input type="submit" value="Print View" class="btn btn-primary" />
 </form>

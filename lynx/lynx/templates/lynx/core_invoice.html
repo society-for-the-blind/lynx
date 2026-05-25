@@ -28,11 +28,12 @@
 
 {% if not request.GET.print %}
 <h1>Invoice for the month of {{ month|month_name }}, {{ year }}</h1>
-<input type="button" onclick="location.href='{% url "lynx:authorization_show" object.authorization.contact.id object.authorization.id %}';" value="Return to Authorization" /> <input type="button" onclick="location.href='{% url "lynx:contact_show" object.authorization.contact.id %}';" value="Return to Client" />
+<input type="button" onclick="location.href='{% url "lynx:core_authorization_show" client_id=object.authorization.contact.id pk=object.authorization.id %}';" value="Return to Authorization" />
+<input type="button" onclick="location.href='{% url "lynx:contact_show" object.authorization.contact.id %}';" value="Return to Client" />
 <p>Please review the following information. Listed below is the billing information on file for this authorization. You can modify the contact information for the payment source, or view a printable invoice.</p>
 
 <div>
-    <form action='/lynx/billing-review/{{ object.id}}/' method="get">
+    <form action='{% url "lynx:core_invoice_show" client_id=object.authorization.contact.id pk=object.authorization.id %}' method="get">
         <select name="selMonth" id="selMonth" title="Month">
             <option value="1">January</option>
             <option value="2">February</option>
@@ -128,12 +129,12 @@
         </tr>
         {% for note in note_list %}
             <tr>
-                <td><a href='/lynx/lesson-note/{{ note.id }}/'>{{ note.date|date:'F j, Y' }}</a></td>
+                <td><a href='{% url "lynx:core_lesson_note_show" object.contact.id object.id note.id %}'>{{ note.date|date:'F j, Y' }}</a></td>
                 <td>{{ object.authorization_type }}</td>
                 <td>{% if object.authorization_type == 'Hours' %} {{ note.billed_units|div:4 }} {% elif note.billed_units %} 1 {% endif %}</td>
                 <td>${{ object.billing_rate }}</td>
                 <td>{{ object.intake_service_area }}</td>
-                {% if not request.GET.print %}<td><a href='/lynx/lesson-note-edit/{{ note.id }}'>Edit</a> - <a href='/lynx/lesson-note-confirm/{{ note.id }}/{{ note.authorization_id }}'>Delete</a></td>{% endif %}
+                {% if not request.GET.print %}<td><a href='{% url "lynx:core_lesson_note_edit" object.contact.id object.id note.id %}'>Edit</a> - <a href='{% url "lynx:core_lesson_note_delete" object.contact.id object.id note.id %}'>Delete</a></td>{% endif %}
             </tr>
         {% endfor %}
     </table>
@@ -143,12 +144,12 @@
             <input type="button" class="btn btn-info" onclick="location.href='{% url "lynx:core_progress_report_show" object.contact.id object.id report.id %}';" value="View Progress Report" /> <input type="button" class="btn btn-primary" onclick="location.href='{% url "lynx:core_progress_report_edit" object.contact.id object.id report.id %}';" value="Edit Progress Report" />
         {% endfor %}
     {% else %}
-        <input type="button" class="btn btn-success" onclick="location.href='/lynx/add-progress-report/{{ object.id }}/';" value="Add New Progress Report" />
+        <input type="button" class="btn btn-success" onclick="location.href='{% url "lynx:core_progress_report_new" object.authorization.contact.id object.authorization.id %}';" value="Add New Progress Report" />
     {% endif %}
 {% endif %}
 <br><br>
 {% if not request.GET.print %}
-<form action="/lynx/billing-review/{{ object.id }}/" method="GET">
+<form action='{% url "lynx:core_invoice_show" client_id=object.authorization.contact.id pk=object.authorization.id %}' method="GET">
   <input type="hidden" name="print" value="true" />
   <input type="submit" value="Print View" class="btn btn-primary" />
 </form>

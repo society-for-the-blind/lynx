@@ -716,7 +716,7 @@ class Authorization(models.Model):
             intake = getattr(self, 'intake', None)
             client_id = getattr(intake, 'contact_id', None) if intake else None
         if client_id:
-            return reverse('lynx:authorization_show', kwargs={'client_id': client_id, 'pk': self.id})
+            return reverse('lynx:core_authorization_show', kwargs={'client_id': client_id, 'pk': self.id})
         return reverse('lynx:index')
 
 class OutsideAgency(models.Model):
@@ -776,7 +776,7 @@ class ProgressReport(models.Model):
                 intake = getattr(auth, 'intake', None)
                 client_id = getattr(intake, 'contact_id', None) if intake else None
         if auth_id and client_id:
-            return reverse('lynx:authorization_show', kwargs={'client_id': client_id, 'pk': auth_id})
+            return reverse('lynx:core_authorization_show', kwargs={'client_id': client_id, 'pk': auth_id})
         return reverse('lynx:index')
 
 
@@ -807,7 +807,25 @@ class LessonNote(models.Model):
     history = HistoricalRecords()
 
     def get_absolute_url(self):
-        return reverse('lynx:authorization_show', kwargs={'pk': self.authorization_id})
+        auth_id = getattr(self, 'authorization_id', None) or (getattr(self, 'authorization', None).id if getattr(self, 'authorization', None) else None)
+        client_id = None
+        auth = getattr(self, 'authorization', None)
+        if auth:
+            client_id = getattr(auth, 'contact_id', None) or getattr(auth, 'client_id', None)
+            if not client_id:
+                intake = getattr(auth, 'intake', None)
+                client_id = getattr(intake, 'contact_id', None) if intake else None
+
+        if not client_id and auth_id:
+            try:
+                auth_obj = Authorization.objects.filter(pk=auth_id).only('contact_id').first()
+                client_id = getattr(auth_obj, 'contact_id', None) if auth_obj else None
+            except Exception:
+                client_id = None
+
+        if auth_id and client_id:
+            return reverse('lynx:core_authorization_show', kwargs={'client_id': client_id, 'pk': auth_id})
+        return reverse('lynx:index')
 
 class Document(models.Model):
     contact = models.ForeignKey('Contact', on_delete=models.CASCADE)

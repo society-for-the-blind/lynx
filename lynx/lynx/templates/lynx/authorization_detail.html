@@ -58,9 +58,9 @@
                 <td>{{ note.user.first_name }} {{ note.user.last_name }}</td>
                 <td>
                     <form>
-                      <button class="btn btn-success" formaction="/lynx/lesson-note/{{ note.id }}/">View</button>
-                      <button class="btn btn-primary" formaction="/lynx/lesson-note-edit/{{ note.id }}">Edit</button>
-                      <button class="btn btn-danger" formaction="/lynx/lesson-note-confirm/{{ note.id }}/{{ object.id }}">Delete</button>
+                      <button class="btn btn-success" formaction="{% url 'lynx:core_lesson_note_show' object.contact.id object.id note.id %}">View</button>
+                      <button class="btn btn-primary" formaction="{% url 'lynx:core_lesson_note_edit' object.contact.id object.id note.id %}">Edit</button>
+                      <button class="btn btn-danger" formaction="{% url 'lynx:core_lesson_note_delete' object.contact.id object.id note.id %}">Delete</button>
                     </form>
 
                 </td>
@@ -79,9 +79,9 @@
         </tr>
     </table>
 {% if remaining_hours <= 0 or auth_ended %}
-<input type="button" onclick="location.href='/lynx/add-lesson-note/{{ object.id }}/';" value="Add Lesson Note" disabled/>
+<input type="button" onclick="location.href='{% url "lynx:core_lesson_note_new" object.contact.id object.id %}';" value="Add Lesson Note" disabled/>
 {% else %}
-<input type="button" onclick="location.href='/lynx/add-lesson-note/{{ object.id }}/';" value="Add Lesson Note" />
+<input type="button" onclick="location.href='{% url "lynx:core_lesson_note_new" object.contact.id object.id %}';" value="Add Lesson Note" />
 {% endif %}
 
 <br><br>
@@ -98,7 +98,7 @@
 <br><br>
 
 <h2>Billing Information</h2>
-    <input type="button" onclick="location.href='/lynx/billing-review/{{ object.id }}/';" value="Billing Review" />
+    <input type="button" onclick="location.href='{% url "lynx:core_invoice_show" client_id=object.contact.id pk=object.id %}';" value="Billing Review" />
     <table class="table">
         <tr>
             <th>Lesson Date</th>

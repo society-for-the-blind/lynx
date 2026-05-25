@@ -44,44 +44,38 @@ urlpatterns = [
 
     # === CORE ============================================================ {{-
     path('core/client/<int:client_id>/authorizations', views.authorization_list, name='core_authorization_list'),
-    path('core/client/<int:client_id>/authorization/<int:pk>', views.AuthorizationDetailView.as_view(), name='authorization_show'),
+    path('core/client/<int:client_id>/authorization/<int:pk>', views.AuthorizationDetailView.as_view(), name='core_authorization_show'),
     path('core/client/<int:contact_id>/authorization/new', views.add_authorization, name='core_authorization_new'),
     path('core/client/<int:contact_id>/authorization/<int:pk>/edit', views.AuthorizationUpdateView.as_view(), name='core_authorization_edit'),
     path('core/client/<int:contact_id>/authorization/<int:pk>/delete', views.AuthorizationDeleteView.as_view(), name='core_authorization_delete'),
 
-    # path('progress-report/<int:pk>/', views.ProgressReportDetailView.as_view(), name='progress_report_detail'),
-    # path('add-progress-report/<int:authorization_id>/', views.add_progress_report, name='add_progress_report'),
-    # path('progress-report-edit/<int:pk>', views.ProgressReportUpdateView.as_view(), name='progresss-report-edit'),
-    # path('progress-report-confirm/<int:pk>/<int:auth_id>', views.ProgressReportDeleteView.as_view(), name='pr-delete'),
     path('core/client/<int:client_id>/authorization/<int:authorization_id>/progress-report/<int:pk>', views.ProgressReportDetailView.as_view(), name='core_progress_report_show'),
     path('core/client/<int:client_id>/authorization/<int:authorization_id>/progress-report/new', views.add_progress_report, name='core_progress_report_new'),
     path('core/client/<int:client_id>/authorization/<int:authorization_id>/progress-report/<int:pk>/edit', views.ProgressReportUpdateView.as_view(), name='core_progress_report_edit'),
     path('core/client/<int:client_id>/authorization/<int:authorization_id>/progress-report/<int:pk>/delete', views.ProgressReportDeleteView.as_view(), name='core_progress_report_delete'),
 
-    # path('lesson-note-confirm/<int:pk>/<int:auth_id>', views.LessonNoteDeleteView.as_view(), name='ln-delete'),
-    # path('add-lesson-note/<int:authorization_id>/', views.add_lesson_note, name='add_lesson_note'),
-    # path('lesson-note/<int:pk>/', views.LessonNoteDetailView.as_view(), name='lesson_note'),
-    # path('lesson-note-edit/<int:pk>', views.LessonNoteUpdateView.as_view(), name='lesson-note-edit'),
-    path('lesson-note-confirm/<int:pk>/<int:auth_id>', views.LessonNoteDeleteView.as_view(), name='core_lesson_note_delete'),
-    path('add-lesson-note/<int:authorization_id>/', views.add_lesson_note, name='core_lesson_note_new'),
-    path('lesson-note/<int:pk>/', views.LessonNoteDetailView.as_view(), name='core_lesson_note_show'),
-    path('lesson-note-edit/<int:pk>', views.LessonNoteUpdateView.as_view(), name='core_lesson_note_edit'),
+    path('core/client/<int:client_id>/authorization/<int:authorization_id>/lesson-note/<int:pk>', views.LessonNoteDetailView.as_view(), name='core_lesson_note_show'),
+    path('core/client/<int:client_id>/authorization/<int:authorization_id>/lesson-note/new', views.add_lesson_note, name='core_lesson_note_new'),
+    path('core/client/<int:client_id>/authorization/<int:authorization_id>/lesson-note/<int:pk>/edit', views.LessonNoteUpdateView.as_view(), name='core_lesson_note_edit'),
+    path('core/client/<int:client_id>/authorization/<int:authorization_id>/lesson-note/<int:pk>/delete', views.LessonNoteDeleteView.as_view(), name='core_lesson_note_delete'),
+
+    # path('billing-review/<int:pk>/', views.BillingReviewDetailView.as_view(), name='billing_review'),
+    path('core/client/<int:client_id>/authorization/<int:pk>/invoice', views.CoreInvoice.as_view(), name='core_invoice_show'),
     # ===================================================================== }}-
 
     # TODO See 20260304_2153
     # path('get-hour-validation/<int:authorization_id>/<int:billed_units>', views.get_hour_validation, name='get_hour_validation'),
     # path('get-date-validation/<int:authorization_id>/<str:note_date>', views.get_date_validation, name='get_date_validation'),
 
-    # === CORE ============================================================ {{-
+    # === REPORT ========================================================== {{-
+    path('reports', views.reports, name='reports'),
     path('report/core/monthly-invoices-and-progress-reports', views.progress_result_view, name='core_monthly_print'),
 
-    path('reports', views.reports, name='reports'),
     path('billing-report/', views.billing_report, name='billing_report'),
     path('sip-demographic-report/', views.sip_demographic_report, name='sip_demo_report'),
     path('sip-quarterly-demo-report/', views.sip_csf_demographic_report, name='sip_quarterly_demo_report'),
     path('sip-quarterly-service-report/', views.sip_csf_services_report, name='sip_quarterly_service_report'),
     path('sip-quarterly-report/', views.sip_quarterly_report, name='sip_quarterly_report'),
-    path('billing-review/<int:pk>/', views.BillingReviewDetailView.as_view(), name='billing_review'),
     path('intake-edit/<int:pk>', views.IntakeUpdateView.as_view(), name='intake-edit'),
     path('emergency-contact-edit/<int:pk>', views.EmergencyContactUpdateView.as_view(), name='emergency-contact-edit'),
     path('contact-confirm/<int:pk>', views.ContactDeleteView.as_view(), name='contact-delete'),
@@ -92,10 +86,10 @@ urlpatterns = [
     path('intake-note-edit/<int:pk>', views.IntakeNoteUpdateView.as_view(), name='intake-note-edit'),
 
     # === ASSIGNMENTS (OIB programs only) ================================= {{-
-    path('client/<int:contact_id>/oib/assignments/new', views.oib_assigment_add, name='oib_assignment_add'),
-    path('client/<int:contact_id>/oib/assignments/', views.oib_assignment_list_for_client, name='oib_assignment_for_client'),
-    path('client/<int:contact_id>/oib/assignments/<int:pk>/edit', views.AssignmentUpdateView.as_view(), name='assignment-edit'),
-    path('client/<int:contact_id>/oib/assignments/<int:pk>/delete', views.AssignmentDeleteView.as_view(), name='assignment-delete'),
+    path('client/<int:contact_id>/oib/assignments/new', views.oib_assigment_add, name='oib_assignment_new'),
+    path('client/<int:contact_id>/oib/assignments', views.oib_assignment_list_for_client, name='oib_assignment_for_client'),
+    path('client/<int:contact_id>/oib/assignment/<int:pk>/edit', views.AssignmentUpdateView.as_view(), name='oib_assignment_edit'),
+    path('client/<int:contact_id>/oib/assignment/<int:pk>/delete', views.AssignmentDeleteView.as_view(), name='oib_assignment_delete'),
     path('oib/assignments', views.oib_assignment_list, name='oib_assignment_list'),
     # ===================================================================== }}-
 
