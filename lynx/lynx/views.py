@@ -1533,15 +1533,15 @@ def sip_demographic_report(request):
             # --- REWRITE: Use Program.program for SIP membership ---
             with connection.cursor() as cursor:
                 cursor.execute("""
-                    SELECT CONCAT(c.last_name, ', ', c.first_name) as name, c.id as id, int.intake_date as date, int.age_group, int.gender, int.ethnicity,
-                        int.degree, int.eye_condition, int.eye_condition_date, int.education, int.living_arrangement, int.residence_type,
-                        int.dialysis, int.stroke, int.seizure, int.heart, int.arthritis, int.high_bp, int.neuropathy, int.pain, int.asthma,
-                        int.cancer, int.musculoskeletal, int.alzheimers, int.allergies, int.mental_health, int.substance_abuse, int.memory_loss,
-                        int.learning_disability, int.geriatric, int.dexterity, int.migraine, int.referred_by, int.hearing_loss,
-                        c.first_name, c.last_name, int.birth_date
+                    SELECT CONCAT(c.last_name, ', ', c.first_name) as name, c.id as id, intake.intake_date as date, intake.gender, intake.ethnicity,
+                        intake.degree, intake.eye_condition, intake.eye_condition_date, intake.education, intake.living_arrangement, intake.residence_type,
+                        intake.dialysis, intake.stroke, intake.seizure, intake.heart, intake.arthritis, intake.high_bp, intake.neuropathy, intake.pain, intake.asthma,
+                        intake.cancer, intake.musculoskeletal, intake.alzheimers, intake.allergies, intake.mental_health, intake.substance_abuse, intake.memory_loss,
+                        intake.learning_disability, intake.geriatric, intake.dexterity, intake.migraine, intake.referred_by, intake.hearing_loss,
+                        c.first_name, c.last_name, intake.birth_date
                     FROM lynx_sipnote ls
                     LEFT JOIN lynx_contact as c  ON c.id = ls.contact_id
-                    LEFT JOIN lynx_intake as int  ON int.contact_id = c.id
+                    LEFT JOIN lynx_intake as intake  ON intake.contact_id = c.id
                     WHERE c.id != 111
                       AND extract(month FROM ls.note_date) = %s
                       AND extract(year FROM ls.note_date) = '%s'
@@ -1558,6 +1558,23 @@ def sip_demographic_report(request):
                     ORDER BY c.last_name, c.first_name;
                 """ % (month, year, month_string))
                 client_set = dictfetchall(cursor)
+
+            # populate age_group from the Intake model's computed property (bulk lookup)
+            contact_ids = [row['id'] for row in client_set]
+            latest_intakes = {}
+            if contact_ids:
+                intakes_qs = (
+                    lm.Intake.objects
+                    .filter(contact_id__in=contact_ids)
+                    .exclude(birth_date__isnull=True)
+                    .order_by('contact_id', '-intake_date')
+                )
+                for intake in intakes_qs:
+                    if intake.contact_id not in latest_intakes:
+                        latest_intakes[intake.contact_id] = intake
+            for row in client_set:
+                intake = latest_intakes.get(row['id'])
+                row['age_group'] = intake.age_group if intake else ''
 
             filename = "Core Lynx Excel Billing - " + month + " - " + year
             response = HttpResponse(content_type='text/csv')
@@ -1576,6 +1593,7 @@ def sip_demographic_report(request):
                     continue
                 impairments = ''
                 client_ids.append(client['id'])
+                age_group = client.get('age_group', '')
                 if client['dialysis']:
                     impairments += 'Dialysis, '
                 if client['stroke']:
@@ -1623,8 +1641,8 @@ def sip_demographic_report(request):
                     impairments = impairments[:-2]
 
                 writer.writerow(
-                    [client['name'], client['first_name'], client['last_name'], client['age_group'], client['gender'],
-                     client['birth_date'], client['ethnicity'], client['degree'], client['eye_condition'], impairments,
+                    [client['name'], client['first_name'], client['last_name'], age_group,
+                     client['gender'], client['birth_date'], client['ethnicity'], client['degree'], client['eye_condition'], impairments,
                      client['eye_condition_date'], client['education'], client['living_arrangement'],
                      client['residence_type'], client['referred_by']])
 

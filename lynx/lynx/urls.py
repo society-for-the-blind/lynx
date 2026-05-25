@@ -59,7 +59,6 @@ urlpatterns = [
     path('core/client/<int:client_id>/authorization/<int:authorization_id>/lesson-note/<int:pk>/edit', views.LessonNoteUpdateView.as_view(), name='core_lesson_note_edit'),
     path('core/client/<int:client_id>/authorization/<int:authorization_id>/lesson-note/<int:pk>/delete', views.LessonNoteDeleteView.as_view(), name='core_lesson_note_delete'),
 
-    # path('billing-review/<int:pk>/', views.BillingReviewDetailView.as_view(), name='billing_review'),
     path('core/client/<int:client_id>/authorization/<int:pk>/invoice', views.CoreInvoice.as_view(), name='core_invoice_show'),
     # ===================================================================== }}-
 
