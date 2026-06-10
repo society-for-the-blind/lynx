@@ -417,3 +417,5 @@ def force_recalc_on_open(wba_files: WorkBookArchiveFilepathsWithBytes) -> WorkBo
 
 # >>> _ = x.write_column( wba_files=wbaf, sheet_rid="rId4", start_cell=x.Cell(column='A', row=17), values=values);
 # >>> x.write_memory_to_xlsx(wbaf, "/tmp/fff.xlsx")
+
+# import lynx.utils.oib_quarterly_reports as luo; q = luo.get_oib_quarters(luo.grant_year_for_date()).get("Q3"); luo.write_report(q)
