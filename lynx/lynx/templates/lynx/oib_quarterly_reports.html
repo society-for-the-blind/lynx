@@ -1,0 +1,16 @@
+{% extends "lynx/base.html" %}
+{% block content %}
+<h1>{{ page_title }}</h1>
+<form method="post">
+  {% csrf_token %}
+  <label for="quarter">Quarter</label>
+  <select name="quarter" id="quarter" required>
+    {% for q in quarters %}
+      <option value="{{ q }}">{{ q }}</option>
+    {% endfor %}
+  </select>
+  <label for="grant_year">Grant year</label>
+  <input name="grant_year" id="grant_year" value="{{ grant_year }}" />
+  <button type="submit">Generate and email me</button>
+</form>
+{% endblock %}

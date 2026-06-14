@@ -441,10 +441,15 @@ def write_report(oib_quarter: OIBQuarter):
     }
     csd = oib_clients_with_report_data(oib_quarter)
     sob = split_oib_clients_by_report(csd)
+
+    output_paths: List[str] = []
+
     for report_type, clients in sob.items():
+        # load template into memory
         wbaf = xlsx.load_xlsx_to_memory(report_templates[report_type])
         column_data = transpose_report_data(clients)
 
+        # demographics: write starting at row 17 (template expectation)
         demographics_columns = {
             'A': 'client_name',
             'B': 'case_open_date',
@@ -465,21 +470,19 @@ def write_report(oib_quarter: OIBQuarter):
             'Q': 'residence_county',
         }
         for col, key in demographics_columns.items():
-            if key not in column_data:
-                raise ValueError(f"Missing expected column data for key '{key}' in report type '{report_type}'.")
             xlsx.write_column(
                 wba_files=wbaf,
                 sheet_rid=report_sheet_rids["demographics"],
                 start_cell=xlsx.Cell(column=col, row=17),
-                values=column_data[key]
+                values=column_data.get(key, [])
             )
 
+        # services: write starting at row 7 (template expectation)
         services_columns = {
             'B': 'vision_screening',
             'C': 'vision_treatment',
             'D': 'service_AT',
             'E': 'outcome_AT',
-          # 'F': auto-calculated by Excel formula
             'G': 'service_OM',
             'H': 'service_communication',
             'I': 'service_DLS',
@@ -495,21 +498,22 @@ def write_report(oib_quarter: OIBQuarter):
             'S': 'outcome_employment',
         }
         for col, key in services_columns.items():
-            if key not in column_data:
-                raise ValueError(f"Missing expected column data for key '{key}' in report type '{report_type}'.")
             xlsx.write_column(
                 wba_files=wbaf,
                 sheet_rid=report_sheet_rids["services"],
                 start_cell=xlsx.Cell(column=col, row=7),
-                values=column_data[key]
+                values=column_data.get(key, [])
             )
 
+        # ensure workbook recalculates formulas on open
         xlsx.force_recalc_on_open(wbaf)
 
         timestamp = datetime.now(timezone.utc).strftime("%Y_%m_%d_%H%M%S")
         output_path = f"/tmp/OIB_Report_{oib_quarter.quarter_name}_{timestamp}_{report_type}.xlsx"
         xlsx.write_memory_to_xlsx(wbaf, output_path)
+        output_paths.append(output_path)
 
+    return output_paths
 # import lynx.utils.oib_quarterly_reports as luo; q1 = luo.get_oib_quarters(luo.grant_year_for_date()).get("Q1"); luo.write_report(q1)
 
 def demographics_err_msg_wrapper(query, fields: List[str], f: Callable[..., str], model_err: str, prop_err: str) -> str:

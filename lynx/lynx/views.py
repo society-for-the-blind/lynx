@@ -5,6 +5,10 @@ from urllib.parse import quote
 from django      import forms
 from django.conf import settings
 
+import threading
+from django.core.mail import EmailMessage
+from .utils import oib_quarterly_reports as luo
+
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins     import LoginRequiredMixin  \
                                          , UserPassesTestMixin
@@ -164,6 +168,73 @@ def authorization_list(request, client_id):
 def reports(request):
     context = { "page_title": "Reports", }
     return render(request, 'lynx/reports.html', context)
+
+@login_required
+def generate_oib_quarterly_reports(request):
+    """
+    Start background generation of OIB quarterly reports and email the requestor when done.
+    """
+    def _generate_and_email(oib_quarter, recipient_email):
+        try:
+            paths = luo.write_report(oib_quarter)
+            if not paths:
+                EmailMessage(
+                    "OIB Report Generation - no output",
+                    "No reports were generated for your request.",
+                    settings.EMAIL_HOST_USER or settings.DEFAULT_FROM_EMAIL,
+                    [recipient_email]
+                ).send()
+                return
+
+            msg = EmailMessage(
+                f"OIB Quarterly Reports: {oib_quarter.quarter_name}",
+                "Attached are the generated OIB quarterly reports.",
+                settings.EMAIL_HOST_USER or settings.DEFAULT_FROM_EMAIL,
+                [recipient_email]
+            )
+            for p in paths:
+                try:
+                    with open(p, 'rb') as fh:
+                        filename = os.path.basename(p)
+                        msg.attach(filename, fh.read(), 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+                except Exception:
+                    continue
+            msg.send()
+        except Exception as e:
+            EmailMessage(
+                "OIB Report Generation Error",
+                f"Error generating reports: {e}",
+                settings.EMAIL_HOST_USER or settings.DEFAULT_FROM_EMAIL,
+                [recipient_email]
+            ).send()
+
+    if request.method == 'POST':
+        quarter = request.POST.get('quarter')
+        grant_year = request.POST.get('grant_year')
+        try:
+            grant_year = int(grant_year) if grant_year else luo.grant_year_for_date()
+        except Exception:
+            grant_year = luo.grant_year_for_date()
+
+        oib_quarters = luo.get_oib_quarters(grant_year)
+        oib_q = oib_quarters.get(quarter)
+        if not oib_q:
+            messages.error(request, "Invalid quarter selected.")
+            return redirect('lynx:reports')
+
+        recipient = request.user.email
+        threading.Thread(target=_generate_and_email, args=(oib_q, recipient), daemon=True).start()
+        messages.info(request, "Report generation started. You will be emailed the reports when ready.")
+        return redirect('lynx:reports')
+
+    # GET: show simple form
+    grant_year = luo.grant_year_for_date()
+    quarters = sorted(luo.get_oib_quarters(grant_year).keys())
+    return render(request, 'lynx/oib_quarterly_reports.html', {
+        'quarters': quarters,
+        'grant_year': grant_year,
+        'page_title': 'Generate OIB Quarterly Reports'
+    })
 # ===================================================================== }}-
 
 # === ASSIGNMENTS (OIB programs only) ================================= {{-

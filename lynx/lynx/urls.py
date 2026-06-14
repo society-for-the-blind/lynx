@@ -70,6 +70,8 @@ urlpatterns = [
     path('reports', views.reports, name='reports'),
     path('report/core/monthly-invoices-and-progress-reports', views.progress_result_view, name='core_monthly_print'),
 
+    path('oib/reports/generate/', views.generate_oib_quarterly_reports, name='generate_oib_quarterly_reports'),
+
     path('billing-report/', views.billing_report, name='billing_report'),
     path('sip-demographic-report/', views.sip_demographic_report, name='sip_demo_report'),
     path('sip-quarterly-demo-report/', views.sip_csf_demographic_report, name='sip_quarterly_demo_report'),
