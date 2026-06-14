@@ -74,9 +74,6 @@ urlpatterns = [
 
     path('billing-report/', views.billing_report, name='billing_report'),
     path('sip-demographic-report/', views.sip_demographic_report, name='sip_demo_report'),
-    path('sip-quarterly-demo-report/', views.sip_csf_demographic_report, name='sip_quarterly_demo_report'),
-    path('sip-quarterly-service-report/', views.sip_csf_services_report, name='sip_quarterly_service_report'),
-    path('sip-quarterly-report/', views.sip_quarterly_report, name='sip_quarterly_report'),
     path('intake-edit/<int:pk>', views.IntakeUpdateView.as_view(), name='intake-edit'),
     path('emergency-contact-edit/<int:pk>', views.EmergencyContactUpdateView.as_view(), name='emergency-contact-edit'),
     path('contact-confirm/<int:pk>', views.ContactDeleteView.as_view(), name='contact-delete'),
