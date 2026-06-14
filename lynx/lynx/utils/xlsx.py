@@ -263,7 +263,7 @@ def set_cell(sheet_tree: SheetTree, cell: Cell, value: str) -> SheetTree:
         # row_lxml.set('r', cell.ref)
         raise ValueError(f"worksheet is missing row {row_num}; is template valid?")
 
-    cell_lxml = sheet_tree_lxml.xpath(f"//main:c[@r='{cell.ref}']", namespaces=NS)[0]
+    cell_lxml = next((c for c in row_lxml if c.get('r') == cell.ref), None)
 
     if cell_lxml is None:
         # cell_lxml = etree.SubElement(row_lxml, '{%s}c' % NS['main'])
@@ -300,38 +300,39 @@ def set_column(sheet_tree: SheetTree, start_cell: Cell, values: List[str]) -> Sh
       - Iterates values and writes them downwards in the same column.
       - Uses set_cell for each cell (so preserves worksheet-level unknown parts).
     """
-    for str in values:
-        sheet_tree = set_cell(sheet_tree, start_cell, str)
+    for value in values:
+        sheet_tree = set_cell(sheet_tree, start_cell, value)
         start_cell = Cell(column=start_cell.column, row=start_cell.row + 1)
     return sheet_tree
 
-def write_column(
-      wba_files: WorkBookArchiveFilepathsWithBytes,
-      sheet_rid: rId,
-      start_cell: str,
-      values: List[str]
-    ) -> WorkBookArchiveFilepathsWithBytes:
-    """
-    Convenience wrapper that writes a column into a named worksheet inside the in-memory wba_files dict.
+# TODO: "Soft-deleting" as it doesn't seem to be used.
+# def write_column(
+#       wba_files: WorkBookArchiveFilepathsWithBytes,
+#       sheet_rid: rId,
+#       start_cell: str,
+#       values: List[str]
+#     ) -> WorkBookArchiveFilepathsWithBytes:
+#     """
+#     Convenience wrapper that writes a column into a named worksheet inside the in-memory wba_files dict.
 
-    Args:
-      wba_files: in-memory xlsx archive dict.
-      sheet: display name of the worksheet (e.g. 'Sheet1').
-      start_cell: first cell to write into (e.g. 'B4').
-      values: list of values to write downwards.
+#     Args:
+#       wba_files: in-memory xlsx archive dict.
+#       sheet: display name of the worksheet (e.g. 'Sheet1').
+#       start_cell: first cell to write into (e.g. 'B4').
+#       values: list of values to write downwards.
 
-    Raises:
-      ValueError if sheet is not present in the workbook.
-    """
-    sheets = get_sheets(wba_files)
-    matched_sheet_info = next((s for s in sheets if s.rId == sheet_rid), None)
-    sheet_tree = matched_sheet_info.sheet_tree
-    sheet_path = matched_sheet_info.path
+#     Raises:
+#       ValueError if sheet is not present in the workbook.
+#     """
+#     sheets = get_sheets(wba_files)
+#     matched_sheet_info = next((s for s in sheets if s.rId == sheet_rid), None)
+#     sheet_tree = matched_sheet_info.sheet_tree
+#     sheet_path = matched_sheet_info.path
 
-    sheet_tree = set_column(sheet_tree, start_cell, values)
-    sheet_bytes = serialize_lxml_tree(sheet_tree.lxml_tree)
-    wba_files[sheet_path] = WorkBookArchiveFileBytes(bytes=sheet_bytes)
-    return wba_files
+#     sheet_tree = set_column(sheet_tree, start_cell, values)
+#     sheet_bytes = serialize_lxml_tree(sheet_tree.lxml_tree)
+#     wba_files[sheet_path] = WorkBookArchiveFileBytes(bytes=sheet_bytes)
+#     return wba_files
 
 # def get_sheet_path_by_name(files: WorkBookArchiveFilepathsWithBytes, sheet_name: str) -> Optional[str]:
 #     """

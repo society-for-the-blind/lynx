@@ -7,6 +7,9 @@ from django.conf import settings
 
 import threading
 from django.core.mail import EmailMessage
+import io
+import zipfile
+import os
 from .utils import oib_quarterly_reports as luo
 
 from django.contrib.auth.decorators import login_required
@@ -174,40 +177,6 @@ def generate_oib_quarterly_reports(request):
     """
     Start background generation of OIB quarterly reports and email the requestor when done.
     """
-    def _generate_and_email(oib_quarter, recipient_email):
-        try:
-            paths = luo.write_report(oib_quarter)
-            if not paths:
-                EmailMessage(
-                    "OIB Report Generation - no output",
-                    "No reports were generated for your request.",
-                    settings.EMAIL_HOST_USER or settings.DEFAULT_FROM_EMAIL,
-                    [recipient_email]
-                ).send()
-                return
-
-            msg = EmailMessage(
-                f"OIB Quarterly Reports: {oib_quarter.quarter_name}",
-                "Attached are the generated OIB quarterly reports.",
-                settings.EMAIL_HOST_USER or settings.DEFAULT_FROM_EMAIL,
-                [recipient_email]
-            )
-            for p in paths:
-                try:
-                    with open(p, 'rb') as fh:
-                        filename = os.path.basename(p)
-                        msg.attach(filename, fh.read(), 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
-                except Exception:
-                    continue
-            msg.send()
-        except Exception as e:
-            EmailMessage(
-                "OIB Report Generation Error",
-                f"Error generating reports: {e}",
-                settings.EMAIL_HOST_USER or settings.DEFAULT_FROM_EMAIL,
-                [recipient_email]
-            ).send()
-
     if request.method == 'POST':
         quarter = request.POST.get('quarter')
         grant_year = request.POST.get('grant_year')
@@ -222,10 +191,40 @@ def generate_oib_quarterly_reports(request):
             messages.error(request, "Invalid quarter selected.")
             return redirect('lynx:reports')
 
-        recipient = request.user.email
-        threading.Thread(target=_generate_and_email, args=(oib_q, recipient), daemon=True).start()
-        messages.info(request, "Report generation started. You will be emailed the reports when ready.")
-        return redirect('lynx:reports')
+        # Synchronous generation and return as a ZIP download
+        try:
+            paths = luo.write_report(oib_q)
+        except Exception as e:
+            messages.error(request, f"Error generating reports: {e}")
+            return redirect('lynx:reports')
+
+        if not paths:
+            messages.error(request, "No reports were generated.")
+            return redirect('lynx:reports')
+
+        # Build an in-memory ZIP file containing the generated XLSX files
+        mem_zip = io.BytesIO()
+        try:
+            with zipfile.ZipFile(mem_zip, mode='w', compression=zipfile.ZIP_DEFLATED) as zf:
+                for p in paths:
+                    try:
+                        arcname = os.path.basename(p)
+                        zf.write(p, arcname=arcname)
+                    except Exception:
+                        # skip unreadable files
+                        continue
+            mem_zip.seek(0)
+
+            response = HttpResponse(mem_zip.read(), content_type='application/zip')
+            response['Content-Disposition'] = f'attachment; filename=OIB_Reports_{oib_q.quarter_name}_{luo.grant_year_for_date()}.zip'
+            return response
+        finally:
+            # best-effort cleanup of temporary files
+            for p in paths:
+                try:
+                    os.remove(p)
+                except Exception:
+                    pass
 
     # GET: show simple form
     grant_year = luo.grant_year_for_date()

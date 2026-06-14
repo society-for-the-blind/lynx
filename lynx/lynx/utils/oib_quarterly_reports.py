@@ -445,11 +445,16 @@ def write_report(oib_quarter: OIBQuarter):
     output_paths: List[str] = []
 
     for report_type, clients in sob.items():
-        # load template into memory
         wbaf = xlsx.load_xlsx_to_memory(report_templates[report_type])
         column_data = transpose_report_data(clients)
+        sheets_by_rid = {sheet.rId: sheet for sheet in xlsx.get_sheets(wbaf)}
 
-        # demographics: write starting at row 17 (template expectation)
+        demographics_sheet = sheets_by_rid[report_sheet_rids["demographics"]]
+        services_sheet = sheets_by_rid[report_sheet_rids["services"]]
+
+        demographics_tree = demographics_sheet.sheet_tree
+        services_tree = services_sheet.sheet_tree
+
         demographics_columns = {
             'A': 'client_name',
             'B': 'case_open_date',
@@ -470,14 +475,16 @@ def write_report(oib_quarter: OIBQuarter):
             'Q': 'residence_county',
         }
         for col, key in demographics_columns.items():
-            xlsx.write_column(
-                wba_files=wbaf,
-                sheet_rid=report_sheet_rids["demographics"],
-                start_cell=xlsx.Cell(column=col, row=17),
-                values=column_data.get(key, [])
+            demographics_tree = xlsx.set_column(
+                demographics_tree,
+                xlsx.Cell(column=col, row=17),
+                column_data.get(key, []),
             )
 
-        # services: write starting at row 7 (template expectation)
+        wbaf[demographics_sheet.path] = xlsx.WorkBookArchiveFileBytes(
+            bytes=xlsx.serialize_lxml_tree(demographics_tree.lxml_tree)
+        )
+
         services_columns = {
             'B': 'vision_screening',
             'C': 'vision_treatment',
@@ -498,14 +505,16 @@ def write_report(oib_quarter: OIBQuarter):
             'S': 'outcome_employment',
         }
         for col, key in services_columns.items():
-            xlsx.write_column(
-                wba_files=wbaf,
-                sheet_rid=report_sheet_rids["services"],
-                start_cell=xlsx.Cell(column=col, row=7),
-                values=column_data.get(key, [])
+            services_tree = xlsx.set_column(
+                services_tree,
+                xlsx.Cell(column=col, row=7),
+                column_data.get(key, []),
             )
 
-        # ensure workbook recalculates formulas on open
+        wbaf[services_sheet.path] = xlsx.WorkBookArchiveFileBytes(
+            bytes=xlsx.serialize_lxml_tree(services_tree.lxml_tree)
+        )
+
         xlsx.force_recalc_on_open(wbaf)
 
         timestamp = datetime.now(timezone.utc).strftime("%Y_%m_%d_%H%M%S")
