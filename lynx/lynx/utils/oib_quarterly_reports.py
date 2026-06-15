@@ -4,6 +4,11 @@ from collections import OrderedDict
 from lynx import models  as lm
 from typing import Dict, List, NamedTuple, Optional, TypeAlias, Callable
 from lynx.utils import xlsx
+from django.conf import settings
+from pathlib import Path
+import logging
+
+logger = logging.getLogger(__name__)
 
 class OIBQuarter(NamedTuple):
     quarter_name: str
@@ -431,9 +436,10 @@ def transpose_report_data(ordered_oib_clients: OIBClientsWithReportData) -> List
 # _ = x.write_column( wba_files=wbaf_7ob, sheet_rid="rId4", start_cell=x.Cell(column='C', row=17), values=age_groups)
 # x.write_memory_to_xlsx(wbaf_7ob, "/tmp/aaa.xlsx")
 def write_report(oib_quarter: OIBQuarter):
+    # Template paths are relative to the project BASE_DIR; ensure absolute paths
     report_templates = {
-        "YIB": "sftb/xlsx_templates/YIB_Report_Data_Collection_Tool_2025_v2.xlsx",
-        "7OB": "sftb/xlsx_templates/7-OB_Report_Data_Collection_Tool_2025_v2.xlsx",
+        "YIB": Path(settings.BASE_DIR) / "sftb" / "xlsx_templates" / "YIB_Report_Data_Collection_Tool_2025_v2.xlsx",
+        "7OB": Path(settings.BASE_DIR) / "sftb" / "xlsx_templates" / "7-OB_Report_Data_Collection_Tool_2025_v2.xlsx",
     }
     report_sheet_rids = {
         "demographics": "rId4",
@@ -445,7 +451,12 @@ def write_report(oib_quarter: OIBQuarter):
     output_paths: List[str] = []
 
     for report_type, clients in sob.items():
-        wbaf = xlsx.load_xlsx_to_memory(report_templates[report_type])
+        template_path = report_templates[report_type]
+        try:
+            wbaf = xlsx.load_xlsx_to_memory(str(template_path))
+        except Exception:
+            logger.exception("Failed to load XLSX template %s", template_path)
+            raise
         column_data = transpose_report_data(clients)
         sheets_by_rid = {sheet.rId: sheet for sheet in xlsx.get_sheets(wbaf)}
 
