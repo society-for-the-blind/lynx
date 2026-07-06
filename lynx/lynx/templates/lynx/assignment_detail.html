@@ -3,7 +3,7 @@
 {% block content %}
 
 <h1>SIP/ILP Assignments for {{contact.first_name}} {{contact.last_name}}</h1>
-<input type="button" class="btn btn-success" aria-label="Assign Instructor" onclick="location.href='{% url 'lynx:oib_assignment_add' contact_id %}';" value="Add Assignment" /> <input type="button" class="btn btn-success" aria-label="Back to Client" onclick="location.href='{% url 'lynx:contact_show' contact_id %}';" value="Return to Client" />
+<input type="button" class="btn btn-success" aria-label="Assign Instructor" onclick="location.href='{% url 'lynx:oib_assignment_new' contact_id %}';" value="Add Assignment" /> <input type="button" class="btn btn-success" aria-label="Back to Client" onclick="location.href='{% url 'lynx:contact_show' contact_id %}';" value="Return to Client" />
     <table class="table">
         <tr>
             <th>Program</th>
@@ -29,8 +29,8 @@
                         <form>
                           {% csrf_token %}
                           <input type="hidden" name="next" value="{{ request.path }}">
-                          <button class="btn btn-primary" formaction="{% url 'lynx:assignment-edit' contact_id instructor.id %}">Edit</button>
-                          <button class="btn btn-danger" formaction="{% url 'lynx:assignment-delete' contact_id instructor.id %}">Delete</button>
+                          <button class="btn btn-primary" formaction="{% url 'lynx:oib_assignment_edit' contact_id instructor.id %}">Edit</button>
+                          <button class="btn btn-danger" formaction="{% url 'lynx:oib_assignment_delete' contact_id instructor.id %}">Delete</button>
                         </form>
                     </td>
                 {% endif %}

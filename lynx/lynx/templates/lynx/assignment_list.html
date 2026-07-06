@@ -69,13 +69,13 @@
                     <form>
                       {% csrf_token %}
                       <input type="hidden" name="next" value="{{ request.get_full_path }}">
-                      <button class="btn btn-primary" formaction="{% url 'lynx:assignment-edit' assignment.client_id assignment.assignment_id %}">Edit</button>
-                      <button class="btn btn-danger" formaction="{% url 'lynx:assignment-delete' assignment.client_id assignment.assignment_id %}">Delete</button>
+                      <button class="btn btn-primary" formaction="{% url 'lynx:oib_assignment_edit' assignment.client_id assignment.assignment_id %}">Edit</button>
+                      <button class="btn btn-danger" formaction="{% url 'lynx:oib_assignment_delete' assignment.client_id assignment.assignment_id %}">Delete</button>
                     </form>
                   {% endif %}
                   <span class="expand btn btn-success">Expand<span>
                 </td>
-                <!-- <td><a href="/lynx/assignment-edit/{{ key }}">{{ assignment.assignment_status }}</a></td> -->
+                <!-- <td><a href="/lynx/oib_assignment_edit/{{ key }}">{{ assignment.assignment_status }}</a></td> -->
             </tr>
         {% endfor %}
         </tbody>
