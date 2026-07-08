@@ -628,3 +628,8 @@ class OIBServiceEventFilterForm(forms.Form):
         years = list(range(2000, 2101))
         self.fields['start_date'].widget = forms.SelectDateWidget(years=years)
         self.fields['end_date'].widget = forms.SelectDateWidget(years=years)
+
+class NumberOfServicesForm(forms.Form):
+    start_date = forms.DateField(widget=forms.SelectDateWidget(years=list(range(1900, 2100))))
+    end_date = forms.DateField(widget=forms.SelectDateWidget(years=list(range(1900, 2100))))
+    include_event_dates = forms.BooleanField(required=False)

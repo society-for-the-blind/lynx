@@ -243,18 +243,19 @@ def generate_number_of_services_report(request):
     Generate SIP report for number of services per client per date range and return as a downloadable CSV.
     """
     if request.method == 'POST':
-        start_date_str = request.POST.get('start_date')
-        end_date_str = request.POST.get('end_date')
-        try:
-            start_date = datetime.strptime(start_date_str, '%Y-%m-%d').date()
-            end_date = datetime.strptime(end_date_str, '%Y-%m-%d').date()
-        except ValueError:
-            messages.error(request, "Invalid date format. Please use YYYY-MM-DD.")
+        form = lfo.NumberOfServicesForm(request.POST)
+        if not form.is_valid():
+            messages.error(request, "Invalid date format. Please correct the form fields.")
             return redirect('lynx:reports')
+
+        start_date = form.cleaned_data['start_date']
+        end_date = form.cleaned_data['end_date']
+        include_event_dates = form.cleaned_data.get('include_event_dates')
 
         try:
             report_data = lunos.get_number_of_services(start_date, end_date)
         except Exception as e:
+            logger.exception("Error generating number of services report")
             messages.error(request, f"Error generating report: {e}")
             return redirect('lynx:reports')
 
@@ -263,12 +264,12 @@ def generate_number_of_services_report(request):
         response['Content-Disposition'] = f'attachment; filename=number_of_services_{start_date}_{end_date}.csv'
         writer = csv.writer(response)
         default_column_headers = ['Contact ID', 'Client Name', 'County', 'Service Event Count']
-        if request.POST.get('include_event_dates'):
+        if include_event_dates:
             default_column_headers.append('Event Dates')
         writer.writerow(default_column_headers)
         for item in report_data:
             default_data = [item['contact_id'], item['client_name'], item.get('county', ''), item.get('service_event_count', 0)]
-            if request.POST.get('include_event_dates'):
+            if include_event_dates:
                 event_dates_str = '\n'.join([d.strftime('%Y-%m-%d') for d in item.get('event_dates', [])])
                 default_data.append(event_dates_str)
             # services_str = '; '.join([f"{s['service_short']} (count: {s['count']})" for s in item['services']])
@@ -278,11 +279,14 @@ def generate_number_of_services_report(request):
     current_grant_year = luo.grant_year_for_date()
     current_grant_year_start_date = luo.grant_start_date_for_grant_year(grant_year=current_grant_year)
     # GET: show form to input date range
+    form = lfo.NumberOfServicesForm(initial={
+        'start_date': current_grant_year_start_date,
+        'end_date': date.today(),
+        'include_event_dates': True,
+    })
     return render(request, 'lynx/oib_number_of_services_per_client_report.html', {
         'page_title': 'Generate Number of Services Report',
-        'current_grant_year_start_date': current_grant_year_start_date,
-        'current_date': date.today(),
-        'include_event_dates': True, # default to including event dates in the report
+        'form': form,
     })
 # ===================================================================== }}-
 

@@ -1,14 +1,10 @@
 {% extends "lynx/base.html" %}
+{% load crispy_forms_tags %}
 {% block content %}
 <h1>{{ page_title }}</h1>
 <form method="post">
     {% csrf_token %}
-    <label for="start_date">Start date:</label>
-    <input type="date" id="start_date" name="start_date" value="{{ current_grant_year_start_date|date:'Y-m-d' }}" required>
-    <label for="end_date">End date:</label>
-    <input type="date" id="end_date" name="end_date" value="{{ current_date|date:'Y-m-d' }}" required>
-    <label for="include_event_dates">Add event dates?</label>
-    <input type="checkbox" id="include_event_dates" name="include_event_dates" {% if include_event_dates %}checked{% endif %}>
+    {{ form|crispy }}
     <button type="submit">Generate and download CSV</button>
 </form>
 {% endblock %}
