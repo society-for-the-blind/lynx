@@ -975,6 +975,20 @@ class OIBService(models.Model):
     def __str__(self):
         return self.oib_service
 
+class OIBPlan(models.Model):
+    oib_plan_name = models.CharField(max_length=255)
+    created = models.DateTimeField(auto_now_add=True)
+    modified = models.DateTimeField(auto_now=True)
+    history = HistoricalRecords()
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=['oib_plan_name'], name='unique_oib_plan_name')
+        ]
+
+    def __str__(self):
+        return self.oib_plan_name
+
 class OIBServiceEvent(models.Model):
     # NOTE-1 See "0109_add_oibserviceeventcontact.py" for
     #        the diff between `organizer` and `OIBServiceEventContact.oib_program`
@@ -990,6 +1004,7 @@ class OIBServiceEvent(models.Model):
 
     # NOTE This is the "plan" in the front-end.
     oib_service_delivery_type = models.ForeignKey(OIBServiceDeliveryType, on_delete=models.PROTECT)
+    oib_plan = models.ForeignKey(OIBPlan, on_delete=models.PROTECT, null=True, blank=True)
 
     date = models.DateField(blank=True, default=date.today)
     # start_time = models.TimeField(blank=True, default="00:00:00")
@@ -1281,9 +1296,13 @@ class OIBOutcome(models.Model):
         verbose_name = "OIB Outcome"
         verbose_name_plural = "OIB Outcomes"
 
-
-# === MARK FOR DELETION =====================================================
-# Can't delete these until prod hasn't been migrated with 0131.
+# === TODO: DELETE ONCE NEW MODELS PUSHED TO PRODUCTION =====================
+#
+# Can't delete these until prod  hasn't  been  migrated  because  ...  of
+# migrations? Right now, deployments take a copy of the  old  version  of
+# the datbase, apply the transformation, and  then  save  the  new  model
+# tables. It feels safer to just wait until the new model is accepted and
+# pushed to production.
 class BasePlanNote(models.Model):
     contact = models.ForeignKey('Contact', on_delete=models.CASCADE)
     note = models.TextField(null=True)
