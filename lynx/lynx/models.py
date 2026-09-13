@@ -927,6 +927,10 @@ class Assignment(models.Model):
 #      "plan types". Damage done.
 class OIBServiceDeliveryType(models.Model):
     parent_id = models.IntegerField(null=True, blank=True)
+    # TODO Made a decisiion in the beginning to  use  the
+    #      model name as this attribute  instead  of  using
+    #      `name` - this may have  been  a  mistake...  See
+    #      `views._get_plans`
     oib_service_delivery_type = models.CharField(max_length=255)
     created = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)
@@ -1011,8 +1015,18 @@ class OIBServiceEvent(models.Model):
         else:
             return self.date.year - 1
 
-    def get_plan_name(self, grant_year, program, servide_delivery_type_name):
-        return f"{program or ''} 10/1/{grant_year} - {servide_delivery_type_name or ''}"
+    def get_program(self, contact):
+        client_age_at_event = contact.maybe_age_on(self.date)
+        return Program.get_age_appropriate_oib_program(client_age_at_event)
+    
+    def construct_plan_name(self, default = True):
+        grant_year = self.get_grant_year()
+        if default:
+            plan_month_day = "10/01"
+        else:
+            plan_month_day = self.date.strftime("%m/%d")
+        service_delivery_type_name = getattr(self.oib_service_delivery_type, 'oib_service_delivery_type', '') or ""
+        return f"{plan_month_day}/{grant_year} - {service_delivery_type_name or ''}"
 
     def collect_service_names(self):
         service_names = set()

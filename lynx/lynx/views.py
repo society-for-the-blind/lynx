@@ -2419,20 +2419,19 @@ def _get_plans(client):
     # Keep one OrderedDict mapping each key -> list[OIBServiceEvent].
     service_events_by_plan = OrderedDict()
     for service_event in service_events_qs:
-        client_age_at_event = client.maybe_age_on(service_event.date)
-        program = lm.Program.get_age_appropriate_oib_program(client_age_at_event)
+        program = service_event.get_program(client)
         # normalize program to a simple code/string for the key (avoid model instances as dict keys)
-        program = getattr(program, 'program', program) if program is not None else None
-        key = (service_event.grant_year, service_event.oib_service_delivery_type_id, program)
+        program_name = getattr(program, 'program', program) if program is not None else None
+        key = (service_event.grant_year, service_event.oib_service_delivery_type_id, program_name)
         service_events_by_plan.setdefault(key, []).append(service_event)
 
     plans = []
-    for (grant_year, service_delivery_type_id, program), service_events in service_events_by_plan.items():
+    for (grant_year, service_delivery_type_id, program_name), service_events in service_events_by_plan.items():
         # use the first event as representative for names / labels
         first_service_event = service_events[0]
-        maybe_sdt = first_service_event.oib_service_delivery_type
-        service_delivery_type_name = maybe_sdt.oib_service_delivery_type if maybe_sdt.oib_service_delivery_type else ""
-        plan_name = first_service_event.get_plan_name(grant_year, program, service_delivery_type_name)
+        sdt_name = getattr(first_service_event.oib_service_delivery_type, 'oib_service_delivery_type', '') or ""
+        program = first_service_event.get_program(client)
+        plan_name = first_service_event.construct_plan_name()
 
         service_names = set().union(*(se.collect_service_names() for se in service_events))
         _otc_id_dict, _outcome_types, otc_tuples = _get_plan_outcomes(client.id, service_delivery_type_id, grant_year)
@@ -2443,13 +2442,14 @@ def _get_plans(client):
         service_event_ids_for_plan = [se.id for se in service_events]
         plan_token = signing.dumps(service_event_ids_for_plan)
 
+        ui_plan_name = f"{program or ''} {plan_name}"
         plans.append({
-            'id': plan_name,
+            'id': ui_plan_name,
             'grant_year': grant_year,
             'service_delivery_type_id': service_delivery_type_id,
-            'service_delivery_type_name': service_delivery_type_name,
-            'plan_name': plan_name,
-            'program': program,
+            'service_delivery_type_name': sdt_name,
+            'plan_name': ui_plan_name,
+            'program': program_name,
             'outcomes': otc_tuples,
             'service_names': sorted(service_names, key=str.lower),
             'plan_token': plan_token,
@@ -2509,7 +2509,7 @@ def _oib_plan_dict(request, contact_id, program, grant_year, service_delivery_ty
         "outcome_types": outcome_types,
         "choices_by_type": choices_by_type,
         "program": program,
-        "plan_name": service_events[0].get_plan_name(grant_year, program, service_delivery_type.oib_service_delivery_type),
+        "plan_name": f"{program or ''} {service_events[0].construct_plan_name()}",
         "plan_outcomes": otc_id_dict if edit_mode else otc_tuples,
         "edit_mode": edit_mode,
     }
