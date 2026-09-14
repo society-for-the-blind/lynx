@@ -2412,29 +2412,97 @@ def oib_service_events_per_client_per_program(request, contact_id, program):
         "service_events": events,
     })
 
-def _get_plans(client):
-    service_events_qs = lm.OIBServiceEvent.for_client_with_grant_year(client.id)
+# NOTE the attempt with cache
+# def _get_plans(client):
+#     client_birth_date = client.intake_set.first().birth_date if client.intake_set.exists() else None
 
-    # Group events by the plan key (grant_year, service_delivery_type_id, program) preserving first-seen order.
-    # Keep one OrderedDict mapping each key -> list[OIBServiceEvent].
-    service_events_by_plan = OrderedDict()
-    for service_event in service_events_qs:
+#     cached, _created = lm.ContactBirthDateCache.objects.get_or_create(contact=client, defaults={'last_saved_birth_date': client_birth_date})
+#     cached_birth_date = cached.last_saved_birth_date
+
+#     # TODO/NOTE 2026_09_13_1645
+#     # Note checking whether `client_birth_date` is None - this should not happen. If it does,
+#     # this needs to be fixed.`
+#     if ( client_birth_date == cached_birth_date):
+#         plan_program_service_events_qs = lm.OIBPlanProgramCache.for_client(client.id)
+#         if plan_program_service_events_qs.exists():
+#             service_events = plan_program_service_events_qs.all()
+#         else:
+#             service_events = lm.OIBServiceEvent.for_client(client.id).all()
+#             service_events_by_plan = {}
+#             for service_event in service_event_qs:
+#                 program = service_event.get_program(client)
+#                 # normalize program to a simple code/string for the key (avoid model instances as dict keys)
+#                 program_name = getattr(program, 'program', program) if program is not None else None
+
+#                 key = (service_event.grant_year, service_event.oib_service_delivery_type_id, program_name)
+#                 service_events_by_plan.setdefault(key, []).append(service_event)
+
+
+#     plans = []
+#     for (grant_year, service_delivery_type_id, program_name), service_events in service_events_by_plan.items():
+#         # use the first event as representative for names / labels
+#         first_service_event = service_events[0]
+#         sdt_name = getattr(first_service_event.oib_service_delivery_type, 'oib_service_delivery_type', '') or ""
+#         program = first_service_event.get_program(client)
+#         plan_name = first_service_event.construct_plan_name()
+
+#         service_names = set().union(*(se.collect_service_names() for se in service_events))
+#         _otc_id_dict, _outcome_types, otc_tuples = _get_plan_outcomes(client.id, service_delivery_type_id, grant_year)
+
+#         # `service_events_by_plan` contains exactly what the name says, but don't want to
+#         # recreate that on each plan load, so added the concrete service event IDs to each
+#         # plan link to be read by the appropriate plan view.
+#         service_event_ids_for_plan = [se.id for se in service_events]
+#         plan_token = signing.dumps(service_event_ids_for_plan)
+
+#         ui_plan_name = f"{program or ''} {plan_name}"
+#         plans.append({
+#             'id': ui_plan_name,
+#             'grant_year': grant_year,
+#             'service_delivery_type_id': service_delivery_type_id,
+#             'service_delivery_type_name': sdt_name,
+#             'plan_name': ui_plan_name,
+#             'program': program_name,
+#             'outcomes': otc_tuples,
+#             'service_names': sorted(service_names, key=str.lower),
+#             'plan_token': plan_token,
+#             'service_events': service_events,
+#         })
+
+#     return plans
+
+def _get_plans(client):
+    service_event_contacts = \
+        lm.OIBServiceEventContact.objects.filter(contact=client) \
+            .select_related('oib_service_event') \
+            .select_related('oib_plan') \
+            .select_related('contact')
+
+    service_events_by_plan = {}
+    for sec in service_event_contacts:
+        service_event = sec.oib_service_event
         program = service_event.get_program(client)
-        # normalize program to a simple code/string for the key (avoid model instances as dict keys)
         program_name = getattr(program, 'program', program) if program is not None else None
-        key = (service_event.grant_year, service_event.oib_service_delivery_type_id, program_name)
+
+        key = (program_name, service_event.oib_plan.oib_plan_name)
         service_events_by_plan.setdefault(key, []).append(service_event)
 
+    sorted_service_events_by_plan = dict(sorted(service_events_by_plan.items(), reverse=True))
     plans = []
-    for (grant_year, service_delivery_type_id, program_name), service_events in service_events_by_plan.items():
+    for (program_name, plan_name), service_events in sorted_service_events_by_plan.items():
         # use the first event as representative for names / labels
         first_service_event = service_events[0]
         sdt_name = getattr(first_service_event.oib_service_delivery_type, 'oib_service_delivery_type', '') or ""
-        program = first_service_event.get_program(client)
-        plan_name = first_service_event.construct_plan_name()
 
+        grant_year = first_service_event.get_grant_year()
+        service_delivery_type_id = first_service_event.oib_service_delivery_type_id
         service_names = set().union(*(se.collect_service_names() for se in service_events))
-        _otc_id_dict, _outcome_types, otc_tuples = _get_plan_outcomes(client.id, service_delivery_type_id, grant_year)
+        _otc_id_dict, _outcome_types, otc_tuples = \
+            _get_plan_outcomes(
+                client.id,
+                service_delivery_type_id,
+                grant_year
+            )
 
         # `service_events_by_plan` contains exactly what the name says, but don't want to
         # recreate that on each plan load, so added the concrete service event IDs to each
@@ -2442,7 +2510,7 @@ def _get_plans(client):
         service_event_ids_for_plan = [se.id for se in service_events]
         plan_token = signing.dumps(service_event_ids_for_plan)
 
-        ui_plan_name = f"{program or ''} {plan_name}"
+        ui_plan_name = f"{program_name or ''} {plan_name}"
         plans.append({
             'id': ui_plan_name,
             'grant_year': grant_year,
