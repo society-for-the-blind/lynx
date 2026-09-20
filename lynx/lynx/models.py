@@ -1008,7 +1008,7 @@ class ContactBirthDateCache(models.Model):
         ]
 
     def __str__(self):
-        return f"{self.contact} - {self.birth_date}"
+        return f"{self.contact} - {self.last_saved_birth_date}"
 
 class OIBServiceEvent(models.Model):
     # NOTE-1 See "0109_add_oibserviceeventcontact.py" for
