@@ -42,10 +42,6 @@ class Migration(migrations.Migration):
             },
             bases=(simple_history.models.HistoricalChanges, models.Model),
         ),
-        migrations.RemoveConstraint(
-            model_name='oibplan',
-            name='unique_oib_plan_name',
-        ),
         migrations.RemoveField(
             model_name='historicaloibserviceevent',
             name='oib_plan',
@@ -53,20 +49,6 @@ class Migration(migrations.Migration):
         migrations.RemoveField(
             model_name='oibserviceevent',
             name='oib_plan',
-        ),
-        migrations.AddField(
-            model_name='historicaloibplan',
-            name='program_name',
-            field=models.CharField(blank=True, max_length=255, null=True),
-        ),
-        migrations.AddField(
-            model_name='oibplan',
-            name='program_name',
-            field=models.CharField(blank=True, max_length=255, null=True),
-        ),
-        migrations.AddConstraint(
-            model_name='oibplan',
-            constraint=models.UniqueConstraint(fields=('oib_plan_name', 'program_name'), name='unique_oib_plan_name'),
         ),
         migrations.AddField(
             model_name='contactbirthdatecache',

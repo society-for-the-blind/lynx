@@ -978,14 +978,13 @@ class OIBService(models.Model):
 
 class OIBPlan(models.Model):
     oib_plan_name = models.CharField(max_length=255)
-    program_name = models.CharField(max_length=255, blank=True, null=True)
     created = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)
     history = HistoricalRecords()
 
     class Meta:
         constraints = [
-            models.UniqueConstraint(fields=['oib_plan_name', 'program_name'], name='unique_oib_plan_name')
+            models.UniqueConstraint(fields=['oib_plan_name'], name='unique_oib_plan_name')
         ]
 
     def __str__(self):
@@ -1010,33 +1009,6 @@ class ContactBirthDateCache(models.Model):
 
     def __str__(self):
         return f"{self.contact} - {self.birth_date}"
-
-# class OIBPlanProgramCache(models.Model):
-#     oib_plan = models.ForeignKey(OIBPlan, on_delete=models.CASCADE)
-#     oib_program = models.ForeignKey('Program', on_delete=models.CASCADE)
-#     oib_service_event = models.ForeignKey('OIBServiceEvent', on_delete=models.CASCADE)
-#     contact = models.ForeignKey('Contact', on_delete=models.CASCADE)
-#     created = models.DateTimeField(auto_now_add=True)
-#     modified = models.DateTimeField(auto_now=True)
-#     history = HistoricalRecords()
-
-#     class Meta:
-#         constraints = [
-#             models.UniqueConstraint(fields=['oib_plan', 'oib_program', 'contact', 'oib_service_event'], name='unique_oib_plan_program')
-#         ]
-
-#     def __str__(self):
-#         return f"{self.oib_plan} - {self.oib_program}"
-
-#     @classmethod
-#     def for_client(cls, contact_id):
-#         """
-#         Base queryset for a contact with useful joins for repeated use.
-#         """
-#         return cls.objects.filter(contact__id=contact_id) \
-#                    .select_related('oib_plan') \
-#                    .select_related('oib_program') \
-#                    .select_related('oib_service_event')
 
 class OIBServiceEvent(models.Model):
     # NOTE-1 See "0109_add_oibserviceeventcontact.py" for
@@ -1218,6 +1190,7 @@ class OIBServiceEventContact(models.Model):
     contact = models.ForeignKey(Contact, on_delete=models.PROTECT)
     oib_service_event_contact_role = models.ForeignKey(OIBServiceEventContactRole, on_delete=models.PROTECT, default=0)
     oib_plan = models.ForeignKey(OIBPlan, on_delete=models.PROTECT, null=True, blank=True)
+    program_name = models.CharField(max_length=255, blank=True, null=True)
     created = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)
     history = HistoricalRecords()
