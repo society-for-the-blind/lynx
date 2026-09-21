@@ -1010,6 +1010,24 @@ class ContactBirthDateCache(models.Model):
     def __str__(self):
         return f"{self.contact} - {self.last_saved_birth_date}"
 
+    @classmethod
+    def cache_updated(cls, contact):
+        client_birth_date = contact.intake_set.first().birth_date if contact.intake_set.exists() else '1900-01-01'
+        birth_date_cache = cls.objects.filter(contact=contact).first()
+        if birth_date_cache is None:
+            # Create a new cache entry if it doesn't exist
+            birth_date_cache = cls.objects.create(
+                contact=contact,
+                last_saved_birth_date=client_birth_date
+            )
+            return True
+        if birth_date_cache.last_saved_birth_date != client_birth_date:
+            # Update the cache if the birth date has changed
+            birth_date_cache.last_saved_birth_date = client_birth_date
+            birth_date_cache.save()
+            return True
+        return False
+
 class OIBServiceEvent(models.Model):
     # NOTE-1 See "0109_add_oibserviceeventcontact.py" for
     #        the diff between `organizer` and `OIBServiceEventContact.oib_program`

@@ -883,13 +883,22 @@ class ContactDetailView(LoginRequiredMixin, DetailView):
         context['form'] = lfo.IntakeNoteForm
         context['upload_form'] = lfo.DocumentForm
 
-        oib_plans = _get_plans(self.object)
-        oib_programs = sorted(list({plan['program'] for plan in oib_plans}))
-        context['oib_programs'] = oib_programs
-        # import pdb; pdb.set_trace()
 
-        # add historical SIP / ILP existence flag and counts
-        client_id = self.kwargs['pk']
+        # cache_updated() == True ->  client birth date =/= cached birth date,
+        #                             cache was updated.
+        # cache_updated() == False -> client birth date === cached birth date
+        client = lm.Contact.objects.get(pk=self.kwargs['pk'])
+        birth_date_cache_updated = lm.ContactBirthDateCache.cache_updated(client)
+        if not(birth_date_cache_updated):
+            context['oib_programs'] = \
+                lm.OIBServiceEventContact.objects \
+                    .filter(contact_id=self.kwargs['pk']) \
+                    .values_list('program_name', flat=True) \
+                    .distinct()
+        else:
+            oib_plans = _get_plans(self.object, birth_date_cache_updated)
+            oib_programs = sorted(list({plan['program'] for plan in oib_plans}))
+            context['oib_programs'] = oib_programs
 
         # compute warnings / optionally auto-end offending memberships
         birth_date = intake.birth_date if intake else None
@@ -2370,7 +2379,8 @@ def _get_plan_outcomes(contact_id, service_delivery_type_id, grant_year):
 @login_required
 def oib_plan_list(request, contact_id):
     client = lm.Contact.objects.get(id=contact_id)
-    plans = _get_plans(client)
+    birth_date_cache_updated = lm.ContactBirthDateCache.cache_updated(client)
+    plans = _get_plans(client, birth_date_cache_updated)
 
     program_filter = (request.GET.get('program') or '').strip()
 
@@ -2391,7 +2401,8 @@ def oib_service_events_per_client_per_program(request, contact_id, program):
     Uses _get_plans() to rely on the same program-detection logic.
     """
     client = get_object_or_404(lm.Contact, pk=contact_id)
-    plans = _get_plans(client)
+    birth_date_cache_updated = lm.ContactBirthDateCache.cache_updated(client)
+    plans = _get_plans(client, birth_date_cache_updated)
     # collect events for the requested program
     events = []
     for plan in plans:
@@ -2471,7 +2482,16 @@ def oib_service_events_per_client_per_program(request, contact_id, program):
 
 #     return plans
 
-def _get_plans(client):
+def _get_plans(client, birth_date_cache_updated):
+
+    def _create_and_save_program_name(service_event_contact):
+        service_event = service_event_contact.oib_service_event
+        program = service_event.get_program(client)
+        program_name = getattr(program, 'program', program) if program is not None else None
+        service_event_contact.program_name = program_name
+        service_event_contact.save(update_fields=['program_name'])
+        return program_name
+
     service_event_contacts = \
         lm.OIBServiceEventContact.objects.filter(contact=client) \
             .select_related('oib_service_event') \
@@ -2481,10 +2501,23 @@ def _get_plans(client):
     service_events_by_plan = {}
     for sec in service_event_contacts:
         service_event = sec.oib_service_event
-        program = service_event.get_program(client)
-        program_name = getattr(program, 'program', program) if program is not None else None
 
-        key = (program_name, service_event.oib_plan.oib_plan_name)
+        # cache_updated() == True ->  client birth date =/= cached birth date,
+        #                             cache was updated.
+        # cache_updated() == False -> client birth date === cached birth date
+        #
+        # The return value of cache_updated() is necessary here because if there
+        # was a cache miss (i.e. the client birth date changed), then the program
+        # name needs to be re-calculated and saved.
+        if not(birth_date_cache_updated):
+            if (sec.program_name is not None) and (sec.program_name != ''):
+                program_name = sec.program_name
+            else:
+                program_name = _create_and_save_program_name(sec)
+        else:
+            program_name = _create_and_save_program_name(sec)
+
+        key = (program_name, sec.oib_plan.oib_plan_name)
         service_events_by_plan.setdefault(key, []).append(service_event)
 
     sorted_service_events_by_plan = dict(sorted(service_events_by_plan.items(), reverse=True))

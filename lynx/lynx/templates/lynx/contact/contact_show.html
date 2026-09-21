@@ -53,7 +53,7 @@
             <input type="button" class="btn btn-success" aria-label="{{ program }} Plans"
                         onclick="location.href='{% url 'lynx:oib_plan_list' object.id %}?program={{ program|urlencode }}';"
                         value="{{ program }} Plans" />
-            <input type="button" class="btn btn-success" aria-label="{{ program }} Events"
+            <input type="button" class="btn btn-success" aria-label="{{ program }} Notes"
                 onclick="location.href='{% url 'lynx:oib_service_events_per_client_per_program' object.id program %}';"
                 value="View {{ program }} Notes" />
         {% endif %}
