@@ -2377,20 +2377,17 @@ def _get_plan_outcomes(contact_id, service_delivery_type_id, grant_year):
     return otc_id_dict, outcome_types, outcome_type_choice_tuples
 
 @login_required
-def oib_plan_list(request, contact_id):
+def oib_plan_list(request, contact_id, program_name):
     client = lm.Contact.objects.get(id=contact_id)
     birth_date_cache_updated = lm.ContactBirthDateCache.cache_updated(client)
-    plans = _get_plans(client, birth_date_cache_updated)
+    plans = _get_plans(client, birth_date_cache_updated, program_name=program_name)
 
-    program_filter = (request.GET.get('program') or '').strip()
-
-    if program_filter:
-        plans = [plan for plan in plans if plan['program'] == program_filter]
+    # plans = [plan for plan in plans if plan['program'] == program_name]
 
     return render(request, "lynx/oib/oib_plan_list.html", {
         "client": client,
         "plans": plans,
-        "program": request.GET.get('program')
+        "program": program_name
     })
 
 @login_required
@@ -2482,7 +2479,7 @@ def oib_service_events_per_client_per_program(request, contact_id, program):
 
 #     return plans
 
-def _get_plans(client, birth_date_cache_updated):
+def _get_plans(client, birth_date_cache_updated, program_name=None):
 
     def _create_and_save_program_name(service_event_contact):
         service_event = service_event_contact.oib_service_event
@@ -2492,11 +2489,13 @@ def _get_plans(client, birth_date_cache_updated):
         service_event_contact.save(update_fields=['program_name'])
         return program_name
 
-    service_event_contacts = \
-        lm.OIBServiceEventContact.objects.filter(contact=client) \
-            .select_related('oib_service_event') \
-            .select_related('oib_plan') \
-            .select_related('contact')
+    service_event_contacts = (
+        lm.OIBServiceEventContact.objects
+        .filter(contact=client)
+        .select_related('oib_service_event', 'oib_plan', 'contact')
+    )
+    if program_name:
+        service_event_contacts = service_event_contacts.filter(program_name__iexact=program_name)
 
     service_events_by_plan = {}
     for sec in service_event_contacts:
@@ -2517,12 +2516,12 @@ def _get_plans(client, birth_date_cache_updated):
         else:
             program_name = _create_and_save_program_name(sec)
 
-        key = (program_name, sec.oib_plan.oib_plan_name)
+        key = (sec.oib_plan.oib_plan_name, program_name, sec.oib_plan)
         service_events_by_plan.setdefault(key, []).append(service_event)
 
     sorted_service_events_by_plan = dict(sorted(service_events_by_plan.items(), reverse=True))
     plans = []
-    for (program_name, plan_name), service_events in sorted_service_events_by_plan.items():
+    for (plan_name, program_name, oib_plan), service_events in sorted_service_events_by_plan.items():
         # use the first event as representative for names / labels
         first_service_event = service_events[0]
         sdt_name = getattr(first_service_event.oib_service_delivery_type, 'oib_service_delivery_type', '') or ""
@@ -2545,7 +2544,7 @@ def _get_plans(client, birth_date_cache_updated):
 
         ui_plan_name = f"{program_name or ''} {plan_name}"
         plans.append({
-            'id': ui_plan_name,
+            'id': oib_plan.id,
             'grant_year': grant_year,
             'service_delivery_type_id': service_delivery_type_id,
             'service_delivery_type_name': sdt_name,

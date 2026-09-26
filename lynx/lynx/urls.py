@@ -120,7 +120,7 @@ urlpatterns = [
         ),
 
     # "plans" (one / client / grant year / service delivery type (aka. plan type))
-    path('oib/client/<int:contact_id>/plans',
+    path('oib/client/<int:contact_id>/<str:program_name>/plans',
          views.oib_plan_list,
          name='oib_plan_list'
         ),

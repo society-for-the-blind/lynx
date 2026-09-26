@@ -48,14 +48,14 @@
 
   {% if object.programs.all|has_any_oib %}
         <input type="button" class="btn btn-success" aria-label="SIP/ILP Assignments" onclick="location.href='{% url 'lynx:oib_assignment_for_client' object.id %}';" value="SIP/ILP Assignments" />
-    {% for program in oib_programs %}
-        {% if program != None %}
-            <input type="button" class="btn btn-success" aria-label="{{ program }} Plans"
-                        onclick="location.href='{% url 'lynx:oib_plan_list' object.id %}?program={{ program|urlencode }}';"
-                        value="{{ program }} Plans" />
-            <input type="button" class="btn btn-success" aria-label="{{ program }} Notes"
-                onclick="location.href='{% url 'lynx:oib_service_events_per_client_per_program' object.id program %}';"
-                value="View {{ program }} Notes" />
+    {% for program_name in oib_programs %}
+        {% if program_name != None %}
+            <input type="button" class="btn btn-success" aria-label="{{ program_name }} Plans"
+                        onclick="location.href='{% url 'lynx:oib_plan_list' object.id program_name %}';"
+                        value="{{ program_name }} Plans" />
+            <input type="button" class="btn btn-success" aria-label="{{ program_name }} Notes"
+                onclick="location.href='{% url 'lynx:oib_service_events_per_client_per_program' object.id program_name %}';"
+                value="View {{ program_name }} Notes" />
         {% endif %}
     {% endfor %}
     <!--
