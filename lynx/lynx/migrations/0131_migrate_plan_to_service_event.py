@@ -305,59 +305,117 @@ def migrate_legacy_plans(apps, schema_editor):
             if not entered_by:
                 entered_by = User.objects.filter(is_staff=True).first()
 
-            service_event = OIBServiceEvent.objects.create(
-                oib_service_delivery_type=delivery_type,
-                date=note_date,  # use the normalized note_date from the group key
-                length=convert_class_hours_to_duration(g['class_hours']),
-                note=note_text,  # consolidated note text
-                entered_by=entered_by
-            )
-
-            # Attach all unique contacts
-            for contact_id in g['contact_ids']:
-                if not OIBServiceEventContact.objects.filter(oib_service_event=service_event, contact_id=contact_id).exists():
-                    OIBServiceEventContact.objects.create(
-                        oib_service_event=service_event,
-                        contact_id=contact_id,
-                        oib_service_event_contact_role=default_client_role
+            # If `delivery_type` is "in-home", create a separate service event for each contact, else create one event for all contacts
+            # SQL to check:
+            # 
+            #     SELECT *
+            #     FROM public.lynx_oibserviceeventcontact AS sec
+            #     JOIN public.lynx_oibserviceevent AS se ON se.id = sec.oib_service_event_id
+            #     -- ORDER BY oib_service_event_id DESC 
+            #     -- where contact_id = 7588
+            #     WHERE oib_service_delivery_type_id = 1
+            #       AND sec.oib_service_event_id IN (
+            #           SELECT oib_service_event_id 
+            #           FROM public.lynx_oibserviceeventcontact
+            #           GROUP BY oib_service_event_id 
+            #           HAVING COUNT(oib_service_event_id) > 1
+            #       )
+            #     ORDER BY sec.oib_service_event_id DESC; 
+            if delivery_type and delivery_type.oib_service_delivery_type.lower() == "in-home":
+                for contact_id in g['contact_ids']:
+                    service_event = OIBServiceEvent.objects.create(
+                        oib_service_delivery_type=delivery_type,
+                        date=note_date,  # use the normalized note_date from the group key
+                        length=convert_class_hours_to_duration(g['class_hours']),
+                        note=note_text,  # consolidated note text
+                        entered_by=entered_by
                     )
+                    if not OIBServiceEventContact.objects.filter(oib_service_event=service_event, contact_id=contact_id).exists():
+                        OIBServiceEventContact.objects.create(
+                            oib_service_event=service_event,
+                            contact_id=contact_id,
+                            oib_service_event_contact_role=default_client_role
+                        )
 
-            # Attach services derived from each grouped note (dedup-safe via existence check)
-            for n in g['notes']:
-                add_extracted_services(service_event, n)
+                    # Attach services derived from each grouped note (dedup-safe via existence check)
+                    for n in g['notes']:
+                        add_extracted_services(service_event, n)
 
-            # Instructor: prefer note.user, else resolve by instructor name
-            instructor = None
-            rep = g['representative']
-            if getattr(rep, 'user_id', None):
-                instructor = User.objects.filter(pk=rep.user_id).first()
-            if not instructor and g['instructor_name']:
-                parts = g['instructor_name'].split()
-                if len(parts) > 1:
-                    maybe = User.objects.filter(first_name__iexact=parts[0], last_name__iexact=parts[-1]).first()
-                    instructor = maybe or instructor
-            if instructor and not OIBServiceEventInstructor.objects.filter(oib_service_event=service_event, instructor_id=instructor.pk).exists():
-                OIBServiceEventInstructor.objects.create(
-                    oib_service_event=service_event,
-                    instructor=instructor,
-                    oib_service_event_instructor_role=default_instructor_role
+                    # Instructor: prefer note.user, else resolve by instructor name
+                    instructor = None
+                    rep = g['representative']
+                    if getattr(rep, 'user_id', None):
+                        instructor = User.objects.filter(pk=rep.user_id).first()
+                    if not instructor and g['instructor_name']:
+                        parts = g['instructor_name'].split()
+                        if len(parts) > 1:
+                            maybe = User.objects.filter(first_name__iexact=parts[0], last_name__iexact=parts[-1]).first()
+                            instructor = maybe or instructor
+                    if instructor and not OIBServiceEventInstructor.objects.filter(oib_service_event=service_event, instructor_id=instructor.pk).exists():
+                        OIBServiceEventInstructor.objects.create(
+                            oib_service_event=service_event,
+                            instructor=instructor,
+                            oib_service_event_instructor_role=default_instructor_role
+                        )
+
+                    # Outcomes: create per note's plan to preserve per-client outcomes
+                    for n in g['notes']:
+                        try:
+                            create_outcomes(service_event, n, entered_by)
+                        except Exception:
+                            continue
+            else:
+                service_event = OIBServiceEvent.objects.create(
+                    oib_service_delivery_type=delivery_type,
+                    date=note_date,  # use the normalized note_date from the group key
+                    length=convert_class_hours_to_duration(g['class_hours']),
+                    note=note_text,  # consolidated note text
+                    entered_by=entered_by
                 )
 
-            # Outcomes: create per note's plan to preserve per-client outcomes
-            for n in g['notes']:
-                try:
-                    create_outcomes(service_event, n, entered_by)
-                except Exception:
-                    continue
+                # Attach all unique contacts
+                for contact_id in g['contact_ids']:
+                    if not OIBServiceEventContact.objects.filter(oib_service_event=service_event, contact_id=contact_id).exists():
+                        OIBServiceEventContact.objects.create(
+                            oib_service_event=service_event,
+                            contact_id=contact_id,
+                            oib_service_event_contact_role=default_client_role
+                        )
+
+                # Attach services derived from each grouped note (dedup-safe via existence check)
+                for n in g['notes']:
+                    add_extracted_services(service_event, n)
+
+                # Instructor: prefer note.user, else resolve by instructor name
+                instructor = None
+                rep = g['representative']
+                if getattr(rep, 'user_id', None):
+                    instructor = User.objects.filter(pk=rep.user_id).first()
+                if not instructor and g['instructor_name']:
+                    parts = g['instructor_name'].split()
+                    if len(parts) > 1:
+                        maybe = User.objects.filter(first_name__iexact=parts[0], last_name__iexact=parts[-1]).first()
+                        instructor = maybe or instructor
+                if instructor and not OIBServiceEventInstructor.objects.filter(oib_service_event=service_event, instructor_id=instructor.pk).exists():
+                    OIBServiceEventInstructor.objects.create(
+                        oib_service_event=service_event,
+                        instructor=instructor,
+                        oib_service_event_instructor_role=default_instructor_role
+                    )
+
+                # Outcomes: create per note's plan to preserve per-client outcomes
+                for n in g['notes']:
+                    try:
+                        create_outcomes(service_event, n, entered_by)
+                    except Exception:
+                        continue
 
         except Exception:
             continue
 
-
 def reverse_migration(apps, schema_editor):
     # Not reversible
     pass
-
 
 class Migration(migrations.Migration):
 
