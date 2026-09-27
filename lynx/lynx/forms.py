@@ -428,8 +428,16 @@ class OIBServiceEventForm(forms.Form):
         required=True,
         label='Plan Type',
     )
+
+    # `plan_name` dropdown shows all plan names for the service event's pariticipants; service events and contacts have a many to many relationship but all participants for a service event share the same plan name and program name so just show the first participant's plan name and program name in the dropdown. The plan name is used to determine which plan the note will be saved into
+    plan_name = forms.ChoiceField(
+        choices=[],
+        required=True,
+        label='Plan Name',
+    )
+
     note_date = forms.DateField(
-        widget=forms.SelectDateWidget(years=list(range(1900, 2100))),
+        widget=forms.SelectDateWidget(years=list(range(2000, 2100))),
         required=True,
         label='Note Date',
     )
@@ -459,10 +467,98 @@ class OIBServiceEventForm(forms.Form):
         label='Note',
     )
 
-    def __init__(self, *args, user=None, **kwargs):
-        # accept `user` so validation can allow admin override
+    def _set_plan_type_choices_for_existing_event(self, event):
+        # If new event is being added, then ignore this and show all
+        # available options.
+        if event is None:
+            return
+
+        delivery_type_id = getattr(event, 'oib_service_delivery_type_id', None)
+        self.fields['plan_type'].initial = delivery_type_id
+        # If delivery type is in-home: allow all choices.
+        # If delivery type is not in-home, enable all choices except in-home.
+        if delivery_type_id == 1:
+            plan_type_name = event.oib_service_delivery_type.oib_service_delivery_type
+            self.fields['plan_type'].choices = [
+                (pk, name) for pk, name in lm.OIBServiceDeliveryType.get_leaf_nodes() if int(pk) != 1
+            ]
+            return
+
+    # TODO The curret changes only take into consideration when editing an existing service event - but this form is also used for creating new service events!
+    def _set_plan_choices_from_event(self, event):
+        # If no event provided (i.e., new note/service event), then default to
+        # disabled plan_name
+        if event is None:
+            self.fields['plan_name'].choices = []
+            self.fields['plan_name'].widget.attrs['disabled'] = 'disabled'
+            # TODO For new service events,
+            # 1. Show play type dropdown for all service delivery types, but if in-home is selected, then also show existing plan names - with also a "new" option to create a new plan name for the current grant year on that current date
+            return
+
+        # If delivery type is not "in-home" (id != 1) disable the dropdown
+        delivery_type_id = getattr(event, 'oib_service_delivery_type_id', None)
+        if delivery_type_id != 1:
+            plan_name = event.oibserviceeventcontact_set.select_related('oib_plan').first().oib_plan.oib_plan_name
+            self.fields['plan_name'].choices = [(plan_name, plan_name)]
+            self.fields['plan_name'].widget.attrs['disabled'] = 'disabled'
+            self.fields['plan_name'].required = False
+            return
+
+        grant_year = event.get_grant_year()
+        grant_year_start = date(grant_year, 10, 1)
+        grant_year_end = date(grant_year + 1, 9, 30)
+
+        # Show all in-home plans in grant year for the in-home service event's
+        # participant. (Singular, because in-home service events are implicitly
+        # one-to-one with a participant; not enforced in the model yet, but 
+        # one cannot save multiple participants for an in-home service event in the UI.)
+        client = event.oibserviceeventcontact_set.select_related('contact').first()
+
+        # Get all joined OIBServiceEventContact records for client for
+        # in-home service events.
+        sec_qs = lm.OIBServiceEventContact.objects \
+            .select_related('oib_plan','oib_service_event') \
+            .filter(contact_id=7588, oib_service_event__oib_service_delivery_type_id=1) \
+            .order_by('-oib_plan__oib_plan_name') \
+            .distinct('oib_plan__oib_plan_name')
+
+        current_grant_year_plans = []
+        for jsec in sec_qs:
+            plan_name = jsec.oib_plan.oib_plan_name
+            # Plan names are unique, constructed via the following formula:
+            # "<month>/<day>/<year> - <service_delivery_type_name>"
+            date_part, _delivery_type_part = plan_name.split(' - ', 1)
+            try:
+                plan_date = datetime.strptime(date_part, '%m/%d/%Y').date()
+                # Filter plans to only those in the same grant year as the service event (a grant year runs from Oct 1 to Sep 30)
+                if grant_year_start <= plan_date <= grant_year_end:
+                    current_grant_year_plans.append(plan_name)
+            except ValueError:
+                # If the date part is not a valid date, skip this plan name
+                continue
+
+        choices = [(plan_name, plan_name) for plan_name in current_grant_year_plans]
+        self.fields['plan_name'].choices = choices
+
+        # ensure field is enabled
+        self.fields['plan_name'].widget.attrs.pop('disabled', None)
+
+    def __init__(self, *args, user=None, service_event_id=None, **kwargs):
         self.user = user
         super().__init__(*args, **kwargs)
+        event = None
+
+        # import pdb; pdb.set_trace() 
+
+        if service_event_id:
+            try:
+                event = lm.OIBServiceEvent.objects.get(id=service_event_id)
+                self.fields['note_date'].initial = event.date
+            except lm.OIBServiceEvent.DoesNotExist:
+                event = None
+        self._set_plan_choices_from_event(event)
+        self._set_plan_type_choices_for_existing_event(event)
+        # accept `user` so validation can allow admin override
         desired_order = [0,1,2,3,4,5,7,8,6]
         when_list = [ddm.When(id=pk, then=pos) for pos, pk in enumerate(desired_order)]
         qs = lm.OIBService.objects.annotate(
@@ -513,39 +609,6 @@ class OIBServiceEventForm(forms.Form):
         self.fields['note_date'].widget.attrs.update(widget_attrs)
         if not self.initial.get('note_date'):
             self.fields['note_date'].initial = today
-
-    def clean_note_date(self):
-        """
-        Enforce note_date ∈ [current grant-year start (Oct 1), today].
-        Allow preserving an existing initial date if present (editing old events).
-        """
-        note_date = self.cleaned_data.get('note_date')
-        if not note_date:
-            return note_date
-
-        # allow preserving existing initial date when editing
-        initial_note_date = self.initial.get('note_date')
-        if initial_note_date and note_date == initial_note_date:
-            return note_date
-
-        # admin override bypass: staff users may set the hidden admin_override input
-        admin_override_flag = (self.data.get('admin_override') in ('1', 'true', 'on'))
-        if getattr(self, 'user', None) and getattr(self.user, 'is_staff', False) and admin_override_flag:
-            return note_date
-
-        today = timezone.localdate()
-        if today.month >= 10:
-            grant_start = date(today.year, 10, 1)
-        else:
-            grant_start = date(today.year - 1, 10, 1)
-
-        latest_allowed = today  # explicitly disallow future dates
-
-        if note_date < grant_start or note_date > latest_allowed:
-            raise forms.ValidationError(
-                f"Note date must be between {grant_start.isoformat()} and {latest_allowed.isoformat()} (no future dates)."
-            )
-        return note_date
 
 # TODO DRY up - there is an (almost) exact dup of this class in `filters.py`
 class UserModelChoiceField(forms.ModelChoiceField):

@@ -943,6 +943,7 @@ class OIBServiceDeliveryType(models.Model):
     # TODO This doesn't really belong here as it is  not  a
     #      class method, but a simple function defined on a
     #      class, but not sure where to put it.
+    # Get all leaf nodes AND nodes with parent_id = 0 (which are the main category of the delivery types)
     def get_leaf_nodes():
         with connection.cursor() as cursor:
             cursor.execute("""
@@ -957,7 +958,8 @@ class OIBServiceDeliveryType(models.Model):
                 )
                 SELECT t3.id, t3.oib_service_delivery_type
                 FROM lynx_oibservicedeliverytype t3
-                WHERE t3.id NOT IN (SELECT parent_id FROM lynx_oibservicedeliverytype WHERE parent_id IS NOT NULL);
+                WHERE (t3.id NOT IN (SELECT parent_id FROM lynx_oibservicedeliverytype WHERE parent_id IS NOT NULL))
+                   OR t3.parent_id = 0;
             """)
             rows = cursor.fetchall()
         # return choices: (id, label)

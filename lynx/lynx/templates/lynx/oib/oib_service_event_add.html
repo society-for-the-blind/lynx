@@ -6,7 +6,7 @@
 {% endblock %}
 
 {% block javascript %}
-<script>
+<!-- <script>
 document.addEventListener('DOMContentLoaded', function () {
   // dynamically restrict the SelectDateWidget to [grant_start .. latest_allowed]
   const yearSel = document.getElementById('id_note_date_year');
@@ -33,7 +33,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
   function setFullYearOptions() {
     yearSel.innerHTML = '';
-    for (let y = 1900; y <= 2100; y++) {
+    for (let y = 2000; y <= 2100; y++) {
       const opt = document.createElement('option');
       opt.value = String(y);
       opt.text = String(y);
@@ -155,7 +155,7 @@ document.addEventListener('DOMContentLoaded', function () {
   // initial setup
   onAdminToggle();
 });
-</script>
+</script> -->
 <script>
 function prefix_to_select_classes() {
     return { 'client': 'client-select',

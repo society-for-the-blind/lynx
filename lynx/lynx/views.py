@@ -1899,6 +1899,7 @@ def oib_service_event_show(request, oib_service_event_id):
                  , 'lynx/oib/oib_service_event_show.html'
                  , { 'service_event': service_event
                    , 'instructors_with_roles': instructors_with_roles
+                   , 'plan_name': service_event.oibserviceeventcontact_set.select_related('oib_plan').first().oib_plan.oib_plan_name
                    }
                  )
 
@@ -2161,7 +2162,7 @@ def oib_service_event_form(request, oib_service_event_id=None):
 
     if request.method == 'POST':
         # pass user into form so it can honor admin override
-        form = lfo.OIBServiceEventForm(request.POST, user=request.user)
+        form = lfo.OIBServiceEventForm(request.POST, user=request.user, service_event_id=oib_service_event_id)
 
         user_role_formset = OIBServiceEventUserRoleFormSet(request.POST, prefix=user_role_form_prefix)
         # Only show SIP instructors in the dropdown
@@ -2199,6 +2200,10 @@ def oib_service_event_form(request, oib_service_event_id=None):
                     entered_by=request.user,
                 )
 
+            # determine plan object for this event (create if missing)
+            plan_name = service_event.construct_plan_name()
+            plan_obj, _created = lm.OIBPlan.objects.get_or_create(oib_plan_name=plan_name)
+
             # Create related objects for both add/edit modes
             for service in form.cleaned_data['services']:
                 lm.OIBServiceEventOIBService.objects.create(
@@ -2216,10 +2221,14 @@ def oib_service_event_form(request, oib_service_event_id=None):
 
             for row in client_formset.cleaned_data:
                 if row and not row.get('DELETE', False):
+                    # attach the plan to each participant
                     lm.OIBServiceEventContact.objects.create(
                         oib_service_event=service_event,
                         contact=row['client'],
+                        oib_plan=plan_obj,
                     )
+                    birth_date_cache_updated = lm.ContactBirthDateCache.cache_updated(row['client'])
+                    plans = _get_plans(row['client'], birth_date_cache_updated)
 
             return redirect('lynx:oib_service_event_show', oib_service_event_id=service_event.id)
         else:
@@ -2237,7 +2246,7 @@ def oib_service_event_form(request, oib_service_event_id=None):
             return render(request, template_path, context)
     else:
         # GET request - show the form (pass user so template/widget knows admin availability)
-        form = lfo.OIBServiceEventForm(initial=initial_data, user=request.user)
+        form = lfo.OIBServiceEventForm(initial=initial_data, user=request.user, service_event_id=oib_service_event_id)
         user_role_formset = OIBServiceEventUserRoleFormSet(
             initial=user_role_initial,
             prefix=user_role_form_prefix
