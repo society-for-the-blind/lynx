@@ -100,7 +100,13 @@ urlpatterns = [
         ),
     path('oib/service-events/new',
          views.oib_service_event_form,
+         {'in_home': False},
          name='oib_service_event_add'
+        ),
+    path('oib/client/<int:contact_id>/service-events/new-in-home',
+         views.oib_service_event_form,
+        {'in_home': True},
+         name='oib_service_event_in-home_add'
         ),
     path('oib/service-events/<int:oib_service_event_id>/edit',
          views.oib_service_event_form,

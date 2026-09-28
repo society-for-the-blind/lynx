@@ -1,3 +1,5 @@
+from http import client
+
 from django       import forms
 from django.utils import timezone
 from datetime     import datetime, date
@@ -7,6 +9,7 @@ from django.contrib.auth import models    as dca
 
 # lm  = lynx model
 from . import models  as lm
+from .utils import kitchen_sink as lks
 
 months = (("1", "January"), ("2", "February"), ("3", "March"), ("4", "April"), ("5", "May"), ("6", "June"),
           ("7", "July"), ("8", "August"), ("9", "September"), ("10", "October"), ("11", "November"), ("12", "December"),
@@ -371,41 +374,6 @@ def filter_units(authorization_id):
 
     return choices_dictionary
 
-DURATION_CHOICES = [
-    ("00:15:00", "15 minutes"),
-    ("00:30:00", "30 minutes"),
-    ("00:45:00", "45 minutes"),
-    ("01:00:00", "1 hour"),
-    ("01:15:00", "1 hour 15 minutes"),
-    ("01:30:00", "1 hour 30 minutes"),
-    ("01:45:00", "1 hour 45 minutes"),
-    ("02:00:00", "2 hours"),
-    ("02:15:00", "2 hours 15 minutes"),
-    ("02:30:00", "2 hours 30 minutes"),
-    ("02:45:00", "2 hours 45 minutes"),
-    ("03:00:00", "3 hours"),
-    ("03:15:00", "3 hours 15 minutes"),
-    ("03:30:00", "3 hours 30 minutes"),
-    ("03:45:00", "3 hours 45 minutes"),
-    ("04:00:00", "4 hours"),
-    ("04:15:00", "4 hours 15 minutes"),
-    ("04:30:00", "4 hours 30 minutes"),
-    ("04:45:00", "4 hours 45 minutes"),
-    ("05:00:00", "5 hours"),
-    ("05:15:00", "5 hours 15 minutes"),
-    ("05:30:00", "5 hours 30 minutes"),
-    ("05:45:00", "5 hours 45 minutes"),
-    ("06:00:00", "6 hours"),
-    ("06:15:00", "6 hours 15 minutes"),
-    ("06:30:00", "6 hours 30 minutes"),
-    ("06:45:00", "6 hours 45 minutes"),
-    ("07:00:00", "7 hours"),
-    ("07:15:00", "7 hours 15 minutes"),
-    ("07:30:00", "7 hours 30 minutes"),
-    ("07:45:00", "7 hours 45 minutes"),
-    ("08:00:00", "8 hours"),
-]
-
 class OIBServiceMultipleChoiceField(forms.ModelMultipleChoiceField):
     def label_from_instance(self, obj):
         return obj.long_name
@@ -442,7 +410,7 @@ class OIBServiceEventForm(forms.Form):
         label='Note Date',
     )
     event_length = forms.ChoiceField(
-        choices=DURATION_CHOICES,
+        choices=lks.DURATION_CHOICES,
         required=True,
         label='Event Length',
     )
@@ -467,64 +435,76 @@ class OIBServiceEventForm(forms.Form):
         label='Note',
     )
 
-    def _set_plan_type_choices_for_existing_event(self, event):
+    def _set_plan_type_choices_for_existing_event(self, service_event):
         # If new event is being added, then ignore this and show all
         # available options.
-        if event is None:
+        if service_event is None:
             return
 
-        delivery_type_id = getattr(event, 'oib_service_delivery_type_id', None)
+        delivery_type_id = getattr(service_event, 'oib_service_delivery_type_id', None)
         self.fields['plan_type'].initial = delivery_type_id
         # If delivery type is in-home: allow all choices.
         # If delivery type is not in-home, enable all choices except in-home.
-        if delivery_type_id == 1:
-            plan_type_name = event.oib_service_delivery_type.oib_service_delivery_type
+        if delivery_type_id != 1:
+            plan_type_name = service_event.oib_service_delivery_type.oib_service_delivery_type
             self.fields['plan_type'].choices = [
                 (pk, name) for pk, name in lm.OIBServiceDeliveryType.get_leaf_nodes() if int(pk) != 1
             ]
             return
 
-    # TODO The curret changes only take into consideration when editing an existing service event - but this form is also used for creating new service events!
-    def _set_plan_choices_from_event(self, event):
-        # If no event provided (i.e., new note/service event), then default to
-        # disabled plan_name
-        if event is None:
-            self.fields['plan_name'].choices = []
-            self.fields['plan_name'].widget.attrs['disabled'] = 'disabled'
-            # TODO For new service events,
-            # 1. Show play type dropdown for all service delivery types, but if in-home is selected, then also show existing plan names - with also a "new" option to create a new plan name for the current grant year on that current date
-            return
+    def _set_plan_choices_from_event(self, service_event, in_home_client_id):
 
-        # If delivery type is not "in-home" (id != 1) disable the dropdown
-        delivery_type_id = getattr(event, 'oib_service_delivery_type_id', None)
-        if delivery_type_id != 1:
-            plan_name = event.oibserviceeventcontact_set.select_related('oib_plan').first().oib_plan.oib_plan_name
-            self.fields['plan_name'].choices = [(plan_name, plan_name)]
-            self.fields['plan_name'].widget.attrs['disabled'] = 'disabled'
-            self.fields['plan_name'].required = False
-            return
-
-        grant_year = event.get_grant_year()
+        # service_event==None && in_home_client_id       => new in-home event
+        # service_event==None && in_home_client_id==None => new group event
+        # service_event       && in_home_client_id==None => edit event (group or in-home)
+        grant_year = lks.get_grant_year(service_event)
         grant_year_start = date(grant_year, 10, 1)
         grant_year_end = date(grant_year + 1, 9, 30)
 
-        # Show all in-home plans in grant year for the in-home service event's
-        # participant. (Singular, because in-home service events are implicitly
-        # one-to-one with a participant; not enforced in the model yet, but 
-        # one cannot save multiple participants for an in-home service event in the UI.)
-        client = event.oibserviceeventcontact_set.select_related('contact').first()
+        contact_id = None
+        # Edit an existing service event
+        if service_event:
+            # If delivery type is not "in-home" (id != 1) disable the dropdown
+            delivery_type_id = getattr(service_event, 'oib_service_delivery_type_id', None)
+            if delivery_type_id != 1:
+                plan_name = service_event.oibserviceeventcontact_set.select_related('oib_plan').first().oib_plan.oib_plan_name
+                self.fields['plan_name'].choices = [(plan_name, plan_name)]
+                self.fields['plan_name'].widget.attrs['disabled'] = 'disabled'
+                self.fields['plan_name'].required = False
+                return
+            # If it's an in-home, prepare for listing all in-home plans for client.
+            # Current policy is that only in-homes can have multiple plans in a
+            # grant year, and each in-home event should only have one participant,
+            # therefore to list all in-home plans for a service event, we can just
+            # get the first participant.
+            sec_to_get_in_home_plans = service_event.oibserviceeventcontact_set.select_related('contact').first()
+            contact_id = sec_to_get_in_home_plans.contact_id
+        # It's a new in-home, so prepare to list all in-home plans for the client
+        # to choose which plan to save new service event.
+        if in_home_client_id:
+            contact_id = in_home_client_id
+        # If this is true, then it's a new group event; hide the plan_name field
+        # and let the view handle creating a new plan name for the new group event.
+        if contact_id is None:
+            # TODO: This needs to go in the view under POST; service_delivery_type_name
+            #       is known by then.
+            # new_group_plan_name = lks.construct_plan_name(default=True, service_delivery_type_id=?)
+            self.fields['plan_name'].choices = []
+            self.fields['plan_name'].widget = forms.HiddenInput()
+            self.fields['plan_name'].required = False
+            return
 
         # Get all joined OIBServiceEventContact records for client for
         # in-home service events.
-        sec_qs = lm.OIBServiceEventContact.objects \
+        sec_in_home_qs = lm.OIBServiceEventContact.objects \
             .select_related('oib_plan','oib_service_event') \
-            .filter(contact_id=7588, oib_service_event__oib_service_delivery_type_id=1) \
+            .filter(contact_id=contact_id, oib_service_event__oib_service_delivery_type_id=1) \
             .order_by('-oib_plan__oib_plan_name') \
             .distinct('oib_plan__oib_plan_name')
 
         current_grant_year_plans = []
-        for jsec in sec_qs:
-            plan_name = jsec.oib_plan.oib_plan_name
+        for in_home_sec in sec_in_home_qs:
+            plan_name = in_home_sec.oib_plan.oib_plan_name
             # Plan names are unique, constructed via the following formula:
             # "<month>/<day>/<year> - <service_delivery_type_name>"
             date_part, _delivery_type_part = plan_name.split(' - ', 1)
@@ -538,26 +518,30 @@ class OIBServiceEventForm(forms.Form):
                 continue
 
         choices = [(plan_name, plan_name) for plan_name in current_grant_year_plans]
+        new_in_home_plan_name = lks.construct_plan_name(
+            service_delivery_type_name="in-home", default=False
+        )
+        choices.append((new_in_home_plan_name, 'Create new in-home plan'))
         self.fields['plan_name'].choices = choices
 
         # ensure field is enabled
         self.fields['plan_name'].widget.attrs.pop('disabled', None)
 
-    def __init__(self, *args, user=None, service_event_id=None, **kwargs):
+    def __init__(self, *args, user=None, service_event_id=None, in_home=False, in_home_client_id=None, **kwargs):
         self.user = user
         super().__init__(*args, **kwargs)
-        event = None
+        service_event = None
 
         # import pdb; pdb.set_trace() 
 
         if service_event_id:
             try:
-                event = lm.OIBServiceEvent.objects.get(id=service_event_id)
-                self.fields['note_date'].initial = event.date
+                service_event = lm.OIBServiceEvent.objects.get(id=service_event_id)
+                self.fields['note_date'].initial = service_event.date
             except lm.OIBServiceEvent.DoesNotExist:
-                event = None
-        self._set_plan_choices_from_event(event)
-        self._set_plan_type_choices_for_existing_event(event)
+                service_event = None
+        self._set_plan_choices_from_event(service_event, in_home_client_id)
+        self._set_plan_type_choices_for_existing_event(service_event)
         # accept `user` so validation can allow admin override
         desired_order = [0,1,2,3,4,5,7,8,6]
         when_list = [ddm.When(id=pk, then=pos) for pos, pk in enumerate(desired_order)]

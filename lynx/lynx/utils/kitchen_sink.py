@@ -1,4 +1,4 @@
-from datetime import date
+from datetime import date, timezone
 from functools import reduce
 
 # keep your existing pipe
@@ -49,6 +49,74 @@ def pipe(data, *funcs):
 # result = pipe(x,
 #               lambda v: inc_curried(v)(y),
 #               lambda v: curry(db1)(v)(y))
+
+def get_grant_year(service_event=None):
+    if not service_event or not service_event.date:
+        date = timezone.now().date()
+    else:
+        date = service_event.date
+
+    if date.month >= 10:
+        return date.year
+    else:
+        return date.year - 1
+
+def construct_plan_name(service_event=None, service_delivery_type_name=None, default=True):
+    grant_year = get_grant_year(service_event)
+
+    if default:
+        plan_month_day = "10/01"
+    else:
+        plan_month_day = timezone.now().date().strftime("%m/%d")
+
+    if service_event and service_event.oib_service_delivery_type:
+        service_delivery_type_name = getattr(service_event.oib_service_delivery_type, 'oib_service_delivery_type', '')
+
+    return f"{plan_month_day}/{grant_year} - {service_delivery_type_name or ''}"
+
+def timedelta_to_hms(td):
+    if not td:
+        return None
+    total_seconds = int(td.total_seconds())
+    hours = total_seconds // 3600
+    minutes = (total_seconds % 3600) // 60
+    seconds = total_seconds % 60
+    return f"{hours:02d}:{minutes:02d}:{seconds:02d}"
+
+DURATION_CHOICES = [
+    ("00:15:00", "15 minutes"),
+    ("00:30:00", "30 minutes"),
+    ("00:45:00", "45 minutes"),
+    ("01:00:00", "1 hour"),
+    ("01:15:00", "1 hour 15 minutes"),
+    ("01:30:00", "1 hour 30 minutes"),
+    ("01:45:00", "1 hour 45 minutes"),
+    ("02:00:00", "2 hours"),
+    ("02:15:00", "2 hours 15 minutes"),
+    ("02:30:00", "2 hours 30 minutes"),
+    ("02:45:00", "2 hours 45 minutes"),
+    ("03:00:00", "3 hours"),
+    ("03:15:00", "3 hours 15 minutes"),
+    ("03:30:00", "3 hours 30 minutes"),
+    ("03:45:00", "3 hours 45 minutes"),
+    ("04:00:00", "4 hours"),
+    ("04:15:00", "4 hours 15 minutes"),
+    ("04:30:00", "4 hours 30 minutes"),
+    ("04:45:00", "4 hours 45 minutes"),
+    ("05:00:00", "5 hours"),
+    ("05:15:00", "5 hours 15 minutes"),
+    ("05:30:00", "5 hours 30 minutes"),
+    ("05:45:00", "5 hours 45 minutes"),
+    ("06:00:00", "6 hours"),
+    ("06:15:00", "6 hours 15 minutes"),
+    ("06:30:00", "6 hours 30 minutes"),
+    ("06:45:00", "6 hours 45 minutes"),
+    ("07:00:00", "7 hours"),
+    ("07:15:00", "7 hours 15 minutes"),
+    ("07:30:00", "7 hours 30 minutes"),
+    ("07:45:00", "7 hours 45 minutes"),
+    ("08:00:00", "8 hours"),
+]
 
 def program_age_violations(contact, proposed_birth_date):
     """

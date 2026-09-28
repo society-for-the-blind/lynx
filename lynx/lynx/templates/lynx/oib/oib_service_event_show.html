@@ -4,15 +4,22 @@
 {% block title %}SIP note: {{ service_event.oib_service_delivery_type.oib_service_delivery_type }} on {{ service_event.date|date:'F j, Y' }}{% endblock %}
 
 {% block content %}
-<h2>SIP/ILP group note</h2>
+{% if service_event.oib_service_delivery_type_id == 1 %}
+  <h2>SIP/ILP in-home note</h2>
+{% else %}
+  <h2>SIP/ILP group note</h2>
+{% endif %}
 <a href="{% url 'lynx:oib_service_event_edit' service_event.id %}" class="btn btn-primary">
   Edit
 </a>
 <a href="{% url 'lynx:oib_service_event_delete' service_event.id %}" class="btn btn-danger">
   Delete
 </a>
+<a href="{% url 'lynx:oib_service_event_in-home_add' in_home_client_id %}" class="btn btn-primary">
+  Add new in-home
+</a>
 <a href="{% url 'lynx:oib_service_event_add' %}" class="btn btn-primary">
-  Add new
+  Add new group note
 </a>
 <a href="{% url 'lynx:oib_service_event_list' %}" class="btn btn-primary">
   Show all notes
@@ -24,7 +31,7 @@
   <!-- <li><strong>Plan Type:</strong> {{ service_event.oib_service_delivery_type.oib_service_delivery_type }}</li> -->
   <li><strong>Plan Name:</strong> {{ plan_name }}</li>
   <li><strong>Date:</strong> {{ service_event.date|date:"F j, Y" }}</li>
-  <li><strong>Length:</strong> {{ service_event.length }}</li>
+  <li><strong>Length:</strong> {{ service_event_length }}</li>
   <li><strong>Entered by:</strong> {{ service_event.entered_by.get_full_name|default:service_event.entered_by.username }}</li>
   <li><strong>Created:</strong> {{ service_event.created }}</li>
   <li><strong>Modified:</strong> {{ service_event.modified }}</li>

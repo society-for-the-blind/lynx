@@ -1887,8 +1887,19 @@ def grant_year_start_date():
 # SERVICE EVENTS (aka notes)
 @login_required
 def oib_service_event_show(request, oib_service_event_id):
-    service_event = \
-        get_object_or_404(lm.OIBServiceEvent, pk=oib_service_event_id)
+    service_event = get_object_or_404(lm.OIBServiceEvent, pk=oib_service_event_id)
+    hms = lks.timedelta_to_hms(service_event.length)
+    service_event_length = dict(lks.DURATION_CHOICES).get(hms)
+
+    # TODO This is wrong, remove it altogether
+    in_home_client_id = None
+    if service_event.oib_service_delivery_type_id == 1: # in-home
+        # Show all in-home plans in grant year for the in-home service event's
+        # participant. (Singular, because in-home service events are implicitly
+        # one-to-one with a participant; not enforced in the model yet, but 
+        # one cannot save multiple participants for an in-home service event in the UI.)
+        in_home_client_id = service_event.oibserviceeventcontact_set.select_related('contact').first().contact.id
+
     instructors_with_roles = (
         lm.OIBServiceEventInstructor
         .objects
@@ -1898,8 +1909,10 @@ def oib_service_event_show(request, oib_service_event_id):
     return render( request
                  , 'lynx/oib/oib_service_event_show.html'
                  , { 'service_event': service_event
+                   , 'service_event_length': service_event_length
                    , 'instructors_with_roles': instructors_with_roles
                    , 'plan_name': service_event.oibserviceeventcontact_set.select_related('oib_plan').first().oib_plan.oib_plan_name
+                   , 'in_home_client_id': in_home_client_id
                    }
                  )
 
@@ -2052,7 +2065,7 @@ def active_oib_clients(request):
     return HttpResponse('\n'.join(parts), content_type='text/html')
 
 @login_required
-def oib_service_event_form(request, oib_service_event_id=None):
+def oib_service_event_form(request, oib_service_event_id=None, in_home_client_id=None, in_home=False):
     """Unified view for both adding and editing OIB service events."""
     edit_mode = oib_service_event_id is not None
     template_path = "lynx/oib/oib_service_event_add.html"
@@ -2085,19 +2098,10 @@ def oib_service_event_form(request, oib_service_event_id=None):
     if edit_mode:
         service_event = get_object_or_404(lm.OIBServiceEvent, pk=oib_service_event_id)
 
-        def _timedelta_to_hms(td):
-            if not td:
-                return None
-            total_seconds = int(td.total_seconds())
-            hours = total_seconds // 3600
-            minutes = (total_seconds % 3600) // 60
-            seconds = total_seconds % 60
-            return f"{hours:02d}:{minutes:02d}:{seconds:02d}"
-
         initial_data = {
             'plan_type': service_event.oib_service_delivery_type.pk,
             'note_date': service_event.date,
-            'event_length': _timedelta_to_hms(service_event.length),
+            'event_length': lks.timedelta_to_hms(service_event.length),
             'services': [s.oib_service.pk for s in service_event.oibserviceeventoibservice_set.all()],
             'note': service_event.note,
         }
@@ -2162,7 +2166,13 @@ def oib_service_event_form(request, oib_service_event_id=None):
 
     if request.method == 'POST':
         # pass user into form so it can honor admin override
-        form = lfo.OIBServiceEventForm(request.POST, user=request.user, service_event_id=oib_service_event_id)
+        form = lfo.OIBServiceEventForm(
+            request.POST,
+            user=request.user,
+            service_event_id=oib_service_event_id,
+            in_home=in_home,
+            in_home_client_id=in_home_client_id
+        )
 
         user_role_formset = OIBServiceEventUserRoleFormSet(request.POST, prefix=user_role_form_prefix)
         # Only show SIP instructors in the dropdown
@@ -2246,7 +2256,13 @@ def oib_service_event_form(request, oib_service_event_id=None):
             return render(request, template_path, context)
     else:
         # GET request - show the form (pass user so template/widget knows admin availability)
-        form = lfo.OIBServiceEventForm(initial=initial_data, user=request.user, service_event_id=oib_service_event_id)
+        form = lfo.OIBServiceEventForm(
+            initial=initial_data,
+            user=request.user,
+            service_event_id=oib_service_event_id,
+            in_home=in_home,
+            in_home_client_id=in_home_client_id
+        )
         user_role_formset = OIBServiceEventUserRoleFormSet(
             initial=user_role_initial,
             prefix=user_role_form_prefix
