@@ -226,14 +226,23 @@ function removeFormRow(btn) {
 </script>
 <script>
   document.addEventListener('DOMContentLoaded', function () {
-    function toggleAddClientButton(plan_type_selector) {
+    function toggleInHomeUI(plan_type_selector) {
       const add_client_button = document.getElementById('add-client-btn');
+      const client_selector = document.getElementById('id_client-0-client')
       if (!add_client_button || !plan_type_selector) return;
       add_client_button.style.display = (plan_type_selector.value === '1') ? 'none' : '';
     }
     const plan_type_selector = document.getElementById('id_plan_type');
-    toggleAddClientButton(plan_type_selector);
-    if (plan_type_selector) plan_type_selector.addEventListener('change', toggleAddClientButton);
+    toggleInHomeUI(plan_type_selector);
+    if (plan_type_selector) plan_type_selector.addEventListener('change', toggleInHomeUI);
+
+    // Defensive: if any client selects end up disabled by other code, re-enable them before submit
+    const form = document.querySelector('form');
+    if (form) {
+      form.addEventListener('submit', function () {
+        document.querySelectorAll('.client-select').forEach(function (el) { el.disabled = false; });
+      });
+    }
   });
 </script>
 <script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.7/dist/htmx.min.js"></script>
@@ -277,7 +286,7 @@ function removeFormRow(btn) {
     <h1>Add new group note</h1>
   {% endif %}
 {% endif %}
-<form action="{% if edit_mode %}{% url 'lynx:oib_service_event_edit' service_event.id %}{% else %}{% url 'lynx:oib_service_event_add' %}{% endif %}" method="post">
+<form method="post">
   {% csrf_token %}
   {% if request.user.is_staff %}
     <div class="form-group">

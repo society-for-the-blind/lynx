@@ -2124,6 +2124,11 @@ def oib_service_event_form(request, oib_service_event_id=None, contact_id=None, 
             for osec in lm.OIBServiceEventContact.objects.filter(oib_service_event=service_event)
         ]
 
+    # New in-home
+    if in_home_client_id:
+        client = lm.Contact.objects.get(pk=in_home_client_id)
+        client_initial = [{'client': client}]
+
     def _attach_client_htmx_attrs(formset):
         """Attach HTMX attrs to client selects in a formset (called before rendering)."""
         base = reverse('lynx:active_oib_clients')
@@ -2170,6 +2175,7 @@ def oib_service_event_form(request, oib_service_event_id=None, contact_id=None, 
             })
 
     if request.method == 'POST':
+        import pdb; pdb.set_trace()
         # pass user into form so it can honor admin override
         form = lfo.OIBServiceEventForm(
             request.POST,
@@ -2284,7 +2290,8 @@ def oib_service_event_form(request, oib_service_event_id=None, contact_id=None, 
             initial=client_initial,
             prefix=client_form_prefix
         )
-        _attach_client_htmx_attrs(client_formset)
+        if not len(client_initial):
+            _attach_client_htmx_attrs(client_formset)
 
         # minimize select rendering cost: keep only selected option(s) in each form's queryset
         for form_inst, init in zip(client_formset.forms, client_initial + [None] * max(0, len(client_formset.forms) - len(client_initial))):

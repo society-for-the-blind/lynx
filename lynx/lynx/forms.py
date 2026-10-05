@@ -462,9 +462,36 @@ class OIBServiceEventForm(forms.Form):
         if delivery_type_id != 1:
             plan_type_name = service_event.oib_service_delivery_type.oib_service_delivery_type
             self.fields['plan_type'].choices = note_choices['group']
+        else:
+            self.fields['plan_type'].choices = note_choices['in-home']
         return
 
     def _set_plan_choices_from_event(self, service_event, in_home_client_id):
+
+        def get_current_grant_year_in_home_plans(contact_id):
+            result = []
+            # Get all joined OIBServiceEventContact records for client for
+            # in-home service events.
+            sec_in_home_qs = lm.OIBServiceEventContact.objects \
+                .select_related('oib_plan','oib_service_event') \
+                .filter(contact_id=contact_id, oib_service_event__oib_service_delivery_type_id=1) \
+                .order_by('-oib_plan__oib_plan_name') \
+                .distinct('oib_plan__oib_plan_name')
+
+            for in_home_sec in sec_in_home_qs:
+                plan_name = in_home_sec.oib_plan.oib_plan_name
+                # Plan names are unique, constructed via the following formula:
+                # "<month>/<day>/<year> - <service_delivery_type_name>"
+                date_part, _delivery_type_part = plan_name.split(' - ', 1)
+                try:
+                    plan_date = datetime.strptime(date_part, '%m/%d/%Y').date()
+                    # Filter plans to only those in the same grant year as the service event (a grant year runs from Oct 1 to Sep 30)
+                    if grant_year_start <= plan_date <= grant_year_end:
+                        result.append(plan_name)
+                except ValueError:
+                    # If the date part is not a valid date, skip this plan name
+                    continue
+            return [(plan_name, plan_name) for plan_name in result]
 
         # service_event==None && in_home_client_id       => new in-home event
         # service_event==None && in_home_client_id==None => new group event
@@ -478,12 +505,23 @@ class OIBServiceEventForm(forms.Form):
         if service_event:
             # If delivery type is not "in-home" (id != 1) disable the dropdown
             delivery_type_id = getattr(service_event, 'oib_service_delivery_type_id', None)
+            plan_choices = []
             if delivery_type_id != 1:
-                plan_name = service_event.oibserviceeventcontact_set.select_related('oib_plan').first().oib_plan.oib_plan_name
-                self.fields['plan_name'].choices = [(plan_name, plan_name)]
+                plan_name_qs = service_event.oibserviceeventcontact_set.select_related('oib_plan')
+                plan_name = plan_name_qs.first().oib_plan.oib_plan_name
+                plan_choices.append((plan_name, plan_name))
                 self.fields['plan_name'].widget.attrs['disabled'] = 'disabled'
-                self.fields['plan_name'].required = False
-                return
+            else:
+                contact_id = service_event.oibserviceeventcontact_set.select_related('contact').first().contact_id
+                in_home_plan_choices = get_current_grant_year_in_home_plans(contact_id)
+                new_in_home_plan_name = lks.construct_plan_name(
+                    service_delivery_type_name="in-home", default=False
+                )
+                in_home_plan_choices.append((new_in_home_plan_name, 'Create new in-home plan'))
+                plan_choices = in_home_plan_choices
+            self.fields['plan_name'].choices = plan_choices
+            self.fields['plan_name'].required = False
+            return
             # If it's an in-home, prepare for listing all in-home plans for client.
             # Current policy is that only in-homes can have multiple plans in a
             # grant year, and each in-home event should only have one participant,
@@ -501,36 +539,17 @@ class OIBServiceEventForm(forms.Form):
             self.fields['plan_name'].required = False
             return
 
+        self.fields['plan_name'].required = True
+        self.fields['plan_name'].widget = forms.Select()
+
         contact_id = in_home_client_id
-        # Get all joined OIBServiceEventContact records for client for
-        # in-home service events.
-        sec_in_home_qs = lm.OIBServiceEventContact.objects \
-            .select_related('oib_plan','oib_service_event') \
-            .filter(contact_id=contact_id, oib_service_event__oib_service_delivery_type_id=1) \
-            .order_by('-oib_plan__oib_plan_name') \
-            .distinct('oib_plan__oib_plan_name')
 
-        current_grant_year_in_home_plans = []
-        for in_home_sec in sec_in_home_qs:
-            plan_name = in_home_sec.oib_plan.oib_plan_name
-            # Plan names are unique, constructed via the following formula:
-            # "<month>/<day>/<year> - <service_delivery_type_name>"
-            date_part, _delivery_type_part = plan_name.split(' - ', 1)
-            try:
-                plan_date = datetime.strptime(date_part, '%m/%d/%Y').date()
-                # Filter plans to only those in the same grant year as the service event (a grant year runs from Oct 1 to Sep 30)
-                if grant_year_start <= plan_date <= grant_year_end:
-                    current_grant_year_in_home_plans.append(plan_name)
-            except ValueError:
-                # If the date part is not a valid date, skip this plan name
-                continue
-
-        choices = [(plan_name, plan_name) for plan_name in current_grant_year_in_home_plans]
+        in_home_plan_choices = get_current_grant_year_in_home_plans(contact_id)
         new_in_home_plan_name = lks.construct_plan_name(
             service_delivery_type_name="in-home", default=False
         )
-        choices.append((new_in_home_plan_name, 'Create new in-home plan'))
-        self.fields['plan_name'].choices = choices
+        in_home_plan_choices.append((new_in_home_plan_name, 'Create new in-home plan'))
+        self.fields['plan_name'].choices = in_home_plan_choices
 
         # ensure field is enabled
         self.fields['plan_name'].widget.attrs.pop('disabled', None)
