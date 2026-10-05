@@ -106,7 +106,7 @@ urlpatterns = [
     path('oib/client/<int:contact_id>/service-events/new-in-home',
          views.oib_service_event_form,
         {'in_home': True},
-         name='oib_service_event_in-home_add'
+         name='oib_service_event_add_in-home'
         ),
     path('oib/service-events/<int:oib_service_event_id>/edit',
          views.oib_service_event_form,
@@ -120,7 +120,11 @@ urlpatterns = [
          views.oib_service_event_list,
          name='oib_service_event_list'
         ),
-    path('oib/service-events/<int:contact_id>/<str:program>',
+    path('oib/client/<int:client_id>/service-events',
+         views.oib_service_event_list,
+         name='oib_service_event_list'
+        ),
+    path('oib/client/<int:contact_id>/service-events/<str:program>',
          views.oib_service_events_per_client_per_program,
          name='oib_service_events_per_client_per_program'
         ),

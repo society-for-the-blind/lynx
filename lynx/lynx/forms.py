@@ -435,22 +435,34 @@ class OIBServiceEventForm(forms.Form):
         label='Note',
     )
 
-    def _set_plan_type_choices_for_existing_event(self, service_event):
-        # If new event is being added, then ignore this and show all
-        # available options.
+    def _set_plan_type_choices(self, service_event, contact_id=None):
+
+        note_choices = { 'in-home': [], 'group': [] }
+        for pk, name in lm.OIBServiceDeliveryType.get_leaf_nodes():
+            if int(pk) == 1:
+                # in-home
+                note_choices['in-home'].append((pk, name))
+            else:
+                # group
+                note_choices['group'].append((pk, name))
+
+        # Handle adding a new service event
         if service_event is None:
+            if contact_id is not None:
+                self.fields['plan_type'].choices = note_choices['in-home']
+            else:
+                self.fields['plan_type'].choices = note_choices['group']
             return
 
+        # Handle editing an existing service event
         delivery_type_id = getattr(service_event, 'oib_service_delivery_type_id', None)
         self.fields['plan_type'].initial = delivery_type_id
         # If delivery type is in-home: allow all choices.
         # If delivery type is not in-home, enable all choices except in-home.
         if delivery_type_id != 1:
             plan_type_name = service_event.oib_service_delivery_type.oib_service_delivery_type
-            self.fields['plan_type'].choices = [
-                (pk, name) for pk, name in lm.OIBServiceDeliveryType.get_leaf_nodes() if int(pk) != 1
-            ]
-            return
+            self.fields['plan_type'].choices = note_choices['group']
+        return
 
     def _set_plan_choices_from_event(self, service_event, in_home_client_id):
 
@@ -479,13 +491,8 @@ class OIBServiceEventForm(forms.Form):
             # get the first participant.
             sec_to_get_in_home_plans = service_event.oibserviceeventcontact_set.select_related('contact').first()
             contact_id = sec_to_get_in_home_plans.contact_id
-        # It's a new in-home, so prepare to list all in-home plans for the client
-        # to choose which plan to save new service event.
-        if in_home_client_id:
-            contact_id = in_home_client_id
-        # If this is true, then it's a new group event; hide the plan_name field
-        # and let the view handle creating a new plan name for the new group event.
-        if contact_id is None:
+
+        if in_home_client_id is None:
             # TODO: This needs to go in the view under POST; service_delivery_type_name
             #       is known by then.
             # new_group_plan_name = lks.construct_plan_name(default=True, service_delivery_type_id=?)
@@ -494,6 +501,7 @@ class OIBServiceEventForm(forms.Form):
             self.fields['plan_name'].required = False
             return
 
+        contact_id = in_home_client_id
         # Get all joined OIBServiceEventContact records for client for
         # in-home service events.
         sec_in_home_qs = lm.OIBServiceEventContact.objects \
@@ -502,7 +510,7 @@ class OIBServiceEventForm(forms.Form):
             .order_by('-oib_plan__oib_plan_name') \
             .distinct('oib_plan__oib_plan_name')
 
-        current_grant_year_plans = []
+        current_grant_year_in_home_plans = []
         for in_home_sec in sec_in_home_qs:
             plan_name = in_home_sec.oib_plan.oib_plan_name
             # Plan names are unique, constructed via the following formula:
@@ -512,12 +520,12 @@ class OIBServiceEventForm(forms.Form):
                 plan_date = datetime.strptime(date_part, '%m/%d/%Y').date()
                 # Filter plans to only those in the same grant year as the service event (a grant year runs from Oct 1 to Sep 30)
                 if grant_year_start <= plan_date <= grant_year_end:
-                    current_grant_year_plans.append(plan_name)
+                    current_grant_year_in_home_plans.append(plan_name)
             except ValueError:
                 # If the date part is not a valid date, skip this plan name
                 continue
 
-        choices = [(plan_name, plan_name) for plan_name in current_grant_year_plans]
+        choices = [(plan_name, plan_name) for plan_name in current_grant_year_in_home_plans]
         new_in_home_plan_name = lks.construct_plan_name(
             service_delivery_type_name="in-home", default=False
         )
@@ -541,7 +549,7 @@ class OIBServiceEventForm(forms.Form):
             except lm.OIBServiceEvent.DoesNotExist:
                 service_event = None
         self._set_plan_choices_from_event(service_event, in_home_client_id)
-        self._set_plan_type_choices_for_existing_event(service_event)
+        self._set_plan_type_choices(service_event, contact_id=in_home_client_id)
         # accept `user` so validation can allow admin override
         desired_order = [0,1,2,3,4,5,7,8,6]
         when_list = [ddm.When(id=pk, then=pos) for pos, pk in enumerate(desired_order)]

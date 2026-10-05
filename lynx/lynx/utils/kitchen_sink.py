@@ -1,4 +1,5 @@
 from datetime import date, timezone
+import django.utils as du
 from functools import reduce
 
 # keep your existing pipe
@@ -52,7 +53,7 @@ def pipe(data, *funcs):
 
 def get_grant_year(service_event=None):
     if not service_event or not service_event.date:
-        date = timezone.now().date()
+        date = du.timezone.now().date()
     else:
         date = service_event.date
 
@@ -67,7 +68,7 @@ def construct_plan_name(service_event=None, service_delivery_type_name=None, def
     if default:
         plan_month_day = "10/01"
     else:
-        plan_month_day = timezone.now().date().strftime("%m/%d")
+        plan_month_day = du.timezone.now().date().strftime("%m/%d")
 
     if service_event and service_event.oib_service_delivery_type:
         service_delivery_type_name = getattr(service_event.oib_service_delivery_type, 'oib_service_delivery_type', '')

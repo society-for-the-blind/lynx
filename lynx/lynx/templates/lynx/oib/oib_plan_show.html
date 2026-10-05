@@ -10,6 +10,16 @@
 <input type="button" class="btn btn-success" aria-label="SIP Plans" onclick="location.href='{% url 'lynx:oib_plan_list' client.id program %}';" value="Show all SIP plans" />
 <a class="btn btn-success" href="{% url 'lynx:contact_show' client.id %}">Back to client</a>
 
+<a href="{% url 'lynx:oib_service_event_add_in-home' client.id %}" class="btn btn-primary">
+  Add new in-home
+</a>
+<a href="{% url 'lynx:oib_service_event_add' %}" class="btn btn-primary">
+  Add new group note
+</a>
+<a href="{% url 'lynx:oib_service_event_list' client.id %}" class="btn btn-primary">
+  Show all notes
+</a>
+
 <h2>Outcomes</h2>
 {% if edit_mode %}
     {% include "lynx/oib/fragments/_plan_outcomes_edit.html" with client_outcomes=plan_outcomes %}
@@ -39,7 +49,7 @@
                              user has a plan open that they refresh.
     -->
     {% empty %}
-        <li>No service events found for this plan.</li>
+        <li>No notes found for this plan.</li>
     {% endfor %}
 </ul>
 

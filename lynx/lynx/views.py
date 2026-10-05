@@ -1891,15 +1891,6 @@ def oib_service_event_show(request, oib_service_event_id):
     hms = lks.timedelta_to_hms(service_event.length)
     service_event_length = dict(lks.DURATION_CHOICES).get(hms)
 
-    # TODO This is wrong, remove it altogether
-    in_home_client_id = None
-    if service_event.oib_service_delivery_type_id == 1: # in-home
-        # Show all in-home plans in grant year for the in-home service event's
-        # participant. (Singular, because in-home service events are implicitly
-        # one-to-one with a participant; not enforced in the model yet, but 
-        # one cannot save multiple participants for an in-home service event in the UI.)
-        in_home_client_id = service_event.oibserviceeventcontact_set.select_related('contact').first().contact.id
-
     instructors_with_roles = (
         lm.OIBServiceEventInstructor
         .objects
@@ -1912,7 +1903,6 @@ def oib_service_event_show(request, oib_service_event_id):
                    , 'service_event_length': service_event_length
                    , 'instructors_with_roles': instructors_with_roles
                    , 'plan_name': service_event.oibserviceeventcontact_set.select_related('oib_plan').first().oib_plan.oib_plan_name
-                   , 'in_home_client_id': in_home_client_id
                    }
                  )
 
@@ -1936,7 +1926,7 @@ def oib_service_event_delete(request, oib_service_event_id):
                  )
 
 @login_required
-def oib_service_event_list(request):
+def oib_service_event_list(request, client_id=None):
     today = date.today()
     initial = {'start_date': today, 'end_date': today}
 
@@ -2012,10 +2002,23 @@ def oib_service_event_list(request):
         # avoid duplicates because of M2M joins
         qs = qs.distinct()
     else:
-        # initial page load: show filter form prefilled (start/end default to today)
+        # If a client_id was passed and this is not a filtered GET,
+        # pre-populate the list with all service events for that client.
         form = lfo.OIBServiceEventFilterForm(initial=initial)
-        qs = lm.OIBServiceEvent.objects.none()
-        highlight_tokens = []
+        if client_id:
+            qs = (
+                lm.OIBServiceEvent.objects
+                .filter(contacts__id=client_id)
+                .select_related('oib_service_delivery_type', 'entered_by')
+                .prefetch_related('services', 'contacts', 'instructors')
+                .order_by('-date')
+                .distinct()
+            )
+            highlight_tokens = []
+        else:
+            # initial page load: show filter form with defaults but DO NOT filter / load results
+            qs = lm.OIBServiceEvent.objects.none()
+            highlight_tokens = []
 
     return render(
         request,
@@ -2065,7 +2068,9 @@ def active_oib_clients(request):
     return HttpResponse('\n'.join(parts), content_type='text/html')
 
 @login_required
-def oib_service_event_form(request, oib_service_event_id=None, in_home_client_id=None, in_home=False):
+def oib_service_event_form(request, oib_service_event_id=None, contact_id=None, in_home=False):
+    in_home_client_id = contact_id
+
     """Unified view for both adding and editing OIB service events."""
     edit_mode = oib_service_event_id is not None
     template_path = "lynx/oib/oib_service_event_add.html"
@@ -2302,6 +2307,7 @@ def oib_service_event_form(request, oib_service_event_id=None, in_home_client_id
                 'user_role_formset': user_role_formset,
                 'client_formset': client_formset,
             },
+            'contact_id': contact_id,
         }
         if edit_mode:
             context['service_event'] = service_event
