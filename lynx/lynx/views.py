@@ -1919,7 +1919,11 @@ def oib_service_event_delete(request, oib_service_event_id):
         lm.OIBServiceEventOIBService.objects.filter(oib_service_event=service_event).delete()
         service_event.delete()
 
-        return redirect( 'lynx:oib_service_event_list')
+        if contact_id:
+            return redirect( 'lynx:contact_show', pk=contact_id )
+        else:
+            return redirect( 'lynx:oib_service_event_list')
+
     return render( request \
                  , "lynx/oib/oib_service_event_confirm_delete.html" \
                  , {"service_event": service_event} \
@@ -2175,7 +2179,6 @@ def oib_service_event_form(request, oib_service_event_id=None, contact_id=None, 
             })
 
     if request.method == 'POST':
-        import pdb; pdb.set_trace()
         # pass user into form so it can honor admin override
         form = lfo.OIBServiceEventForm(
             request.POST,
@@ -2221,9 +2224,14 @@ def oib_service_event_form(request, oib_service_event_id=None, contact_id=None, 
                     entered_by=request.user,
                 )
 
-            # determine plan object for this event (create if missing)
-            plan_name = service_event.construct_plan_name()
+            plan_name = form.cleaned_data.get('plan_name')
+            # This is for when adding group notes, becuase the in-home form has
+            # a plan dropdown, but for the group notes the plan is implicit.
+            if not plan_name:
+                # is_in_home = service_event.oib_service_delivery_type_id == 1
+                plan_name = service_event.construct_plan_name()
             plan_obj, _created = lm.OIBPlan.objects.get_or_create(oib_plan_name=plan_name)
+            # import pdb; pdb.set_trace()
 
             # Create related objects for both add/edit modes
             for service in form.cleaned_data['services']:
@@ -2621,6 +2629,12 @@ def _oib_plan_dict(request, contact_id, program, grant_year, service_delivery_ty
         # fallback: existing behaviour
         service_events = lm.OIBServiceEvent.in_grant_year(contact_id, service_delivery_type_id, grant_year)
 
+    plan_name = \
+        lm.OIBServiceEventContact.objects \
+        .select_related('oib_plan') \
+        .filter(contact_id=contact_id, oib_service_event_id=service_events[0].id) \
+        .first().oib_plan.oib_plan_name
+
     client = lm.Contact.objects.get(id=contact_id)
     service_delivery_type = lm.OIBServiceDeliveryType.objects.get(id=service_delivery_type_id)
     otc_id_dict, outcome_types, otc_tuples = _get_plan_outcomes(contact_id, service_delivery_type_id, grant_year)
@@ -2637,6 +2651,7 @@ def _oib_plan_dict(request, contact_id, program, grant_year, service_delivery_ty
             for outcome_type in outcome_types
         }
 
+        # "plan_name": f"{program or ''} {service_events[0].construct_plan_name()}",
     return {
         "client": client,
         "grant_year": grant_year,
@@ -2647,7 +2662,7 @@ def _oib_plan_dict(request, contact_id, program, grant_year, service_delivery_ty
         "outcome_types": outcome_types,
         "choices_by_type": choices_by_type,
         "program": program,
-        "plan_name": f"{program or ''} {service_events[0].construct_plan_name()}",
+        "plan_name": plan_name,
         "plan_outcomes": otc_id_dict if edit_mode else otc_tuples,
         "edit_mode": edit_mode,
     }
