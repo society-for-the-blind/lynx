@@ -43,23 +43,23 @@ urlpatterns = [
     # So, use it to manage entities that are rarely touched? (Was meaning to write non-client contacts, but those can be managed from `client/` as well...)
 
     # === CORE ============================================================ {{-
-    path('core/client/<int:client_id>/authorizations', views.authorization_list, name='core_authorization_list'),
-    path('core/client/<int:client_id>/authorization/<int:pk>', views.AuthorizationDetailView.as_view(), name='core_authorization_show'),
-    path('core/client/<int:contact_id>/authorization/new', views.add_authorization, name='core_authorization_new'),
-    path('core/client/<int:contact_id>/authorization/<int:pk>/edit', views.AuthorizationUpdateView.as_view(), name='core_authorization_edit'),
-    path('core/client/<int:contact_id>/authorization/<int:pk>/delete', views.AuthorizationDeleteView.as_view(), name='core_authorization_delete'),
+    path( 'client/<int:client_id>/core/authorizations', views.authorization_list, name='core_authorization_list'),
+    path( 'client/<int:client_id>/core/authorization/<int:pk>', views.AuthorizationDetailView.as_view(), name='core_authorization_show'),
+    path('client/<int:contact_id>/core/authorization/new', views.add_authorization, name='core_authorization_new'),
+    path('client/<int:contact_id>/core/authorization/<int:pk>/edit', views.AuthorizationUpdateView.as_view(), name='core_authorization_edit'),
+    path('client/<int:contact_id>/core/authorization/<int:pk>/delete', views.AuthorizationDeleteView.as_view(), name='core_authorization_delete'),
 
-    path('core/client/<int:client_id>/authorization/<int:authorization_id>/progress-report/<int:pk>', views.ProgressReportDetailView.as_view(), name='core_progress_report_show'),
-    path('core/client/<int:client_id>/authorization/<int:authorization_id>/progress-report/new', views.add_progress_report, name='core_progress_report_new'),
-    path('core/client/<int:client_id>/authorization/<int:authorization_id>/progress-report/<int:pk>/edit', views.ProgressReportUpdateView.as_view(), name='core_progress_report_edit'),
-    path('core/client/<int:client_id>/authorization/<int:authorization_id>/progress-report/<int:pk>/delete', views.ProgressReportDeleteView.as_view(), name='core_progress_report_delete'),
+    path( 'client/<int:client_id>/core/authorization/<int:authorization_id>/progress-report/<int:pk>', views.ProgressReportDetailView.as_view(), name='core_progress_report_show'),
+    path( 'client/<int:client_id>/core/authorization/<int:authorization_id>/progress-report/new', views.add_progress_report, name='core_progress_report_new'),
+    path( 'client/<int:client_id>/core/authorization/<int:authorization_id>/progress-report/<int:pk>/edit', views.ProgressReportUpdateView.as_view(), name='core_progress_report_edit'),
+    path( 'client/<int:client_id>/core/authorization/<int:authorization_id>/progress-report/<int:pk>/delete', views.ProgressReportDeleteView.as_view(), name='core_progress_report_delete'),
 
-    path('core/client/<int:client_id>/authorization/<int:authorization_id>/lesson-note/<int:pk>', views.LessonNoteDetailView.as_view(), name='core_lesson_note_show'),
-    path('core/client/<int:client_id>/authorization/<int:authorization_id>/lesson-note/new', views.add_lesson_note, name='core_lesson_note_new'),
-    path('core/client/<int:client_id>/authorization/<int:authorization_id>/lesson-note/<int:pk>/edit', views.LessonNoteUpdateView.as_view(), name='core_lesson_note_edit'),
-    path('core/client/<int:client_id>/authorization/<int:authorization_id>/lesson-note/<int:pk>/delete', views.LessonNoteDeleteView.as_view(), name='core_lesson_note_delete'),
+    path( 'client/<int:client_id>/core/authorization/<int:authorization_id>/lesson-note/<int:pk>', views.LessonNoteDetailView.as_view(), name='core_lesson_note_show'),
+    path( 'client/<int:client_id>/core/authorization/<int:authorization_id>/lesson-note/new', views.add_lesson_note, name='core_lesson_note_new'),
+    path( 'client/<int:client_id>/core/authorization/<int:authorization_id>/lesson-note/<int:pk>/edit', views.LessonNoteUpdateView.as_view(), name='core_lesson_note_edit'),
+    path( 'client/<int:client_id>/core/authorization/<int:authorization_id>/lesson-note/<int:pk>/delete', views.LessonNoteDeleteView.as_view(), name='core_lesson_note_delete'),
 
-    path('core/client/<int:client_id>/authorization/<int:pk>/invoice', views.CoreInvoice.as_view(), name='core_invoice_show'),
+    path( 'client/<int:client_id>/core/authorization/<int:pk>/invoice', views.CoreInvoice.as_view(), name='core_invoice_show'),
     # ===================================================================== }}-
 
     # TODO See 20260304_2153
@@ -103,7 +103,7 @@ urlpatterns = [
          {'in_home': False},
          name='oib_service_event_add'
         ),
-    path('oib/client/<int:contact_id>/service-events/new-in-home',
+    path('client/<int:contact_id>/oib/service-events/new-in-home',
          views.oib_service_event_form,
         {'in_home': True},
          name='oib_service_event_add_in-home'
@@ -120,29 +120,31 @@ urlpatterns = [
          views.oib_service_event_list,
          name='oib_service_event_list'
         ),
-    path('oib/client/<int:client_id>/service-events',
+    path('client/<int:client_id>/oib/service-events',
          views.oib_service_event_list,
          name='oib_service_event_list'
         ),
-    path('oib/client/<int:contact_id>/service-events/<str:program>',
+    path('client/<int:contact_id>/oib/service-events/<str:program>',
          views.oib_service_events_per_client_per_program,
          name='oib_service_events_per_client_per_program'
         ),
 
     # "plans" (one / client / grant year / service delivery type (aka. plan type))
-    path('oib/client/<int:contact_id>/<str:program_name>/plans',
+    path('client/<int:contact_id>/oib/<str:program_name>/plans',
          views.oib_plan_list,
          name='oib_plan_list'
         ),
-    path('oib/client/<int:contact_id>/plans-with-notes',
+    path('client/<int:contact_id>/oib/plans-with-notes',
          views.oib_plan_list_with_notes,
          name='oib_plan_list_with_notes'
         ),
-    path('oib/client/<int:contact_id>/plans/<str:program>/<int:grant_year>/<int:service_delivery_type_id>',
+    # path('client/<int:contact_id>/oib/plans/<str:program>/<int:grant_year>/<int:service_delivery_type_id>',
+    path('client/<int:contact_id>/oib/plan/<int:oib_plan_id>',
          views.oib_plan_show,
          name='oib_plan_show'
         ),
-    path('oib/client/<int:contact_id>/plans/<str:program>/<int:grant_year>/<int:service_delivery_type_id>/edit',
+    # path('client/<int:contact_id>/oib/plans/<str:program>/<int:grant_year>/<int:service_delivery_type_id>/edit',
+    path('client/<int:contact_id>/oib/plan/<int:oib_plan_id>/edit',
          views.oib_plan_edit,
          name='oib_plan_edit'
         ),

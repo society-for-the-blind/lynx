@@ -6,7 +6,6 @@
 <h1>{{ program }} Plan for {{ client }}: {{ plan_name }}</h1>
 
 <input type="button" class="btn btn-success" aria-label="Back to Client" onclick="location.href='{% url 'lynx:contact_show' client.id %}';" value="Return to Client" />
-<!-- <input type="button" class="btn btn-success" aria-label="Edit outcomes" onclick="location.href='{% url 'lynx:oib_plan_list' client.id program %}';" value="Edit" /> -->
 <input type="button" class="btn btn-success" aria-label="SIP Plans" onclick="location.href='{% url 'lynx:oib_plan_list' client.id program %}';" value="Show all SIP plans" />
 <a class="btn btn-success" href="{% url 'lynx:contact_show' client.id %}">Back to client</a>
 
@@ -27,7 +26,7 @@
 <ul>
     {% include "lynx/oib/fragments/_plan_outcomes_show.html" %}
 </ul>
-<a class="btn btn-primary" href="{% url 'lynx:oib_plan_edit' client.id program grant_year service_delivery_type_id %}">
+<a class="btn btn-primary" href="{% url 'lynx:oib_plan_edit' client.id plan_id %}">
     Edit Outcomes
 </a>
 {% endif %}

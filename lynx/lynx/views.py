@@ -2250,14 +2250,15 @@ def oib_service_event_form(request, oib_service_event_id=None, contact_id=None, 
 
             for row in client_formset.cleaned_data:
                 if row and not row.get('DELETE', False):
+                    program_name = service_event.get_program(row['client']).program
                     # attach the plan to each participant
                     lm.OIBServiceEventContact.objects.create(
                         oib_service_event=service_event,
                         contact=row['client'],
                         oib_plan=plan_obj,
+                        program_name=program_name
                     )
                     birth_date_cache_updated = lm.ContactBirthDateCache.cache_updated(row['client'])
-                    plans = _get_plans(row['client'], birth_date_cache_updated)
 
             return redirect('lynx:oib_service_event_show', oib_service_event_id=service_event.id)
         else:
@@ -2466,65 +2467,6 @@ def oib_service_events_per_client_per_program(request, contact_id, program):
         "service_events": events,
     })
 
-# NOTE the attempt with cache
-# def _get_plans(client):
-#     client_birth_date = client.intake_set.first().birth_date if client.intake_set.exists() else None
-
-#     cached, _created = lm.ContactBirthDateCache.objects.get_or_create(contact=client, defaults={'last_saved_birth_date': client_birth_date})
-#     cached_birth_date = cached.last_saved_birth_date
-
-#     # TODO/NOTE 2026_09_13_1645
-#     # Note checking whether `client_birth_date` is None - this should not happen. If it does,
-#     # this needs to be fixed.`
-#     if ( client_birth_date == cached_birth_date):
-#         plan_program_service_events_qs = lm.OIBPlanProgramCache.for_client(client.id)
-#         if plan_program_service_events_qs.exists():
-#             service_events = plan_program_service_events_qs.all()
-#         else:
-#             service_events = lm.OIBServiceEvent.for_client(client.id).all()
-#             service_events_by_plan = {}
-#             for service_event in service_event_qs:
-#                 program = service_event.get_program(client)
-#                 # normalize program to a simple code/string for the key (avoid model instances as dict keys)
-#                 program_name = getattr(program, 'program', program) if program is not None else None
-
-#                 key = (service_event.grant_year, service_event.oib_service_delivery_type_id, program_name)
-#                 service_events_by_plan.setdefault(key, []).append(service_event)
-
-
-#     plans = []
-#     for (grant_year, service_delivery_type_id, program_name), service_events in service_events_by_plan.items():
-#         # use the first event as representative for names / labels
-#         first_service_event = service_events[0]
-#         sdt_name = getattr(first_service_event.oib_service_delivery_type, 'oib_service_delivery_type', '') or ""
-#         program = first_service_event.get_program(client)
-#         plan_name = first_service_event.construct_plan_name()
-
-#         service_names = set().union(*(se.collect_service_names() for se in service_events))
-#         _otc_id_dict, _outcome_types, otc_tuples = _get_plan_outcomes(client.id, service_delivery_type_id, grant_year)
-
-#         # `service_events_by_plan` contains exactly what the name says, but don't want to
-#         # recreate that on each plan load, so added the concrete service event IDs to each
-#         # plan link to be read by the appropriate plan view.
-#         service_event_ids_for_plan = [se.id for se in service_events]
-#         plan_token = signing.dumps(service_event_ids_for_plan)
-
-#         ui_plan_name = f"{program or ''} {plan_name}"
-#         plans.append({
-#             'id': ui_plan_name,
-#             'grant_year': grant_year,
-#             'service_delivery_type_id': service_delivery_type_id,
-#             'service_delivery_type_name': sdt_name,
-#             'plan_name': ui_plan_name,
-#             'program': program_name,
-#             'outcomes': otc_tuples,
-#             'service_names': sorted(service_names, key=str.lower),
-#             'plan_token': plan_token,
-#             'service_events': service_events,
-#         })
-
-#     return plans
-
 def _get_plans(client, birth_date_cache_updated, program_name=None):
 
     def _create_and_save_program_name(service_event_contact):
@@ -2582,62 +2524,37 @@ def _get_plans(client, birth_date_cache_updated, program_name=None):
                 grant_year
             )
 
-        # `service_events_by_plan` contains exactly what the name says, but don't want to
-        # recreate that on each plan load, so added the concrete service event IDs to each
-        # plan link to be read by the appropriate plan view.
-        service_event_ids_for_plan = [se.id for se in service_events]
-        plan_token = signing.dumps(service_event_ids_for_plan)
-
         ui_plan_name = f"{program_name or ''} {plan_name}"
         plans.append({
             'id': oib_plan.id,
+            'name': ui_plan_name,
             'grant_year': grant_year,
             'service_delivery_type_id': service_delivery_type_id,
             'service_delivery_type_name': sdt_name,
-            'plan_name': ui_plan_name,
             'program': program_name,
             'outcomes': otc_tuples,
             'service_names': sorted(service_names, key=str.lower),
-            'plan_token': plan_token,
             'service_events': service_events,
         })
 
     return plans
 
-def _oib_plan_dict(request, contact_id, program, grant_year, service_delivery_type_id, edit_mode):
-    token = request.GET.get('token')
-    if token:
-        try:
-            event_ids = signing.loads(token)
-        except signing.BadSignature:
-            # invalid token — fallback to default behaviour or raise
-            event_ids = None
-    else:
-        event_ids = None
+def _oib_plan_dict(request, contact_id, oib_plan_id, edit_mode):
 
-    service_events = []
-    if event_ids:
-        # fetch only the events referenced by the token, preserve original order
-        service_events = list(
-            lm.OIBServiceEvent.objects
-            .filter(id__in=event_ids)
-            .select_related('oib_service_delivery_type')
-            .prefetch_related('services', 'contacts')
-            .order_by('-date')
-        )
-    else:
-        # fallback: existing behaviour
-        service_events = lm.OIBServiceEvent.in_grant_year(contact_id, service_delivery_type_id, grant_year)
+    sec_qs = lm.OIBServiceEventContact.objects \
+        .select_related('oib_service_event', 'oib_plan') \
+        .filter(contact_id=contact_id, oib_plan_id=oib_plan_id) \
+        .order_by('-oib_service_event__date')
 
-    plan_name = \
-        lm.OIBServiceEventContact.objects \
-        .select_related('oib_plan') \
-        .filter(contact_id=contact_id, oib_service_event_id=service_events[0].id) \
-        .first().oib_plan.oib_plan_name
+    service_events = [sec.oib_service_event for sec in sec_qs]
+    plan_name = lm.OIBPlan.objects.get(id=oib_plan_id).oib_plan_name
+    program = sec_qs.first().program_name
 
     client = lm.Contact.objects.get(id=contact_id)
-    service_delivery_type = lm.OIBServiceDeliveryType.objects.get(id=service_delivery_type_id)
-    otc_id_dict, outcome_types, otc_tuples = _get_plan_outcomes(contact_id, service_delivery_type_id, grant_year)
+    grant_year = lks.get_grant_year(service_events[0])
+
+    service_delivery_type = service_events[0].oib_service_delivery_type
+    otc_id_dict, outcome_types, otc_tuples = _get_plan_outcomes(contact_id, service_delivery_type.id, grant_year)
 
     choices_by_type = {}
     if edit_mode:
@@ -2654,9 +2571,10 @@ def _oib_plan_dict(request, contact_id, program, grant_year, service_delivery_ty
         # "plan_name": f"{program or ''} {service_events[0].construct_plan_name()}",
     return {
         "client": client,
+        "plan_id": oib_plan_id,
         "grant_year": grant_year,
         "service_delivery_type": service_delivery_type,
-        "service_delivery_type_id": service_delivery_type_id,
+        "service_delivery_type_id": service_delivery_type.id,
         "service_delivery_type_name": service_delivery_type.oib_service_delivery_type,
         "service_events": service_events,
         "outcome_types": outcome_types,
@@ -2671,13 +2589,13 @@ def _oib_plan_dict(request, contact_id, program, grant_year, service_delivery_ty
 #                      which are not re-set when a new grant year starts. (The client wouldn't
 #                      magically loose their progress just because a new grant year started.)
 @login_required
-def oib_plan_show(request, contact_id, program, grant_year, service_delivery_type_id):
-    opd = _oib_plan_dict( request, contact_id, program, grant_year, service_delivery_type_id, edit_mode=False )
+def oib_plan_show(request, contact_id, oib_plan_id):
+    opd = _oib_plan_dict( request, contact_id, oib_plan_id, edit_mode=False )
     return render(request, "lynx/oib/oib_plan_show.html", opd)
 
 @login_required
-def oib_plan_edit(request, contact_id, program, grant_year, service_delivery_type_id):
-    opd = _oib_plan_dict( request, contact_id, program, grant_year, service_delivery_type_id, edit_mode=True )
+def oib_plan_edit(request, contact_id, oib_plan_id):
+    opd = _oib_plan_dict( request, contact_id, oib_plan_id, edit_mode=True )
 
     if request.method == "POST":
         otc_id_dict = opd.get('plan_outcomes', {})      # in edit_mode this is the otc_id_dict
@@ -2697,9 +2615,9 @@ def oib_plan_edit(request, contact_id, program, grant_year, service_delivery_typ
                     oib_outcome_type_choice=otc,
                     user=request.user,
                     oib_service_delivery_type=service_delivery_type,
-                    grant_year=grant_year
+                    grant_year=opd.get('grant_year')
                 )
-        return redirect('lynx:oib_plan_show', contact_id, program, grant_year, service_delivery_type_id)
+        return redirect('lynx:oib_plan_show', contact_id, oib_plan_id)
 
     return render(request, "lynx/oib/oib_plan_show.html", opd)
 # ===================================================================== }}-
