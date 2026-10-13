@@ -34,7 +34,7 @@
     {% for program_plan in plans %}
       <div class="container-fluid mb-3 p-2 border">
         <div><strong>Plan Name: </strong>
-          <a href="{% url 'lynx:oib_plan_show' client.id program_plan.id %}">
+          <a href="{% url 'lynx:oib_plan_show' client.id program program_plan.id %}">
             {{ program_plan.name }}
           </a>
         </div>

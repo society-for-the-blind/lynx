@@ -1888,6 +1888,7 @@ def grant_year_start_date():
 @login_required
 def oib_service_event_show(request, oib_service_event_id):
     service_event = get_object_or_404(lm.OIBServiceEvent, pk=oib_service_event_id)
+    sec_qs = service_event.oibserviceeventcontact_set
     hms = lks.timedelta_to_hms(service_event.length)
     service_event_length = dict(lks.DURATION_CHOICES).get(hms)
 
@@ -1902,7 +1903,8 @@ def oib_service_event_show(request, oib_service_event_id):
                  , { 'service_event': service_event
                    , 'service_event_length': service_event_length
                    , 'instructors_with_roles': instructors_with_roles
-                   , 'plan_name': service_event.oibserviceeventcontact_set.select_related('oib_plan').first().oib_plan.oib_plan_name
+                   , 'plan': sec_qs.select_related('oib_plan').first().oib_plan
+                   , 'sec_all': sec_qs.select_related('contact').all()
                    }
                  )
 
@@ -2539,16 +2541,21 @@ def _get_plans(client, birth_date_cache_updated, program_name=None):
 
     return plans
 
-def _oib_plan_dict(request, contact_id, oib_plan_id, edit_mode):
+def _oib_plan_dict(request, contact_id, oib_plan_id, program_name, edit_mode):
 
     sec_qs = lm.OIBServiceEventContact.objects \
         .select_related('oib_service_event', 'oib_plan') \
-        .filter(contact_id=contact_id, oib_plan_id=oib_plan_id) \
+        .filter(
+            contact_id=contact_id,
+            oib_plan_id=oib_plan_id,
+            program_name__iexact=program_name
+        ) \
         .order_by('-oib_service_event__date')
 
     service_events = [sec.oib_service_event for sec in sec_qs]
     plan_name = lm.OIBPlan.objects.get(id=oib_plan_id).oib_plan_name
-    program = sec_qs.first().program_name
+    program = service_events[0].get_program(lm.Contact.objects.get(id=contact_id)).program
+
 
     client = lm.Contact.objects.get(id=contact_id)
     grant_year = lks.get_grant_year(service_events[0])
@@ -2589,13 +2596,13 @@ def _oib_plan_dict(request, contact_id, oib_plan_id, edit_mode):
 #                      which are not re-set when a new grant year starts. (The client wouldn't
 #                      magically loose their progress just because a new grant year started.)
 @login_required
-def oib_plan_show(request, contact_id, oib_plan_id):
-    opd = _oib_plan_dict( request, contact_id, oib_plan_id, edit_mode=False )
+def oib_plan_show(request, contact_id, oib_plan_id, program_name):
+    opd = _oib_plan_dict( request, contact_id, oib_plan_id, program_name, edit_mode=False )
     return render(request, "lynx/oib/oib_plan_show.html", opd)
 
 @login_required
-def oib_plan_edit(request, contact_id, oib_plan_id):
-    opd = _oib_plan_dict( request, contact_id, oib_plan_id, edit_mode=True )
+def oib_plan_edit(request, contact_id, oib_plan_id, program_name):
+    opd = _oib_plan_dict( request, contact_id, oib_plan_id, program_name, edit_mode=True )
 
     if request.method == "POST":
         otc_id_dict = opd.get('plan_outcomes', {})      # in edit_mode this is the otc_id_dict
@@ -2617,7 +2624,7 @@ def oib_plan_edit(request, contact_id, oib_plan_id):
                     oib_service_delivery_type=service_delivery_type,
                     grant_year=opd.get('grant_year')
                 )
-        return redirect('lynx:oib_plan_show', contact_id, oib_plan_id)
+        return redirect('lynx:oib_plan_show', contact_id, program_name, oib_plan_id)
 
     return render(request, "lynx/oib/oib_plan_show.html", opd)
 # ===================================================================== }}-

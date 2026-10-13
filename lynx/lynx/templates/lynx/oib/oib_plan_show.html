@@ -26,7 +26,7 @@
 <ul>
     {% include "lynx/oib/fragments/_plan_outcomes_show.html" %}
 </ul>
-<a class="btn btn-primary" href="{% url 'lynx:oib_plan_edit' client.id plan_id %}">
+<a class="btn btn-primary" href="{% url 'lynx:oib_plan_edit' client.id program plan_id %}">
     Edit Outcomes
 </a>
 {% endif %}

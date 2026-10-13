@@ -1,7 +1,7 @@
 {% extends 'lynx/base.html' %}
 {% load time_convert %}
 
-{% block title %}SIP note: {{ service_event.oib_service_delivery_type.oib_service_delivery_type }} on {{ service_event.date|date:'F j, Y' }}{% endblock %}
+{% block title %}SIP/ILP note: {{ service_event.oib_service_delivery_type.oib_service_delivery_type }} on {{ service_event.date|date:'F j, Y' }}{% endblock %}
 
 {% block content %}
 {% if service_event.oib_service_delivery_type_id == 1 %}
@@ -20,7 +20,7 @@
 -->
 <ul>
   <!-- <li><strong>Plan Type:</strong> {{ service_event.oib_service_delivery_type.oib_service_delivery_type }}</li> -->
-  <li><strong>Plan Name:</strong> {{ plan_name }}</li>
+  <li><strong>Plan Name:</strong> {{ plan.oib_plan_name }}</li>
   <li><strong>Date:</strong> {{ service_event.date|date:"F j, Y" }}</li>
   <li><strong>Length:</strong> {{ service_event_length }}</li>
   <li><strong>Entered by:</strong> {{ service_event.entered_by.get_full_name|default:service_event.entered_by.username }}</li>
@@ -39,10 +39,14 @@
 
 <h3>Clients</h3>
 <ol>
-  {% for contact in service_event.contacts.all %}
+  {% for sec in sec_all %}
     <li>
-      <a href="{% url 'lynx:contact_show' contact.id %}">
-        {{ contact.first_name }} {{ contact.last_name }}
+      <a href="{% url 'lynx:contact_show' sec.contact_id %}">
+        {{ sec.contact.first_name }} {{ sec.contact.last_name }}
+      </a>
+      &nbsp;
+      <a href="{% url 'lynx:oib_plan_show' sec.contact_id sec.program_name plan.id %}">
+        ({{ plan.oib_plan_name }})
       </a>
     </li>
   {% empty %}

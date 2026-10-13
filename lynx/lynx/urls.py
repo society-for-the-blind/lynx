@@ -139,12 +139,12 @@ urlpatterns = [
          name='oib_plan_list_with_notes'
         ),
     # path('client/<int:contact_id>/oib/plans/<str:program>/<int:grant_year>/<int:service_delivery_type_id>',
-    path('client/<int:contact_id>/oib/plan/<int:oib_plan_id>',
+    path('client/<int:contact_id>/oib/<str:program_name>/plan/<int:oib_plan_id>',
          views.oib_plan_show,
          name='oib_plan_show'
         ),
     # path('client/<int:contact_id>/oib/plans/<str:program>/<int:grant_year>/<int:service_delivery_type_id>/edit',
-    path('client/<int:contact_id>/oib/plan/<int:oib_plan_id>/edit',
+    path('client/<int:contact_id>/oib/<str:program_name>/plan/<int:oib_plan_id>/edit',
          views.oib_plan_edit,
          name='oib_plan_edit'
         ),

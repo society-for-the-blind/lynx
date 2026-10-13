@@ -17,5 +17,5 @@
         {% endfor %}
     </ul>
     <button type="submit" class="btn btn-success">Save Outcomes</button>
-    <a href="{% url 'lynx:oib_plan_show' client.id plan_id %}" class="btn btn-secondary">Cancel</a>
+    <a href="{% url 'lynx:oib_plan_show' client.id program plan_id %}" class="btn btn-secondary">Cancel</a>
 </form>
