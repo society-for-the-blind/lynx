@@ -2457,7 +2457,7 @@ def oib_service_events_per_client_per_program(request, contact_id, program):
             for ev in plan.get('service_events', []):
                 setattr(ev, 'plan_grant_year', plan.get('grant_year'))
                 setattr(ev, 'plan_service_delivery_type_id', plan.get('service_delivery_type_id'))
-                setattr(ev, 'plan_token', plan.get('plan_token'))
+                setattr(ev, 'plan_id', plan.get('id'))
                 setattr(ev, 'plan_program', plan.get('program'))
                 events.append(ev)
     # order newest first

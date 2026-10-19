@@ -61,10 +61,14 @@
 
             <p class="mb-1">
               <strong>Plan:</strong>
-              {% if ev.plan_grant_year and ev.plan_service_delivery_type_id %}
-                <a href="{% url 'lynx:oib_plan_show' client.id program ev.plan_grant_year ev.plan_service_delivery_type_id %}">Open plan 10/1/{{ ev.plan_grant_year }} - {{ ev.oib_service_delivery_type.oib_service_delivery_type }}</a>
+              {% if ev.plan_id %}
+                <a href="{% url 'lynx:oib_plan_show' client.id program ev.plan_id %}">
+                  Open plan 10/1/{{ ev.plan_grant_year }} - {{ ev.oib_service_delivery_type.oib_service_delivery_type }}
+                </a>
               {% else %}
-                <a href="{% url 'lynx:oib_plan_list' client.id %}?program={{ program|urlencode }}">Open plans for {{ program }}</a>
+                <a href="{% url 'lynx:oib_plan_list' client.id program %}">
+                  Open plans for {{ program }}
+                </a>
               {% endif %}
             </p>
 
