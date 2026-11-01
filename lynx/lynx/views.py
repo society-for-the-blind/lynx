@@ -1005,7 +1005,8 @@ class ContactFormView(LoginRequiredMixin, dvg.edit.ModelFormMixin):
             email.active = True
             email.save()
 
-        return HttpResponseRedirect(reverse('lynx:emergency_contact_add', args=(contact_id,)))
+        # return HttpResponseRedirect(reverse('lynx:emergency_contact_add', args=(contact_id,)))
+        return HttpResponseRedirect(reverse('lynx:contact_show', args=(contact_id,)))
 
 # For add
 class ContactCreateView(ContactFormView, dvg.CreateView):
