@@ -44,6 +44,13 @@
       <a href="{% url 'lynx:contact_show' sec.contact_id %}">
         {{ sec.contact.first_name }} {{ sec.contact.last_name }}
       </a>
+      {% if not sec.contact.active and sec.contact.deceased %}
+        <span class="badge bg-danger">Inactive & Deceased</span>
+      {% elif not sec.contact.active %}
+        <span class="badge bg-warning">Inactive</span>
+      {% elif sec.contact.deceased %}
+        <span class="badge bg-danger">Deceased</span>
+      {% endif %}
       &nbsp;
       <a href="{% url 'lynx:oib_plan_show' sec.contact_id sec.program_name plan.id %}">
         ({{ plan.oib_plan_name }})
