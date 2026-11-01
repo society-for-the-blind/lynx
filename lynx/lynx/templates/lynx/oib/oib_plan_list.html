@@ -20,15 +20,8 @@
   <h2>{{ program }} Plans for {{ client.first_name }} {{ client.last_name }}</h2>
 
   <input type="button" class="btn btn-success" aria-label="Back to Client" onclick="location.href='{% url 'lynx:contact_show' client.id %}';" value="Return to Client" />
-  <a href="{% url 'lynx:oib_service_event_add_in-home' client.id %}" class="btn btn-primary">
-    Add new in-home
-  </a>
-  <a href="{% url 'lynx:oib_service_event_add' %}" class="btn btn-primary">
-    Add new group note
-  </a>
-  <a href="{% url 'lynx:oib_service_event_list' client.id %}" class="btn btn-primary">
-    Show all notes
-  </a>
+  
+  {% include "lynx/oib/fragments/_add_show_oib_notes.html" with client_id=client.id %}
 
   <div class="container-fluid">
     {% for program_plan in plans %}

@@ -7,17 +7,8 @@
 
 <input type="button" class="btn btn-success" aria-label="Back to Client" onclick="location.href='{% url 'lynx:contact_show' client.id %}';" value="Return to Client" />
 <input type="button" class="btn btn-success" aria-label="SIP Plans" onclick="location.href='{% url 'lynx:oib_plan_list' client.id program %}';" value="Show all {{ program}} plans" />
-<a class="btn btn-success" href="{% url 'lynx:contact_show' client.id %}">Back to client</a>
 
-<a href="{% url 'lynx:oib_service_event_add_in-home' client.id %}" class="btn btn-primary">
-  Add new in-home
-</a>
-<a href="{% url 'lynx:oib_service_event_add' %}" class="btn btn-primary">
-  Add new group note
-</a>
-<a href="{% url 'lynx:oib_service_event_list' client.id %}" class="btn btn-primary">
-  Show all notes
-</a>
+{% include "lynx/oib/fragments/_add_show_oib_notes.html" with client_id=client.id %}
 
 <h2>Outcomes</h2>
 {% if edit_mode %}
