@@ -1,0 +1,36 @@
+{% if client.active %}
+  <a href="{% url 'lynx:oib_service_event_add_in-home' client_id %}" class="btn btn-primary">
+    Add new in-home note
+  </a>
+  <a href="{% url 'lynx:oib_service_event_add' %}" class="btn btn-primary">
+    Add new group note
+  </a>
+  <a href="{% url 'lynx:oib_service_event_list' client_id %}" class="btn btn-primary">
+    Show all notes
+  </a>
+{% else %}
+  <a href="#"
+     class="btn btn-primary disabled"
+     aria-disabled="true"
+     aria-describedby="inactive-client-note"
+     onclick="return false;">
+    Add new in-home note
+  </a>
+  <a href="#"
+     class="btn btn-primary disabled"
+     aria-disabled="true"
+     aria-describedby="inactive-client-note"
+     onclick="return false;">
+    Add new group note
+  </a>
+  <a href="#"
+     class="btn btn-primary disabled"
+     aria-disabled="true"
+     aria-describedby="inactive-client-note"
+     onclick="return false;">
+    Show all notes
+  </a>
+  <p id="inactive-client-note" class="text-muted" role="note">
+    This client is inactive. Please set as active to enable adding new notes.
+  </p>
+{% endif %}
