@@ -210,6 +210,12 @@ function addFormSetInstance(prefix) {
     document.getElementById(prefix + '_formset').appendChild(wrapper);
     totalForms.value = parseInt(formIdx) + 1;
     updateSelectOptions( prefix_to_select_classes()[prefix] );
+
+    // Focus on the newly added dropdown
+    const newSelect = wrapper.querySelector('select');
+    if (newSelect) {
+      newSelect.focus();
+    }
 }
 
 function removeFormRow(btn) {
