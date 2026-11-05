@@ -5,8 +5,8 @@
 {% block content %}
 <h1>{{ program }} Plan for {{ client }}: {{ plan_name }}</h1>
 
-<input type="button" class="btn btn-success" aria-label="Back to Client" onclick="location.href='{% url 'lynx:contact_show' client.id %}';" value="Return to Client" />
-<input type="button" class="btn btn-success" aria-label="SIP Plans" onclick="location.href='{% url 'lynx:oib_plan_list' client.id program %}';" value="Show all {{ program}} plans" />
+  <a class="btn btn-success" aria-label="Back to Client" href="{% url 'lynx:contact_show' client.id %}">Return to Client</a>
+  <a class="btn btn-success" aria-label="SIP Plans" href="{% url 'lynx:oib_plan_list' client.id program %}">Show all {{ program}} plans</a>
 
 {% include "lynx/oib/fragments/_add_show_oib_notes.html" with client_id=client.id %}
 

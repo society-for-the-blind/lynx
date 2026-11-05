@@ -19,7 +19,7 @@
 {% block content %}
   <h2>{{ program }} Plans for {{ client.first_name }} {{ client.last_name }}</h2>
 
-  <input type="button" class="btn btn-success" aria-label="Back to Client" onclick="location.href='{% url 'lynx:contact_show' client.id %}';" value="Return to Client" />
+  <a class="btn btn-success" aria-label="Back to Client" href="{% url 'lynx:contact_show' client.id %}">Return to Client</a>
   
   {% include "lynx/oib/fragments/_add_show_oib_notes.html" with client_id=client.id %}
 

@@ -252,12 +252,126 @@ function removeFormRow(btn) {
   });
 </script>
 <script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.7/dist/htmx.min.js"></script>
+<script>
+// Make form validation errors accessible to screen readers
+document.addEventListener('DOMContentLoaded', function() {
+  // Handle Django/Bootstrap invalid-feedback divs (e.g., id_user_role-0-instructor_error)
+  const invalidFeedbackDivs = document.querySelectorAll('div.invalid-feedback');
+  
+  invalidFeedbackDivs.forEach(function(errorDiv) {
+    // Mark error div for screen readers
+    errorDiv.setAttribute('role', 'alert');
+    errorDiv.setAttribute('aria-live', 'assertive');
+    errorDiv.setAttribute('aria-atomic', 'true');
+    
+    // Extract the field ID from the error div ID (remove "_error" suffix)
+    if (errorDiv.id) {
+      const fieldId = errorDiv.id.replace(/_error$/, '');
+      const field = document.getElementById(fieldId);
+      
+      if (field) {
+        // Mark input as invalid
+        field.setAttribute('aria-invalid', 'true');
+        
+        // Link input field to its error message
+        field.setAttribute('aria-describedby', errorDiv.id);
+      }
+    }
+  });
+  
+  // Handle traditional ul.errorlist elements
+  const errorContainers = document.querySelectorAll('ul.errorlist');
+  
+  errorContainers.forEach(function(errorList) {
+    // Mark error list for screen readers
+    errorList.setAttribute('role', 'alert');
+    errorList.setAttribute('aria-live', 'assertive');
+    errorList.setAttribute('aria-atomic', 'true');
+    
+    // Try to find the associated form field
+    const fieldContainer = errorList.closest('.form-group, .mb-3, .fieldWrapper, .field-wrapper, div[class*="field"]');
+    if (fieldContainer) {
+      const input = fieldContainer.querySelector('input, select, textarea');
+      if (input && input.id) {
+        // Mark input as invalid
+        input.setAttribute('aria-invalid', 'true');
+        
+        // Create unique ID for error list if it doesn't have one
+        if (!errorList.id) {
+          errorList.id = input.id + '_errors';
+        }
+        
+        // Link input field to its error messages
+        input.setAttribute('aria-describedby', errorList.id);
+      }
+    }
+  });
+  
+  // Also handle form-level non-field errors
+  const nonFieldErrors = document.querySelector('ul.errorlist');
+  if (nonFieldErrors && !nonFieldErrors.id) {
+    nonFieldErrors.id = 'form_errors_services';
+    nonFieldErrors.setAttribute('role', 'alert');
+    nonFieldErrors.setAttribute('aria-live', 'assertive');
+    nonFieldErrors.setAttribute('aria-atomic', 'true');
+  }
+});
+</script>
 {% endblock %}
 
 {% block style %}
 <style>
   legend { all: unset; font-size: inherit; color: inherit; }
   input[type="checkbox"][name$="-DELETE"] { visibility: hidden;}
+  
+  /* Accessibility: Error styling and focus indicators */
+  ul.errorlist {
+    list-style: none;
+    padding: 0.5rem;
+    margin: 0.5rem 0;
+    background-color: #fee;
+    border: 2px solid #c00;
+    border-radius: 4px;
+    color: #c00;
+  }
+  
+  ul.errorlist li {
+    margin: 0.25rem 0;
+    font-weight: 500;
+  }
+  
+  /* Ensure invalid fields have strong visual indicator */
+  input[aria-invalid="true"],
+  select[aria-invalid="true"],
+  textarea[aria-invalid="true"] {
+    border-color: #c00 !important;
+    border-width: 2px !important;
+  }
+  
+  /* Enhance focus visibility for keyboard navigation */
+  input:focus,
+  select:focus,
+  textarea:focus,
+  button:focus {
+    outline: 2px solid #0066cc;
+    outline-offset: 2px;
+  }
+  
+  /* Style Bootstrap invalid-feedback divs for accessibility */
+  div.invalid-feedback {
+    display: block;
+    padding: 0.5rem;
+    margin: 0.5rem 0;
+    background-color: #fee;
+    border: 2px solid #c00;
+    border-radius: 4px;
+    color: #c00;
+    font-weight: 500;
+  }
+  
+  div.invalid-feedback p {
+    margin: 0;
+  }
 </style>
 {% endblock %}
 
@@ -292,7 +406,7 @@ function removeFormRow(btn) {
     <h1>Add new group note</h1>
   {% endif %}
 {% endif %}
-<form method="post">
+<form method="post" novalidate>
   {% csrf_token %}
   {% if request.user.is_staff %}
     <div class="form-group">
