@@ -2,156 +2,6 @@
 {% load crispy_forms_tags %}
 
 {% block javascript %}
-<!-- <script>
-document.addEventListener('DOMContentLoaded', function () {
-  // dynamically restrict the SelectDateWidget to [grant_start .. latest_allowed]
-  const yearSel = document.getElementById('id_note_date_year');
-  const monthSel = document.getElementById('id_note_date_month');
-  const daySel = document.getElementById('id_note_date_day');
-  const adminCheckbox = document.getElementById('id_admin_override');
-  if (!yearSel || !monthSel || !daySel) return;
-
-  // Read ISO dates from widget attrs (SelectDateWidget propagates attrs to sub-selects)
-  const grantIso = yearSel.getAttribute('data-grant-start') || monthSel.getAttribute('data-grant-start');
-  const latestIso = yearSel.getAttribute('data-latest-allowed') || monthSel.getAttribute('data-latest-allowed');
-  const adminAvailable = (yearSel.getAttribute('data-admin-override-available') === '1');
-
-  function parseISODateToLocal(iso) {
-    const [y, m, d] = (iso || '').split('-').map(n => parseInt(n, 10));
-    return new Date(y, (m || 1) - 1, d || 1);
-  }
-  const grantStart = parseISODateToLocal(grantIso);
-  const latestAllowed = parseISODateToLocal(latestIso);
-
-  function daysInMonth(y, m) {
-    return new Date(y, m, 0).getDate(); // m is 1..12
-  }
-
-  function setFullYearOptions() {
-    yearSel.innerHTML = '';
-    for (let y = 2000; y <= 2100; y++) {
-      const opt = document.createElement('option');
-      opt.value = String(y);
-      opt.text = String(y);
-      yearSel.appendChild(opt);
-    }
-  }
-  function restoreYearOptions(minYear, maxYear) {
-    yearSel.innerHTML = '';
-    for (let y = minYear; y <= maxYear; y++) {
-      const opt = document.createElement('option');
-      opt.value = String(y);
-      opt.text = String(y);
-      yearSel.appendChild(opt);
-    }
-  }
-
-  function clampMonthOptions() {
-    if (adminCheckbox && adminCheckbox.checked && adminAvailable) {
-      // admin override -> enable all months
-      Array.from(monthSel.options).forEach(opt => { opt.disabled = false; opt.hidden = false; });
-      return;
-    }
-    // Preserve the current selection if still valid; otherwise choose the earliest allowed month.
-    const prevMonth = parseInt(monthSel.value, 10);
-    const selectedYear = parseInt(yearSel.value, 10);
-    const minMonth = (selectedYear === grantStart.getFullYear()) ? (grantStart.getMonth() + 1) : 1;
-    const maxMonth = (selectedYear === latestAllowed.getFullYear()) ? (latestAllowed.getMonth() + 1) : 12;
-    Array.from(monthSel.options).forEach(opt => {
-      const m = parseInt(opt.value, 10);
-      if (!isNaN(m)) {
-        opt.disabled = !(m >= minMonth && m <= maxMonth);
-        opt.hidden = opt.disabled;
-      }
-    });
-    if (!isNaN(prevMonth) && prevMonth >= minMonth && prevMonth <= maxMonth) {
-      monthSel.value = String(prevMonth);
-    } else {
-      monthSel.value = String(minMonth);
-    }
-  }
-
-  function clampDayOptions() {
-    if (adminCheckbox && adminCheckbox.checked && adminAvailable) {
-      // admin override -> show full month days
-      const y = parseInt(yearSel.value, 10);
-      const m = parseInt(monthSel.value, 10);
-      if (isNaN(y) || isNaN(m)) return;
-      const maxDay = daysInMonth(y, m);
-      daySel.innerHTML = '';
-      for (let d = 1; d <= maxDay; d++) {
-        const opt = document.createElement('option');
-        opt.value = String(d);
-        opt.text = String(d);
-        daySel.appendChild(opt);
-      }
-      return;
-    }
-    const y = parseInt(yearSel.value, 10);
-    const m = parseInt(monthSel.value, 10);
-    if (isNaN(y) || isNaN(m)) return;
-
-    // Preserve previously selected day if still valid
-    const prevDay = parseInt(daySel.value, 10);
-
-    let minDay = 1;
-    let maxDay = daysInMonth(y, m);
-
-    if (y === grantStart.getFullYear() && m === (grantStart.getMonth() + 1)) {
-      minDay = grantStart.getDate();
-    }
-    if (y === latestAllowed.getFullYear() && m === (latestAllowed.getMonth() + 1)) {
-      maxDay = latestAllowed.getDate();
-    }
-
-    daySel.innerHTML = '';
-    for (let d = minDay; d <= maxDay; d++) {
-      const opt = document.createElement('option');
-      opt.value = String(d);
-      opt.text = String(d);
-      if (!isNaN(prevDay) && prevDay >= minDay && prevDay <= maxDay && d === prevDay) {
-        opt.selected = true;
-      }
-      daySel.appendChild(opt);
-    }
-
-    // If no option was selected (e.g. new form), prefer latestAllowed day when month/year match today,
-    // otherwise pick the first allowed day.
-    if (!daySel.value) {
-      if (y === latestAllowed.getFullYear() && m === (latestAllowed.getMonth() + 1)) {
-        daySel.value = String(latestAllowed.getDate());
-      } else {
-        daySel.value = String(minDay);
-      }
-    }
-  }
-
-  function onAdminToggle() {
-    if (adminCheckbox && adminCheckbox.checked && adminAvailable) {
-      setFullYearOptions();
-    } else {
-      // rebuild years limited to grant start..today
-      const minY = grantStart.getFullYear();
-      const maxY = latestAllowed.getFullYear();
-      restoreYearOptions(minY, maxY);
-    }
-    clampMonthOptions();
-    clampDayOptions();
-  }
-
-  yearSel.addEventListener('change', function () {
-    clampMonthOptions();
-    clampDayOptions();
-  });
-  monthSel.addEventListener('change', clampDayOptions);
-  if (adminCheckbox) {
-    adminCheckbox.addEventListener('change', onAdminToggle);
-  }
-
-  // initial setup
-  onAdminToggle();
-});
-</script> -->
 <script>
 function prefix_to_select_classes() {
     return { 'client': 'client-select',
@@ -383,7 +233,8 @@ document.addEventListener('DOMContentLoaded', function() {
       Edit group
     {% endif %}
   {% else %}
-    {% if contact_id %}
+    {# Check contact_id from initial render, or fall back to hidden field in POST with errors #}
+    {% if contact_id or request.POST.in_home_flag == 'true' %}
       Add new in-home
     {% else %}
       Add new group
@@ -400,7 +251,8 @@ document.addEventListener('DOMContentLoaded', function() {
     <h1>Edit group note</h1>
   {% endif %}
 {% else %}
-  {% if contact_id %}
+  {# Check contact_id from initial render, or fall back to hidden field in POST with errors #}
+  {% if contact_id or request.POST.in_home_flag == 'true' %}
     <h1>Add new in-home note</h1>
   {% else %}
     <h1>Add new group note</h1>
@@ -408,6 +260,10 @@ document.addEventListener('DOMContentLoaded', function() {
 {% endif %}
 <form method="post" novalidate>
   {% csrf_token %}
+  {# Hidden field to preserve in-home mode when form is re-rendered after validation errors #}
+  {% if not edit_mode %}
+    <input type="hidden" name="in_home_flag" value="{% if contact_id %}true{% else %}false{% endif %}">
+  {% endif %}
   {% if request.user.is_staff %}
     <div class="form-group">
       <label for="id_admin_override">
