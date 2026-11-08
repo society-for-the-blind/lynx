@@ -275,67 +275,26 @@ document.addEventListener('DOMContentLoaded', function() {
 
   {{ form }}
 
-  <h2>Clients</h2>
-  {{ formsets.client_formset.management_form }}
-  <div>
-    <div id="{{ formsets.client_formset.prefix }}_formset">
-      {% for f in formsets.client_formset %}
-        <div class="row contact-role-row">
-          <div class="col-6">{{ f.client|as_crispy_field }}</div>
-          <div class="col-2">
-            {% if formsets.client_formset.can_delete %}
-              {{ f.DELETE }}
-              <button type="button" onclick="removeFormRow(this)">Remove</button>
-            {% endif %}
-          </div>
-        </div>
-      {% endfor %}
-    </div>
-    <div id="{{ formsets.client_formset.prefix }}_form" style="display:none;">
-      <div class="row contact-role-row">
-        <div class="col-6">{{ formsets.client_formset.empty_form.client|as_crispy_field }}</div>
-        <div class="col-2">
-          {% if formsets.client_formset.can_delete %}
-            {{ formsets.client_formset.empty_form.DELETE }}
-            <button type="button" onclick="removeFormRow(this)">Remove</button>
-          {% endif %}
-        </div>
-      </div>
-    </div>
-    <button type="button" id="add-client-btn" onclick="addFormSetInstance('{{ formsets.client_formset.prefix }}')">Add client</button>
-  </div>
+  {% if edit_mode %}
+    {% if service_event.oib_service_delivery_type_id == 1 %}
+      {% include "lynx/oib/fragments/_add_note_clients.html" with formsets=formsets client_id=contact_id show_client_toggle="none" %}
+      {% include "lynx/oib/fragments/_add_note_instructors.html" with formsets=formsets show_instructor_toggle="block" %}
+    {% else %}
+      {% include "lynx/oib/fragments/_add_note_clients.html" with formsets=formsets client_id=contact_id show_client_toggle="block" %}
+      {% include "lynx/oib/fragments/_add_note_instructors.html" with formsets=formsets show_instructor_toggle="block" %}
+    {% endif %}
+  {% else %}
+    {# Check contact_id from initial render, or fall back to hidden field in POST with errors #}
+    {% if contact_id or request.POST.in_home_flag == 'true' %}
+      {% include "lynx/oib/fragments/_add_note_clients.html" with formsets=formsets client_id=contact_id show_client_toggle="none" %}
+      {% include "lynx/oib/fragments/_add_note_instructors.html" with formsets=formsets show_instructor_toggle="none" %}
+    {% else %}
+      {% include "lynx/oib/fragments/_add_note_clients.html" with formsets=formsets client_id=contact_id show_client_toggle="block" %}
+      {% include "lynx/oib/fragments/_add_note_instructors.html" with formsets=formsets show_instructor_toggle="block" %}
+    {% endif %}
+  {% endif %}
 
-  <h2>Instructors</h2>
-  {{ formsets.user_role_formset.management_form }}
-  <div>
-    <div id="{{ formsets.user_role_formset.prefix }}_formset">
-      {% for f in formsets.user_role_formset %}
-        <div class="row contact-role-row">
-          <div class="col-6">{{ f.instructor|as_crispy_field }}</div>
-          <div class="col-4">{{ f.role|as_crispy_field }}</div>
-          <div class="col-2">
-            {% if formsets.user_role_formset.can_delete %}
-              {{ f.DELETE }}
-              <button type="button" onclick="removeFormRow(this)">Remove</button>
-            {% endif %}
-          </div>
-        </div>
-      {% endfor %}
-    </div>
-    <div id="{{ formsets.user_role_formset.prefix }}_form" style="display:none;">
-      <div class="row contact-role-row">
-        <div class="col-6">{{ formsets.user_role_formset.empty_form.instructor|as_crispy_field }}</div>
-        <div class="col-4">{{ formsets.user_role_formset.empty_form.role|as_crispy_field }}</div>
-        <div class="col-2">
-          {% if formsets.user_role_formset.can_delete %}
-            {{ formsets.user_role_formset.empty_form.DELETE }}
-            <button type="button" onclick="removeFormRow(this)">Remove</button>
-          {% endif %}
-        </div>
-      </div>
-    </div>
-    <button type="button" onclick="addFormSetInstance('{{ formsets.user_role_formset.prefix }}')">Add another instructor/role</button>
-  </div>
+
   <input type="submit" value="{% if edit_mode %}Update{% else %}Submit{% endif %}">
 </form>
 {% endblock %}

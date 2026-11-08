@@ -1,0 +1,33 @@
+  {% load crispy_forms_tags %}
+
+<div style="display:{{ show_client_toggle }};">
+    <h2>Clients</h2>
+    {{ formsets.client_formset.management_form }}
+    <div>
+      <div id="{{ formsets.client_formset.prefix }}_formset">
+        {% for f in formsets.client_formset %}
+          <div class="row contact-role-row">
+            <div class="col-6">{{ f.client|as_crispy_field }}</div>
+            <div class="col-2">
+              {% if formsets.client_formset.can_delete %}
+                {{ f.DELETE }}
+                <button type="button" onclick="removeFormRow(this)">Remove</button>
+              {% endif %}
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+      <div id="{{ formsets.client_formset.prefix }}_form" style="display:none;">
+        <div class="row contact-role-row">
+          <div class="col-6">{{ formsets.client_formset.empty_form.client|as_crispy_field }}</div>
+          <div class="col-2">
+            {% if formsets.client_formset.can_delete %}
+              {{ formsets.client_formset.empty_form.DELETE }}
+              <button type="button" onclick="removeFormRow(this)">Remove</button>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+      <button type="button" id="add-client-btn" onclick="addFormSetInstance('{{ formsets.client_formset.prefix }}')">Add client</button>
+    </div>
+  </div>

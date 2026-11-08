@@ -2134,7 +2134,16 @@ def oib_service_event_form(request, oib_service_event_id=None, contact_id=None, 
     # New in-home
     if in_home_client_id:
         client = lm.Contact.objects.get(pk=in_home_client_id)
-        client_initial = [{'client': client}]
+        client_initial = [
+            {
+                'client': client
+            }
+        ]
+        user_role_initial = [
+            {
+                'instructor': request.user,
+            }
+        ]
 
     def _attach_client_htmx_attrs(formset):
         """Attach HTMX attrs to client selects in a formset (called before rendering)."""
