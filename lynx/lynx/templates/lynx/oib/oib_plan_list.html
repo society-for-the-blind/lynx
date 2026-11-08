@@ -28,7 +28,13 @@
       <div class="container-fluid mb-3 p-2 border">
         <div><strong>Plan Name: </strong>
           <a href="{% url 'lynx:oib_plan_show' client.id program program_plan.id %}">
-            {{ program_plan.name }}
+            {% if program_plan.is_in_home %}
+              {# In-home plans: show date, service delivery type, and first instructor #}
+              {{ program_plan.program_name }} {{ program_plan.first_service_date|date:"m/d/Y" }} - {{ program_plan.service_delivery_type }}{% if program_plan.first_instructor %} - {{ program_plan.first_instructor }}{% endif %}
+            {% else %}
+              {# Regular plans: show grant year start #}
+              {{ program_plan.name }}
+            {% endif %}
           </a>
         </div>
 

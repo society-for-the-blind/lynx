@@ -2537,16 +2537,30 @@ def _get_plans(client, birth_date_cache_updated, program_name=None):
             )
 
         ui_plan_name = f"{program_name or ''} {plan_name}"
+        
+        # For in-home plans, get the first instructor from the service event
+        first_instructor_name = None
+        if service_delivery_type_id == 1:  # in-home service delivery type
+            instructors = first_service_event.instructors.all()
+            if instructors.exists():
+                first_instructor = instructors.first()
+                first_instructor_name = first_instructor.get_full_name() or first_instructor.username
+        
         plans.append({
             'id': oib_plan.id,
             'name': ui_plan_name,
             'grant_year': grant_year,
             'service_delivery_type_id': service_delivery_type_id,
             'service_delivery_type_name': sdt_name,
+            'service_delivery_type': sdt_name,
             'program': program_name,
+            'program_name': program_name,
             'outcomes': otc_tuples,
             'service_names': sorted(service_names, key=str.lower),
             'service_events': service_events,
+            'is_in_home': service_delivery_type_id == 1,
+            'first_service_date': first_service_event.date,
+            'first_instructor': first_instructor_name,
         })
 
     return plans
