@@ -2329,6 +2329,18 @@ def oib_service_event_form(request, oib_service_event_id=None, contact_id=None, 
         # ensure the empty_form renders no full list
         client_formset.empty_form.fields['client'].queryset = lm.Contact.objects.none()
 
+        if edit_mode:
+            if service_event.oib_service_delivery_type_id == 1:  # in-home
+                client = service_event.contacts.first()
+                page_title = f"Edit In-Home for {client.first_name} {client.last_name}"
+            else:
+                page_title = f"Edit Group Note {service_event.construct_plan_name()}"
+        else:
+            if in_home_client_id:
+                page_title = f"Add new In-Home for {client.first_name} {client.last_name}"
+            else:
+                page_title = "Add new Group Note"
+
         context = {
             'form': form,
             'formsets': {
@@ -2336,48 +2348,13 @@ def oib_service_event_form(request, oib_service_event_id=None, contact_id=None, 
                 'client_formset': client_formset,
             },
             'contact_id': contact_id,
+            'page_title': page_title,
         }
         if edit_mode:
             context['service_event'] = service_event
             context['edit_mode'] = True
 
         return render(request, template_path, context)
-
-# "PLANS" (virtual)
-# Outdated, but still useful for listing notes per program-agnostic plan
-@login_required
-def oib_plan_list_with_notes(request, contact_id):
-    client = lm.Contact.objects.get(id=contact_id)
-
-    # Get all distinct combinations of grant year and service delivery type
-    plans = (
-        lm.OIBServiceEvent.objects
-        .filter(contacts__id=contact_id)
-        .values(
-            'id',
-            'date',
-            'oib_service_delivery_type__id',
-            'oib_service_delivery_type__oib_service_delivery_type'
-        )
-        .annotate(
-            grant_year=ddm.Case(
-                ddm.When(date__month__gte=10, then=ddm.F('date__year')),
-                default=ddm.F('date__year') - 1,
-                output_field=ddm.IntegerField()
-            )
-        )
-        .distinct()
-        .order_by('-grant_year', 'oib_service_delivery_type__oib_service_delivery_type')
-    )
-
-    plans = list(plans)
-    for plan in plans:
-        plan['plan_group'] = f"10/1/{plan['grant_year']} - {plan['oib_service_delivery_type__oib_service_delivery_type']}"
-
-    return render(request, "lynx/oib/oib_plan_list_with_notes.html", {
-        "client": client,
-        "plans": list(plans),
-    })
 
 def _get_plan_outcomes(contact_id, service_delivery_type_id, grant_year):
     """
@@ -2446,7 +2423,8 @@ def oib_plan_list(request, contact_id, program_name):
     return render(request, "lynx/oib/oib_plan_list.html", {
         "client": client,
         "plans": plans,
-        "program": program_name
+        "program": program_name,
+        "page_title": f"{program_name} Plans for {client.first_name} {client.last_name}"
     })
 
 @login_required
@@ -2477,6 +2455,7 @@ def oib_service_events_per_client_per_program(request, contact_id, program):
         "client": client,
         "program": program,
         "service_events": events,
+        "page_title": f"{program} Notes for {client.first_name} {client.last_name}"
     })
 
 def _get_plans(client, birth_date_cache_updated, program_name=None):

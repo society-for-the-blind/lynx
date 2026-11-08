@@ -225,24 +225,6 @@ document.addEventListener('DOMContentLoaded', function() {
 </style>
 {% endblock %}
 
-{% block title %}
-  {% if edit_mode %}
-    {% if service_event.oib_service_delivery_type_id == 1 %}
-      Edit in-home
-    {% else %}
-      Edit group
-    {% endif %}
-  {% else %}
-    {# Check contact_id from initial render, or fall back to hidden field in POST with errors #}
-    {% if contact_id or request.POST.in_home_flag == 'true' %}
-      Add new in-home
-    {% else %}
-      Add new group
-    {% endif %}
-  {% endif %}
-   note
-{% endblock %}
-
 {% block content %}
 {% if edit_mode %}
   {% if service_event.oib_service_delivery_type_id == 1 %}
