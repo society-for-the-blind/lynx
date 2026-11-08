@@ -1,5 +1,6 @@
 {% extends 'lynx/base.html' %}
 {% load time_convert %}
+{% load format_duration %}
 
 {% block content %}
   <h1>{{ client.first_name }} {{ client.last_name }} — {{ program }} notes</h1>
@@ -51,11 +52,11 @@
 
             <p class="mb-1"><strong>Entered by:</strong> {{ ev.entered_by.get_full_name|default:ev.entered_by.username }}</p>
 
-            <p class="mb-1"><strong>Hours:</strong>
+            <p class="mb-1"><strong>Length:</strong>
               {% if ev.length %}
-                {{ ev.length }} (HH:MM:SS)
+                {{ ev.length|format_duration }}
               {% else %}
-                <em>0</em>
+                <em>None recorded</em>
               {% endif %}
             </p>
 
@@ -63,7 +64,7 @@
               <strong>Plan:</strong>
               {% if ev.plan_id %}
                 <a href="{% url 'lynx:oib_plan_show' client.id program ev.plan_id %}">
-                  Open plan 10/1/{{ ev.plan_grant_year }} - {{ ev.oib_service_delivery_type.oib_service_delivery_type }}
+                  10/1/{{ ev.plan_grant_year }} - {{ ev.oib_service_delivery_type.oib_service_delivery_type }}
                 </a>
               {% else %}
                 <a href="{% url 'lynx:oib_plan_list' client.id program %}">
