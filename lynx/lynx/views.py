@@ -890,15 +890,25 @@ class ContactDetailView(LoginRequiredMixin, DetailView):
         client = lm.Contact.objects.get(pk=self.kwargs['pk'])
         birth_date_cache_updated = lm.ContactBirthDateCache.cache_updated(client)
         if not(birth_date_cache_updated):
-            context['oib_programs'] = \
+            oib_programs = list(
                 lm.OIBServiceEventContact.objects \
                     .filter(contact_id=self.kwargs['pk']) \
                     .values_list('program_name', flat=True) \
                     .distinct()
+            )
         else:
             oib_plans = _get_plans(self.object, birth_date_cache_updated)
             oib_programs = sorted(list({plan['program'] for plan in oib_plans}))
-            context['oib_programs'] = oib_programs
+        
+        # If no service events exist, fall back to active program memberships
+        if not oib_programs:
+            oib_programs = sorted([
+                cp.program.program
+                for cp in context['program_memberships']
+                if cp.program.is_oib
+            ])
+        
+        context['oib_programs'] = oib_programs
 
         # compute warnings / optionally auto-end offending memberships
         birth_date = intake.birth_date if intake else None
