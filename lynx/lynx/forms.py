@@ -514,10 +514,7 @@ class OIBServiceEventForm(forms.Form):
             else:
                 contact_id = service_event.oibserviceeventcontact_set.select_related('contact').first().contact_id
                 in_home_plan_choices = get_current_grant_year_in_home_plans(contact_id)
-                new_in_home_plan_name = lks.construct_plan_name(
-                    service_delivery_type_name="in-home", default=False
-                )
-                in_home_plan_choices.append((new_in_home_plan_name, 'Create new in-home plan'))
+                in_home_plan_choices.append(('', 'Create new in-home plan'))
                 plan_choices = in_home_plan_choices
                 # Determine the current plan name used by this service event (if any)
                 sec = service_event.oibserviceeventcontact_set.select_related('oib_plan', 'contact').first()
@@ -533,10 +530,7 @@ class OIBServiceEventForm(forms.Form):
                         # move it to the front for better visibility
                         in_home_plan_choices = sorted(in_home_plan_choices, key=lambda t: 0 if t[0] == current_plan_name else 1)
 
-                new_in_home_plan_name = lks.construct_plan_name(
-                    service_delivery_type_name="in-home", default=False
-                )
-                in_home_plan_choices.append((new_in_home_plan_name, 'Create new in-home plan'))
+                in_home_plan_choices.append(('', 'Create new in-home plan'))
                 plan_choices = in_home_plan_choices
                 # default selection -> the current plan for the service event when editing
                 if current_plan_name:
@@ -561,16 +555,14 @@ class OIBServiceEventForm(forms.Form):
             self.fields['plan_name'].required = False
             return
 
-        self.fields['plan_name'].required = True
+        # For in-home, allow empty value (means "create new plan") or existing plan name
+        self.fields['plan_name'].required = False
         self.fields['plan_name'].widget = forms.Select()
 
         contact_id = in_home_client_id
 
         in_home_plan_choices = get_current_grant_year_in_home_plans(contact_id)
-        new_in_home_plan_name = lks.construct_plan_name(
-            service_delivery_type_name="in-home", default=False
-        )
-        in_home_plan_choices.append((new_in_home_plan_name, 'Create new in-home plan'))
+        in_home_plan_choices.append(('', 'Create new in-home plan'))
         self.fields['plan_name'].choices = in_home_plan_choices
 
         # ensure field is enabled

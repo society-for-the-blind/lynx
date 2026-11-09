@@ -23,7 +23,7 @@
               <div class="btn-group">
                 <a class="btn btn-sm btn-outline-primary" href="{% url 'lynx:oib_service_event_show' ev.id %}">View</a>
                 <a class="btn btn-sm btn-outline-primary" href="{% url 'lynx:oib_service_event_edit' ev.id %}">Edit</a>
-                <a class="btn btn-sm btn-outline-danger" href="{% url 'lynx:oib_service_event_delete' ev.id %}" onclick="return confirm('Delete this service event?');">Delete</a>
+                <a class="btn btn-sm btn-outline-danger" href="{% url 'lynx:oib_service_event_delete' ev.id %}?next={% url 'lynx:oib_service_events_per_client_per_program' client.id program %}">Delete</a>
               </div>
             </div>
 
@@ -84,8 +84,6 @@
                   <em>None</em>
                 {% endif %}
               {% endwith %}
-              &nbsp; — &nbsp;
-              <a class="text-danger" href="{% url 'lynx:oib_service_event_delete' ev.id %}" onclick="return confirm('Delete note for this event?');">delete note</a>
             </p>
           </div>
         </div>
@@ -122,7 +120,7 @@
             <td class="text-nowrap">
               <a class="btn btn-sm btn-outline-primary" href="{% url 'lynx:oib_service_event_show' ev.id %}">View</a>
               <a class="btn btn-sm btn-outline-secondary" href="{% url 'lynx:oib_service_event_edit' ev.id %}">Edit</a>
-              <a class="btn btn-sm btn-outline-danger" href="{% url 'lynx:oib_service_event_delete' ev.id %}" onclick="return confirm('Delete this service event?');">Delete</a>
+              <a class="btn btn-sm btn-outline-danger" href="{% url 'lynx:oib_service_event_delete' ev.id %}?next={% url 'lynx:oib_service_events_per_client_per_program' client.id program %}">Delete</a>
             </td>
           </tr>
         {% endfor %}

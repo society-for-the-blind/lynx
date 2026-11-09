@@ -1922,14 +1922,19 @@ def oib_service_event_delete(request, oib_service_event_id):
         lm.OIBServiceEventOIBService.objects.filter(oib_service_event=service_event).delete()
         service_event.delete()
 
-        if contact_id:
+        # Check for a next parameter to redirect back to the originating page
+        next_url = request.POST.get('next')
+        if next_url:
+            return redirect(next_url)
+        elif contact_id:
             return redirect( 'lynx:contact_show', pk=contact_id )
         else:
             return redirect( 'lynx:oib_service_event_list')
 
+    next_url = request.GET.get('next')
     return render( request \
                  , "lynx/oib/oib_service_event_confirm_delete.html" \
-                 , {"service_event": service_event} \
+                 , {"service_event": service_event, "next": next_url} \
                  )
 
 @login_required
@@ -2241,7 +2246,17 @@ def oib_service_event_form(request, oib_service_event_id=None, contact_id=None, 
             # a plan dropdown, but for the group notes the plan is implicit.
             if not plan_name:
                 # is_in_home = service_event.oib_service_delivery_type_id == 1
-                plan_name = service_event.construct_plan_name()
+                # For in-home service events, generate the plan name using the actual note_date
+                if service_event.oib_service_delivery_type_id == 1:
+                    note_date = form.cleaned_data.get('note_date')
+                    plan_name = lks.construct_plan_name(
+                        service_delivery_type_name="in-home",
+                        default=False,
+                        plan_date=note_date
+                    )
+                else:
+                    plan_name = service_event.construct_plan_name()
+
             plan_obj, _created = lm.OIBPlan.objects.get_or_create(oib_plan_name=plan_name)
             # import pdb; pdb.set_trace()
 

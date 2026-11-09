@@ -20,20 +20,14 @@
 
   <a class="btn btn-success" aria-label="Back to Client" href="{% url 'lynx:contact_show' client.id %}">Return to Client</a>
   
-  {% include "lynx/oib/fragments/_add_show_oib_notes.html" with client_id=client.id %}
+  {% include "lynx/oib/fragments/_add_show_oib_notes.html" with client_id=client.id program_name=program %}
 
   <div class="container-fluid">
     {% for program_plan in plans %}
       <div class="container-fluid mb-3 p-2 border">
         <div><strong>Plan Name: </strong>
           <a href="{% url 'lynx:oib_plan_show' client.id program program_plan.id %}">
-            {% if program_plan.is_in_home %}
-              {# In-home plans: show date, service delivery type, and first instructor #}
-              {{ program_plan.program_name }} {{ program_plan.first_service_date|date:"m/d/Y" }} - {{ program_plan.service_delivery_type }}{% if program_plan.first_instructor %} - {{ program_plan.first_instructor }}{% endif %}
-            {% else %}
-              {# Regular plans: show grant year start #}
-              {{ program_plan.name }}
-            {% endif %}
+            {{ program_plan.name }}
           </a>
         </div>
 

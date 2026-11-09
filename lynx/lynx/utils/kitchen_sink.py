@@ -62,13 +62,17 @@ def get_grant_year(service_event=None):
     else:
         return date.year - 1
 
-def construct_plan_name(service_event=None, service_delivery_type_name=None, default=True):
+def construct_plan_name(service_event=None, service_delivery_type_name=None, default=True, plan_date=None):
     grant_year = get_grant_year(service_event)
 
     if default:
         plan_month_day = "10/01"
     else:
-        plan_month_day = du.timezone.now().date().strftime("%m/%d")
+        # Use provided plan_date if available, otherwise use current date
+        if plan_date:
+            plan_month_day = plan_date.strftime("%m/%d")
+        else:
+            plan_month_day = du.timezone.now().date().strftime("%m/%d")
 
     if service_event and service_event.oib_service_delivery_type:
         service_delivery_type_name = getattr(service_event.oib_service_delivery_type, 'oib_service_delivery_type', '')

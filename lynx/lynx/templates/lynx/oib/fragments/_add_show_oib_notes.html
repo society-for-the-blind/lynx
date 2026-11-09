@@ -2,9 +2,7 @@
   <a href="{% url 'lynx:oib_service_event_add_in-home' client_id %}" class="btn btn-primary">
     Add new in-home note
   </a>
-  <a href="{% url 'lynx:oib_service_event_list' client_id %}" class="btn btn-primary">
-    Show all notes
-  </a>
+  <a class="btn btn-success" aria-label="{{ program_name }} Notes" href="{% url 'lynx:oib_service_events_per_client_per_program' client_id program_name %}">{{ program_name }} Notes</a>
 {% else %}
   <a href="#"
      class="btn btn-primary disabled"

@@ -8,7 +8,7 @@
   <a class="btn btn-success" aria-label="Back to Client" href="{% url 'lynx:contact_show' client.id %}">Return to Client</a>
   <a class="btn btn-success" aria-label="SIP Plans" href="{% url 'lynx:oib_plan_list' client.id program %}">Show all {{ program}} plans</a>
 
-{% include "lynx/oib/fragments/_add_show_oib_notes.html" with client_id=client.id %}
+{% include "lynx/oib/fragments/_add_show_oib_notes.html" with client_id=client.id program_name=program %}
 
 <h2>Outcomes</h2>
 {% if edit_mode %}
