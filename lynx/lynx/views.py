@@ -2540,8 +2540,6 @@ def _get_plans(client, birth_date_cache_updated, program_name=None):
                 grant_year
             )
 
-        ui_plan_name = f"{program_name or ''} {plan_name}"
-        
         # For in-home plans, get the first instructor from the service event
         first_instructor_name = None
         if service_delivery_type_id == 1:  # in-home service delivery type
@@ -2549,6 +2547,11 @@ def _get_plans(client, birth_date_cache_updated, program_name=None):
             if instructors.exists():
                 first_instructor = instructors.first()
                 first_instructor_name = first_instructor.get_full_name() or first_instructor.username
+        
+        ui_plan_name = f"{program_name or ''} {plan_name}"
+        # Append instructor to display name for in-home plans
+        if service_delivery_type_id == 1 and first_instructor_name:
+            ui_plan_name = f"{ui_plan_name} - {first_instructor_name}"
         
         plans.append({
             'id': oib_plan.id,
@@ -2604,6 +2607,19 @@ def _oib_plan_dict(request, contact_id, oib_plan_id, program_name, edit_mode):
         }
 
         # "plan_name": f"{program or ''} {service_events[0].construct_plan_name()}",
+    
+    # For in-home plans, append the first instructor name to the display name
+    display_plan_name = plan_name
+    if service_delivery_type.id == 1:  # in-home service delivery type
+        first_instructor_name = None
+        instructors = service_events[0].instructors.all()
+        if instructors.exists():
+            first_instructor = instructors.first()
+            first_instructor_name = first_instructor.get_full_name() or first_instructor.username
+        
+        if first_instructor_name:
+            display_plan_name = f"{plan_name} - {first_instructor_name}"
+    
     return {
         "client": client,
         "plan_id": oib_plan_id,
@@ -2615,7 +2631,7 @@ def _oib_plan_dict(request, contact_id, oib_plan_id, program_name, edit_mode):
         "outcome_types": outcome_types,
         "choices_by_type": choices_by_type,
         "program": program,
-        "plan_name": plan_name,
+        "plan_name": display_plan_name,
         "plan_outcomes": otc_id_dict if edit_mode else otc_tuples,
         "edit_mode": edit_mode,
     }
